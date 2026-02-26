@@ -595,6 +595,27 @@
     .topbar { gap: 8px; }
     .topbar a span { display: none; }
   }
+
+  /* ── Pattes dans tarif-box sans modifier le design existant ── */
+.tarif-box .tbox-lines {
+  margin: 0;
+}
+
+.tarif-box .tbox-lines span {
+  display: block;
+  position: relative;
+  padding-left: 18px;
+}
+
+.tarif-box .tbox-lines span::before {
+  content: "🐾";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  font-size: 9px;
+  color: var(--sand);
+  opacity: 0.6;
+}
 </style>
 </head>
 <body>
@@ -814,33 +835,34 @@
       <!-- Colonne droite : infos pratiques -->
       <div class="tarif-right-col">
         <div class="tarif-boxes">
-         <div class="tarif-box">
-            <h4><span class="tbox-emoji">🚗</span> Zone d'intervention</h4>
-            <ul class="pcard">
-              <li>Déplacements inclus dans un rayon de 15 km autour de Châteaubourg.</li>
-              <li>Au-delà : 0,50 €/km (aller-retour), calculé depuis Châteaubourg.</li>
-              <li><em>Je me déplace volontiers plus loin — contactez-moi.</em></li>
-            </ul>
-          </div>
-          
-          <div class="tarif-box">
-            <h4><span class="tbox-emoji">💳</span> Modalités de paiement</h4>
-            <ul class="pcard">
-              <li>Acompte de 30 % à la réservation.</li>
-              <li>Solde à la remise des clés.</li>
-              <li>Paiement par virement bancaire ou espèces.</li>
-            </ul>
-          </div>
-          
-          <div class="tarif-box">
-            <h4><span class="tbox-emoji">❌</span> Conditions d’annulation</h4>
-            <ul class="pcard">
-              <li>Remboursement intégral si annulation plus de 72h avant le début du séjour.</li>
-              <li>Acompte conservé si annulation à moins de 72h.</li>
-              <li>Séjour écourté intégralement dû.</li>
-            </ul>
-          </div>
-        </div>
+
+  <div class="tarif-box">
+    <h4><span class="tbox-emoji">🚗</span> Zone d'intervention</h4>
+    <p class="tbox-lines">
+      <span>Déplacements inclus dans un rayon de 15 km autour de Châteaubourg.</span>
+      <span>Au-delà : 0,50 €/km (aller-retour), calculé depuis Châteaubourg.</span>
+      <span><em>Je me déplace volontiers plus loin — contactez-moi.</em></span>
+    </p>
+  </div>
+
+  <div class="tarif-box">
+    <h4><span class="tbox-emoji">💳</span> Modalités de paiement</h4>
+    <p class="tbox-lines">
+      <span>Acompte de 30 % à la réservation.</span>
+      <span>Solde à la remise des clés.</span>
+      <span>Paiement par virement bancaire ou espèces.</span>
+    </p>
+  </div>
+
+  <div class="tarif-box">
+    <h4><span class="tbox-emoji">❌</span> Conditions d’annulation</h4>
+    <p class="tbox-lines">
+      <span>Remboursement intégral si annulation plus de 72h avant le début du séjour.</span>
+      <span>Acompte conservé si annulation à moins de 72h.</span>
+      <span>Séjour écourté intégralement dû.</span>
+    </p>
+  </div>
+</div>
       </div>
 
     </div>
