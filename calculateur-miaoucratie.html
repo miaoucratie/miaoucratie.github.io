@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miaoucratie — Calculateur de garde</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf8f2;
+    --warm: #f5ede0;
+    --terracotta: #c4623a;
+    --terracotta-light: #e8845f;
+    --dark: #2a1f1a;
+    --mid: #7a6358;
+    --light: #b8a598;
+    --green: #4a7c59;
+    --green-light: #e8f2eb;
+    --border: #e2d5c8;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 20%, #f0e6d8 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, #e8ddd3 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 560px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .logo-paw {
+    font-size: 40px;
+    margin-bottom: 12px;
+    display: block;
+    animation: wiggle 3s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+
+  .subtitle {
+    margin-top: 8px;
+    color: var(--mid);
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Card */
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: 0 4px 40px rgba(42, 31, 26, 0.08), 0 1px 4px rgba(42, 31, 26, 0.06);
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section labels */
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--light);
+    margin-bottom: 16px;
+    margin-top: 28px;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  /* Field groups */
+  .field {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--mid);
+    margin-bottom: 8px;
+  }
+
+  label span.hint {
+    font-weight: 300;
+    color: var(--light);
+    font-size: 0.8rem;
+  }
+
+  /* Stepper for numbers */
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    width: fit-content;
+    background: var(--cream);
+  }
+
+  .stepper button {
+    background: none;
+    border: none;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+    color: var(--terracotta);
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+
+  .stepper button:hover { background: var(--warm); }
+  .stepper button:active { background: var(--border); }
+
+  .stepper .val {
+    min-width: 56px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--dark);
+    border-left: 1.5px solid var(--border);
+    border-right: 1.5px solid var(--border);
+    height: 44px;
+    line-height: 44px;
+    user-select: none;
+  }
+
+  /* Toggle checkboxes */
+  .toggle-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    font-size: 0.88rem;
+    color: var(--mid);
+    background: var(--cream);
+  }
+
+  .toggle input { display: none; }
+
+  .toggle .dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle.active {
+    border-color: var(--terracotta);
+    background: #fdf2ed;
+    color: var(--dark);
+  }
+
+  .toggle.active .dot {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+  }
+
+  /* Km input */
+  .km-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 0 16px;
+    background: var(--cream);
+    width: fit-content;
+  }
+
+  .km-input input {
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--dark);
+    width: 70px;
+    height: 44px;
+    outline: none;
+    text-align: center;
+  }
+
+  .km-input input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .km-label {
+    font-size: 0.85rem;
+    color: var(--light);
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0;
+  }
+
+  /* Result panel */
+  .result {
+    background: var(--dark);
+    border-radius: 16px;
+    padding: 28px;
+    color: white;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .result-title {
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--light);
+    margin-bottom: 20px;
+  }
+
+  .result-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .result-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.88rem;
+    color: #b8a598;
+  }
+
+  .result-line .label { flex: 1; }
+
+  .result-line .amount {
+    font-weight: 400;
+    color: #d4c5b8;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result-line.discount .amount { color: #7cc47e; }
+  .result-line.extra .amount { color: #e8a87c; }
+
+  .result-total {
+    border-top: 1px solid #3d2e27;
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+
+  .result-total .label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: white;
+  }
+
+  .result-total .amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: white;
+    font-weight: 700;
+  }
+
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .breakdown-item {
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .breakdown-item .b-label {
+    font-size: 0.75rem;
+    color: var(--light);
+    margin-bottom: 4px;
+  }
+
+  .breakdown-item .b-amount {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: white;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .breakdown-item.highlight { background: rgba(196, 98, 58, 0.25); }
+  .breakdown-item.highlight .b-amount { color: var(--terracotta-light); }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 20px 0;
+    color: var(--light);
+    font-size: 0.9rem;
+  }
+
+  .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
+
+  /* Mention */
+  .mention {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--light);
+    margin-top: 20px;
+  }
+
+  .badge-cumul {
+    display: inline-block;
+    background: var(--green-light);
+    color: var(--green);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <span class="logo-paw">🐾</span>
+    <h1>Miaou<em>cratie</em></h1>
+    <p class="subtitle">Simulateur de garde — résultats instantanés</p>
+  </header>
+
+  <div class="card">
+    <!-- Chats -->
+    <p class="section-label">Nombre de chats</p>
+    <div class="field">
+      <div class="stepper">
+        <button onclick="change('chats', -1)">−</button>
+        <div class="val" id="val-chats">1</div>
+        <button onclick="change('chats', +1)">+</button>
+      </div>
+    </div>
+
+    <!-- Visites -->
+    <p class="section-label">Nombre de visites</p>
+    <div class="field">
+      <label><span class="hint">Une visite = 30 min minimum</span></label>
+      <div class="stepper">
+        <button onclick="change('visites', -1)">−</button>
+        <div class="val" id="val-visites">1</div>
+        <button onclick="change('visites', +1)">+</button>
+      </div>
+    </div>
+
+    <!-- Remises -->
+    <p class="section-label">Remises applicables</p>
+    <div class="field">
+      <div class="toggle-group">
+        <div class="toggle" id="toggle-solidaire" onclick="toggleOption('solidaire')">
+          <span class="dot" id="dot-solidaire"></span>
+          Tarif Moustaches & Compagnie
+        </div>
+        <div class="toggle" id="toggle-periode" onclick="toggleOption('periode')">
+          <span class="dot" id="dot-periode"></span>
+          Période de forte demande*
+        </div>
+      </div>
+    </div>
+
+    <!-- Distance -->
+    <p class="section-label">Distance hors zone <span style="font-size:0.75rem;color:var(--light);text-transform:none;letter-spacing:0">(au-delà de 15 km de Châteaubourg)</span></p>
+    <div class="field">
+      <div class="km-input">
+        <input type="number" id="km-input" min="0" value="0" oninput="calculate()">
+        <span class="km-label">km supplémentaires</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Résultat -->
+    <div id="result-area">
+      <div class="empty-state">
+        <div class="icon">🐱</div>
+        Renseigne les informations ci-dessus
+      </div>
+    </div>
+
+    <p class="mention">TVA non applicable · Art. 293 B du CGI</p>
+    <p class="mention" style="margin-top:8px">* Périodes de forte demande : vacances scolaires et ponts de Mai</p>
+  </div>
+</div>
+
+<script>
+  const state = { chats: 1, visites: 1, solidaire: false, periode: false };
+
+  function change(key, delta) {
+    const min = key === 'chats' ? 1 : 1;
+    const max = key === 'chats' ? 10 : 60;
+    state[key] = Math.max(min, Math.min(max, state[key] + delta));
+    document.getElementById('val-' + key).textContent = state[key];
+    calculate();
+  }
+
+  function toggleOption(key) {
+    state[key] = !state[key];
+    document.getElementById('toggle-' + key).classList.toggle('active', state[key]);
+    calculate();
+  }
+
+  function fmt(n) {
+    return n.toFixed(2).replace('.', ',') + ' €';
+  }
+
+  function calculate() {
+    const { chats, visites, solidaire, periode } = state;
+    const km = Math.max(0, parseFloat(document.getElementById('km-input').value) || 0);
+
+    // Tarif de base
+    let base;
+    if (chats <= 2) base = 18;
+    else if (chats === 3) base = 22;
+    else if (chats === 4) base = 26;
+    else base = 29;
+
+    // Remises
+    const remiseSejour = visites >= 7 ? 1 : 0;
+    const remiseSolidaire = (solidaire && !periode) ? 1 : 0;
+    const remiseTotale = remiseSejour + remiseSolidaire;
+    const tarifNet = base - remiseTotale;
+    const cumulBloque = solidaire && periode;
+
+    // Supplément km (aller-retour)
+    const supKm = km * 2 * 0.5;
+
+    // Total
+    const total = tarifNet * visites + supKm;
+    const acompte = Math.round(total * 0.3 * 100) / 100;
+    const solde = Math.round((total - acompte) * 100) / 100;
+
+    // Render
+    let lines = `<div class="result-line">
+      <span class="label">Tarif de base (${chats <= 2 ? '1-2' : chats} chat${chats > 1 ? 's' : ''})</span>
+      <span class="amount">${base},00 € × ${visites} visite${visites > 1 ? 's' : ''}</span>
+    </div>`;
+
+    if (remiseSejour > 0) {
+      lines += `<div class="result-line discount">
+        <span class="label">Remise séjour long (≥ 7 visites)</span>
+        <span class="amount">− ${fmt(remiseSejour * visites)}</span>
+      </div>`;
+    }
+
+    if (remiseSolidaire > 0) {
+      lines += `<div class="result-line discount">
+        <span class="label">Remise Moustaches & Cie</span>
+        <span class="amount">− ${fmt(remiseSolidaire * visites)}</span>
+      </div>`;
+    }
+
+    if (cumulBloque) {
+      lines += `<div class="result-line">
+        <span class="label" style="color:#e8a87c">⚠ Cumul remises non applicable en période forte demande</span>
+        <span class="amount"></span>
+      </div>`;
+    }
+
+    if (supKm > 0) {
+      lines += `<div class="result-line extra">
+        <span class="label">Supplément déplacement (${km} km × 2 × 0,50 €)</span>
+        <span class="amount">+ ${fmt(supKm)}</span>
+      </div>`;
+    }
+
+    const cumul = remiseSejour > 0 && remiseSolidaire > 0;
+
+    document.getElementById('result-area').innerHTML = `
+      <div class="result">
+        <p class="result-title">Estimation du coût</p>
+        <div class="result-lines">${lines}</div>
+        <div class="result-total">
+          <span class="label">Total séjour${cumul ? '<span class="badge-cumul">2 remises</span>' : ''}</span>
+          <span class="amount">${fmt(total)}</span>
+        </div>
+        <div class="result-breakdown">
+          <div class="breakdown-item highlight">
+            <div class="b-label">Acompte à la réservation</div>
+            <div class="b-amount">${fmt(acompte)}</div>
+          </div>
+          <div class="breakdown-item">
+            <div class="b-label">Solde à la remise des clés</div>
+            <div class="b-amount">${fmt(solde)}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // Init
+  calculate();
+</script>
+</body>
+</html>
