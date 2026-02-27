@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section Carte – Miaoucratie</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,800;1,300;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF7F0;--warm:#F0E8DA;--terracotta:#C8603A;
+    --sage:#7A9E8E;--deep:#1E1812;--mid:#4A3728;--sand:#B89B80;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--deep)}
+
+  .zone-section{background:var(--warm);padding:56px 0 0;overflow:hidden}
+
+  /* ── Header : texte à gauche, respiration à droite ── */
+  .zone-header{
+    max-width:1100px;margin:0 auto;padding:0 40px 44px;
+    display:grid;grid-template-columns:5fr 4fr;gap:48px;align-items:end;
+  }
+
+  /* Colonne gauche */
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
+    color:var(--terracotta);background:rgba(200,96,58,0.08);
+    padding:5px 13px;border-radius:100px;margin-bottom:18px;
+  }
+  h2{
+    font-family:'Fraunces',serif;font-size:clamp(26px,3vw,44px);
+    font-weight:800;color:var(--deep);line-height:1.1;letter-spacing:-0.5px;margin-bottom:12px;
+  }
+  h2 em{font-style:italic;font-weight:300;color:var(--terracotta)}
+  .zone-desc{font-size:15.5px;color:var(--mid);line-height:1.8;font-weight:400;margin-bottom:20px}
+  .zone-cta{
+    padding-left:14px;border-left:3px solid var(--terracotta);
+    font-size:14.5px;color:var(--terracotta);font-weight:500;line-height:1.6;
+  }
+
+  /* Colonne droite : stat déplacement + rappel tarifaire */
+  .zone-aside{
+    display:flex;flex-direction:column;gap:16px;
+    padding:28px 28px;border-radius:16px;
+    background:rgba(200,96,58,0.06);
+    border:1px solid rgba(200,96,58,0.12);
+  }
+  .zone-aside-stat{
+    font-family:'Fraunces',serif;
+    font-size:clamp(36px,3.5vw,52px);font-weight:800;
+    color:var(--terracotta);line-height:1;letter-spacing:-1px;
+  }
+  .zone-aside-stat span{
+    display:block;font-family:'DM Sans',sans-serif;
+    font-size:13px;font-weight:500;color:var(--mid);
+    letter-spacing:0;line-height:1.5;margin-top:4px;
+  }
+  .zone-aside-divider{
+    height:1px;background:rgba(200,96,58,0.15);
+  }
+  .zone-aside-note{
+    font-size:12.5px;color:#7a6655;line-height:1.7;font-weight:400;
+  }
+
+  /* Carte */
+  .map-full{width:100%;height:clamp(480px,60vw,760px);overflow:hidden}
+  .map-full svg{width:100%;height:100%;display:block}
+
+  @keyframes pulse-ring{0%{r:8;opacity:.5}100%{r:22;opacity:0}}
+  .pulse-ring{animation:pulse-ring 2.5s ease-out infinite}
+
+  @media(max-width:820px){
+    .zone-section{padding-top:48px}
+    .zone-header{grid-template-columns:1fr;gap:28px;padding:0 24px 40px}
+    .map-full{height:clamp(340px,82vw,520px)}
+  }
+  @media(max-width:480px){
+    .map-full{height:72vw;min-height:280px}
+    h2{font-size:clamp(24px,7vw,32px)}
+  }
+</style>
+</head>
+<body>
+<section class="zone-section" id="zone">
+  <div class="zone-header">
+
+    <!-- Gauche : accroche + description + CTA -->
+    <div>
+      <div class="eyebrow">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Zone d'intervention
+      </div>
+      <h2>Je viens <em>chez vous</em>,<br>dans tout le secteur</h2>
+      <p class="zone-desc">Votre chat garde ses repères — son panier douillet, ses cachettes secrètes, ses jouets préférés. Pas de transport, pas de stress : c'est moi qui me déplace.</p>
+      <p class="zone-cta">Votre chat (et vous) habitez hors zone ? Contactez-moi — je fais tout mon possible pour m'adapter.</p>
+    </div>
+
+    <!-- Droite : encadré stat + tarif -->
+    <div class="zone-aside">
+      <div class="zone-aside-stat">
+        15 km
+        <span>de déplacement offert autour de Châteaubourg</span>
+      </div>
+      <div class="zone-aside-divider"></div>
+      <p class="zone-aside-note">Au-delà de la zone principale, des frais kilométriques s'appliquent — 0,50 €/km parcouru par la route.</p>
+    </div>
+
+  </div>
+
+  <!--
+    CARTE SVG 1400×800
+    Coords vérifiées : cartesfrance.fr + monbeauvillage.fr + communes.com
+    Centre géo : (48.106, -1.355) → SVG (700,400)
+    Échelle : 18.04 px/km
+    Châteaubourg (48.112,-1.398) → SVG (642,388)
+
+    Corrections majeures vs version précédente :
+    - Saint-Didier : 48.095,-1.371 (juste SE de Châteaubourg, pas au sud loin)
+    - Moulins : 48.002,-1.371 (bien au S, lon proche de St-Didier)
+    - Ossé : 48.055,-1.449 (SO, pas aussi au S qu'avant)
+    - Amanlis : 48.006,-1.476 (SO)
+    - Piré-sur-Seiche : 48.009,-1.431
+    - Chancé : 48.036,-1.383
+    - Louvigné-de-Bais : 48.049,-1.333 (SE, pas SO)
+    - Bais : 48.009,-1.289 (SE)
+    - Torcé : 48.062,-1.266 (E)
+  -->
+  <div class="map-full">
+  <svg viewBox="0 0 1400 800" preserveAspectRatio="xMidYMid meet"
+       xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Zone d'intervention Miaoucratie autour de Châteaubourg">
+    <defs>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ede4d6"/>
+        <stop offset="100%" stop-color="#e4d8c8"/>
+      </linearGradient>
+      <filter id="sf"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1E1812" flood-opacity="0.2"/></filter>
+    </defs>
+    <rect width="1400" height="800" fill="url(#bg)"/>
+
+    <!-- ══ LÉGENDE dans la carte ══ -->
+    <g transform="translate(32, 32)">
+      <rect x="0" y="0" width="310" height="88" rx="10"
+            fill="rgba(240,232,218,0.92)" stroke="rgba(184,155,128,0.35)" stroke-width="1"/>
+      <!-- Zone principale -->
+      <circle cx="24" cy="30" r="8" fill="rgba(200,96,58,0.9)"/>
+      <text x="42" y="35" font-family="DM Sans,sans-serif" font-size="14" fill="#4A3728" font-weight="400">Zone principale — déplacement inclus</text>
+      <!-- Zone secondaire -->
+      <rect x="16" y="52" width="16" height="16" rx="3"
+            fill="rgba(122,158,142,0.2)" stroke="rgba(122,158,142,0.7)" stroke-width="2" stroke-dasharray="4 3"/>
+      <text x="42" y="65" font-family="DM Sans,sans-serif" font-size="14" fill="#4A3728" font-weight="400">Zone secondaire — frais kilométriques</text>
+    </g>
+    <!-- Routes décoratives -->
+    <path d="M 642 388 Q 720 435 788 594" stroke="#cfc3b0" stroke-width="4" fill="none"/>
+    <path d="M 642 388 Q 760 378 895 364" stroke="#cfc3b0" stroke-width="6" fill="none"/>
+    <path d="M 642 388 Q 695 338 766 224" stroke="#cfc3b0" stroke-width="3" fill="none"/>
+    <path d="M 642 388 Q 590 420 501 518" stroke="#cfc3b0" stroke-width="3" fill="none"/>
+
+    <!-- ══ ZONE SECONDAIRE ══ polygone direct St-Aubin → St-M'Hervé -->
+    <polygon
+      points="391,366 489,176 652,106 1018,256 868,426 879,498 821,542 788,594 639,668 506,694 411,510 382,458"
+      fill="#7A9E8E" fill-opacity="0.13"
+      stroke="#7A9E8E" stroke-width="2.5" stroke-dasharray="10 6" stroke-opacity="0.55"/>
+
+    <!-- SECONDAIRE — labels à 15px du point, au-dessus ou en-dessous -->
+    <circle cx="391" cy="366" r="5.5" fill="#7A9E8E"/>
+    <text x="391" y="351" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Cesson-Sévigné</text>
+
+    <circle cx="447" cy="302" r="5.5" fill="#7A9E8E"/>
+    <text x="447" y="287" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Thorigné-F.</text>
+
+    <circle cx="489" cy="176" r="5.5" fill="#7A9E8E"/>
+    <text x="489" y="161" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Liffré</text>
+
+    <circle cx="652" cy="106" r="5.5" fill="#7A9E8E"/>
+    <text x="652" y="91" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">St-Aubin-du-Cormier</text>
+
+    <circle cx="1018" cy="256" r="5.5" fill="#7A9E8E"/>
+    <text x="1018" y="241" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">St-M'Hervé</text>
+
+    <circle cx="868" cy="426" r="5.5" fill="#7A9E8E"/>
+    <text x="868" y="445" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Erbrée</text>
+
+    <circle cx="879" cy="498" r="5.5" fill="#7A9E8E"/>
+    <text x="879" y="517" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Étrelles</text>
+
+    <circle cx="821" cy="542" r="5.5" fill="#7A9E8E"/>
+    <text x="821" y="561" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Vergéal</text>
+
+    <circle cx="506" cy="694" r="5.5" fill="#7A9E8E"/>
+    <text x="506" y="713" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Janzé</text>
+
+    <circle cx="639" cy="668" r="5.5" fill="#7A9E8E"/>
+    <text x="639" y="653" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Boistrudan</text>
+
+    <circle cx="411" cy="510" r="5.5" fill="#7A9E8E"/>
+    <text x="411" y="529" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Vern-sur-Seiche</text>
+
+    <circle cx="382" cy="458" r="5.5" fill="#7A9E8E"/>
+    <text x="382" y="443" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Chantepie</text>
+
+    <!-- PRINCIPALE — labels à 15px du point, au-dessus ou en-dessous -->
+
+    <!-- Nord -->
+    <circle cx="563" cy="272" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="563" y="257" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">La Bouëxière</text>
+
+    <circle cx="766" cy="224" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="766" y="209" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Landavran</text>
+
+    <circle cx="801" cy="258" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="801" y="277" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Livré-s-Changeon</text>
+
+    <!-- NO / O -->
+    <circle cx="559" cy="368" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="559" y="353" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Servon-s-V.</text>
+
+    <circle cx="475" cy="384" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="475" y="369" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Noyal-s-V.</text>
+
+    <circle cx="532" cy="396" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="532" y="415" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Brécé</text>
+
+    <!-- NE -->
+    <circle cx="766" cy="452" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="766" y="437" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Cornillé</text>
+
+    <circle cx="804" cy="310" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="804" y="295" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Val-d'Izé</text>
+
+    <circle cx="895" cy="364" r="7" fill="#C8603A"/>
+    <text x="895" y="349" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" fill="#7a3520" font-weight="700">Vitré</text>
+
+    <!-- SE proche -->
+    <circle cx="678" cy="422" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="678" y="441" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">St-Didier</text>
+
+    <circle cx="789" cy="436" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="789" y="455" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">St-Aubin-des-L.</text>
+
+    <!-- Sud -->
+    <circle cx="611" cy="460" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="611" y="445" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Domagné</text>
+
+    <circle cx="573" cy="502" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="573" y="521" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Ossé</text>
+
+    <circle cx="501" cy="518" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="501" y="537" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="600">Châteaugiron</text>
+
+    <circle cx="819" cy="488" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="819" y="507" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Torcé</text>
+
+    <circle cx="729" cy="514" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="729" y="533" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Louvigné</text>
+
+    <circle cx="597" cy="594" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="597" y="579" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Piré-s-S.</text>
+
+    <circle cx="537" cy="600" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="537" y="619" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Amanlis</text>
+
+    <circle cx="662" cy="540" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="662" y="559" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Chancé</text>
+
+    <circle cx="788" cy="594" r="5.5" fill="#7A9E8E"/>
+    <text x="788" y="613" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#3d6456" font-weight="500">Bais</text>
+
+    <!-- Moulins — au S, même longitude que St-Didier/Châteaubourg -->
+    <circle cx="678" cy="608" r="5.5" fill="#C8603A" fill-opacity="0.9"/>
+    <text x="678" y="627" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#7a3520" font-weight="500">Moulins</text>
+
+    <!-- ══ CHÂTEAUBOURG ══ -->
+    <circle class="pulse-ring" cx="642" cy="388" r="8" fill="#C8603A" fill-opacity="0.2"/>
+    <circle cx="642" cy="388" r="7" fill="#C8603A" stroke="#FBF7F0" stroke-width="2.5" filter="url(#sf)"/>
+    <text x="642" y="373" text-anchor="middle" font-family="Fraunces,serif" font-size="13" font-weight="800" fill="#1E1812">Châteaubourg</text>
+
+    <!-- Boussole -->
+    <g transform="translate(1345,62)" opacity="0.75">
+      <circle cx="0" cy="0" r="28" fill="rgba(240,232,218,0.6)" stroke="#B89B80" stroke-width="1.5"/>
+      <path d="M0,-19 L5,0 L0,7 L-5,0 Z" fill="#C8603A"/>
+      <path d="M0,19 L5,0 L0,-7 L-5,0 Z" fill="#9a8270"/>
+      <text x="0" y="-33" font-family="DM Sans,sans-serif" font-size="13" fill="#4A3728" text-anchor="middle" font-weight="700">N</text>
+    </g>
+
+  </svg>
+  </div>
+</section>
+
+<script>
+(function() {
+  const container = document.querySelector('.map-full');
+  const svg = container.querySelector('svg');
+
+  // Enveloppe tout le contenu SVG dans un groupe transformable
+  const inner = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  inner.id = 'map-pan-zoom';
+  while (svg.firstChild) inner.appendChild(svg.firstChild);
+  svg.appendChild(inner);
+
+  let scale = 1, tx = 0, ty = 0;
+  const MIN = 0.8, MAX = 6;
+
+  function clamp(v, a, b) { return Math.min(Math.max(v, a), b); }
+
+  function apply() {
+    inner.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
+    btnReset.style.opacity = (scale > 1.05 || Math.abs(tx) > 2 || Math.abs(ty) > 2) ? '1' : '0';
+    btnReset.style.pointerEvents = btnReset.style.opacity === '1' ? 'auto' : 'none';
+  }
+
+  // ── Bouton reset ──
+  const btnReset = document.createElement('button');
+  btnReset.textContent = '↺ Réinitialiser';
+  Object.assign(btnReset.style, {
+    position:'absolute', bottom:'16px', right:'16px',
+    padding:'7px 14px', borderRadius:'100px',
+    background:'rgba(240,232,218,0.92)', border:'1px solid rgba(184,155,128,0.4)',
+    fontFamily:'DM Sans,sans-serif', fontSize:'12px', fontWeight:'600',
+    color:'#4A3728', cursor:'pointer', opacity:'0',
+    transition:'opacity .2s', pointerEvents:'none',
+    zIndex:'10',
+  });
+  btnReset.addEventListener('click', () => { scale=1; tx=0; ty=0; apply(); });
+  container.style.position = 'relative';
+  container.appendChild(btnReset);
+
+  // ── Hint mobile (disparaît après 1ère interaction) ──
+  const hint = document.createElement('div');
+  hint.textContent = '👆 Pincer pour zoomer · Glisser pour naviguer';
+  Object.assign(hint.style, {
+    position:'absolute', bottom:'16px', left:'50%',
+    transform:'translateX(-50%)',
+    padding:'6px 14px', borderRadius:'100px',
+    background:'rgba(240,232,218,0.88)', border:'1px solid rgba(184,155,128,0.3)',
+    fontFamily:'DM Sans,sans-serif', fontSize:'11.5px', color:'#7a6655',
+    pointerEvents:'none', whiteSpace:'nowrap',
+    opacity:'0', transition:'opacity .4s', zIndex:'10',
+  });
+  container.appendChild(hint);
+
+  // Afficher le hint uniquement sur touch
+  window.addEventListener('touchstart', function showHint() {
+    hint.style.opacity = '1';
+    setTimeout(() => hint.style.opacity = '0', 2800);
+    window.removeEventListener('touchstart', showHint);
+  }, { once: true });
+
+  function hideHint() { hint.style.opacity = '0'; }
+
+  // ── Zoom molette ──
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = svg.getBoundingClientRect();
+    const svgW = 1400, svgH = 800;
+    const mx = (e.clientX - rect.left) / rect.width  * svgW;
+    const my = (e.clientY - rect.top)  / rect.height * svgH;
+    const delta = e.deltaY < 0 ? 1.12 : 0.89;
+    const ns = clamp(scale * delta, MIN, MAX);
+    tx = mx - (mx - tx) * (ns / scale);
+    ty = my - (my - ty) * (ns / scale);
+    scale = ns;
+    apply();
+  }, { passive: false });
+
+  // ── Drag souris ──
+  let dragging = false, lastX = 0, lastY = 0;
+  svg.addEventListener('mousedown', e => {
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    svg.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const rect = svg.getBoundingClientRect();
+    const scaleX = 1400 / rect.width, scaleY = 800 / rect.height;
+    tx += (e.clientX - lastX) * scaleX;
+    ty += (e.clientY - lastY) * scaleY;
+    lastX = e.clientX; lastY = e.clientY;
+    apply();
+  });
+  window.addEventListener('mouseup', () => {
+    dragging = false;
+    svg.style.cursor = 'grab';
+  });
+  svg.style.cursor = 'grab';
+
+  // ── Pinch & pan tactile ──
+  let touches = [], lastDist = 0, lastMidX = 0, lastMidY = 0;
+
+  function getTouches(e) {
+    return Array.from(e.touches).slice(0, 2);
+  }
+  function dist(a, b) {
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  }
+  function mid(a, b) {
+    return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
+  }
+
+  svg.addEventListener('touchstart', e => {
+    hideHint();
+    e.preventDefault();
+    touches = getTouches(e);
+    if (touches.length === 2) {
+      lastDist = dist(touches[0], touches[1]);
+      const m = mid(touches[0], touches[1]);
+      lastMidX = m.x; lastMidY = m.y;
+    } else if (touches.length === 1) {
+      lastX = touches[0].clientX; lastY = touches[0].clientY;
+    }
+  }, { passive: false });
+
+  svg.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const ts = getTouches(e);
+    const rect = svg.getBoundingClientRect();
+    const scaleX = 1400 / rect.width, scaleY = 800 / rect.height;
+
+    if (ts.length === 2 && touches.length === 2) {
+      // Pinch zoom
+      const d = dist(ts[0], ts[1]);
+      const m = mid(ts[0], ts[1]);
+      const mx = (m.x - rect.left) * scaleX;
+      const my = (m.y - rect.top)  * scaleY;
+      const delta = d / lastDist;
+      const ns = clamp(scale * delta, MIN, MAX);
+      tx = mx - (mx - tx) * (ns / scale);
+      ty = my - (my - ty) * (ns / scale);
+      scale = ns;
+      // Pan simultané
+      tx += (m.x - lastMidX) * scaleX;
+      ty += (m.y - lastMidY) * scaleY;
+      lastDist = d; lastMidX = m.x; lastMidY = m.y;
+    } else if (ts.length === 1) {
+      // Pan 1 doigt
+      tx += (ts[0].clientX - lastX) * scaleX;
+      ty += (ts[0].clientY - lastY) * scaleY;
+      lastX = ts[0].clientX; lastY = ts[0].clientY;
+    }
+    touches = ts;
+    apply();
+  }, { passive: false });
+
+  svg.addEventListener('touchend', e => { touches = getTouches(e); }, { passive: false });
+
+  apply();
+})();
+</script>
+</body>
+</html>
