@@ -497,6 +497,18 @@
     border-left: 3px solid var(--terracotta); padding-left: 20px;
   }
   .cred-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+	/* Le 5ème item s'étale sur 2 colonnes pour rester centré */
+.cred-item--label {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.cred-label-img {
+  width: 90px;
+  flex-shrink: 0;
+}
   .cred-item {
     background: #fff; border-radius: 14px; padding: 22px;
     border-left: 3px solid var(--terracotta);
@@ -690,7 +702,7 @@
     </div>
     <p class="eyebrow">🐾 Cat-sitting professionnel</p>
     <h1 class="hero-title">Votre chat reste<br><em>chez lui.</em><br>En sécurité.</h1>
-    <p class="hero-lead">Un chat est un animal territorial et sensible. Miaoucratie propose une garde à domicile professionnelle, pensée autour de son confort — avec l'attention et l'expérience d'une vraie passionnée féline.</p>
+    <p class="hero-lead">Un chat est un animal sensible et attaché à son environnement. Miaoucratie propose une garde à domicile professionnelle, pensée autour de son confort - avec l'attention et l'expérience d'une vraie passionnée féline.</p>
     <div class="hero-ctas">
       <a href="https://wa.me/33644247681" class="btn-primary">
         <svg class="ico"><use href="#ic-wa"/></svg> Prendre contact
@@ -705,9 +717,9 @@
       <div class="hero-card">
         <p class="hero-card-title">Ce qui est inclus à chaque visite</p>
         <ul class="promise-list">
-          <li><span class="promise-icon">🍽️</span><div><strong>Soins essentiels</strong>Repas, gamelles, litière — tout est géré.</div></li>
+          <li><span class="promise-icon">🍽️</span><div><strong>Soins essentiels</strong>Repas, gamelles, litière - tout est géré.</div></li>
           <li><span class="promise-icon">👁️</span><div><strong>Attention portée à votre chat</strong>Comportement, appétit, mobilité, éliminations.</div></li>
-          <li><span class="promise-icon">🎾</span><div><strong>Interaction adaptée</strong>Jeu, câlins, présence calme — selon son caractère.</div></li>
+          <li><span class="promise-icon">🎾</span><div><strong>Interaction adaptée</strong>Jeu, câlins, présence calme - selon son caractère.</div></li>
           <li><span class="promise-icon">📲</span><div><strong>Photos &amp; nouvelles</strong>Après chaque passage, via WhatsApp, SMS ou mail.</div></li>
         </ul>
       </div>
@@ -727,12 +739,12 @@
     <div class="stripe-item">
       <span class="stripe-emoji">🩷</span>
       <h3>Un vrai accompagnement, pas une formalité</h3>
-      <p>Chaque visite est un moment d'attention sincère. Observation du bien-être, détection des signaux discrets — parce qu'un chat qui ne va pas bien ne le dit pas toujours.</p>
+      <p>Chaque visite est un moment d'attention sincère. Observation du bien-être, détection des signaux discrets - parce qu'un chat qui ne va pas bien ne le montre pas toujours.</p>
     </div>
     <div class="stripe-item">
       <span class="stripe-emoji">💬</span>
       <h3>Vous êtes rassurés à distance</h3>
-      <p>Photos et nouvelles après chaque visite. Vous partez en sachant que votre chat est entre de bonnes mains — et vous le voyez.</p>
+      <p>Photos et nouvelles après chaque visite. Vous partez en sachant que votre chat est entre de bonnes mains - et vous le voyez.</p>
     </div>
   </div>
 </div>
@@ -870,7 +882,7 @@
               <div class="tarif-info-lines">
                 <div class="tarif-info-line">Déplacements inclus dans un rayon de 15 km autour de Châteaubourg.</div>
                 <div class="tarif-info-line">Au-delà : 0,50 €/km aller-retour, calculé depuis Châteaubourg.</div>
-                <div class="tarif-info-line"><em>Je me déplace volontiers plus loin — contactez-moi.</em></div>
+                <div class="tarif-info-line"><em>Je me déplace volontiers plus loin - contactez-moi.</em></div>
               </div>
             </div>
 
@@ -963,22 +975,27 @@
       </div>
       <div>
         <div class="cred-grid">
-          <div class="cred-item">
-            <h4>🎓 Certification ACACED Chat</h4>
-            <p>Attestation officielle de connaissances pour les animaux de compagnie des espèces domestiques.</p>
-          </div>
-          <div class="cred-item">
-            <h4>🐾 10+ ans en protection féline</h4>
-            <p>Bénévole active au sein des associations Les Pachas et Moustaches &amp; Cie.</p>
-          </div>
-          <div class="cred-item">
-            <h4>🏠 Famille d'accueil expérimentée</h4>
-            <p>Accueil régulier de chats en transit, convalescence ou socialisation.</p>
-          </div>
-          <div class="cred-item">
-            <h4>🐱 Propriétaire de 5 chats</h4>
-            <p>Connaissance quotidienne et approfondie des comportements félins et des signaux d'alerte.</p>
-          </div>
+  <div class="cred-item">
+    <h4>🎓 Certification ACACED Chat</h4>
+    <p>Attestation officielle de connaissances pour les animaux de compagnie des espèces domestiques.</p>
+  </div>
+  <div class="cred-item">
+    <h4>🐾 10+ ans en protection féline</h4>
+    <p>Bénévole active au sein des associations Les Pachas et Moustaches &amp; Cie.</p>
+  </div>
+  <div class="cred-item">
+    <h4>🏠 Famille d'accueil expérimentée</h4>
+    <p>Accueil régulier de chats en transit, convalescence ou socialisation.</p>
+  </div>
+  <div class="cred-item">
+    <h4>🐱 Propriétaire de 5 chats</h4>
+    <p>Connaissance quotidienne et approfondie des comportements félins et des signaux d'alerte.</p>
+  </div>
+  <div class="cred-item cred-item--label">
+    <img src="https://drive.google.com/uc?export=view&id=1PNJzhqHSlSrZKYItcv9Rk15UmE-Wzi9O" alt="Label Professionnel France Petsitters – Garde sans hébergement 2026" class="cred-label-img" />
+    <p>Labellisée <strong>France Petsitters</strong> - garantit que Miaoucratie exerce conformément à la réglementation et aux meilleures pratiques de la profession.</p>
+  </div>
+</div>
         </div>
       </div>
     </div>
@@ -988,7 +1005,7 @@
 <!-- CTA -->
 <div class="cta-section">
   <h2>Votre chat mérite<br>mieux qu'un passage éclair. 🐾</h2>
-  <p>Premier échange sans engagement — à domicile ou en visio. Devis personnalisé selon vos besoins.</p>
+  <p>Premier échange sans engagement - à domicile ou en visio.</p>
   <div class="cta-btns">
     <a href="https://wa.me/33644247681" class="cta-btn-white"><svg class="ico"><use href="#ic-wa"/></svg> WhatsApp</a>
     <a href="tel:+33644247681" class="cta-btn-outline"><svg class="ico"><use href="#ic-phone"/></svg> Appeler</a>
