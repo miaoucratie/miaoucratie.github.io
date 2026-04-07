@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tarifs garde de chats à domicile | Miaoucratie</title>
+<meta name="description" content="Tarifs transparents de garde de chats à domicile. Aucun supplément ni majoration, sauf le 1er mai."/>
+<link href="https://miaoucratie.github.io/tarifs.html" rel="canonical"/>
+<meta name="google-site-verification" content="MrlaPfH23y4IGKw6fifRzFedoyYjWy4dsTeTU692tWQ"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="css/style.css" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size:16px;line-height:1.7;overflow-x:hidden}
+
+.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;width:100%;animation:none!important}
+.tmenu-wrap{position:relative;flex-shrink:0}
+.tmenu-btn{background:none;border:none;cursor:pointer;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:12px 0;transition:color .2s}
+.tmenu-btn:hover{color:#F2CDB0}
+.tmenu-panel{flex-direction:column;gap:2px;position:absolute;top:calc(100% + 6px);left:0;min-width:200px;padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#1E1812;box-shadow:0 20px 48px rgba(0,0,0,.4);z-index:1000}
+.tmenu-panel a{display:block;padding:9px 14px;border-radius:8px;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;text-decoration:none;transition:background .15s,color .15s}
+.tmenu-panel a:hover{background:rgba(255,255,255,.07);color:#FBF7F0}
+.tmenu-panel a.is-current{color:#F2CDB0;background:rgba(242,205,176,.08)}
+.topbar-links{margin-left:auto;display:flex;align-items:center;gap:16px}
+.topbar-links a{color:#D4BEA8;text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:color .2s;font-family:'DM Sans',sans-serif}
+.topbar-links a:hover{color:#F2CDB0}
+.tsep{width:1px;height:16px;background:rgba(255,255,255,.12);flex-shrink:0}
+
+.page-wrap{max-width:1100px;margin:0 auto;padding:52px 40px 80px}
+
+/* Hero */
+.t-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#C8603A;background:rgba(200,96,58,.1);border-radius:999px;padding:6px 14px;margin-bottom:20px}
+.t-hero{margin-bottom:48px}
+.t-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,6vw,76px);font-weight:700;line-height:.95;letter-spacing:-.04em;color:#1E1812;margin-bottom:16px}
+.t-hero h1 em{font-style:italic;color:#C8603A}
+.t-hero-sub{font-size:16px;color:#7A6B5E;max-width:660px;line-height:1.8;margin-bottom:32px}
+.t-hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:#C8603A;color:#fff;font-family:'DM Sans',sans-serif;font-weight:500;font-size:14px;padding:13px 28px;border-radius:100px;text-decoration:none;transition:background .2s,transform .15s;box-shadow:0 4px 16px rgba(200,96,58,.28)}
+.btn-primary:hover{background:#A8472A;transform:translateY(-2px)}
+.btn-ghost-link{font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:none;border-bottom:1px solid #D4BEA8;padding-bottom:2px;transition:color .2s,border-color .2s}
+.btn-ghost-link:hover{color:#1E1812;border-color:#1E1812}
+
+/* USPs */
+.t-usps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E8DDD0;border-radius:16px;overflow:hidden;margin-bottom:56px}
+.t-usp{background:#fff;padding:24px 28px}
+.t-usp-icon{font-size:32px;line-height:1;margin-bottom:12px;display:block}
+.t-usp strong{display:block;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:#1E1812;margin-bottom:5px;letter-spacing:-.01em}
+.t-usp span{font-size:13px;color:#7A6B5E;line-height:1.65}
+
+/* === SECTION 1 : TARIFS & REMISES === */
+.t-section{margin-bottom:48px}
+.t-section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,40px);font-weight:700;color:#1E1812;letter-spacing:-.03em;margin-bottom:24px}
+.t-section-title em{font-style:italic;color:#C8603A}
+
+/* Grille tarifs : prix + remises côte à côte */
+.t-tarifs-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+
+/* Price card */
+.t-price-card{background:#fff;border-radius:20px;overflow:hidden;border:1px solid #E8DDD0;box-shadow:0 4px 20px rgba(30,24,18,.06)}
+.t-price-header{background:#1E1812;padding:22px 30px}
+.t-price-header h2{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:3px}
+.t-price-header p{font-size:13px;color:rgba(255,255,255,.5)}
+.t-price-row{display:flex;justify-content:space-between;align-items:center;padding:16px 30px;border-bottom:1px solid #F0E8DA;transition:background .15s}
+.t-price-row:last-child{border-bottom:none}
+.t-price-row:hover{background:#FDFAF7}
+.t-price-label{font-size:15px;color:#4A3728}
+.t-price-amount{display:flex;align-items:baseline;gap:1px}
+.t-price-amount strong{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,3.5vw,42px);font-weight:700;color:#C8603A;letter-spacing:-.04em;line-height:1}
+.t-price-amount span{font-size:13px;color:#B89B80}
+.t-price-tva{padding:12px 30px;font-size:12px;color:#B89B80;font-style:italic;border-top:1px solid #F0E8DA;background:#FDFAF7}
+
+/* Remises */
+.t-remises{display:flex;flex-direction:column;gap:14px}
+.t-remise{background:#fff;border-radius:16px;padding:22px 24px;border:1.5px solid #E8DDD0;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;box-shadow:0 2px 10px rgba(30,24,18,.04);transition:border-color .2s,box-shadow .2s}
+.t-remise:hover{border-color:rgba(122,158,142,.45);box-shadow:0 6px 20px rgba(30,24,18,.08)}
+.t-remise-body{flex:1}
+.t-remise-icon{font-size:22px;margin-bottom:8px;display:block}
+.t-remise strong{display:block;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:#1E1812;margin-bottom:8px;letter-spacing:-.02em}
+.t-remise p{font-size:13.5px;color:#7A6B5E;margin:0 0 6px 0;line-height:1.65}
+.t-remise p:last-of-type{margin-bottom:0}
+.t-remise-badge{flex-shrink:0;background:rgba(122,158,142,.1);border:1.5px solid rgba(122,158,142,.35);border-radius:14px;padding:16px 20px;text-align:center;min-width:90px;align-self:center}
+.t-remise-badge strong{display:block;font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,44px);font-weight:700;color:#5E9080;line-height:1;letter-spacing:-.04em}
+.t-remise-badge span{font-size:12px;color:#7A6B5E;display:block;margin-top:4px}
+.t-remise-note{font-size:12px;color:#B89B80;font-style:italic;margin-top:7px;line-height:1.55}
+
+/* === SECTION 2 : CONDITIONS === */
+.t-cond-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.t-cond-block{background:#fff;border-radius:16px;padding:24px 26px;border:1px solid #E8DDD0;box-shadow:0 2px 10px rgba(30,24,18,.04)}
+.t-cond-block-title{font-size:12px;font-weight:600;color:#1E1812;letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.t-cond-line{font-size:14px;color:#7A6B5E;padding:6px 0 6px 18px;border-bottom:1px solid rgba(232,221,208,.5);line-height:1.65;position:relative}
+.t-cond-line::before{content:"·";position:absolute;left:4px;color:#C8603A;font-size:18px;line-height:1.3;font-weight:700}
+.t-cond-line:last-child{border-bottom:none;padding-bottom:0}
+
+/* CTA */
+.t-cta{margin-top:48px;background:#1E1812;border-radius:20px;padding:48px 56px;display:flex;align-items:center;justify-content:space-between;gap:32px}
+.t-cta-left h2{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3.2vw,38px);font-weight:700;color:#fff;letter-spacing:-.03em;margin-bottom:10px;line-height:1.1}
+.t-cta-left h2 em{color:#F2CDB0;font-style:italic}
+.t-cta-left p{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6}
+.t-cta-btns{display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.btn-cta-white{display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#C8603A;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;padding:13px 30px;border-radius:100px;text-decoration:none;transition:transform .15s,box-shadow .15s;white-space:nowrap}
+.btn-cta-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,255,255,.15)}
+.btn-cta-ghost{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:rgba(255,255,255,.65);font-family:'DM Sans',sans-serif;font-weight:400;font-size:14px;padding:12px 30px;border-radius:100px;text-decoration:none;border:1px solid rgba(255,255,255,.18);transition:border-color .2s,color .2s;white-space:nowrap}
+.btn-cta-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
+
+/* Footer */
+.footer-bar{background:#1E1812;padding:28px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-bar .footer-logo{display:flex;align-items:center;gap:12px}
+.footer-bar .footer-logo img{width:40px;height:40px;border-radius:50%;object-fit:cover;opacity:.9}
+.footer-bar .footer-logo span{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;letter-spacing:-.5px;color:#FBF7F0}
+.footer-bar .footer-logo em{color:#C8603A;font-style:italic}
+.footer-bar .footer-links{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.footer-bar .footer-links a{color:#B89B80;text-decoration:none;font-size:13px;transition:color .2s}
+.footer-bar .footer-links a:hover{color:#F2CDB0}
+.footer-bar .footer-legal{font-size:12px;color:rgba(255,255,255,.4)}
+.footer-bar .footer-legal a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
+.footer-bar .footer-legal a:hover{color:rgba(255,255,255,.7)}
+
+@media(max-width:900px){
+  .t-tarifs-grid,.t-cond-grid{grid-template-columns:1fr}
+  .t-usps{grid-template-columns:1fr}
+  .t-cta{flex-direction:column;padding:32px 28px;text-align:center}
+  .t-cta-btns{width:100%}
+  .topbar{padding:0 20px}
+}
+@media(max-width:768px){
+  .page-wrap{padding:32px 20px 56px}
+  .tsep{display:none}
+  .topbar-links a[href^="mailto"]{display:none}
+  .footer-bar{flex-direction:column;text-align:center;padding:24px 20px}
+  .footer-bar .footer-links{justify-content:center}
+}
+
+/* ── Miaoucratie corrections ── */
+.t-usp-icon{font-size:42px!important;line-height:1.15!important;margin-bottom:14px!important;display:block!important}
+.t-usp{border-top:3px solid transparent;transition:border-color .25s}.t-usp:hover{border-top-color:#A8472A}
+.t-eyebrow{color:#A8472A!important;background:rgba(168,71,42,.1)!important}
+.t-hero h1 em,.t-section-title em{color:#A8472A!important}
+.btn-primary{background:#A8472A!important;color:#fff!important}
+.btn-primary:hover{background:#8B3921!important}
+.t-price-header{background:#A8472A!important}
+.t-price-amount strong{color:#A8472A!important}
+.t-cond-line::before{color:#A8472A!important}
+.t-remise-badge strong{color:#5E9080!important}
+.t-cta{background:#F0E8DA!important;border:1.5px solid #E8DDD0!important}
+.t-cta-left h2{color:#1E1812!important}
+.t-cta-left h2 em{color:#A8472A!important;font-style:italic!important}
+.t-cta-left p{color:#7A6B5E!important}
+.btn-cta-white{background:#A8472A!important;color:#fff!important;box-shadow:0 4px 16px rgba(168,71,42,.28)!important}
+.btn-cta-white:hover{background:#8B3921!important}
+.btn-cta-ghost{color:#4A3728!important;border:1.5px solid #C8B8A2!important;background:transparent!important}
+.btn-cta-ghost:hover{border-color:#A8472A!important;color:#A8472A!important}
+html{height:100%}body{min-height:100vh;display:flex!important;flex-direction:column!important}
+.page-wrap{flex:1!important}
+
+</style>
+</head>
+<body>
+<div class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
+  <a href="index.html">Accueil</a>
+  <a href="tarifs.html" class="is-current">Tarifs</a>
+  <a href="faq.html">FAQ</a>
+  <a href="carte.html">Carte</a>
+</div></div><div class="topbar-links"><a href="tel:+33644247681"><svg fill="currentColor" height="14" viewBox="0 0 24 24" width="14"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg> 06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a><span class="tsep"></span><a href="mailto:miaoucratie@gmail.com"><svg fill="currentColor" height="14" viewBox="0 0 24 24" width="14"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> miaoucratie@gmail.com</a><span class="tsep"></span><a href="https://www.instagram.com/miaoucratie" target="_blank" rel="noopener"><svg fill="currentColor" height="14" viewBox="0 0 24 24" width="14"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> @miaoucratie</a><span class="tsep"></span><a href="https://wa.me/33644247681" target="_blank" rel="noopener"><svg fill="currentColor" height="14" viewBox="0 0 24 24" width="14"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg> WhatsApp</a></div></div>
+<div class="page-wrap">
+
+  <section class="t-hero">
+    <div class="t-eyebrow">🐾 Tarifs clairs, garde professionnelle</div>
+    <h1>Des prix <em>transparents.</em></h1>
+    <p class="t-hero-sub">Une visite, ce n'est pas "nourrir et repartir". Comptez au minimum 30 minutes pour un chat - et plus si nécessaire, surtout en présence de plusieurs chats, chacun ayant ses besoins. Avec un suivi après chaque passage et des tarifs sans surprise.</p>
+    <div class="t-hero-cta">
+      <a class="btn-primary" href="calculateur-miaoucratie.html">Simuler mon devis</a>
+    </div>
+  </section>
+
+  <div class="t-usps">
+    <div class="t-usp">
+      <span class="t-usp-icon">⏰</span>
+      <strong>Pas de visites chronométrées à la minute près</strong>
+      <span>30 minutes minimum, avec le temps nécessaire pour chaque chat.</span>
+    </div>
+    <div class="t-usp">
+      <span class="t-usp-icon">📸</span>
+      <strong>Vous savez exactement comment va votre chat</strong>
+      <span>Après chaque visite, vous recevez des photos et des nouvelles détaillées.</span>
+    </div>
+    <div class="t-usp">
+      <span class="t-usp-icon">✅</span>
+      <strong>Contrairement à la plupart des cat-sitters</strong>
+      <span>Pas de majoration le week-end ni les jours fériés. Seul le 1<sup>er</sup> mai est majoré (+50&nbsp;%).</span>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 1 : TARIFS & REMISES ══ -->
+  <section class="t-section">
+    <h2 class="t-section-title">Tarifs &amp; <em>remises</em></h2>
+    <div class="t-tarifs-grid">
+
+      <!-- Grille des prix -->
+      <div class="t-price-card">
+        <div class="t-price-header">
+          <h2>Tarif par visite</h2>
+          <p>30 min minimum pour 1 chat · Prix nets en euros</p>
+        </div>
+        <div class="t-price-row"><span class="t-price-label">1 ou 2 chats</span><div class="t-price-amount"><strong>18</strong><span>&nbsp;€/visite</span></div></div>
+        <div class="t-price-row"><span class="t-price-label">3 chats</span><div class="t-price-amount"><strong>22</strong><span>&nbsp;€/visite</span></div></div>
+        <div class="t-price-row"><span class="t-price-label">4 chats</span><div class="t-price-amount"><strong>26</strong><span>&nbsp;€/visite</span></div></div>
+        <div class="t-price-row"><span class="t-price-label">5 chats</span><div class="t-price-amount"><strong>29</strong><span>&nbsp;€/visite</span></div></div>
+        <div class="t-price-tva">TVA non applicable - art. 293 B du CGI</div>
+      </div>
+
+      <!-- Remises -->
+      <div class="t-remises">
+        <div class="t-remise">
+          <div class="t-remise-body">
+            <span class="t-remise-icon">🎁</span>
+            <strong>Remise séjour long</strong>
+            <p>À partir de 7 visites consécutives, une remise est appliquée sur l'ensemble du séjour.</p>
+            <p class="t-remise-note">Cumulable avec le tarif solidaire, hors périodes de forte demande (15 juillet au 15 août).</p>
+          </div>
+          <div class="t-remise-badge"><strong>-1&nbsp;€</strong><span>par visite</span></div>
+        </div>
+
+        <div class="t-remise">
+          <div class="t-remise-body">
+            <span class="t-remise-icon">🤝</span>
+            <strong>Tarif solidaire – Moustaches &amp; Cie</strong>
+            <p>Parce que Miaoucratie soutient la protection féline locale, des remises existent pour les familles d'accueil et les adoptants de l'association Moustaches &amp; Compagnie.</p>
+            <p>Sur présentation d'un justificatif, avec plaisir.</p>
+            <p class="t-remise-note">Cumulable avec la remise séjour long, hors périodes de forte demande (15 juillet au 15 août).</p>
+          </div>
+          <div class="t-remise-badge"><strong>-1&nbsp;€</strong><span>par visite</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 2 : CONDITIONS ══ -->
+  <section class="t-section">
+    <h2 class="t-section-title">Conditions de <em>prestation</em></h2>
+    <div class="t-cond-grid">
+      <div class="t-cond-block">
+        <div class="t-cond-block-title">💳 Paiement</div>
+        <div class="t-cond-line">Acompte de 30&nbsp;% à la réservation</div>
+        <div class="t-cond-line">Solde réglé à la remise des clés</div>
+        <div class="t-cond-line">Virement bancaire ou espèces</div>
+      </div>
+      <div class="t-cond-block">
+        <div class="t-cond-block-title">❌ Annulation</div>
+        <div class="t-cond-line">Remboursement intégral si annulation notifiée &gt; 72&nbsp;h avant</div>
+        <div class="t-cond-line">Acompte conservé si annulation notifiée &lt; 72&nbsp;h avant</div>
+        <div class="t-cond-line">Toute prestation entamée demeure intégralement due</div>
+        <div class="t-cond-line">Remboursement total si annulation à l'initiative de Miaoucratie</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="t-cta">
+    <div class="t-cta-left">
+      <h2>Prêt à partir <em>l'esprit tranquille&nbsp;?</em></h2>
+      <p>Simulez votre devis en quelques secondes ou contactez-moi directement.</p>
+    </div>
+    <div class="t-cta-btns">
+      <a class="btn-cta-white" href="calculateur-miaoucratie.html">Simuler mon devis</a>
+      <a class="btn-cta-ghost" href="https://wa.me/33644247681" target="_blank" rel="noopener">💬 WhatsApp</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-bar">
+  <div class="footer-logo"><img alt="Miaoucratie" src="images/miaoucratie-2.png"/><span>Miaou<em>cratie.</em></span></div>
+  <div class="footer-links">
+    <a href="tel:+33644247681">06 44 24 76 81</a>
+    <a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>
+    <a href="https://www.instagram.com/miaoucratie" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://wa.me/33644247681" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+  <div class="footer-legal">
+    <a href="cgv.html" rel="noopener" target="_blank">CGV</a> ·
+    <a href="#" onclick="document.getElementById('mlModal').style.display='flex';return false;">Mentions légales</a>
+  </div>
+</div>
+
+<div id="mlModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(30,24,18,0.65);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="max-width:700px;width:100%;background:#FBF7F0;border-radius:20px;position:relative;max-height:88vh;overflow-y:auto;">
+    <div style="padding:26px 36px 18px;border-bottom:1px solid #F0E8DA;position:sticky;top:0;background:#FBF7F0;z-index:1;border-radius:20px 20px 0 0;">
+      <button onclick="document.getElementById('mlModal').style.display='none'" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:#B89B80;line-height:1;">&times;</button>
+      <div style="width:36px;height:3px;background:#A8472A;border-radius:2px;margin-bottom:10px;"></div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:#1E1812;letter-spacing:-0.5px;margin:0;">Mentions légales</h2>
+    </div>
+    <div style="padding:20px 36px 36px;">
+
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">1. Éditeur du site</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le présent site, accessible à l'adresse <strong>https://miaoucratie.github.io</strong>, est édité par :</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;"><strong>Irina TALBOT</strong><br>
+      Entreprise individuelle &ndash; Miaoucratie, service de cat-sitting à domicile<br>
+      SIRET&nbsp;: 100 988 138 00010</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Adresse&nbsp;:<br>35113 Domagné &ndash; Ille-et-Vilaine &ndash; France</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Email&nbsp;:<br><a href="mailto:miaoucratie@gmail.com" style="color:#A8472A;text-decoration:none;">miaoucratie@gmail.com</a></p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Téléphone&nbsp;:<br>06 44 24 76 81</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Responsable de la publication&nbsp;:<br>Irina TALBOT</p>
+
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">2. Activité</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Miaoucratie propose des services de garde de chats à domicile (cat-sitting), incluant visites, suivi personnalisé et respect du bien-être animal dans son environnement habituel.</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Zone d'intervention principale&nbsp;:<br>Domagné, Châteaubourg, Châteaugiron, Vitré, Janzé et les communes environnantes en Ille-et-Vilaine.</p>
+
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">3. Hébergement</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site est hébergé par&nbsp;:<br>
+      GitHub, Inc.<br>88 Colin P. Kelly Jr. Street<br>San Francisco, CA 94107<br>États-Unis<br>
+      Site web&nbsp;: <a href="https://github.com" target="_blank" rel="noopener" style="color:#A8472A;text-decoration:none;">https://github.com</a></p>
+
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">4. Propriété intellectuelle</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">L'ensemble des contenus présents sur le site (textes, images, illustrations, logo, structure) est protégé par le droit de la propriété intellectuelle.</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Toute reproduction, représentation, modification, publication ou exploitation, totale ou partielle, sans autorisation écrite préalable est strictement interdite.</p>
+
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">5. Données personnelles (RGPD)</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Dans le cadre de son activité de cat-sitting, Miaoucratie peut être amenée à collecter des données personnelles via :</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">email</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">téléphone</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">WhatsApp</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Finalités du traitement</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Ces données sont utilisées exclusivement pour&nbsp;:</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la gestion des demandes de garde de chats</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'établissement de devis, contrats et factures</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le suivi des prestations et des gardes</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la tenue d'un registre sanitaire relatif aux animaux gardés</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la gestion administrative et comptable</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le respect des obligations légales et réglementaires</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la réponse aux demandes des autorités compétentes, notamment en cas de contrôle ou d'audit par la DDPP</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Base légale</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le traitement des données repose sur&nbsp;:</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'exécution d'un contrat (prestation de services)</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le respect d'obligations légales</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'intérêt légitime (gestion de la relation client)</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Durée de conservation</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Les données sont conservées&nbsp;:</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">pendant toute la durée de la relation commerciale</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">puis archivées pendant une durée maximale de 5 ans à des fins administratives et légales</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">les données de facturation peuvent être conservées jusqu'à 10 ans conformément aux obligations comptables</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Destinataires</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Les données sont exclusivement destinées à Miaoucratie.<br>Elles ne sont ni vendues, ni cédées, ni transférées à des tiers, sauf obligation légale.</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Droits des personnes</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez des droits suivants&nbsp;:</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'accès</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit de rectification</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'effacement</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit à la limitation du traitement</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'opposition</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Vous pouvez exercer ces droits à tout moment en contactant&nbsp;: <a href="mailto:miaoucratie@gmail.com" style="color:#A8472A;text-decoration:none;">miaoucratie@gmail.com</a></p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">En cas de litige, vous pouvez introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener" style="color:#A8472A;text-decoration:none;">www.cnil.fr</a>).</p>
+
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">6. Responsabilité</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Miaoucratie s'efforce de fournir des informations fiables et à jour concernant ses services de garde de chats à domicile.</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Toutefois, l'éditeur ne saurait être tenu responsable&nbsp;:</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">des erreurs ou omissions</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">d'une indisponibilité temporaire du site</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">du contenu de sites tiers accessibles via des liens externes</li>
+      </ul>
+
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">7. Cookies</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site ne dépose pas de cookies de suivi ou de publicité.</p>
+
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">8. Conditions générales de vente</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:0;">Les conditions générales de vente (CGV) applicables aux prestations de cat-sitting sont disponibles sur le site, en bas de page (footer), rubrique dédiée.</p>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById("tmenuBtn"),pan=document.getElementById("tmenuPanel");
+  if(!btn||!pan)return;
+  btn.addEventListener("click",function(e){
+    e.stopPropagation();
+    var o=pan.style.display==="none";
+    pan.style.display=o?"flex":"none";
+    btn.setAttribute("aria-expanded",o);
+  });
+  document.addEventListener("click",function(){
+    pan.style.display="none";
+    btn.setAttribute("aria-expanded","false");
+  });
+})();
+</script>
+</body>
+</html>
