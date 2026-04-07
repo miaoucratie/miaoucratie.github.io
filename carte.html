@@ -340,7 +340,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const center = [48.05, -1.34];
+    const center = [48.0572, -1.3365];
     const map = L.map('map', { scrollWheelZoom: false }).setView(center, 10.2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
@@ -383,7 +383,7 @@
     const stickyPrimary = document.getElementById('stickyPrimary');
     const stickySecondary = document.getElementById('stickySecondary');
     const stickyFoot = document.getElementById('stickyFoot');
-    const abortState = { ctrl:null, timer:null };
+    const abortState = { ctrl:null, timer:null, selectedFeature:null };
 
     function normalize(value){
       return String(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’.-]/g,' ').replace(/\s+/g,' ').trim();
@@ -491,7 +491,13 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.innerHTML = `<span>${label}</span><small>${postcode}</small>`;
-        btn.addEventListener('click', () => { searchInput.value = label; autocompleteList.classList.remove('open'); searchInput.setAttribute('aria-expanded', 'false'); runSearch(); });
+        btn.addEventListener('click', () => {
+          searchInput.value = label;
+          abortState.selectedFeature = item;
+          autocompleteList.classList.remove('open');
+          searchInput.setAttribute('aria-expanded', 'false');
+          runSearch();
+        });
         autocompleteList.appendChild(btn);
       });
       autocompleteList.classList.add('open');
@@ -511,15 +517,26 @@
     function localFallback(query){
       const q = normalize(query);
       const list = [
-        { properties:{label:'Domagné, 35113', postcode:'35113'}, geometry:{coordinates:[-1.34,48.05]} },
-        { properties:{label:'Châteaubourg, 35220', postcode:'35220'}, geometry:{coordinates:[-1.4033,48.1111]} },
-        { properties:{label:'Cesson-Sévigné, 35510', postcode:'35510'}, geometry:{coordinates:[-1.6036,48.1238]} },
-        { properties:{label:'Châteaugiron, 35410', postcode:'35410'}, geometry:{coordinates:[-1.5036,48.0465]} },
-        { properties:{label:'Vitré, 35500', postcode:'35500'}, geometry:{coordinates:[-1.2058,48.1230]} },
-        { properties:{label:'Janzé, 35150', postcode:'35150'}, geometry:{coordinates:[-1.4978,47.9617]} },
-        { properties:{label:'Rennes, 35000', postcode:'35000'}, geometry:{coordinates:[-1.6778,48.1173]}}
+        { properties:{label:'Domagné',         postcode:'35113'}, geometry:{coordinates:[-1.3340, 48.0572]} },
+        { properties:{label:'Châteaubourg',     postcode:'35220'}, geometry:{coordinates:[-1.3986, 48.1104]} },
+        { properties:{label:'Châteaugiron',     postcode:'35410'}, geometry:{coordinates:[-1.5028, 48.0461]} },
+        { properties:{label:'Vitré',            postcode:'35500'}, geometry:{coordinates:[-1.2089, 48.1242]} },
+        { properties:{label:'Janzé',            postcode:'35150'}, geometry:{coordinates:[-1.4978, 47.9617]} },
+        { properties:{label:'Cesson-Sévigné',   postcode:'35510'}, geometry:{coordinates:[-1.6036, 48.1238]} },
+        { properties:{label:'Rennes',           postcode:'35000'}, geometry:{coordinates:[-1.6778, 48.1173]} },
+        { properties:{label:'Acigné',           postcode:'35690'}, geometry:{coordinates:[-1.5272, 48.1244]} },
+        { properties:{label:'Servon-sur-Vilaine',postcode:'35530'}, geometry:{coordinates:[-1.4678, 48.0872]} },
+        { properties:{label:'Noyal-sur-Vilaine',postcode:'35530'}, geometry:{coordinates:[-1.5142, 48.1153]} },
+        { properties:{label:'Corps-Nuds',       postcode:'35150'}, geometry:{coordinates:[-1.5700, 47.9758]} },
+        { properties:{label:'Argentré-du-Plessis',postcode:'35370'}, geometry:{coordinates:[-1.1578, 48.0519]} },
+        { properties:{label:'Champeaux',        postcode:'35500'}, geometry:{coordinates:[-1.2881, 47.9794]} },
+        { properties:{label:'Etrelles',         postcode:'35370'}, geometry:{coordinates:[-1.1881, 48.0150]} },
+        { properties:{label:'Bruz',             postcode:'35170'}, geometry:{coordinates:[-1.7439, 47.9831]} },
       ];
-      return list.filter(x => normalize(x.properties.label).includes(q) || x.properties.postcode.startsWith(q)).slice(0,10);
+      return list.filter(x =>
+        normalize(x.properties.label).includes(q) ||
+        x.properties.postcode.startsWith(q)
+      ).slice(0, 10);
     }
 
     function scheduleAutocomplete(){
@@ -535,23 +552,40 @@
       const raw = searchInput.value.trim();
       if(!raw){ setResult({ kind:'unknown', label:'Champ vide', text:'Saisissez une commune.' }); return; }
       try{
-        const data = await fetchSuggestions(raw);
-        const found = data[0] || localFallback(raw)[0];
+        // 1. Use the pre-selected autocomplete feature if available (exact coordinates from user selection)
+        let found = abortState.selectedFeature;
+        abortState.selectedFeature = null;
+
+        // 2. Try localFallback for known communes (reliable OSM-matching coordinates)
+        if(!found){
+          const local = localFallback(raw);
+          if(local.length) found = local[0];
+        }
+
+        // 3. Fall back to API for unknown communes
+        if(!found){
+          const data = await fetchSuggestions(raw);
+          found = data[0] || null;
+        }
+
+        if(!found){ setResult({ kind:'unknown', label:'Aucun résultat', text:'Commune non trouvée.' }); return; }
+
         const result = classifyFeature(found);
         setResult(result);
         if(found?.geometry?.coordinates){
           const latlng = [found.geometry.coordinates[1], found.geometry.coordinates[0]];
           setSearchMarker(latlng, result.kind);
-          map.setView(latlng, 11.2, { animate:true });
+          map.setView(latlng, 12, { animate:true });
         }
       }catch{
         const found = localFallback(raw)[0];
+        if(!found){ setResult({ kind:'unknown', label:'Erreur', text:'Impossible d\'effectuer la recherche.' }); return; }
         const result = classifyFeature(found);
         setResult(result);
         if(found?.geometry?.coordinates){
           const latlng = [found.geometry.coordinates[1], found.geometry.coordinates[0]];
           setSearchMarker(latlng, result.kind);
-          map.setView(latlng, 11.2, { animate:true });
+          map.setView(latlng, 12, { animate:true });
         }
       }
       autocompleteList.classList.remove('open');
@@ -687,24 +721,27 @@
       <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site ne dépose pas de cookies de suivi ou de publicité.</p>
 
       <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">8. Conditions générales de vente</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:0;">Les conditions générales de vente (CGV) applicables aux prestations de cat-sitting sont disponibles sur le site, en bas de page (footer), rubrique dédiée.</p>
-
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:0;">Les conditions générales de vente (CGV) applicables aux prestations de cat-sitting sont disponibles sur le site, en bas de page (footer), rubrique dédiée.</p>
     </div>
   </div>
 </div>
+
 <script>
 (function(){
-  var btn=document.getElementById("tmenuBtn"),pan=document.getElementById("tmenuPanel");
-  if(!btn||!pan)return;
-  btn.addEventListener("click",function(e){
+  var btn = document.getElementById('tmenuBtn');
+  var panel = document.getElementById('tmenuPanel');
+  if(!btn||!panel) return;
+  btn.addEventListener('click', function(e){
     e.stopPropagation();
-    var o=pan.style.display==="none";
-    pan.style.display=o?"flex":"none";
-    btn.setAttribute("aria-expanded",o);
+    var open = panel.style.display === 'flex';
+    panel.style.display = open ? 'none' : 'flex';
+    btn.setAttribute('aria-expanded', String(!open));
   });
-  document.addEventListener("click",function(){
-    pan.style.display="none";
-    btn.setAttribute("aria-expanded","false");
+  document.addEventListener('click', function(e){
+    if(!panel.contains(e.target) && e.target !== btn){
+      panel.style.display = 'none';
+      btn.setAttribute('aria-expanded', 'false');
+    }
   });
 })();
 </script>

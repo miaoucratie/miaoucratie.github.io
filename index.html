@@ -567,6 +567,60 @@ body .cta-eyebrow {
   text-transform: uppercase !important;
 }
 
+/* ── STRIPE ANIMATIONS ────────────────────────────────── */
+@keyframes stripeSlideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes emojiFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-6px) rotate(4deg); }
+}
+@keyframes emojiBounce {
+  0%   { transform: scale(1) rotate(0deg); }
+  30%  { transform: scale(1.3) rotate(-8deg); }
+  55%  { transform: scale(0.9) rotate(5deg); }
+  75%  { transform: scale(1.1) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Initial hidden state */
+.stripe-item {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s ease,
+    background 0.32s ease;
+}
+
+/* Triggered by IntersectionObserver */
+.stripe-item.is-visible {
+  animation: stripeSlideUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stripe-item:nth-child(2).is-visible { animation-delay: 0.13s; }
+.stripe-item:nth-child(3).is-visible { animation-delay: 0.26s; }
+
+/* Hover lift */
+.stripe-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(200, 96, 58, 0.10);
+  background: rgba(200, 96, 58, 0.04) !important;
+}
+
+/* Emoji float loop once visible */
+.stripe-item.is-visible .stripe-emoji {
+  display: inline-block;
+  animation: emojiFloat 3.5s ease-in-out infinite;
+}
+.stripe-item:nth-child(2).is-visible .stripe-emoji { animation-delay: 0.5s; }
+.stripe-item:nth-child(3).is-visible .stripe-emoji { animation-delay: 1.1s; }
+
+/* Emoji bounce on hover */
+.stripe-item:hover .stripe-emoji {
+  animation: emojiBounce 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+}
+
 /* CTA dark section overrides – must come after the body h2 rule */
 .logo-name em {
   color: var(--T, #A8472A);
@@ -1159,6 +1213,26 @@ body.carte-page .zone-header {
   </div>
 </div>
 
+<script>
+/* Stripe scroll entrance */
+(function(){
+  var items = document.querySelectorAll('.stripe-item');
+  if(!items.length) return;
+  if(!window.IntersectionObserver){
+    items.forEach(function(el){ el.classList.add('is-visible'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  items.forEach(function(el){ io.observe(el); });
+})();
+</script>
 <script>
 (function(){
   var btn = document.getElementById('tmenuBtn');
