@@ -90,12 +90,13 @@
     .autocomplete button:hover,.autocomplete button.active{background:rgba(122,158,142,.08)}
     .autocomplete small{color:var(--muted);font-weight:700;white-space:nowrap}
 
-    .result{margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px}
-    .result.free{background:rgba(122,158,142,.12);color:var(--deep)}
-    .result.paid{background:rgba(200,96,58,.10);color:var(--deep)}
-    .result.out{background:rgba(214,69,69,.10);color:var(--deep)}
-    .result strong{display:block;margin-bottom:4px}
-    .result-prefix{display:block;margin-bottom:4px}
+    .result{margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px;display:flex !important;flex-direction:column;gap:4px;min-height:88px;line-height:1.5}
+    .result.free{background:rgba(122,158,142,.12);color:var(--deep) !important}
+    .result.paid{background:rgba(200,96,58,.10);color:var(--deep) !important}
+    .result.out{background:rgba(214,69,69,.10);color:var(--deep) !important}
+    .result .result-prefix,.result .result-label,.result .result-text{display:block !important;color:inherit !important}
+    .result .result-prefix,.result .result-label{font-weight:700}
+    .result .result-text{white-space:normal;font-weight:400}
     .result-prefix.boost{animation:resultPulse .72s cubic-bezier(.2,.8,.2,1) both}
     @keyframes resultPulse{
       0%{transform:translateY(0) scale(.96);opacity:.55}
@@ -159,7 +160,7 @@
     .desktop-sticky-cta .actions a.primary{background:var(--rust,#A8472A);border-color:var(--rust,#A8472A);color:#fff}
     .desktop-sticky-cta .foot{margin-top:8px;font-size:11px;color:var(--muted)}
 
-    .marker-pin{width:30px;height:42px;transform:translate(-50%,-100%);display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 8px 16px rgba(0,0,0,.18))}
+    .marker-pin{width:30px;height:42px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 8px 16px rgba(0,0,0,.18))}
     .marker-pin svg{width:100%;height:100%;display:block}
     .marker-pin.free{color:var(--sage)}
     .marker-pin.paid{color:var(--terracotta)}
@@ -259,7 +260,11 @@
             <button class="btn primary" id="searchBtn" type="button">Vérifier</button>
             <div class="autocomplete" id="autocompleteList" role="listbox" aria-label="Suggestions"></div>
           </div>
-          <div class="result" id="searchResult">Saisissez une commune.</div>
+          <div class="result" id="searchResult" aria-live="polite" aria-atomic="true">
+            <div class="result-prefix" id="resultPrefix" hidden></div>
+            <div class="result-label" id="resultLabel" hidden></div>
+            <div class="result-text" id="resultText">Saisissez une commune.</div>
+          </div>
           <div id="dynamicCTA" class="cta-box"></div>
         </div>
       </div>
@@ -339,281 +344,543 @@
   </aside>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    const center = [48.0572, -1.3365];
-    const map = L.map('map', { scrollWheelZoom: false }).setView(center, 10.2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+<script>
+  const FALLBACK_ORIGIN = [48.0572, -1.3365];
+  let originLatLng = FALLBACK_ORIGIN;
+  const map = L.map('map', { scrollWheelZoom: false }).setView(FALLBACK_ORIGIN, 10.2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
-    function pinSvg(color, isStart = false){
-      const outer = color;
-      const inner = isStart ? '#ffffff' : '#ffffff';
-      return `
-        <svg viewBox="0 0 24 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-          <path d="M12 1.5C7.3 1.5 3.5 5.2 3.5 9.8c0 6 5.8 12.3 8.5 15.7 2.7-3.4 8.5-9.7 8.5-15.7 0-4.6-3.8-8.3-8.5-8.3z" fill="${outer}"/>
-          <circle cx="12" cy="9.8" r="3.3" fill="${inner}" opacity="0.88"/>
-        </svg>`;
+  function pinSvg(color){
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 34" width="24" height="34" aria-hidden="true" focusable="false">
+        <path d="M12 1.5C7.3 1.5 3.5 5.2 3.5 9.8c0 6 5.8 12.3 8.5 15.7 2.7-3.4 8.5-9.7 8.5-15.7 0-4.6-3.8-8.3-8.5-8.3z" fill="${color}"/>
+        <circle cx="12" cy="9.8" r="3.3" fill="#ffffff" opacity="0.9"/>
+      </svg>`;
+  }
+
+  function makePinIcon(kind){
+    const spec = kind === 'start'
+      ? { color: '#3D5A80', size: [34, 48] }
+      : kind === 'free'
+        ? { color: '#7A9E8E', size: [30, 42] }
+        : kind === 'paid'
+          ? { color: '#C8603A', size: [30, 42] }
+          : { color: '#D64545', size: [30, 42] };
+
+    const svg = pinSvg(spec.color).trim();
+    return L.icon({
+      iconUrl: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+      iconSize: spec.size,
+      iconAnchor: [spec.size[0] / 2, spec.size[1] - 1],
+      popupAnchor: [0, -spec.size[1] + 4]
+    });
+  }
+
+  let domagneMarker = null;
+  let searchMarker = null;
+  let communeLayer = null;
+  const bounds = L.latLngBounds([48.28, -1.80], [47.85, -1.00]);
+  map.fitBounds(bounds, { padding:[20,20] });
+
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const autocompleteList = document.getElementById('autocompleteList');
+  const searchResult = document.getElementById('searchResult');
+  const resultPrefixEl = document.getElementById('resultPrefix');
+  const resultLabelEl = document.getElementById('resultLabel');
+  const resultTextEl = document.getElementById('resultText');
+  const dynamicCTA = document.getElementById('dynamicCTA');
+  const overlayNote = document.getElementById('overlayNote');
+  const resetBtn = document.getElementById('resetView');
+  const sticky = document.getElementById('desktopStickyCta');
+  const stickyTitle = document.getElementById('stickyTitle');
+  const stickyDesc = document.getElementById('stickyDesc');
+  const stickyPrimary = document.getElementById('stickyPrimary');
+  const stickySecondary = document.getElementById('stickySecondary');
+  const stickyFoot = document.getElementById('stickyFoot');
+  const abortState = { ctrl:null, timer:null, selectedFeature:null };
+
+  function normalize(value){
+    return String(value || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/['’.-]/g,' ').replace(/\s+/g,' ').trim();
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2){
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+    return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function clearCommuneDisplay(){
+    if(searchMarker){ map.removeLayer(searchMarker); searchMarker = null; }
+    if(communeLayer){ map.removeLayer(communeLayer); communeLayer = null; }
+  }
+
+  function getProp(feature, key){
+    if(!feature) return '';
+    const props = feature.properties && typeof feature.properties === 'object' ? feature.properties : null;
+    const value = props && key in props ? props[key] : feature[key];
+    return value == null ? '' : value;
+  }
+
+  function getLabel(feature){
+    return getProp(feature, 'nom') || getProp(feature, 'label') || getProp(feature, 'name') || '';
+  }
+
+  function getCode(feature){
+    return getProp(feature, 'code') || getProp(feature, 'postcode') || getProp(feature, 'citycode') || getProp(feature, 'codeCommune') || '';
+  }
+
+  function getDepartementCode(feature){
+    const direct = getProp(feature, 'codeDepartement');
+    if(direct) return String(direct);
+    const departementCode = feature?.properties?.departement?.code || feature?.departement?.code;
+    if(departementCode) return String(departementCode);
+    return String(getCode(feature)).slice(0, 2) || '';
+  }
+
+  function getPostalCode(feature){
+    const codes = getProp(feature, 'codesPostaux');
+    if(Array.isArray(codes) && codes.length) return String(codes[0] || '');
+    const single = getProp(feature, 'postcode');
+    return String(single || '');
+  }
+
+  function isIlleEtVilaine(feature){
+    const code = String(getCode(feature) || '');
+    const dep = String(getDepartementCode(feature) || '');
+    const postal = getPostalCode(feature);
+    return dep === '35' || code.startsWith('35') || postal.startsWith('35');
+  }
+
+  function getPointFromGeometry(feature){
+    const geom = feature?.geometry;
+    if(!geom || !geom.coordinates) return null;
+    if(geom.type === 'Point') return [geom.coordinates[1], geom.coordinates[0]];
+    if(geom.type === 'MultiPoint' && geom.coordinates.length) return [geom.coordinates[0][1], geom.coordinates[0][0]];
+    try{
+      const temp = L.geoJSON(feature);
+      const c = temp.getBounds().getCenter();
+      return [c.lat, c.lng];
+    }catch{
+      return null;
+    }
+  }
+
+  function hasGeometry(feature){
+    return !!getPointFromGeometry(feature);
+  }
+
+  function createFeatureIcon(kind){
+    return makePinIcon(kind);
+  }
+
+  function showResultNode(result){
+    searchResult.classList.remove('free','paid','out');
+    if(result.kind === 'free') searchResult.classList.add('free');
+    if(result.kind === 'paid') searchResult.classList.add('paid');
+    if(result.kind === 'out') searchResult.classList.add('out');
+
+    const prefix = result.kind === 'free' ? '😺 Bonne nouvelle' : result.kind === 'paid' ? '✨ C’est possible' : result.kind === 'out' ? '🚫 Ce n’est pas prévu' : '';
+
+    if(resultPrefixEl){
+      resultPrefixEl.textContent = prefix;
+      resultPrefixEl.hidden = !prefix;
+      resultPrefixEl.classList.toggle('boost', result.kind === 'free');
     }
 
-    function makePinIcon(kind){
-      const color = kind === 'start' ? '#3D5A80' : kind === 'free' ? '#7A9E8E' : kind === 'paid' ? '#C8603A' : '#D64545';
-      return L.divIcon({
-        className:'',
-        html:`<div class="marker-pin ${kind}">${pinSvg(color, kind === 'start')}</div>`,
-        iconSize:[30,42],
-        iconAnchor:[15,40]
-      });
+    if(resultLabelEl){
+      resultLabelEl.textContent = result.label || '';
+      resultLabelEl.hidden = !result.label;
     }
 
-    const domagneMarker = L.marker(center, { icon: makePinIcon('start'), zIndexOffset: 1000 }).addTo(map).bindPopup('<strong>Domagné</strong><br>Point de départ des déplacements.');
-
-    let searchMarker = null;
-    const bounds = L.latLngBounds([48.28, -1.80], [47.85, -1.00]);
-    map.fitBounds(bounds, { padding:[20,20] });
-
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const autocompleteList = document.getElementById('autocompleteList');
-    const searchResult = document.getElementById('searchResult');
-    const dynamicCTA = document.getElementById('dynamicCTA');
-    const overlayNote = document.getElementById('overlayNote');
-    const resetBtn = document.getElementById('resetView');
-    const sticky = document.getElementById('desktopStickyCta');
-    const stickyTitle = document.getElementById('stickyTitle');
-    const stickyDesc = document.getElementById('stickyDesc');
-    const stickyPrimary = document.getElementById('stickyPrimary');
-    const stickySecondary = document.getElementById('stickySecondary');
-    const stickyFoot = document.getElementById('stickyFoot');
-    const abortState = { ctrl:null, timer:null, selectedFeature:null };
-
-    function normalize(value){
-      return String(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’.-]/g,' ').replace(/\s+/g,' ').trim();
+    if(resultTextEl){
+      resultTextEl.textContent = result.text || '';
+      resultTextEl.hidden = !result.text;
     }
 
-    function haversineKm(lat1, lon1, lat2, lon2){
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
-      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    setCTA(result);
+  }
+
+  function setResult(result){
+    showResultNode(result);
+    updateSticky(result);
+  }
+
+  function renderFeatureOnMap(pointFeature, result, contourFeature){
+    clearCommuneDisplay();
+
+    const contour = contourFeature && contourFeature.geometry && (contourFeature.geometry.type === 'Polygon' || contourFeature.geometry.type === 'MultiPolygon');
+    if(contour){
+      communeLayer = L.geoJSON(contourFeature, {
+        style: {
+          color: result.kind === 'free' ? '#6D9284' : result.kind === 'paid' ? '#B95A36' : '#C93B3B',
+          weight: 5,
+          opacity: 1,
+          fillColor: result.kind === 'free' ? '#7A9E8E' : result.kind === 'paid' ? '#C8603A' : '#D64545',
+          fillOpacity: 0.18,
+          lineJoin: 'round',
+          lineCap: 'round'
+        }
+      }).addTo(map);
+      if(communeLayer.bringToFront) communeLayer.bringToFront();
     }
 
-    function setSearchMarker(latlng, kind){
-      if(searchMarker) map.removeLayer(searchMarker);
-      searchMarker = L.marker(latlng, { icon: makePinIcon(kind), zIndexOffset: 900 }).addTo(map);
+    const latlng = getPointFromGeometry(pointFeature || contourFeature);
+    if(latlng){
+      searchMarker = L.marker(latlng, { icon: createFeatureIcon(result.kind), zIndexOffset: 900 }).addTo(map);
+      if(searchMarker.bringToFront) searchMarker.bringToFront();
     }
 
-    function updateSticky(result){
-      sticky.classList.add('show');
-      if(result.kind === 'free'){
-        stickyTitle.textContent = 'Commune incluse';
-        stickyDesc.textContent = result.label + ' — R\u00e9servez d\u00e8s maintenant pour garantir votre cr\u00e9neau. \u26a1 Les p\u00e9riodes de vacances se remplissent rapidement.';
-        stickyPrimary.textContent = 'Réserver une garde';
-        stickyPrimary.href = 'https://wa.me/33644247681';
-        stickySecondary.textContent = 'Envoyer un mail';
-        stickySecondary.href = 'mailto:miaoucratie@gmail.com';
-        stickyFoot.textContent = '';
-      } else if(result.kind === 'paid'){
-        stickyTitle.textContent = 'Commune sur devis';
-        stickyDesc.textContent = result.label + ' — La demande peut être étudiée.';
-        stickyPrimary.textContent = 'Demander un devis';
-        stickyPrimary.href = 'mailto:miaoucratie@gmail.com';
-        stickySecondary.textContent = 'Voir la carte';
-        stickySecondary.href = '#map';
-        stickyFoot.textContent = 'Frais kilométriques : 0,70€/km. Étude au cas par cas.';
-      } else if(result.kind === 'out'){
-        stickyTitle.textContent = 'Hors zone';
-        stickyDesc.textContent = result.label + ' — La demande n’entre pas dans le cadre standard.';
-        stickyPrimary.textContent = 'Me contacter quand même';
-        stickyPrimary.href = 'mailto:miaoucratie@gmail.com';
-        stickySecondary.textContent = 'Rechercher une autre commune';
-        stickySecondary.href = '#searchSection';
-        stickyFoot.textContent = 'Hors Ille-et-Vilaine ou au-delà de 45 km.';
-      } else {
-        stickyTitle.textContent = 'Vérifiez votre commune';
-        stickyDesc.textContent = 'Saisissez une ville ou un code postal pour obtenir une réponse immédiate.';
-        stickyPrimary.textContent = 'Commencer';
-        stickyPrimary.href = '#searchSection';
-        stickySecondary.textContent = 'Demander par mail';
-        stickySecondary.href = 'mailto:miaoucratie@gmail.com';
-        stickyFoot.textContent = '';
-      }
-    }
-
-    function setCTA(result){
-      if(result.kind === 'free'){
-        dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="https://wa.me/33644247681" target="_blank" rel="noopener">R\u00e9server une garde</a><div class="cta-note">\u26a1 Les p\u00e9riodes de vacances se remplissent rapidement.</div></div>`;
-      } else if(result.kind === 'paid'){
-        dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="mailto:miaoucratie@gmail.com">Demander un devis</a><div class="cta-note">Déplacement possible sur devis. Une réponse personnalisée vous est proposée selon votre localisation.</div></div>`;
-      } else if(result.kind === 'out'){
-        dynamicCTA.innerHTML = `<div class="cta-box"><a href="mailto:miaoucratie@gmail.com">Me contacter quand même</a><div class="cta-note">Hors secteur standard : je vous répondrai si la demande peut être étudiée.</div></div>`;
-      } else {
-        dynamicCTA.innerHTML = '';
-      }
-      updateSticky(result);
-    }
-
-    function setResult(result){
-      searchResult.classList.remove('free','paid','out');
-      if(result.kind === 'free') searchResult.classList.add('free');
-      if(result.kind === 'paid') searchResult.classList.add('paid');
-      if(result.kind === 'out') searchResult.classList.add('out');
-      const prefix = result.kind === 'free' ? '\uD83D\uDE3A Bonne nouvelle' : result.kind === 'paid' ? '\u2728 C\u2019est possible' : result.kind === 'out' ? '\uD83D\uDEAB Ce n\u2019est pas pr\u00e9vu' : '';
-      const labelHtml = result.label ? `<strong>${result.label}</strong>` : '';
-      const prefixHtml = prefix ? `<strong class="result-prefix ${result.kind === 'free' ? 'boost' : ''}">${prefix}</strong>` : '';
-      searchResult.innerHTML = `${prefixHtml}${labelHtml}${result.text}`;
-      setCTA(result);
-    }
-
-    function classifyFeature(f){
-      if(!f) return { kind:'unknown', label:'Aucun résultat', text:'Aucune commune ou code postal trouvé.' };
-      const label = f.properties?.label || f.properties?.name || '';
-      const postcode = f.properties?.postcode || '';
-      const normalized = normalize(label);
-      const lat = f.geometry?.coordinates?.[1];
-      const lng = f.geometry?.coordinates?.[0];
-      if(!postcode.startsWith('35')) return { kind:'out', label:`${label} : exclue`, text:'Les communes hors Ille-et-Vilaine sont exclues.' };
-      if(normalized.includes('rennes') || postcode === '35000') return { kind:'out', label:'Rennes : exclue', text:'Rennes est exclue de la zone d’intervention standard.' };
-      const routeKm = haversineKm(center[0], center[1], lat, lng) * 1.35;
-      if(routeKm <= 21.5){
-        const isLimit = routeKm > 20;
-        return { kind:'free', label:`${label}${isLimit ? ' (limite)' : ''}`, text:`Déplacement inclus${isLimit ? ' en zone de souplesse' : ''}. Distance routière estimée : ${routeKm.toFixed(1)} km.` };
-      }
-      if(routeKm <= 45) return { kind:'paid', label:`${label} : sur devis`, text:`Déplacement possible sur devis. Distance routière estimée : ${routeKm.toFixed(1)} km. Des frais kilométriques de 0,70€/km s’appliquent.` };
-      return { kind:'out', label:`${label} : hors secteur`, text:`Au-delà de 45 km par la route. La demande n’est pas acceptée.` };
-    }
-
-    function showAutocomplete(items){
-      autocompleteList.innerHTML = '';
-      if(!items.length){ autocompleteList.classList.remove('open'); searchInput.setAttribute('aria-expanded','false'); return; }
-      items.forEach(item => {
-        const label = item.properties?.label || item.properties?.name || item.label || '';
-        const postcode = item.properties?.postcode || item.postcode || '';
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.innerHTML = `<span>${label}</span><small>${postcode}</small>`;
-        btn.addEventListener('click', () => {
-          searchInput.value = label;
-          abortState.selectedFeature = item;
-          autocompleteList.classList.remove('open');
-          searchInput.setAttribute('aria-expanded', 'false');
-          runSearch();
-        });
-        autocompleteList.appendChild(btn);
-      });
-      autocompleteList.classList.add('open');
-      searchInput.setAttribute('aria-expanded', 'true');
-    }
-
-    async function fetchSuggestions(query){
-      if(abortState.ctrl) abortState.ctrl.abort();
-      abortState.ctrl = new AbortController();
-      const url = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&type=municipality&autocomplete=1&limit=10`;
-      const res = await fetch(url, { signal: abortState.ctrl.signal });
-      if(!res.ok) throw new Error('autocomplete failed');
-      const data = await res.json();
-      return data.features || [];
-    }
-
-    function localFallback(query){
-      const q = normalize(query);
-      const list = [
-        { properties:{label:'Domagné',         postcode:'35113'}, geometry:{coordinates:[-1.3340, 48.0572]} },
-        { properties:{label:'Châteaubourg',     postcode:'35220'}, geometry:{coordinates:[-1.3986, 48.1104]} },
-        { properties:{label:'Châteaugiron',     postcode:'35410'}, geometry:{coordinates:[-1.5028, 48.0461]} },
-        { properties:{label:'Vitré',            postcode:'35500'}, geometry:{coordinates:[-1.2089, 48.1242]} },
-        { properties:{label:'Janzé',            postcode:'35150'}, geometry:{coordinates:[-1.4978, 47.9617]} },
-        { properties:{label:'Cesson-Sévigné',   postcode:'35510'}, geometry:{coordinates:[-1.6036, 48.1238]} },
-        { properties:{label:'Rennes',           postcode:'35000'}, geometry:{coordinates:[-1.6778, 48.1173]} },
-        { properties:{label:'Acigné',           postcode:'35690'}, geometry:{coordinates:[-1.5272, 48.1244]} },
-        { properties:{label:'Servon-sur-Vilaine',postcode:'35530'}, geometry:{coordinates:[-1.4678, 48.0872]} },
-        { properties:{label:'Noyal-sur-Vilaine',postcode:'35530'}, geometry:{coordinates:[-1.5142, 48.1153]} },
-        { properties:{label:'Corps-Nuds',       postcode:'35150'}, geometry:{coordinates:[-1.5700, 47.9758]} },
-        { properties:{label:'Argentré-du-Plessis',postcode:'35370'}, geometry:{coordinates:[-1.1578, 48.0519]} },
-        { properties:{label:'Champeaux',        postcode:'35500'}, geometry:{coordinates:[-1.2881, 47.9794]} },
-        { properties:{label:'Etrelles',         postcode:'35370'}, geometry:{coordinates:[-1.1881, 48.0150]} },
-        { properties:{label:'Bruz',             postcode:'35170'}, geometry:{coordinates:[-1.7439, 47.9831]} },
-      ];
-      return list.filter(x =>
-        normalize(x.properties.label).includes(q) ||
-        x.properties.postcode.startsWith(q)
-      ).slice(0, 10);
-    }
-
-    function scheduleAutocomplete(){
-      clearTimeout(abortState.timer);
-      abortState.timer = setTimeout(async () => {
-        const raw = searchInput.value.trim();
-        if(raw.length < 2){ autocompleteList.classList.remove('open'); searchInput.setAttribute('aria-expanded','false'); return; }
-        try{ showAutocomplete(await fetchSuggestions(raw)); }catch{ showAutocomplete(localFallback(raw)); }
-      }, 220);
-    }
-
-    async function runSearch(){
-      const raw = searchInput.value.trim();
-      if(!raw){ setResult({ kind:'unknown', label:'Champ vide', text:'Saisissez une commune.' }); return; }
+    if(communeLayer){
       try{
-        // 1. Use the pre-selected autocomplete feature if available (exact coordinates from user selection)
-        let found = abortState.selectedFeature;
-        abortState.selectedFeature = null;
-
-        // 2. Try localFallback for known communes (reliable OSM-matching coordinates)
-        if(!found){
-          const local = localFallback(raw);
-          if(local.length) found = local[0];
-        }
-
-        // 3. Fall back to API for unknown communes
-        if(!found){
-          const data = await fetchSuggestions(raw);
-          found = data[0] || null;
-        }
-
-        if(!found){ setResult({ kind:'unknown', label:'Aucun résultat', text:'Commune non trouvée.' }); return; }
-
-        const result = classifyFeature(found);
-        setResult(result);
-        if(found?.geometry?.coordinates){
-          const latlng = [found.geometry.coordinates[1], found.geometry.coordinates[0]];
-          setSearchMarker(latlng, result.kind);
-          map.setView(latlng, 12, { animate:true });
-        }
+        map.fitBounds(communeLayer.getBounds(), { padding:[34,34] });
       }catch{
-        const found = localFallback(raw)[0];
-        if(!found){ setResult({ kind:'unknown', label:'Erreur', text:'Impossible d\'effectuer la recherche.' }); return; }
-        const result = classifyFeature(found);
-        setResult(result);
-        if(found?.geometry?.coordinates){
-          const latlng = [found.geometry.coordinates[1], found.geometry.coordinates[0]];
-          setSearchMarker(latlng, result.kind);
-          map.setView(latlng, 12, { animate:true });
-        }
+        if(latlng) map.setView(latlng, 12, { animate:true });
       }
+    } else if(latlng){
+      map.setView(latlng, 12, { animate:true });
+    }
+  }
+
+  function updateSticky(result){
+    sticky.classList.add('show');
+    if(result.kind === 'free'){
+      stickyTitle.textContent = 'Commune incluse';
+      stickyDesc.textContent = result.label + ' — Réservez dès maintenant pour garantir votre créneau. ⚡ Les périodes de vacances se remplissent rapidement.';
+      stickyPrimary.textContent = 'Réserver une garde';
+      stickyPrimary.href = 'https://wa.me/33644247681';
+      stickySecondary.textContent = 'Envoyer un mail';
+      stickySecondary.href = 'mailto:miaoucratie@gmail.com';
+      stickyFoot.textContent = '';
+    } else if(result.kind === 'paid'){
+      stickyTitle.textContent = 'Commune sur devis';
+      stickyDesc.textContent = result.label + ' — La demande peut être étudiée.';
+      stickyPrimary.textContent = 'Demander un devis';
+      stickyPrimary.href = 'mailto:miaoucratie@gmail.com';
+      stickySecondary.textContent = 'Voir la carte';
+      stickySecondary.href = '#map';
+      stickyFoot.textContent = 'Frais kilométriques : 0,70€/km. Étude au cas par cas.';
+    } else if(result.kind === 'out'){
+      stickyTitle.textContent = 'Hors zone';
+      stickyDesc.textContent = result.label + ' — La demande n’entre pas dans le cadre standard.';
+      stickyPrimary.textContent = 'Me contacter quand même';
+      stickyPrimary.href = 'mailto:miaoucratie@gmail.com';
+      stickySecondary.textContent = 'Rechercher une autre commune';
+      stickySecondary.href = '#searchSection';
+      stickyFoot.textContent = 'Hors Ille-et-Vilaine ou au-delà de 45 km.';
+    } else {
+      stickyTitle.textContent = 'Vérifiez votre commune';
+      stickyDesc.textContent = 'Saisissez une ville ou un code postal pour obtenir une réponse immédiate.';
+      stickyPrimary.textContent = 'Commencer';
+      stickyPrimary.href = '#searchSection';
+      stickySecondary.textContent = 'Demander par mail';
+      stickySecondary.href = 'mailto:miaoucratie@gmail.com';
+      stickyFoot.textContent = '';
+    }
+  }
+
+  function setCTA(result){
+    if(result.kind === 'free'){
+      dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="https://wa.me/33644247681" target="_blank" rel="noopener">Réserver une garde</a><div class="cta-note">⚡ Les périodes de vacances se remplissent rapidement.</div></div>`;
+    } else if(result.kind === 'paid'){
+      dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="mailto:miaoucratie@gmail.com">Demander un devis</a><div class="cta-note">Déplacement possible sur devis. Une réponse personnalisée vous est proposée selon votre localisation.</div></div>`;
+    } else if(result.kind === 'out'){
+      dynamicCTA.innerHTML = `<div class="cta-box"><a href="mailto:miaoucratie@gmail.com">Me contacter quand même</a><div class="cta-note">Hors secteur standard : je vous répondrai si la demande peut être étudiée.</div></div>`;
+    } else {
+      dynamicCTA.innerHTML = '';
+    }
+  }
+
+  async function fetchSuggestions(query){
+    if(abortState.ctrl) abortState.ctrl.abort();
+    abortState.ctrl = new AbortController();
+    const q = query.trim();
+    const params = new URLSearchParams({
+      fields: 'code,nom,codeDepartement,codesPostaux',
+      format: 'json',
+      limit: '10'
+    });
+    if(/^\d{5}$/.test(q)){
+      params.set('codePostal', q);
+    } else {
+      params.set('nom', q);
+      params.set('boost', 'population');
+    }
+    const url = `https://geo.api.gouv.fr/communes?${params.toString()}`;
+    const res = await fetch(url, { signal: abortState.ctrl.signal });
+    if(!res.ok) throw new Error('autocomplete failed');
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  }
+
+  async function fetchGeoCommuneFeatures(query, geometry){
+    if(abortState.ctrl) abortState.ctrl.abort();
+    abortState.ctrl = new AbortController();
+    const q = query.trim();
+    const params = new URLSearchParams({
+      fields: 'code,nom,codeDepartement,codesPostaux',
+      format: 'geojson',
+      geometry,
+      limit: '10'
+    });
+    if(/^\d{5}$/.test(q)){
+      params.set('codePostal', q);
+    } else {
+      params.set('nom', q);
+      params.set('boost', 'population');
+    }
+    const res = await fetch(`https://geo.api.gouv.fr/communes?${params.toString()}`, { signal: abortState.ctrl.signal });
+    if(!res.ok) throw new Error('geo search failed');
+    const data = await res.json();
+    return Array.isArray(data.features) ? data.features : [];
+  }
+
+  async function fetchCommuneGeometry(code, geometry){
+    if(!code) return null;
+    const params = new URLSearchParams({
+      fields: 'code,nom,codeDepartement,codesPostaux',
+      format: 'geojson',
+      geometry
+    });
+    const res = await fetch(`https://geo.api.gouv.fr/communes/${encodeURIComponent(code)}?${params.toString()}`, { signal: abortState.ctrl.signal });
+    if(!res.ok) throw new Error('geometry failed');
+    const data = await res.json();
+    return data.features?.[0] || null;
+  }
+
+  function pickBestFeature(features, query){
+    if(!Array.isArray(features) || !features.length) return null;
+    const q = normalize(query);
+    const qDigits = q.replace(/\s+/g, '');
+
+    const exactLabel = features.find(feature => normalize(getLabel(feature)) === q);
+    if(exactLabel) return exactLabel;
+
+    const exactCode = features.find(feature => String(getCode(feature) || '') === qDigits);
+    if(exactCode) return exactCode;
+
+    const exactPostal = features.find(feature => String(getPostalCode(feature) || '') === qDigits);
+    if(exactPostal) return exactPostal;
+
+    const containsLabel = features.find(feature => normalize(getLabel(feature)).includes(q));
+    if(containsLabel) return containsLabel;
+
+    return features[0] || null;
+  }
+
+  async function resolveCommune(query){
+    const pointCandidates = await fetchGeoCommuneFeatures(query, 'mairie');
+    const pointFeature = pickBestFeature(pointCandidates, query);
+    const contourCandidates = await fetchGeoCommuneFeatures(query, 'contour');
+    let contourFeature = pickBestFeature(contourCandidates, query);
+
+    if(!contourFeature && pointFeature){
+      const code = getCode(pointFeature);
+      contourFeature = code ? await fetchCommuneGeometry(code, 'contour').catch(() => null) : null;
+    }
+
+    return {
+      pointFeature: pointFeature || null,
+      contourFeature: contourFeature || null
+    };
+  }
+
+  async function initOriginMarker(){
+    try{
+      const features = await fetchGeoCommuneFeatures('Domagné', 'mairie');
+      const feature = pickBestFeature(features, 'Domagné');
+      const latlng = getPointFromGeometry(feature);
+      if(latlng){
+        originLatLng = latlng;
+        if(domagneMarker) map.removeLayer(domagneMarker);
+        domagneMarker = L.marker(latlng, { icon: makePinIcon('start'), zIndexOffset: 1000 })
+          .addTo(map)
+          .bindPopup('<strong>Domagné</strong><br>Point de départ des déplacements.');
+      }
+    }catch{
+      if(!domagneMarker){
+        domagneMarker = L.marker(originLatLng, { icon: makePinIcon('start'), zIndexOffset: 1000 })
+          .addTo(map)
+          .bindPopup('<strong>Domagné</strong><br>Point de départ des déplacements.');
+      }
+    }
+  }
+
+  function localFallback(query){
+    const q = normalize(query);
+    const list = [
+      { properties:{nom:'Domagné', code:'35113', codeDepartement:'35', codesPostaux:['35113']}, geometry:{type:'Point', coordinates:[-1.3340, 48.0572]} },
+      { properties:{nom:'Châteaubourg', code:'35220', codeDepartement:'35', codesPostaux:['35220']}, geometry:{type:'Point', coordinates:[-1.3986, 48.1104]} },
+      { properties:{nom:'Châteaugiron', code:'35410', codeDepartement:'35', codesPostaux:['35410']}, geometry:{type:'Point', coordinates:[-1.5028, 48.0461]} },
+      { properties:{nom:'Vitré', code:'35500', codeDepartement:'35', codesPostaux:['35500']}, geometry:{type:'Point', coordinates:[-1.2089, 48.1242]} },
+      { properties:{nom:'Janzé', code:'35150', codeDepartement:'35', codesPostaux:['35150']}, geometry:{type:'Point', coordinates:[-1.4978, 47.9617]} },
+      { properties:{nom:'Cesson-Sévigné', code:'35510', codeDepartement:'35', codesPostaux:['35510']}, geometry:{type:'Point', coordinates:[-1.6036, 48.1238]} },
+      { properties:{nom:'Rennes', code:'35000', codeDepartement:'35', codesPostaux:['35000']}, geometry:{type:'Point', coordinates:[-1.6778, 48.1173]} },
+      { properties:{nom:'Acigné', code:'35690', codeDepartement:'35', codesPostaux:['35690']}, geometry:{type:'Point', coordinates:[-1.5272, 48.1244]} },
+      { properties:{nom:'Servon-sur-Vilaine', code:'35530', codeDepartement:'35', codesPostaux:['35530']}, geometry:{type:'Point', coordinates:[-1.4678, 48.0872]} },
+      { properties:{nom:'Noyal-sur-Vilaine', code:'35530', codeDepartement:'35', codesPostaux:['35530']}, geometry:{type:'Point', coordinates:[-1.5142, 48.1153]} },
+      { properties:{nom:'Corps-Nuds', code:'35150', codeDepartement:'35', codesPostaux:['35150']}, geometry:{type:'Point', coordinates:[-1.5700, 47.9758]} },
+      { properties:{nom:'Argentré-du-Plessis', code:'35370', codeDepartement:'35', codesPostaux:['35370']}, geometry:{type:'Point', coordinates:[-1.1578, 48.0519]} },
+      { properties:{nom:'Champeaux', code:'35500', codeDepartement:'35', codesPostaux:['35500']}, geometry:{type:'Point', coordinates:[-1.2881, 47.9794]} },
+      { properties:{nom:'Etrelles', code:'35370', codeDepartement:'35', codesPostaux:['35370']}, geometry:{type:'Point', coordinates:[-1.1881, 48.0150]} },
+      { properties:{nom:'Bruz', code:'35170', codeDepartement:'35', codesPostaux:['35170']}, geometry:{type:'Point', coordinates:[-1.7439, 47.9831]} },
+    ];
+    return list.filter(x => normalize(x.properties.nom).includes(q) || String(x.properties.code || '').startsWith(q) || String(x.properties.codesPostaux?.[0] || '').startsWith(q)).slice(0, 10);
+  }
+
+  function scheduleAutocomplete(){
+    clearTimeout(abortState.timer);
+    abortState.timer = setTimeout(async () => {
+      const raw = searchInput.value.trim();
+      if(raw.length < 2){
+        autocompleteList.innerHTML = '';
+        autocompleteList.classList.remove('open');
+        searchInput.setAttribute('aria-expanded','false');
+        return;
+      }
+      try{ showAutocomplete(await fetchSuggestions(raw)); }
+      catch{ showAutocomplete(localFallback(raw)); }
+    }, 220);
+  }
+
+  function showAutocomplete(items){
+    autocompleteList.innerHTML = '';
+    if(!items.length){
       autocompleteList.classList.remove('open');
       searchInput.setAttribute('aria-expanded','false');
+      return;
     }
+    items.forEach(item => {
+      const label = getLabel(item) || item?.nom || item?.label || 'Résultat';
+      const code = getPostalCode(item) || String(getCode(item) || item?.code || '').trim();
+      const btn = document.createElement('button');
+      btn.type = 'button';
 
-    searchInput.addEventListener('input', scheduleAutocomplete);
-    searchInput.addEventListener('focus', scheduleAutocomplete);
-    searchInput.addEventListener('keydown', e => {
-      if(e.key === 'Enter') runSearch();
-      if(e.key === 'Escape'){ autocompleteList.classList.remove('open'); searchInput.setAttribute('aria-expanded','false'); }
+      const labelSpan = document.createElement('span');
+      labelSpan.textContent = label;
+      btn.appendChild(labelSpan);
+
+      const codeSmall = document.createElement('small');
+      codeSmall.textContent = code || '';
+      btn.appendChild(codeSmall);
+
+      btn.addEventListener('click', () => {
+        searchInput.value = label || '';
+        abortState.selectedFeature = item;
+        autocompleteList.classList.remove('open');
+        searchInput.setAttribute('aria-expanded', 'false');
+        runSearch();
+      });
+      autocompleteList.appendChild(btn);
     });
-    searchBtn.addEventListener('click', runSearch);
-    document.addEventListener('click', e => { if(!autocompleteList.contains(e.target) && e.target !== searchInput){ autocompleteList.classList.remove('open'); searchInput.setAttribute('aria-expanded','false'); } });
+    autocompleteList.classList.add('open');
+    searchInput.setAttribute('aria-expanded','true');
+  }
 
-    resetBtn.addEventListener('click', () => {
-      if(searchMarker){ map.removeLayer(searchMarker); searchMarker = null; }
-      map.fitBounds(bounds, { padding:[20,20] });
-      searchInput.value = '';
-      autocompleteList.classList.remove('open');
-      searchResult.classList.remove('free','paid','out');
-      searchResult.innerHTML = 'Saisissez une commune.';
-      dynamicCTA.innerHTML = '';
-      sticky.classList.remove('show');
-    });
+  async function runSearch(){
+    clearTimeout(abortState.timer);
+    abortState.timer = null;
+    if(abortState.ctrl) abortState.ctrl.abort();
+    autocompleteList.innerHTML = '';
+    autocompleteList.classList.remove('open');
+    searchInput.setAttribute('aria-expanded','false');
 
-    setResult({ kind:'unknown', label:'', text:'Saisissez une commune pour vérifier instantanément.' });
-  </script>
+    const raw = searchInput.value.trim();
+    if(!raw){ setResult({ kind:'unknown', label:'Champ vide', text:'Saisissez une commune.' }); return; }
+
+    try{
+      let pointFeature = abortState.selectedFeature;
+      abortState.selectedFeature = null;
+      let contourFeature = null;
+
+      if(pointFeature && !hasGeometry(pointFeature)){
+        pointFeature = null;
+      }
+
+      if(pointFeature){
+        const code = getCode(pointFeature);
+        contourFeature = code ? await fetchCommuneGeometry(code, 'contour').catch(() => null) : null;
+      }
+
+      if(!pointFeature || !contourFeature){
+        const resolved = await resolveCommune(raw);
+        pointFeature = pointFeature || resolved.pointFeature;
+        contourFeature = contourFeature || resolved.contourFeature;
+      }
+
+      if(!pointFeature){
+        const local = localFallback(raw);
+        if(local.length) pointFeature = local[0];
+      }
+
+      if(!pointFeature){
+        setResult({ kind:'unknown', label:'Aucun résultat', text:'Commune non trouvée.' });
+        return;
+      }
+
+      const result = classifyFeature(pointFeature);
+      setResult(result);
+      renderFeatureOnMap(pointFeature, result, contourFeature);
+    }catch(err){
+      const found = localFallback(raw)[0];
+      if(!found){
+        setResult({ kind:'unknown', label:'Erreur', text:"Impossible d'effectuer la recherche." });
+        return;
+      }
+      const result = classifyFeature(found);
+      setResult(result);
+      renderFeatureOnMap(found, result, null);
+    }
+  }
+
+  function classifyFeature(feature){
+    const label = getLabel(feature);
+    const code = String(getCode(feature) || '');
+    const postal = getPostalCode(feature);
+    const normalized = normalize(label);
+    const latlng = getPointFromGeometry(feature);
+
+    if(!hasGeometry(feature)) return { kind:'unknown', label: `${label || 'Résultat'} : coordonnées indisponibles`, text: 'Impossible de récupérer une position fiable.' };
+    if(!isIlleEtVilaine(feature)) return { kind:'out', label: `${label} : exclue`, text: 'Les communes hors Ille-et-Vilaine sont exclues.' };
+    if(normalized.includes('rennes') || code === '35000' || postal === '35000') return { kind:'out', label: 'Rennes : exclue', text: 'Rennes est exclue de la zone d’intervention standard.' };
+
+    const routeKm = haversineKm(originLatLng[0], originLatLng[1], latlng[0], latlng[1]) * 1.35;
+    if(routeKm <= 21.5){
+      const isLimit = routeKm > 20;
+      return { kind:'free', label: `${label}${isLimit ? ' (limite)' : ''}`, text: `Déplacement inclus${isLimit ? ' en zone de souplesse' : ''}. Distance routière estimée : ${routeKm.toFixed(1)} km.` };
+    }
+    if(routeKm <= 45) return { kind:'paid', label: `${label} : sur devis`, text: `Déplacement possible sur devis. Distance routière estimée : ${routeKm.toFixed(1)} km. Des frais kilométriques de 0,70€/km s’appliquent.` };
+    return { kind:'out', label: `${label} : hors secteur`, text: `Au-delà de 45 km par la route. La demande n’est pas acceptée.` };
+  }
+
+  searchInput.addEventListener('input', scheduleAutocomplete);
+  searchInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter') runSearch();
+    if(e.key === 'Escape'){ autocompleteList.classList.remove('open'); searchInput.setAttribute('aria-expanded','false'); }
+  });
+  searchBtn.addEventListener('click', runSearch);
+  document.addEventListener('click', e => { if(!autocompleteList.contains(e.target) && e.target !== searchInput){ autocompleteList.innerHTML = ''; autocompleteList.classList.remove('open'); searchInput.setAttribute('aria-expanded','false'); } });
+
+  resetBtn.addEventListener('click', () => {
+    clearCommuneDisplay();
+    map.fitBounds(bounds, { padding:[20,20] });
+    searchInput.value = '';
+    autocompleteList.innerHTML = '';
+    autocompleteList.classList.remove('open');
+    searchInput.setAttribute('aria-expanded','false');
+    searchResult.classList.remove('free','paid','out');
+    if(resultPrefixEl){ resultPrefixEl.textContent = ''; resultPrefixEl.hidden = true; resultPrefixEl.classList.remove('boost'); }
+    if(resultLabelEl){ resultLabelEl.textContent = ''; resultLabelEl.hidden = true; }
+    if(resultTextEl){ resultTextEl.textContent = 'Saisissez une commune.'; resultTextEl.hidden = false; }
+    dynamicCTA.innerHTML = '';
+    sticky.classList.remove('show');
+  });
+
+  void initOriginMarker();
+  setResult({ kind:'unknown', label:'', text:'Saisissez une commune pour vérifier instantanément.' });
+</script>
 <div class="footer-bar">
   <div class="footer-logo">
     <img alt="Miaoucratie" src="images/miaoucratie-2.png"/>
