@@ -183,33 +183,6 @@
 	  font-family: 'Cormorant Garamond', serif;
 	}
 	.btn-ghost:hover { background: rgba(168,212,196,0.28); border-color: #a8d4c4; color: #fff; }
-  .faq-cta-secondary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 194px;
-    padding: 15px 34px;
-    border-radius: 100px;
-    text-decoration: none;
-    background: rgba(255,255,255,0.05);
-    border: 1.5px solid rgba(242,205,176,0.42);
-    color: #F6E7DA;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
-  }
-  .faq-cta-secondary:hover,
-  .faq-cta-secondary:focus-visible {
-    background: rgba(200,96,58,0.16);
-    border-color: rgba(242,205,176,0.72);
-    color: #FFF8F2;
-    transform: translateY(-1px);
-  }
 	.btn-ghost .btn-emoji { font-family: 'DM Sans', sans-serif; font-size: 16px; }
 
   .hero-right {
@@ -1804,4 +1777,31 @@ body.tarifs-page .tarif-main .tarif-rows { padding: 4px 0; }
   .tsep { display: none; }
   .topbar-links a[href^="mailto"] { display: none; }
   .topbar-links a span { display: none; }
+}
+
+
+/* ── FAQ final CTA secondary button ── */
+.faq-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 194px;
+  padding: 14px 36px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06) !important;
+  color: #F6E8DB !important;
+  border: 1.5px solid rgba(242,205,176,0.42) !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.faq-cta-secondary:hover,
+.faq-cta-secondary:focus-visible {
+  background: rgba(255,255,255,0.10) !important;
+  border-color: rgba(242,205,176,0.72) !important;
+  color: #FFF8F2 !important;
+  transform: translateY(-1px);
 }
