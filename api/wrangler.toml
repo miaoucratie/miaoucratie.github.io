@@ -1,0 +1,13 @@
+name = "miaoucratie-reservation-api"
+main = "src/worker.js"
+compatibility_date = "2026-04-10"
+
+[vars]
+ALLOWED_ORIGINS = "https://miaoucratie.github.io,http://127.0.0.1:4173,http://localhost:4173"
+MAIL_FROM = "Miaoucratie <reservation@notifications.miaoucratie.fr>"
+RESERVATION_TO = "miaoucratie@gmail.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "miaoucratie_reservation"
+database_id = "56909e79-a023-472f-99d1-ecd1c1a1b79b"

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demande de réservation de garde de chats à domicile | Miaoucratie</title>
+  <meta name="description" content="Déposez votre demande de réservation Miaoucratie pour une garde de chats à domicile. Vérification des disponibilités, calendrier avec dates indisponibles bloquées et réponse sous 24h à 48h.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#f6efe9">
+  <meta name="miaoucratie-api-base" content="https://miaoucratie-reservation-api.miaoucratie.workers.dev">
+  <meta name="web3forms-access-key" content="ee0abc1e-91ca-4e67-b4b6-ed2f4b3b521c">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="canonical" href="https://miaoucratie.github.io/reservation.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="//geo.api.gouv.fr">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/reservation.css">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Miaoucratie">
+  <meta property="og:title" content="Demande de réservation de garde de chats à domicile | Miaoucratie">
+  <meta property="og:description" content="Formulaire de demande de réservation Miaoucratie avec calendrier des disponibilités, validation en français et envoi direct à Miaoucratie.">
+  <meta property="og:url" content="https://miaoucratie.github.io/reservation.html">
+  <meta property="og:image" content="https://miaoucratie.github.io/images/reservation-hero.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Demande de réservation de garde de chats à domicile | Miaoucratie">
+  <meta name="twitter:description" content="Demande de réservation pour une garde de chats à domicile, avec périodes indisponibles bloquées et réponse sous 24h à 48h.">
+  <meta name="twitter:image" content="https://miaoucratie.github.io/images/reservation-hero.webp">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://miaoucratie.github.io/#organisation",
+          "name": "Miaoucratie",
+          "url": "https://miaoucratie.github.io/",
+          "telephone": "+33644247681",
+          "email": "miaoucratie@gmail.com",
+          "areaServed": [
+            "Domagné",
+            "Châteaubourg",
+            "Châteaugiron",
+            "Vitré",
+            "Janzé"
+          ],
+          "sameAs": [
+            "https://www.instagram.com/miaoucratie/",
+            "https://wa.me/33644247681"
+          ]
+        },
+        {
+          "@type": "Service",
+          "@id": "https://miaoucratie.github.io/reservation.html#service",
+          "serviceType": "Demande de réservation de garde de chats à domicile",
+          "provider": {
+            "@id": "https://miaoucratie.github.io/#organisation"
+          },
+          "url": "https://miaoucratie.github.io/reservation.html",
+          "availableChannel": {
+            "@type": "ServiceChannel",
+            "serviceUrl": "https://miaoucratie.github.io/reservation.html"
+          },
+          "areaServed": [
+            "Domagné",
+            "Châteaubourg",
+            "Châteaugiron",
+            "Vitré",
+            "Janzé"
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://miaoucratie.github.io/reservation.html#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Accueil",
+              "item": "https://miaoucratie.github.io/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Réservation",
+              "item": "https://miaoucratie.github.io/reservation.html"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+</head>
+<body class="reservation-page">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <div class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
+    <a href="index.html">Accueil</a>
+    <a href="tarifs.html">Tarifs</a>
+    <a href="faq.html">FAQ</a>
+    <a href="carte.html">Carte</a>
+    <a href="reservation.html" class="is-current">Réservation</a>
+</div></div><div class="topbar-links"><a href="tel:+33644247681"><svg fill="currentColor" height="14" viewBox="0 0 24 24" width="14"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg> 06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a><span class="tsep"></span><a href="mailto:miaoucratie@gmail.com"><svg fill="currentColor" height="14" viewBox="0 0 24 24" width="14"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> miaoucratie@gmail.com</a><span class="tsep"></span><a href="https://www.instagram.com/miaoucratie" target="_blank" rel="noopener"><svg fill="currentColor" height="14" viewBox="0 0 24 24" width="14"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> @miaoucratie</a><span class="tsep"></span><a href="https://wa.me/33644247681" target="_blank" rel="noopener"><svg fill="currentColor" height="14" viewBox="0 0 24 24" width="14"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg> WhatsApp</a></div></div>
+
+  <main id="contenu">
+    <section class="hero">
+      <div class="container hero__grid">
+        <div class="hero__content">
+          <p class="reservation-kicker eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18"/><path d="m9 15 2 2 4-4"/></svg><span>DEMANDE DE RESERVATION</span></p>
+          <h1>Réserver une garde <span>pour vos chats</span></h1>
+          <p class="hero__lead">
+            Votre demande sera étudiée avec le plus grand soin. Chaque demande est relue personnellement
+            avant validation, selon les disponibilités et votre secteur.
+          </p>
+        </div>
+
+        <div class="hero__media">
+          <div class="hero__media-frame">
+            <img
+              src="images/reservation-hero.webp"
+              width="960"
+              height="1200"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              alt="Chat roux allongé au soleil, image de présentation de la demande de réservation Miaoucratie.">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-band" aria-labelledby="info-formulaire-title">
+      <div class="container">
+        <div class="info-card">
+          <div class="info-card__icon" aria-hidden="true">i</div>
+          <div>
+            <h2 id="info-formulaire-title" class="visually-hidden">Information importante</h2>
+            <p>
+              Veuillez noter que ce formulaire constitue une <strong>demande de réservation initiale</strong>.
+              Chaque demande reste soumise à validation selon les disponibilités et la zone géographique.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section" aria-labelledby="form-title">
+      <div class="container">
+        <div class="section-heading">
+          <p class="reservation-section-kicker eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18"/><path d="m9 15 2 2 4-4"/></svg><span>RESERVATION</span></p>
+          <h2 id="form-title">Parlons de votre besoin</h2>
+          <p class="section-heading__lead">
+            Tous les champs marqués comme obligatoires doivent être remplis avant l’envoi.
+          </p>
+        </div>
+
+        <div id="reservation-feedback" class="alert" role="status" aria-live="polite" hidden></div>
+
+        <form id="reservation-form" class="reservation-form" novalidate>
+          <input type="hidden" name="started_at" id="started_at">
+          <div class="field field--honeypot" aria-hidden="true">
+            <label for="website">Ne pas remplir ce champ</label>
+            <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <section class="step-card" aria-labelledby="step-1-title">
+            <div class="step-card__index" aria-hidden="true">1</div>
+            <div class="step-card__content">
+              <div class="step-card__header">
+                <p class="step-card__eyebrow">Étape 1</p>
+                <h3 id="step-1-title">Vos coordonnées</h3>
+              </div>
+
+              <div class="grid grid--two">
+                <div class="field" data-field="nom">
+                  <label for="nom">Nom <span aria-hidden="true">*</span></label>
+                  <input id="nom" name="nom" type="text" required autocomplete="family-name" placeholder="Votre nom de famille">
+                  <p class="field-error" id="nom-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field" data-field="prenom">
+                  <label for="prenom">Prénom <span aria-hidden="true">*</span></label>
+                  <input id="prenom" name="prenom" type="text" required autocomplete="given-name" placeholder="Votre prénom">
+                  <p class="field-error" id="prenom-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field" data-field="telephone">
+                  <label for="telephone">Téléphone de contact <span aria-hidden="true">*</span></label>
+                  <input id="telephone" name="telephone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="06 12 34 56 78">
+                  <p class="field-help">Utilisé pour vous recontacter au sujet de votre demande.</p>
+                  <p class="field-error" id="telephone-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field" data-field="email">
+                  <label for="email">E-mail de contact <span aria-hidden="true">*</span></label>
+                  <input id="email" name="email" type="email" required autocomplete="email" inputmode="email" placeholder="vous@exemple.fr">
+                  <p class="field-help">Utilisé pour vous recontacter et vous envoyer la suite de l’échange.</p>
+                  <p class="field-error" id="email-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field field--full" data-field="whatsapp">
+                  <label for="whatsapp">WhatsApp <span class="field-optional">facultatif</span></label>
+                  <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="Votre numéro WhatsApp si différent">
+                  <p class="field-help">Laissez vide si vous préférez être recontacté autrement.</p>
+                  <p class="field-error" id="whatsapp-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field field--full" data-field="commune">
+                  <label for="commune">Commune de résidence <span aria-hidden="true">*</span></label>
+                  <div class="autocomplete" data-autocomplete>
+                    <input
+                      id="commune"
+                      name="commune"
+                      type="text"
+                      required
+                      autocomplete="off"
+                      spellcheck="false"
+                      aria-autocomplete="list"
+                      aria-expanded="false"
+                      aria-controls="commune-suggestions"
+                      placeholder="Commencez à saisir votre commune">
+                    <input type="hidden" name="commune_code" id="commune_code">
+                    <input type="hidden" name="commune_code_postal" id="commune_code_postal">
+                    <div id="commune-suggestions" class="autocomplete__list" role="listbox" hidden></div>
+                  </div>
+                                    <p class="field-error" id="commune-error" aria-live="polite"></p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="step-card" aria-labelledby="step-2-title">
+            <div class="step-card__index" aria-hidden="true">2</div>
+            <div class="step-card__content">
+              <div class="step-card__header">
+                <p class="step-card__eyebrow">Étape 2</p>
+                <h3 id="step-2-title">Détails de la garde</h3>
+              </div>
+
+              <div class="grid grid--two">
+                <div class="field" data-field="nombreChats">
+                  <label for="nombreChats">Nombre de chats à garder <span aria-hidden="true">*</span></label>
+                  <input id="nombreChats" name="nombre_chats" type="number" inputmode="numeric" min="1" step="1" required placeholder="1">
+                  <p class="field-error" id="nombreChats-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field" data-field="frequence">
+                  <label for="frequence">Fréquence de visites <span aria-hidden="true">*</span></label>
+                  <select id="frequence" name="frequence" required>
+                    <option value="">Sélectionnez une fréquence</option>
+                    <option value="1 visite par jour">1 visite par jour</option>
+                    <option value="2 visites par jour">2 visites par jour</option>
+                    <option value="autre">Autre besoin à préciser</option>
+                  </select>
+                  <p class="field-error" id="frequence-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field field--full" data-field="autreFrequence" id="autre-frequence-wrapper" hidden>
+                  <label for="autreFrequence">Précisez votre autre besoin <span aria-hidden="true">*</span></label>
+                  <input id="autreFrequence" name="frequence_autre" type="text" placeholder="Ex. horaires spécifiques, alternance particulière...">
+                  <p class="field-error" id="autreFrequence-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field" data-field="dateDebut">
+                  <label for="dateDebut">Date de début <span aria-hidden="true">*</span></label>
+                  <input id="dateDebut" name="date_debut" type="text" inputmode="none" required placeholder="Choisir une date">
+                  <p class="field-help">Les dates grisées sont indisponibles.</p>
+                  <p class="field-error" id="dateDebut-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field" data-field="dateFin">
+                  <label for="dateFin">Date de fin <span aria-hidden="true">*</span></label>
+                  <input id="dateFin" name="date_fin" type="text" inputmode="none" required placeholder="Choisir une date">
+                  <p class="field-help">La date de fin ne peut pas être antérieure à la date de début.</p>
+                  <p class="field-error" id="dateFin-error" aria-live="polite"></p>
+                </div>
+              </div>
+
+              <div class="availability-note" id="availability-note" aria-live="polite">
+                Vérification des disponibilités en cours…
+              </div>
+              <p class="field-error field-error--block" id="dateRange-error" aria-live="polite"></p>
+            </div>
+          </section>
+
+          <section class="step-card" aria-labelledby="step-3-title">
+            <div class="step-card__index" aria-hidden="true">3</div>
+            <div class="step-card__content">
+              <div class="step-card__header">
+                <p class="step-card__eyebrow">Étape 3</p>
+                <h3 id="step-3-title">Observations utiles</h3>
+              </div>
+
+              <div class="field" data-field="observations">
+                <label for="observations">Observations & habitudes de vos chats</label>
+                <textarea id="observations" name="observations" rows="7" placeholder="Alimentation spécifique, traitement médical, caractère, cachettes préférées, points d’attention…"></textarea>
+                <p class="field-help">
+                  Ce champ est libre. Vous pourrez compléter davantage lors des échanges suivants si besoin.
+                </p>
+                <p class="field-error" id="observations-error" aria-live="polite"></p>
+              </div>
+            </div>
+          </section>
+
+          <div class="submit-panel">
+            <button id="submit-button" class="button button--primary" type="submit">
+              <span class="button__label">Envoyer ma demande</span>
+              <span class="button__loader" aria-hidden="true"></span>
+            </button>
+          </div>
+        </form>
+
+        <section id="success-panel" class="success-panel" hidden aria-hidden="true" aria-labelledby="success-title">
+          <p class="success-panel__eyebrow">Demande envoyée</p>
+          <h2 id="success-title">Votre demande a bien été envoyée.</h2>
+          <p>Réponse garantie sous 24h à 48h.</p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── FOOTER BAR ── -->
+<div class="footer-bar">
+  <div class="footer-logo">
+    <img alt="Miaoucratie" src="images/miaoucratie-2.png"/>
+    <span>Miaou<em>cratie.</em></span>
+  </div>
+  <div class="footer-links">
+    <a href="tel:+33644247681">06 44 24 76 81</a>
+    <a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>
+    <a href="https://www.instagram.com/miaoucratie" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://wa.me/33644247681" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+  <div class="footer-legal">
+    <a href="cgv.html" rel="noopener" target="_blank">CGV</a> ·
+    <a href="#" onclick="document.getElementById('mlModal').style.display='flex';return false;">Mentions légales</a>
+  </div>
+</div>
+<div id="mlModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(30,24,18,0.65);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="max-width:700px;width:100%;background:#FBF7F0;border-radius:20px;position:relative;max-height:88vh;overflow-y:auto;">
+    <div style="padding:26px 36px 18px;border-bottom:1px solid #F0E8DA;position:sticky;top:0;background:#FBF7F0;z-index:1;border-radius:20px 20px 0 0;">
+      <button onclick="document.getElementById('mlModal').style.display='none'" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:#B89B80;line-height:1;">&times;</button>
+      <div style="width:36px;height:3px;background:#A8472A;border-radius:2px;margin-bottom:10px;"></div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:#1E1812;letter-spacing:-0.5px;margin:0;">Mentions légales</h2>
+    </div>
+    <div style="padding:20px 36px 36px;">
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">1. Éditeur du site</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le présent site, accessible à l'adresse <strong>https://miaoucratie.github.io</strong>, est édité par :</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:6px;"><strong>Irina TALBOT</strong><br>Entreprise individuelle &ndash; Miaoucratie, service de cat-sitting à domicile<br>SIRET&nbsp;: 100 988 138 00010</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:6px;">Adresse&nbsp;:<br>35113 Domagné &ndash; Ille-et-Vilaine &ndash; France</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:6px;">Email&nbsp;:<br><a href="mailto:miaoucratie@gmail.com" style="color:#A8472A;text-decoration:none;">miaoucratie@gmail.com</a></p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:6px;">Téléphone&nbsp;:<br>06 44 24 76 81</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Responsable de la publication&nbsp;:<br>Irina TALBOT</p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">2. Activité</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Miaoucratie propose des services de garde de chats à domicile (cat-sitting), incluant visites, suivi personnalisé et respect du bien-être animal dans son environnement habituel.</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Zone d'intervention principale&nbsp;:<br>Domagné, Châteaubourg, Châteaugiron, Vitré, Janzé et les communes environnantes en Ille-et-Vilaine.</p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">3. Hébergement</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site est hébergé par&nbsp;:<br>GitHub, Inc.<br>88 Colin P. Kelly Jr. Street<br>San Francisco, CA 94107 &ndash; États-Unis<br>Site web&nbsp;: <a href="https://github.com" target="_blank" rel="noopener" style="color:#A8472A;text-decoration:none;">https://github.com</a></p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">4. Propriété intellectuelle</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">L'ensemble des contenus présents sur le site (textes, images, illustrations, logo, structure) est protégé par le droit de la propriété intellectuelle.</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Toute reproduction, représentation, modification, publication ou exploitation, totale ou partielle, sans autorisation écrite préalable est strictement interdite.</p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">5. Données personnelles (RGPD)</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Dans le cadre de son activité de cat-sitting, Miaoucratie peut être amenée à collecter des données personnelles via :</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">email</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">téléphone</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">WhatsApp</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Finalités du traitement</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Ces données sont utilisées exclusivement pour&nbsp;:</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la gestion des demandes de garde de chats</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'établissement de devis, contrats et factures</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le suivi des prestations et des gardes</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la tenue d'un registre sanitaire relatif aux animaux gardés</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la gestion administrative et comptable</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le respect des obligations légales et réglementaires</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la réponse aux demandes des autorités compétentes, notamment en cas de contrôle ou d'audit par la DDPP</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Base légale</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'exécution d'un contrat (prestation de services)</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le respect d'obligations légales</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'intérêt légitime (gestion de la relation client)</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Durée de conservation</p>
+      <ul style="margin:0 0 14px 20px;padding:0;">
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">pendant toute la durée de la relation commerciale</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">puis archivées pendant une durée maximale de 5 ans à des fins administratives et légales</li>
+        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">les données de facturation peuvent être conservées jusqu'à 10 ans conformément aux obligations comptables</li>
+      </ul>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Destinataires</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Les données sont exclusivement destinées à Miaoucratie. Elles ne sont ni vendues, ni cédées, ni transférées à des tiers, sauf obligation légale.</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Droits des personnes</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Conformément au RGPD et à la loi Informatique et Libertés, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation du traitement et d'opposition. Vous pouvez l'exercer à tout moment en contactant&nbsp;: <a href="mailto:miaoucratie@gmail.com" style="color:#A8472A;text-decoration:none;">miaoucratie@gmail.com</a></p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">En cas de litige, vous pouvez introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener" style="color:#A8472A;text-decoration:none;">www.cnil.fr</a>).</p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">6. Responsabilité</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Miaoucratie s'efforce de fournir des informations fiables et à jour. L'éditeur ne saurait être tenu responsable des erreurs ou omissions, d'une indisponibilité temporaire du site, ni du contenu de sites tiers accessibles via des liens externes.</p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">7. Cookies</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site ne dépose pas de cookies de suivi ou de publicité.</p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">8. Conditions générales de vente</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:0;">Les conditions générales de vente (CGV) applicables aux prestations de cat-sitting sont disponibles sur le site, en bas de page (footer), rubrique dédiée.</p>
+    </div>
+  </div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+  <script>
+  (function(){
+    var btn = document.getElementById('tmenuBtn');
+    var panel = document.getElementById('tmenuPanel');
+    if(!btn || !panel) return;
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var open = panel.style.display === 'flex';
+      panel.style.display = open ? 'none' : 'flex';
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+    document.addEventListener('click', function(e){
+      if (!panel.contains(e.target) && e.target !== btn) {
+        panel.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+  </script>
+
+  <script src="js/reservation.js"></script>
+</body>
+</html>
