@@ -3,7 +3,7 @@ main = "src/worker.js"
 compatibility_date = "2026-04-10"
 
 [vars]
-ALLOWED_ORIGINS = "https://miaoucratie.github.io,http://127.0.0.1:4173,http://localhost:4173"
+ALLOWED_ORIGINS = "https://miaoucratie.fr,http://127.0.0.1:4173,http://localhost:4173"
 MAIL_FROM = "Miaoucratie <reservation@notifications.miaoucratie.fr>"
 RESERVATION_TO = "miaoucratie@gmail.com"
 
