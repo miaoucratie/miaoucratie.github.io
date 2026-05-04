@@ -1316,8 +1316,8 @@ body.calculateur-page .container { flex: 1 !important; }
     const tarifNet = base - remiseTotale;
     const cumulBloque = solidaire && periode;
 
-    // Supplément km (aller-retour)
-    const supKm = km * 2 * 0.7;
+    // Supplément km (aller-retour × nombre de visites)
+    const supKm = km * 2 * 0.7 * visites;
 
     // Total
     const total = tarifNet * visites + supKm;
@@ -1353,7 +1353,7 @@ body.calculateur-page .container { flex: 1 !important; }
 
     if (supKm > 0) {
       lines += `<div class="result-line extra">
-        <span class="label">Supplément déplacement (${km} km × 2 × 0,70 €)</span>
+        <span class="label">Supplément déplacement (${km} km × 2 × ${visites} visite${visites > 1 ? 's' : ''} × 0,70 €)</span>
         <span class="amount">+ ${fmt(supKm)}</span>
       </div>`;
     }
