@@ -1049,7 +1049,7 @@ function buildWeb3FormsPayload(payload, reservationId = "") {
     email: payload.email,
     replyto: payload.email,
     phone: payload.telephone,
-    botcheck: "",
+    botcheck: false,
     message,
     nom: payload.nom,
     prenom: payload.prenom,
