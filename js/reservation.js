@@ -931,12 +931,22 @@ async function handleSubmit(event) {
   const validation = validateReservationPayload(payload, state.unavailableRanges);
 
   if (!validation.isValid) {
-    applyErrors(validation.errors);
-    focusFirstError(validation.errors);
-    return;
+  applyErrors(validation.errors);
+  focusFirstError(validation.errors);
+  return;
   }
 
-  setButtonLoading(submitButton, true);
+  const hCaptchaResponse = getHCaptchaResponse();
+
+  if (isHCaptchaExpected() && !hCaptchaResponse) {
+  showAlert(
+    "error",
+    "Merci de valider la vérification anti-spam avant d’envoyer votre demande."
+  );
+  return;
+}
+
+setButtonLoading(submitButton, true);
 
   try {
     const response = await fetch(ENDPOINTS.reservation, {
@@ -961,7 +971,15 @@ async function handleSubmit(event) {
       return;
     }
 
-    await sendWeb3FormsNotification(validation.sanitized, result?.reservationId || "");
+    try {
+      await sendWeb3FormsNotification(
+        validation.sanitized,
+        result?.reservationId || "",
+        hCaptchaResponse
+      );
+    } catch (notificationError) {
+        console.warn("Reservation saved but Web3Forms notification failed", notificationError);
+    }
 
     sessionStorage.removeItem(DRAFT_KEY);
     form.hidden = true;
@@ -979,33 +997,71 @@ async function handleSubmit(event) {
   }
 }
 
+function isHCaptchaExpected() {
+  return Boolean(document.querySelector(".h-captcha"));
+}
 
-async function sendWeb3FormsNotification(payload, reservationId = "") {
+function getHCaptchaResponse() {
+  return document
+    .querySelector('textarea[name="h-captcha-response"]')
+    ?.value
+    ?.trim() || "";
+}
+
+function resetHCaptcha() {
+  try {
+    if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
+      window.hcaptcha.reset();
+    }
+  } catch (error) {
+    console.warn("Unable to reset hCaptcha", error);
+  }
+}
+
+async function sendWeb3FormsNotification(payload, reservationId = "", hCaptchaResponse = "") {
   if (!WEB3FORMS_ACCESS_KEY) {
     throw new Error("La configuration d’envoi d’e-mail est incomplète. Merci de me contacter directement.");
   }
 
-  const response = await fetch(WEB3FORMS_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify(buildWeb3FormsPayload(payload, reservationId)),
-  });
-
-  const result = await safeJson(response);
-
-  if (!response.ok || result?.success === false) {
-    throw new Error(
-      "Votre demande a bien été enregistrée, mais la notification e-mail n’a pas pu être envoyée. Merci de réessayer ou de me contacter directement."
-    );
+  if (isHCaptchaExpected() && !hCaptchaResponse) {
+    throw new Error("La vérification anti-spam est incomplète.");
   }
 
-  return result;
+  try {
+    const response = await fetch(WEB3FORMS_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(buildWeb3FormsPayload(payload, reservationId, hCaptchaResponse)),
+    });
+
+    const result = await safeJson(response);
+
+    if (!response.ok || result?.success === false) {
+      console.error("Web3Forms notification failed", {
+        status: response.status,
+        result,
+      });
+
+      const detail =
+        result?.message ||
+        result?.body?.message ||
+        "Erreur inconnue côté Web3Forms.";
+
+      throw new Error(
+        `Notification Web3Forms échouée : ${detail}`
+      );
+    }
+
+    return result;
+  } finally {
+    resetHCaptcha();
+  }
 }
 
-function buildWeb3FormsPayload(payload, reservationId = "") {
+function buildWeb3FormsPayload(payload, reservationId = "", hCaptchaResponse = "") {
   const submittedAt = new Intl.DateTimeFormat("fr-FR", {
     dateStyle: "full",
     timeStyle: "short",
@@ -1043,20 +1099,15 @@ function buildWeb3FormsPayload(payload, reservationId = "") {
 
   return {
     access_key: WEB3FORMS_ACCESS_KEY,
+    "h-captcha-response": hCaptchaResponse,
     subject: buildReservationSubject(payload),
-    from_name: "Miaoucratie — Demande de réservation",
-    name: `${payload.prenom} ${payload.nom}`.trim(),
-    email: payload.email,
-    replyto: payload.email,
-    phone: payload.telephone,
-    botcheck: false,
-    message,
+    from_name: "Miaoucratie Webform",
     nom: payload.nom,
     prenom: payload.prenom,
+    email: payload.email,
     telephone: payload.telephone,
     whatsapp: payload.whatsapp || "Non renseigné",
     commune: payload.commune,
-    commune_code: payload.communeCode || "",
     commune_code_postal: payload.communeCodePostal || "",
     nombre_chats: String(payload.nombreChats),
     date_debut: payload.dateDebut,
@@ -1065,7 +1116,7 @@ function buildWeb3FormsPayload(payload, reservationId = "") {
     observations: payload.observations || "",
     submitted_at: submittedAt,
     reservation_id: reservationId,
-  };
+   };
 }
 
 async function safeJson(response) {

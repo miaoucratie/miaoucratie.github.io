@@ -97,6 +97,7 @@
     }
   </script>
 </head>
+
 <body class="reservation-page">
   <a class="skip-link" href="#contenu">Aller au contenu</a>
   <div class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
@@ -308,6 +309,7 @@
           </section>
 
           <div class="submit-panel">
+            <div class="h-captcha" data-captcha="true"></div>
             <button id="submit-button" class="button button--primary" type="submit">
               <span class="button__label">Envoyer ma demande</span>
               <span class="button__loader" aria-hidden="true"></span>
@@ -433,6 +435,7 @@
   })();
   </script>
 
-  <script src="js/reservation.js"></script>
-</body>
+  <script src="https://web3forms.com/client/script.js" async defer></script>
+  <script src="js/reservation.js?v=20260513-hcaptcha" defer></script>
+  </body>
 </html>
