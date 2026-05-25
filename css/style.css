@@ -79,12 +79,9 @@
     margin-bottom: 48px;
   }
   .logo-img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
+    width: 110px;
+    height: 110px;
     object-fit: cover;
-    border: 3px solid var(--peach);
-    box-shadow: 0 8px 32px rgba(200,96,58,0.2);
     flex-shrink: 0;
   }
   .logo-name {
