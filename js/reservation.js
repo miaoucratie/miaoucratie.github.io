@@ -1327,14 +1327,4 @@ function safeParseJson(value) {
   } catch (error) {
     return null;
   }
-}start" });
-}
-
-
-function safeParseJson(value) {
-  try {
-    return JSON.parse(value);
-  } catch (error) {
-    return null;
-  }
 }
