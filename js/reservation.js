@@ -981,6 +981,12 @@ setButtonLoading(submitButton, true);
         console.warn("Reservation saved but Web3Forms notification failed", notificationError);
     }
 
+    if (typeof gtag === "function") {
+      gtag("event", "generate_lead", {
+        form_name: "reservation",
+      });
+    }
+
     sessionStorage.removeItem(DRAFT_KEY);
     form.hidden = true;
     successPanel.hidden = false;
@@ -1312,6 +1318,16 @@ function resetForNewRequest() {
   sessionStorage.removeItem(DRAFT_KEY);
   loadUnavailableRanges();
   form.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+
+function safeParseJson(value) {
+  try {
+    return JSON.parse(value);
+  } catch (error) {
+    return null;
+  }
+}start" });
 }
 
 
