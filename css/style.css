@@ -490,6 +490,18 @@
   border-radius: 50%;
   object-fit: cover;
 }
+.cred-label-link {
+  flex-shrink: 0;
+  display: inline-block;
+  line-height: 0;
+  transition: transform .25s ease, opacity .25s ease;
+}
+.cred-label-link:hover { transform: translateY(-2px); opacity: .88; }
+.cred-label-img--syndicat {
+  width: 150px;
+  height: auto;
+  display: block;
+}
   .cred-item {
     background: #fff; border-radius: 14px; padding: 22px;
     border-left: 3px solid var(--terracotta);

@@ -303,8 +303,8 @@
         </div>
 
         <div class="hero-copy">
-          <strong>Une lecture simple, avec une vraie flexibilité de zone.</strong>
-          <span style="margin-top:6px;display:block;">Miaoucratie intervient dans toutes les communes situées jusqu’à 20 km autour de Domagné, et jusqu’à 45 km sur devis. Parmi elles : Châteaubourg, Châteaugiron, Vitré, Janzé, Piré-sur-Seiche et alentours.</span>
+          <strong>Miaoucratie intervient jusqu’à 20 km par la route autour de Domagné, et jusqu’à 45 km sur devis.</strong>
+          <span style="margin-top:6px;display:block;">Notamment : Châteaubourg, Châteaugiron, Vitré, Janzé, Piré-sur-Seiche et alentours.</span>
           <span>Le point de départ est Domagné. Les demandes proches de la limite peuvent être étudiées selon les disponibilités et l’optimisation des déplacements.</span>
           <span style="margin-top:6px;display:block;">Les distances sont calculées <strong>par la route</strong>. Au-delà de la zone incluse, les déplacements sont possibles sur devis avec des frais kilométriques de <strong>0,70€/km</strong>. Ce tarif reflète les coûts réels de déplacement et peut évoluer en fonction du prix du carburant.</span>
         </div>
@@ -338,7 +338,6 @@
             <li><strong>Rennes</strong> est exclue.</li>
             <li>Au-delà de <strong>45 km</strong> par la route, la demande n’est pas acceptée.</li>
           </ul>
-          <div class="foot">Un cadre lisible, sans ambiguïté inutile.</div>
         </div>
 
         <div class="rule-card" style="margin-top:0">
@@ -384,11 +383,6 @@
           <div class="legend-item"><div class="legend-dot red"></div><div><strong>Commune hors zone</strong><p>Rennes, hors 35, ou au-delà de 45 km : non accepté.</p></div></div>
         </div>
 
-        <div class="card info-card">
-          <h2>Au-delà de la carte</h2>
-          <p>Une réponse immédiate et claire : vous savez tout de suite si votre demande est possible.</p>
-          <p>La recherche vous indique immédiatement la marche à suivre : réserver, demander un devis, ou passer à une autre solution.</p>
-        </div>
       </aside>
     </section>
   </main>
@@ -609,7 +603,7 @@
     sticky.classList.add('show');
     if(result.kind === 'free'){
       stickyTitle.textContent = 'Commune incluse';
-      stickyDesc.textContent = result.label + ' — Réservez dès maintenant pour garantir votre créneau. ⚡ Les périodes de vacances se remplissent rapidement.';
+      stickyDesc.textContent = result.label + '. Réservez dès maintenant pour garantir votre créneau. ⚡ Les périodes de vacances se remplissent rapidement.';
       stickyPrimary.textContent = 'Réserver une garde';
       stickyPrimary.href = 'reservation.html';
       stickySecondary.textContent = 'Envoyer un mail';
@@ -617,15 +611,15 @@
       stickyFoot.textContent = '';
     } else if(result.kind === 'paid'){
       stickyTitle.textContent = 'Commune sur devis';
-      stickyDesc.textContent = result.label + ' — La demande peut être étudiée.';
+      stickyDesc.textContent = result.label + '. La demande peut être étudiée.';
       stickyPrimary.textContent = 'Demander un devis';
-      stickyPrimary.href = 'mailto:contact@miaoucratie.fr';
+      stickyPrimary.href = 'reservation.html';
       stickySecondary.textContent = 'Voir la carte';
       stickySecondary.href = '#map';
       stickyFoot.textContent = 'Frais kilométriques : 0,70€/km. Étude au cas par cas.';
     } else if(result.kind === 'out'){
       stickyTitle.textContent = 'Hors zone';
-      stickyDesc.textContent = result.label + ' — La demande n’entre pas dans le cadre standard.';
+      stickyDesc.textContent = result.label + '. La demande n’entre pas dans le cadre standard.';
       stickyPrimary.textContent = 'Me contacter quand même';
       stickyPrimary.href = 'mailto:contact@miaoucratie.fr';
       stickySecondary.textContent = 'Rechercher une autre commune';
@@ -646,7 +640,7 @@
     if(result.kind === 'free'){
       dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="reservation.html">Réserver une garde</a><div class="cta-note">⚡ Les périodes de vacances se remplissent rapidement.</div></div>`;
     } else if(result.kind === 'paid'){
-      dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="mailto:contact@miaoucratie.fr">Demander un devis</a><div class="cta-note">Déplacement possible sur devis. Une réponse personnalisée vous est proposée selon votre localisation.</div></div>`;
+      dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="reservation.html">Demander un devis</a><div class="cta-note">Déplacement possible sur devis. Une réponse personnalisée vous est proposée selon votre localisation.</div></div>`;
     } else if(result.kind === 'out'){
       dynamicCTA.innerHTML = `<div class="cta-box"><a href="mailto:contact@miaoucratie.fr">Me contacter quand même</a><div class="cta-note">Hors secteur standard : je vous répondrai si la demande peut être étudiée.</div></div>`;
     } else {
