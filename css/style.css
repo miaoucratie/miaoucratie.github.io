@@ -195,6 +195,49 @@
     width: 100%;
     max-width: 420px;
   }
+  /* Photo au-dessus de la carte : la colonne de droite est centree
+     verticalement face a un titre tres haut, elle avait 426px de vide.
+     Cadre repris de la page reservation, pour que les deux se repondent. */
+  .hero-photo-frame {
+    position: relative;
+    /* Le cadre deborde lateralement de la valeur de son padding,
+       pour que la PHOTO fasse exactement la largeur de la carte. */
+    margin: 0 -1.15rem 22px;
+    padding: 1.15rem;
+    border-radius: 2.4rem;
+    background: linear-gradient(180deg, #efe1d2 0%, #f7efe8 100%);
+    box-shadow: 0 18px 42px rgba(30,24,18,0.08);
+  }
+  .hero-photo-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0.95rem;
+    border-radius: 2rem;
+    pointer-events: none;
+    background: rgba(255,255,255,0.28);
+  }
+  /* Photo non cliquable (choix assume : ne pas sortir du site depuis
+     le hero), mais l'effet au survol est conserve pour la vie. */
+  .hero-photo-frame img {
+    transition: transform 0.25s ease, filter 0.25s ease;
+  }
+  .hero-photo-frame:hover img {
+    transform: scale(1.015);
+    filter: brightness(1.03);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-photo-frame img { transition: none; }
+    .hero-photo-frame:hover img { transform: none; }
+  }
+  .hero-photo-frame img {
+    display: block;
+    width: 100%;
+    /* height:auto est indispensable : sans lui, l'attribut height="1200"
+       du HTML l'emporte et la photo s'affiche a sa taille naturelle. */
+    height: auto;
+    border-radius: 2rem;
+    box-shadow: 0 14px 30px rgba(38,22,10,0.14);
+  }
   .hero-card {
     background: #fff;
     border-radius: 24px;

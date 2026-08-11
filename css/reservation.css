@@ -322,7 +322,15 @@ body.reservation-page .hero h1 span.nowrap {
   color: inherit;
   font-style: normal;
   font-weight: inherit;
-  white-space: nowrap;
+}
+
+/* nowrap uniquement quand la place existe : sous 992px, "Réserver une garde"
+   reclame 443px pour 343px disponibles et deborderait de l'ecran. */
+@media (min-width: 992px) {
+  .hero h1 span.nowrap,
+  body.reservation-page .hero h1 span.nowrap {
+    white-space: nowrap;
+  }
 }
 
 .hero__lead,

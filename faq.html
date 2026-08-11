@@ -1745,7 +1745,7 @@ body.carte-page .zone-header {
 <section class="faq-hero">
 <span class="hero-eyebrow"><span aria-hidden="true">💬</span>Tout savoir avant de réserver</span>
 <h1 class="hero-title">Vos <em>questions,</em><br/>mes réponses.</h1>
-<p class="hero-sub">Cat-sitting, réservation, soins, tarifs. Les questions qu'on me pose vraiment, avec des réponses complètes.</p>
+<p class="hero-sub">Cat-sitting, réservation, soins, tarifs.<br/>Les questions qu'on me pose vraiment, avec des réponses complètes.</p>
 <div class="hero-rule"></div>
 </section>
 <!-- ─── SEARCH ─────────────────────────────────────── -->
@@ -2413,5 +2413,115 @@ body.carte-page .zone-header {
     <a href="mentions-legales.html">Mentions légales</a>
 </div>
 </div>
+<!-- ─── JS ─────────────────────────────────────────────── -->
+<script>
+(function() {
+
+  // Accordion
+  document.querySelectorAll('.acc-trigger').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var item = btn.closest('.acc-item');
+      var body = item.querySelector('.acc-body');
+      var isOpen = item.classList.contains('open');
+      var section = item.closest('.accordion');
+      section.querySelectorAll('.acc-item.open').forEach(function(openItem) {
+        openItem.classList.remove('open');
+        openItem.querySelector('.acc-body').classList.remove('open');
+        openItem.querySelector('.acc-trigger').setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        body.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // Filtres
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var filter = btn.dataset.filter;
+      document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) {
+        if (filter === 'all') { s.classList.remove('hidden'); }
+        else { s.classList.toggle('hidden', s.dataset.cat !== filter); }
+      });
+      checkNoResults();
+    });
+  });
+
+  // Recherche
+  var searchInput = document.getElementById('faqSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      var query = searchInput.value.toLowerCase().trim();
+      if (!query) {
+        document.querySelectorAll('.acc-item').forEach(function(item) { item.style.display = ''; });
+        document.querySelectorAll('.faq-section').forEach(function(s) { s.style.display = ''; });
+        var active = document.querySelector('.filter-btn.active');
+        var fVal = active ? active.dataset.filter : 'all';
+        document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) {
+          s.classList.toggle('hidden', fVal !== 'all' && s.dataset.cat !== fVal);
+        });
+        checkNoResults(); return;
+      }
+      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      var allBtn = document.querySelector('[data-filter="all"]');
+      if (allBtn) allBtn.classList.add('active');
+      document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) { s.classList.remove('hidden'); });
+      var anyVisible = false;
+      document.querySelectorAll('.faq-section').forEach(function(sec) {
+        var hasMatch = false;
+        sec.querySelectorAll('.acc-item').forEach(function(item) {
+          var match = item.textContent.toLowerCase().includes(query);
+          item.style.display = match ? '' : 'none';
+          if (match) hasMatch = true;
+        });
+        sec.style.display = hasMatch ? '' : 'none';
+        if (hasMatch) anyVisible = true;
+      });
+      var nr = document.getElementById('noResults');
+      if (nr) nr.style.display = anyVisible ? 'none' : 'block';
+    });
+  }
+
+  function checkNoResults() {
+    var visible = Array.from(document.querySelectorAll('.faq-section')).filter(function(s) {
+      return s.style.display !== 'none' && !s.classList.contains('hidden');
+    });
+    var el = document.getElementById('noResults');
+    if (el) el.style.display = visible.length === 0 ? 'block' : 'none';
+  }
+
+  // Ouvrir la 1ère question de chaque section
+  document.querySelectorAll('.faq-section').forEach(function(sec) {
+    var first = sec.querySelector('.acc-trigger');
+    if (first) {
+      var item = first.closest('.acc-item');
+      item.classList.add('open');
+      item.querySelector('.acc-body').classList.add('open');
+      first.setAttribute('aria-expanded', 'true');
+    }
+  });
+
+  // Menu topbar
+  var mBtn = document.getElementById('tmenuBtn');
+  var mPanel = document.getElementById('tmenuPanel');
+  if (mBtn && mPanel) {
+    mBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var hidden = mPanel.style.display === 'none' || mPanel.style.display === '';
+      mPanel.style.display = hidden ? 'flex' : 'none';
+      mBtn.setAttribute('aria-expanded', String(hidden));
+    });
+    document.addEventListener('click', function() {
+      mPanel.style.display = 'none';
+      mBtn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+})();
+</script>
 </body>
 </html>

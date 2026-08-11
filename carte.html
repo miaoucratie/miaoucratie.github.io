@@ -219,7 +219,10 @@
 
     .desktop-sticky-cta{position:fixed;right:24px;bottom:24px;z-index:1100;width:min(320px, calc(100vw - 48px));background:rgba(255,252,249,.92);backdrop-filter:blur(16px);border:1px solid rgba(232,218,200,.95);border-radius:18px;box-shadow:0 12px 28px rgba(30,24,18,.12);padding:12px 14px;display:none}
     .desktop-sticky-cta.show{display:block}
-    .desktop-sticky-cta .eyebrow{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--sage);margin-bottom:10px}
+    /* Pastille compacte : couleur et typo alignees sur le reste du site,
+       mais sans le fond arrondi des en-tetes de page, trop lourd ici. */
+    .desktop-sticky-cta .eyebrow{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--rust,#A8472A);background:none;padding:0;border-radius:0;margin-bottom:10px}
+    .desktop-sticky-cta .title{color:var(--deep,#1E1812)}
     .desktop-sticky-cta .title{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.1;letter-spacing:-.02em;margin:0 0 6px}
     .desktop-sticky-cta .desc{font-size:13px;color:var(--muted);margin:0 0 12px}
     .desktop-sticky-cta .actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -331,7 +334,7 @@
           <div class="result" id="searchResult" aria-live="polite" aria-atomic="true">
             <div class="result-prefix" id="resultPrefix" hidden></div>
             <div class="result-label" id="resultLabel" hidden></div>
-            <div class="result-text" id="resultText">Saisissez une commune.</div>
+            <div class="result-text" id="resultText">Entrez une commune pour vérifier.</div>
           </div>
           <div id="dynamicCTA" class="cta-box"></div>
         </div>
@@ -395,9 +398,8 @@
   </main>
 
   <aside class="desktop-sticky-cta" id="desktopStickyCta" aria-live="polite">
-    <div class="eyebrow">Miaoucratie</div>
     <p class="title" id="stickyTitle">Vérifiez votre commune</p>
-    <p class="desc" id="stickyDesc">Saisissez une ville ou un code postal pour obtenir une réponse immédiate.</p>
+    <p class="desc" id="stickyDesc">Entrez une ville ou un code postal.</p>
     <div class="actions">
       <a href="#searchSection" id="stickyPrimary" class="primary">Commencer</a>
       <a href="mailto:contact@miaoucratie.fr" id="stickySecondary">Demander par mail</a>
@@ -611,33 +613,33 @@
     if(result.kind === 'free'){
       stickyTitle.textContent = 'Commune incluse';
       stickyDesc.textContent = result.label + '. Réservez tôt : les vacances scolaires partent vite.';
-      stickyPrimary.textContent = 'Réserver une garde';
+      stickyPrimary.textContent = 'Réserver';
       stickyPrimary.href = 'reservation.html';
-      stickySecondary.textContent = 'Envoyer un mail';
+      stickySecondary.textContent = 'Écrire un mail';
       stickySecondary.href = 'mailto:contact@miaoucratie.fr';
       stickyFoot.textContent = '';
     } else if(result.kind === 'paid'){
       stickyTitle.textContent = 'Commune sur devis';
-      stickyDesc.textContent = result.label + '. La demande peut être étudiée.';
-      stickyPrimary.textContent = 'Demander un devis';
+      stickyDesc.textContent = result.label + ". J'étudie la demande selon mes tournées.";
+      stickyPrimary.textContent = 'Demander';
       stickyPrimary.href = 'reservation.html';
       stickySecondary.textContent = 'Voir la carte';
       stickySecondary.href = '#map';
-      stickyFoot.textContent = 'Frais kilométriques : 0,70€/km. Étude au cas par cas.';
+      stickyFoot.textContent = 'Frais de déplacement : 0,70 €/km.';
     } else if(result.kind === 'out'){
       stickyTitle.textContent = 'Hors zone';
       stickyDesc.textContent = result.label + ". Je ne peux pas intervenir sur cette commune.";
-      stickyPrimary.textContent = 'Me contacter quand même';
+      stickyPrimary.textContent = 'M’écrire';
       stickyPrimary.href = 'mailto:contact@miaoucratie.fr';
-      stickySecondary.textContent = 'Rechercher une autre commune';
+      stickySecondary.textContent = 'Autre commune';
       stickySecondary.href = '#searchSection';
       stickyFoot.textContent = 'Hors Ille-et-Vilaine ou au-delà de 45 km.';
     } else {
       stickyTitle.textContent = 'Vérifiez votre commune';
-      stickyDesc.textContent = 'Saisissez une ville ou un code postal pour obtenir une réponse immédiate.';
+      stickyDesc.textContent = 'Entrez une ville ou un code postal.';
       stickyPrimary.textContent = 'Commencer';
       stickyPrimary.href = '#searchSection';
-      stickySecondary.textContent = 'Demander par mail';
+      stickySecondary.textContent = 'Écrire un mail';
       stickySecondary.href = 'mailto:contact@miaoucratie.fr';
       stickyFoot.textContent = '';
     }
@@ -645,11 +647,11 @@
 
   function setCTA(result){
     if(result.kind === 'free'){
-      dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="reservation.html">Réserver une garde</a><div class="cta-note">⚡ Les périodes de vacances se remplissent rapidement.</div></div>`;
+      dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="reservation.html">Réserver une garde</a><div class="cta-note">Réservez tôt : les vacances scolaires partent vite.</div></div>`;
     } else if(result.kind === 'paid'){
-      dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="reservation.html">Demander un devis</a><div class="cta-note">Déplacement possible sur devis. Une réponse personnalisée vous est proposée selon votre localisation.</div></div>`;
+      dynamicCTA.innerHTML = `<div class="cta-box"><a class="primary" href="reservation.html">Demander un devis</a><div class="cta-note">Je peux venir sur devis. J'étudie la demande selon mes tournées.</div></div>`;
     } else if(result.kind === 'out'){
-      dynamicCTA.innerHTML = `<div class="cta-box"><a href="mailto:contact@miaoucratie.fr">Me contacter quand même</a><div class="cta-note">Hors secteur standard : je vous répondrai si la demande peut être étudiée.</div></div>`;
+      dynamicCTA.innerHTML = `<div class="cta-box"><a href="mailto:contact@miaoucratie.fr">M'écrire</a><div class="cta-note">C'est hors de ma zone, mais écrivez-moi : je vous répondrai.</div></div>`;
     } else {
       dynamicCTA.innerHTML = '';
     }
@@ -850,7 +852,7 @@
     searchInput.setAttribute('aria-expanded','false');
 
     const raw = searchInput.value.trim();
-    if(!raw){ setResult({ kind:'unknown', label:'Champ vide', text:'Saisissez une commune.' }); return; }
+    if(!raw){ setResult({ kind:'unknown', label:'Champ vide', text:'Entrez une commune pour vérifier.' }); return; }
 
     try{
       let pointFeature = abortState.selectedFeature;
@@ -935,13 +937,16 @@
     searchResult.classList.remove('free','paid','out');
     if(resultPrefixEl){ resultPrefixEl.textContent = ''; resultPrefixEl.hidden = true; resultPrefixEl.classList.remove('boost'); }
     if(resultLabelEl){ resultLabelEl.textContent = ''; resultLabelEl.hidden = true; }
-    if(resultTextEl){ resultTextEl.textContent = 'Saisissez une commune.'; resultTextEl.hidden = false; }
+    if(resultTextEl){ resultTextEl.textContent = 'Entrez une commune pour vérifier.'; resultTextEl.hidden = false; }
     dynamicCTA.innerHTML = '';
+    // On remet le contenu a l'etat initial avant de masquer :
+    // sinon la carte reapparait avec le resultat de la recherche precedente.
+    updateSticky({ kind:'unknown', label:'' });
     sticky.classList.remove('show');
   });
 
   void initOriginMarker();
-  setResult({ kind:'unknown', label:'', text:'Saisissez une commune pour vérifier instantanément.' });
+  setResult({ kind:'unknown', label:'', text:'Entrez une commune pour vérifier.' });
 </script>
 <div class="footer-bar">
   <div class="footer-logo">
