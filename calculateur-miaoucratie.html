@@ -9,7 +9,14 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-X3H7NL9GEL');
+  gtag('config', 'G-X3H7NL9GEL', {
+    // Pas de recoupement multi-appareils ni de ciblage publicitaire.
+    'allow_google_signals': false,
+    'allow_ad_personalization_signals': false,
+    // Cookie ramene de 2 ans (defaut) a 6 mois.
+    'cookie_expires': 15768000,
+    'cookie_flags': 'SameSite=Lax;Secure'
+  });
 </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1422,104 +1429,9 @@ body.calculateur-page .container { flex: 1 !important; }
   </div>
   <div class="footer-legal">
     <a href="cgv.html" rel="noopener" target="_blank">CGV</a> ·
-    <a href="#" onclick="document.getElementById('mlModal').style.display='flex';return false;">Mentions légales</a>
+    <a href="mentions-legales.html">Mentions légales</a>
   </div>
 </div>
-<div id="mlModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(30,24,18,0.65);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
-  <div style="max-width:700px;width:100%;background:#FBF7F0;border-radius:20px;position:relative;max-height:88vh;overflow-y:auto;">
-    <div style="padding:26px 36px 18px;border-bottom:1px solid #F0E8DA;position:sticky;top:0;background:#FBF7F0;z-index:1;border-radius:20px 20px 0 0;">
-      <button onclick="document.getElementById('mlModal').style.display='none'" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:#B89B80;line-height:1;">&times;</button>
-      <div style="width:36px;height:3px;background:#A8472A;border-radius:2px;margin-bottom:10px;"></div>
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:#1E1812;letter-spacing:-0.5px;margin:0;">Mentions légales</h2>
-    </div>
-    <div style="padding:20px 36px 36px;">
 
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">1. Éditeur du site</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le présent site, accessible à l'adresse <strong>https://miaoucratie.fr</strong>, est édité par :</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;"><strong>Irina TALBOT</strong><br>
-      Entreprise individuelle &ndash; Miaoucratie, service de cat-sitting à domicile<br>
-      SIRET&nbsp;: 100 988 138 00010</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Adresse&nbsp;:<br>35113 Domagné &ndash; Ille-et-Vilaine &ndash; France</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Email&nbsp;:<br><a href="mailto:contact@miaoucratie.fr" style="color:#A8472A;text-decoration:none;">contact@miaoucratie.fr</a></p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Téléphone&nbsp;:<br>06 44 24 76 81</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Responsable de la publication&nbsp;:<br>Irina TALBOT</p>
-
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">2. Activité</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Miaoucratie propose des services de garde de chats à domicile (cat-sitting), incluant visites, suivi personnalisé et respect du bien-être animal dans son environnement habituel.</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Zone d'intervention principale&nbsp;:<br>Domagné, Châteaubourg, Châteaugiron, Vitré, Janzé et les communes environnantes en Ille-et-Vilaine.</p>
-
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">3. Hébergement</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site est hébergé par&nbsp;:<br>
-      GitHub, Inc.<br>88 Colin P. Kelly Jr. Street<br>San Francisco, CA 94107<br>États-Unis<br>
-      Site web&nbsp;: <a href="https://github.com" target="_blank" rel="noopener" style="color:#A8472A;text-decoration:none;">https://github.com</a></p>
-
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">4. Propriété intellectuelle</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">L'ensemble des contenus présents sur le site (textes, images, illustrations, logo, structure) est protégé par le droit de la propriété intellectuelle.</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Toute reproduction, représentation, modification, publication ou exploitation, totale ou partielle, sans autorisation écrite préalable est strictement interdite.</p>
-
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">5. Données personnelles (RGPD)</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Dans le cadre de son activité de cat-sitting, Miaoucratie peut être amenée à collecter des données personnelles via :</p>
-      <ul style="margin:0 0 14px 20px;padding:0;">
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">email</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">téléphone</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">WhatsApp</li>
-      </ul>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Finalités du traitement</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Ces données sont utilisées exclusivement pour&nbsp;:</p>
-      <ul style="margin:0 0 14px 20px;padding:0;">
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la gestion des demandes de garde de chats</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'établissement de devis, contrats et factures</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le suivi des prestations et des gardes</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la tenue d'un registre sanitaire relatif aux animaux gardés</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la gestion administrative et comptable</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le respect des obligations légales et réglementaires</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la réponse aux demandes des autorités compétentes, notamment en cas de contrôle ou d'audit par la DDPP</li>
-      </ul>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Base légale</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le traitement des données repose sur&nbsp;:</p>
-      <ul style="margin:0 0 14px 20px;padding:0;">
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'exécution d'un contrat (prestation de services)</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le respect d'obligations légales</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'intérêt légitime (gestion de la relation client)</li>
-      </ul>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Durée de conservation</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Les données sont conservées&nbsp;:</p>
-      <ul style="margin:0 0 14px 20px;padding:0;">
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">pendant toute la durée de la relation commerciale</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">puis archivées pendant une durée maximale de 5 ans à des fins administratives et légales</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">les données de facturation peuvent être conservées jusqu'à 10 ans conformément aux obligations comptables</li>
-      </ul>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Destinataires</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Les données sont exclusivement destinées à Miaoucratie.<br>Elles ne sont ni vendues, ni cédées, ni transférées à des tiers, sauf obligation légale.</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Droits des personnes</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez des droits suivants&nbsp;:</p>
-      <ul style="margin:0 0 14px 20px;padding:0;">
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'accès</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit de rectification</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'effacement</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit à la limitation du traitement</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'opposition</li>
-      </ul>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Vous pouvez exercer ces droits à tout moment en contactant&nbsp;: <a href="mailto:contact@miaoucratie.fr" style="color:#A8472A;text-decoration:none;">contact@miaoucratie.fr</a></p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">En cas de litige, vous pouvez introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener" style="color:#A8472A;text-decoration:none;">www.cnil.fr</a>).</p>
-
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">6. Responsabilité</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Miaoucratie s'efforce de fournir des informations fiables et à jour concernant ses services de garde de chats à domicile.</p>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Toutefois, l'éditeur ne saurait être tenu responsable&nbsp;:</p>
-      <ul style="margin:0 0 14px 20px;padding:0;">
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">des erreurs ou omissions</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">d'une indisponibilité temporaire du site</li>
-        <li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">du contenu de sites tiers accessibles via des liens externes</li>
-      </ul>
-
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">7. Cookies</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site ne dépose pas de cookies de suivi ou de publicité.</p>
-
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">8. Conditions générales de vente</h3>
-      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:0;">Les conditions générales de vente (CGV) applicables aux prestations de cat-sitting sont disponibles sur le site, en bas de page (footer), rubrique dédiée.</p>
-
-    </div>
-  </div>
-</div>
 </body>
 </html>

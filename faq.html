@@ -9,7 +9,14 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-X3H7NL9GEL');
+  gtag('config', 'G-X3H7NL9GEL', {
+    // Pas de recoupement multi-appareils ni de ciblage publicitaire.
+    'allow_google_signals': false,
+    'allow_ad_personalization_signals': false,
+    // Cookie ramene de 2 ans (defaut) a 6 mois.
+    'cookie_expires': 15768000,
+    'cookie_flags': 'SameSite=Lax;Secure'
+  });
 </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -566,7 +573,6 @@ body .faq-cta .cta-sub { color: rgba(255,255,255,0.60) !important; }
 body .faq-cta .cta-title em { color: rgba(255,255,255,0.85) !important; }
 body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
 
-
     .reservation-shortcut {
       margin-top: 18px;
       display: flex;
@@ -631,6 +637,14 @@ body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
     },
     {
       "@type": "Question",
+      "name": "Intervenez-vous à Châteaubourg, Châteaugiron ou Vitré ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui, ce sont mes communes les plus fréquentes, avec Domagné. Pour une autre commune, vérifiez la zone sur la carte."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "Comment réserver une garde avec Miaoucratie ?",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -682,7 +696,7 @@ body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
       "name": "Que faites-vous exactement pendant la visite ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "À chaque visite : nourriture et eau fraîche, litière propre, interaction adaptée (jeu, présence ou câlins selon le chat), contrôle visuel de l'état de santé, puis un compte-rendu complet, avec photos ou vidéos quand le temps et le chat le permettent. Vous êtes absent, pas coupé."
+        "text": "À chaque visite : nourriture et eau fraîche, litière propre, interaction adaptée (jeu, présence ou câlins selon le chat), contrôle visuel de l'état de santé, puis un compte-rendu complet, avec photos et vidéos selon ce que le chat accepte. Vous êtes absent, pas coupé."
       }
     },
     {
@@ -810,12 +824,12 @@ body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
       "name": "Miaoucratie est-elle liée à une association de protection animale ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Oui. J'ai six chats et je participe aux sauvetages félins autant que j'en ai les capacités. Je suis aussi famille d'accueil bénévole pour Moustaches & Cie, association de protection féline. Je côtoie les chats, leurs comportements et leurs signaux de stress au quotidien. Discrétion, autonomie, fiabilité et capacité d'adaptation font partie du métier, tout comme comprendre ce que représente le fait de confier son chat."
+        "text": "Oui. J'ai six chats et je participe aux sauvetages félins autant que j'en ai les capacités. Je suis aussi famille d'accueil bénévole pour Moustaches & Cie, association de protection féline. Je connais les chats, leurs comportements et leurs signaux de stress, parce que j'en côtoie depuis toujours. Je sais aussi ce que ça représente de confier le sien."
       }
     },
     {
       "@type": "Question",
-      "name": "Quelle est la différence entre un cat-sitter professionnel et un voisin qui dépanne ?",
+      "name": "Quelle est la différence entre un cat-sitter professionnel et un voisin qui \"dépanne\" ?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Le voisin est bien intentionné mais n'est ni assuré, ni formé, ni déclaré. En cas d'incident (accident, disparition, problème médical), vous n'avez aucun recours. Un cat-sitter professionnel apporte une assurance RC Pro, une formation reconnue (ACACED), un cadre légal et contractuel, des procédures d'urgence et une responsabilité engagée."
@@ -1731,7 +1745,7 @@ body.carte-page .zone-header {
 <section class="faq-hero">
 <span class="hero-eyebrow"><span aria-hidden="true">💬</span>Tout savoir avant de réserver</span>
 <h1 class="hero-title">Vos <em>questions,</em><br/>mes réponses.</h1>
-<p class="hero-sub">Cat-sitting, réservation, soins, tarifs... Tout ce que vous avez voulu savoir, et que vous n'avez pas toujours osé demander.</p>
+<p class="hero-sub">Cat-sitting, réservation, soins, tarifs. Les questions qu'on me pose vraiment, avec des réponses complètes.</p>
 <div class="hero-rule"></div>
 </section>
 <!-- ─── SEARCH ─────────────────────────────────────── -->
@@ -1772,8 +1786,8 @@ body.carte-page .zone-header {
 <div class="acc-body">
 <div class="acc-content">
 <p>Le cat-sitting, c'est une <strong>garde de chat à domicile</strong> : je viens chez vous, votre chat reste dans son environnement habituel.</p>
-<p>Zéro transport. Zéro pension. Zéro stress inutile.</p>
-<p>Je viens chez vous lors de visites régulières pour m'occuper de lui : nourriture, eau fraîche, litière propre, jeu et affection. Pour un chat, rester chez lui est souvent la solution la moins stressante.</p>
+<p>Pas de transport, pas de pension, pas d'odeurs inconnues.</p>
+<p>Je passe le voir régulièrement pour m'occuper de lui : nourriture, eau fraîche, litière propre, jeu et affection. Pour un chat, rester chez lui est souvent la solution la moins stressante.</p>
 </div>
 </div>
 </div>
@@ -1961,7 +1975,7 @@ body.carte-page .zone-header {
 </button>
 <div class="acc-body">
 <div class="acc-content">
-<p>Minimum <strong>30 à 45 minutes</strong>. Plus si vous avez plusieurs chats ou des besoins spécifiques.</p>
+<p><strong>45 minutes en général</strong>, 30 au minimum. Plus si vous avez plusieurs chats ou des besoins spécifiques.</p>
 <p>Je ne fais pas du "je passe remplir une gamelle et je repars". Chaque visite inclut du temps de présence réel avec votre chat, parce qu'un chat a besoin de contact, pas juste de croquettes.</p>
 </div>
 </div>
@@ -1981,7 +1995,7 @@ body.carte-page .zone-header {
 <span class="tag">👀 Check santé visuel</span>
 <span class="tag">📱 Nouvelles envoyées</span>
 </div>
-<p style="margin-top:12px;">Après chaque passage, vous recevez un <strong>compte-rendu complet</strong>, avec photos ou vidéos quand le temps et le chat le permettent. C'est d'autant plus détaillé pour un chat sensible, malade, âgé ou par météo extrême. Vous êtes absent, pas coupé.</p>
+<p style="margin-top:12px;">Après chaque passage, vous recevez un <strong>compte-rendu complet</strong>, avec photos et vidéos, selon ce que le chat accepte. C'est d'autant plus détaillé pour un chat sensible, malade, âgé ou par météo extrême. Vous êtes absent, pas coupé.</p>
 </div>
 </div>
 </div>
@@ -2050,7 +2064,7 @@ body.carte-page .zone-header {
 </button>
 <div class="acc-body">
 <div class="acc-content">
-<p>Procédure claire, pas d'improvisation :</p>
+<p>Dans cet ordre, sans improviser :</p>
 <div class="steps">
 <div class="step"><span class="step-num">1</span><span>Je vous contacte immédiatement</span></div>
 <div class="step"><span class="step-num">2</span><span>Je contacte votre personne de confiance désignée</span></div>
@@ -2234,7 +2248,7 @@ body.carte-page .zone-header {
 </button>
 <div class="acc-body">
 <div class="acc-content">
-<p>Simple et transparent. Le tarif dépend de deux critères uniquement :</p>
+<p>Le tarif dépend de deux critères, pas un de plus :</p>
 <div class="tag-list">
 <span class="tag">Nombre de chats</span>
 <span class="tag">Localisation (frais km si applicable)</span>
@@ -2318,7 +2332,7 @@ body.carte-page .zone-header {
 </button>
 <div class="acc-body">
 <div class="acc-content">
-<p>Clairement et sans détour :</p>
+<p>Je refuse une garde dans ces cas :</p>
 <div class="tag-list">
 <span class="tag red">Chats nécessitant des injections (ex : diabète)</span>
 <span class="tag red">État de santé instable</span>
@@ -2338,8 +2352,7 @@ body.carte-page .zone-header {
 <div class="acc-body">
 <div class="acc-content">
 <p>Oui. J'ai six chats et je participe aux sauvetages félins autant que j'en ai les capacités. Je suis aussi famille d'accueil bénévole pour <strong>Moustaches &amp; Cie</strong>, association de protection féline.</p>
-<p>Discrétion, autonomie, fiabilité et capacité d'adaptation font partie du métier, tout comme comprendre ce que représente le fait de confier son chat.</p>
-<p>C'est mon quotidien, pas un argument marketing. Je connais les chats, leurs comportements, leurs besoins et leurs signaux de stress, parce que j'en côtoie depuis toujours.</p>
+<p>Je connais les chats, leurs comportements et leurs signaux de stress, parce que j'en côtoie depuis toujours. Je sais aussi ce que ça représente de confier le sien.</p>
 </div>
 </div>
 </div>
@@ -2376,8 +2389,8 @@ body.carte-page .zone-header {
 <div class="faq-cta">
 <div class="cta-left">
 <p class="cta-eyebrow">Vous avez d'autres questions ?</p>
-<h2 class="cta-title">Votre chat mérite<br/>une réponse <em>personnalisée.</em></h2>
-<p class="cta-sub">Chaque chat est différent. Contactez-moi pour en parler.</p>
+<h2 class="cta-title">Votre question n'est pas<br/><em>dans la liste ?</em></h2>
+<p class="cta-sub">Chaque chat est différent. Écrivez-moi, je vous réponds.</p>
 </div>
 <div class="cta-buttons">
 <a class="btn-primary" href="https://wa.me/33644247681">Envoyer un message</a><a class="faq-cta-secondary" href="reservation.html">Réserver une garde</a></div>
@@ -2397,203 +2410,8 @@ body.carte-page .zone-header {
 </div>
 <div class="footer-legal">
 <a href="cgv.html" rel="noopener" target="_blank">CGV</a> ·
-    <a href="#" onclick="document.getElementById('mlModal').style.display='flex';return false;">Mentions légales</a>
+    <a href="mentions-legales.html">Mentions légales</a>
 </div>
 </div>
-<div id="mlModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(30,24,18,0.65);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
-<div style="max-width:700px;width:100%;background:#FBF7F0;border-radius:20px;position:relative;max-height:88vh;overflow-y:auto;">
-<div style="padding:26px 36px 18px;border-bottom:1px solid #F0E8DA;position:sticky;top:0;background:#FBF7F0;z-index:1;border-radius:20px 20px 0 0;">
-<button onclick="document.getElementById('mlModal').style.display='none'" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:#B89B80;line-height:1;">×</button>
-<div style="width:36px;height:3px;background:#A8472A;border-radius:2px;margin-bottom:10px;"></div>
-<h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:#1E1812;letter-spacing:-0.5px;margin:0;">Mentions légales</h2>
-</div>
-<div style="padding:20px 36px 36px;">
-<h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">1. Éditeur du site</h3>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le présent site, accessible à l'adresse <strong>https://miaoucratie.fr</strong>, est édité par :</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;"><strong>Irina TALBOT</strong><br/>
-      Entreprise individuelle – Miaoucratie, service de cat-sitting à domicile<br/>
-      SIRET : 100 988 138 00010</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Adresse :<br/>35113 Domagné – Ille-et-Vilaine – France</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Email :<br/><a href="mailto:contact@miaoucratie.fr" style="color:#A8472A;text-decoration:none;">contact@miaoucratie.fr</a></p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:6px;">Téléphone :<br/>06 44 24 76 81</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Responsable de la publication :<br/>Irina TALBOT</p>
-<h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">2. Activité</h3>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Miaoucratie propose des services de garde de chats à domicile (cat-sitting), incluant visites, suivi personnalisé et respect du bien-être animal dans son environnement habituel.</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Zone d'intervention principale :<br/>Domagné, Châteaubourg, Châteaugiron, Vitré, Janzé et les communes environnantes en Ille-et-Vilaine.</p>
-<h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">3. Hébergement</h3>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site est hébergé par :<br>GitHub, Inc.<br>88 Colin P. Kelly Jr. Street<br>San Francisco, CA 94107 – États-Unis<br>Site web : <a href="https://github.com" target="_blank" rel="noopener" style="color:#A8472A;text-decoration:none;">https://github.com</a></p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Nom de domaine enregistré auprès de :<br>OVHcloud SAS<br>2 rue Kellermann<br>59100 Roubaix – France<br>Site web : <a href="https://www.ovhcloud.com" target="_blank" rel="noopener" style="color:#A8472A;text-decoration:none;">https://www.ovhcloud.com</a></p>
-<h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">4. Propriété intellectuelle</h3>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">L'ensemble des contenus présents sur le site (textes, images, illustrations, logo, structure) est protégé par le droit de la propriété intellectuelle.</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Toute reproduction, représentation, modification, publication ou exploitation, totale ou partielle, sans autorisation écrite préalable est strictement interdite.</p>
-<h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">5. Données personnelles (RGPD)</h3>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Dans le cadre de son activité de cat-sitting, Miaoucratie peut être amenée à collecter des données personnelles via :</p>
-<ul style="margin:0 0 14px 20px;padding:0;">
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">email</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">téléphone</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">WhatsApp</li>
-</ul>
-<p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Finalités du traitement</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Ces données sont utilisées exclusivement pour :</p>
-<ul style="margin:0 0 14px 20px;padding:0;">
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la gestion des demandes de garde de chats</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'établissement de devis, contrats et factures</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le suivi des prestations et des gardes</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la tenue d'un registre sanitaire relatif aux animaux gardés</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la gestion administrative et comptable</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le respect des obligations légales et réglementaires</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">la réponse aux demandes des autorités compétentes, notamment en cas de contrôle ou d'audit par la DDPP</li>
-</ul>
-<p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Base légale</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le traitement des données repose sur :</p>
-<ul style="margin:0 0 14px 20px;padding:0;">
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'exécution d'un contrat (prestation de services)</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">le respect d'obligations légales</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">l'intérêt légitime (gestion de la relation client)</li>
-</ul>
-<p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Durée de conservation</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Les données sont conservées :</p>
-<ul style="margin:0 0 14px 20px;padding:0;">
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">pendant toute la durée de la relation commerciale</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">puis archivées pendant une durée maximale de 5 ans à des fins administratives et légales</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">les données de facturation peuvent être conservées jusqu'à 10 ans conformément aux obligations comptables</li>
-</ul>
-<p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Destinataires</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Les données sont exclusivement destinées à Miaoucratie.<br/>Elles ne sont ni vendues, ni cédées, ni transférées à des tiers, sauf obligation légale.</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1812;margin:12px 0 4px 0">Droits des personnes</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez des droits suivants :</p>
-<ul style="margin:0 0 14px 20px;padding:0;">
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'accès</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit de rectification</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'effacement</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit à la limitation du traitement</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">droit d'opposition</li>
-</ul>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Vous pouvez exercer ces droits à tout moment en contactant : <a href="mailto:contact@miaoucratie.fr" style="color:#A8472A;text-decoration:none;">contact@miaoucratie.fr</a></p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">En cas de litige, vous pouvez introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" rel="noopener" style="color:#A8472A;text-decoration:none;" target="_blank">www.cnil.fr</a>).</p>
-<h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">6. Responsabilité</h3>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Miaoucratie s'efforce de fournir des informations fiables et à jour concernant ses services de garde de chats à domicile.</p>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Toutefois, l'éditeur ne saurait être tenu responsable :</p>
-<ul style="margin:0 0 14px 20px;padding:0;">
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">des erreurs ou omissions</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">d'une indisponibilité temporaire du site</li>
-<li style="list-style:disc;margin-left:18px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;color:#4A3728">du contenu de sites tiers accessibles via des liens externes</li>
-</ul>
-<h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">7. Cookies</h3>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px">Le site ne dépose pas de cookies de suivi ou de publicité.</p>
-<h3 style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#A8472A;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px 0">8. Conditions générales de vente</h3>
-<p style="font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#4A3728;margin-bottom:14px;margin-bottom:0;">Les conditions générales de vente (CGV) applicables aux prestations de cat-sitting sont disponibles sur le site, en bas de page (footer), rubrique dédiée.</p>
-</div>
-</div>
-<!-- ─── JS ─────────────────────────────────────────────── -->
-<script>
-(function() {
-
-  // Accordion
-  document.querySelectorAll('.acc-trigger').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var item = btn.closest('.acc-item');
-      var body = item.querySelector('.acc-body');
-      var isOpen = item.classList.contains('open');
-      var section = item.closest('.accordion');
-      section.querySelectorAll('.acc-item.open').forEach(function(openItem) {
-        openItem.classList.remove('open');
-        openItem.querySelector('.acc-body').classList.remove('open');
-        openItem.querySelector('.acc-trigger').setAttribute('aria-expanded', 'false');
-      });
-      if (!isOpen) {
-        item.classList.add('open');
-        body.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-      }
-    });
-  });
-
-  // Filtres
-  document.querySelectorAll('.filter-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      var filter = btn.dataset.filter;
-      document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) {
-        if (filter === 'all') { s.classList.remove('hidden'); }
-        else { s.classList.toggle('hidden', s.dataset.cat !== filter); }
-      });
-      checkNoResults();
-    });
-  });
-
-  // Recherche
-  var searchInput = document.getElementById('faqSearch');
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      var query = searchInput.value.toLowerCase().trim();
-      if (!query) {
-        document.querySelectorAll('.acc-item').forEach(function(item) { item.style.display = ''; });
-        document.querySelectorAll('.faq-section').forEach(function(s) { s.style.display = ''; });
-        var active = document.querySelector('.filter-btn.active');
-        var fVal = active ? active.dataset.filter : 'all';
-        document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) {
-          s.classList.toggle('hidden', fVal !== 'all' && s.dataset.cat !== fVal);
-        });
-        checkNoResults(); return;
-      }
-      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-      var allBtn = document.querySelector('[data-filter="all"]');
-      if (allBtn) allBtn.classList.add('active');
-      document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) { s.classList.remove('hidden'); });
-      var anyVisible = false;
-      document.querySelectorAll('.faq-section').forEach(function(sec) {
-        var hasMatch = false;
-        sec.querySelectorAll('.acc-item').forEach(function(item) {
-          var match = item.textContent.toLowerCase().includes(query);
-          item.style.display = match ? '' : 'none';
-          if (match) hasMatch = true;
-        });
-        sec.style.display = hasMatch ? '' : 'none';
-        if (hasMatch) anyVisible = true;
-      });
-      var nr = document.getElementById('noResults');
-      if (nr) nr.style.display = anyVisible ? 'none' : 'block';
-    });
-  }
-
-  function checkNoResults() {
-    var visible = Array.from(document.querySelectorAll('.faq-section')).filter(function(s) {
-      return s.style.display !== 'none' && !s.classList.contains('hidden');
-    });
-    var el = document.getElementById('noResults');
-    if (el) el.style.display = visible.length === 0 ? 'block' : 'none';
-  }
-
-  // Ouvrir la 1ère question de chaque section
-  document.querySelectorAll('.faq-section').forEach(function(sec) {
-    var first = sec.querySelector('.acc-trigger');
-    if (first) {
-      var item = first.closest('.acc-item');
-      item.classList.add('open');
-      item.querySelector('.acc-body').classList.add('open');
-      first.setAttribute('aria-expanded', 'true');
-    }
-  });
-
-  // Menu topbar
-  var mBtn = document.getElementById('tmenuBtn');
-  var mPanel = document.getElementById('tmenuPanel');
-  if (mBtn && mPanel) {
-    mBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var hidden = mPanel.style.display === 'none' || mPanel.style.display === '';
-      mPanel.style.display = hidden ? 'flex' : 'none';
-      mBtn.setAttribute('aria-expanded', String(hidden));
-    });
-    document.addEventListener('click', function() {
-      mPanel.style.display = 'none';
-      mBtn.setAttribute('aria-expanded', 'false');
-    });
-  }
-
-})();
-</script>
-</div></body>
+</body>
 </html>
