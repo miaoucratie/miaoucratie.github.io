@@ -312,7 +312,17 @@ a:hover {
 .hero h1 span {
   color: var(--color-primary);
   font-style: italic;
+  font-weight: 400;
   display: inline-block;
+}
+
+/* Le titre ne peut se couper qu'entre les deux groupes de sens. */
+.hero h1 span.nowrap,
+body.reservation-page .hero h1 span.nowrap {
+  color: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  white-space: nowrap;
 }
 
 .hero__lead,
@@ -368,6 +378,36 @@ a:hover {
   border-radius: 2.75rem;
   background: linear-gradient(180deg, #f1e4d7 0%, #f7f0ea 100%);
   box-shadow: var(--shadow-card);
+}
+
+/* La photo de Méli renvoie vers l'Instagram.
+   Le lien doit être un bloc, sinon la ligne de base du inline
+   ajoute quelques pixels de blanc sous l'image. */
+.hero__media-link {
+  display: block;
+  border-radius: inherit;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.hero__media-link:hover,
+.hero__media-link:focus-visible {
+  transform: scale(1.015);
+  filter: brightness(1.03);
+}
+
+.hero__media-link:focus-visible {
+  outline: 2px solid var(--rust, #A8472A);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__media-link {
+    transition: none;
+  }
+  .hero__media-link:hover,
+  .hero__media-link:focus-visible {
+    transform: none;
+  }
 }
 
 .hero__media-frame::before {
@@ -1131,7 +1171,7 @@ body.reservation-page .section-heading .reservation-section-kicker {
 }
 
 body.reservation-page .hero h1 {
-  font-size: clamp(48px, 6.6vw, 78px);
+  font-size: clamp(44px, 6vw, 76px);
   line-height: 0.92;
   letter-spacing: -0.04em;
 }
@@ -1346,7 +1386,7 @@ body.reservation-page .reservation-section-kicker {
   gap: 8px;
   width: fit-content;
   margin: 0 0 18px;
-  padding: 7px 12px;
+  padding: 7px 14px;
   border-radius: 999px;
   background: rgba(168, 71, 42, 0.10);
   color: var(--rust, #A8472A);
@@ -1354,7 +1394,7 @@ body.reservation-page .reservation-section-kicker {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .14em;
-  line-height: 1;
+  line-height: 1.7;
   text-transform: uppercase;
 }
 

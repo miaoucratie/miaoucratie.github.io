@@ -6,6 +6,7 @@
     --rust: #A8472A;
     --sage: #7A9E8E;
     --deep: #1E1812;
+    --N: #1E1812;
     --mid: #4A3728;
     --sand: #B89B80;
     --light: #D4BEA8;
@@ -106,13 +107,13 @@
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 3px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--terracotta);
-    background: rgba(200,96,58,0.08);
-    padding: 6px 14px;
-    border-radius: 100px;
+    color: var(--rust);
+    background: rgba(168,71,42,0.1);
+    padding: 7px 14px;
+    border-radius: 999px;
     margin-bottom: 24px;
   }
   .hero-title {
@@ -126,7 +127,7 @@
   }
   .hero-title em {
     font-style: italic;
-    font-weight: 300;
+    font-weight: 400;
     color: var(--terracotta);
   }
   .hero-lead {
@@ -231,7 +232,9 @@
     z-index: 2;
     box-shadow: 0 8px 24px rgba(200,96,58,0.4);
   }
-  .hero-badge span { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 800; line-height: 1; }
+  .hero-badge-time { display: flex; align-items: baseline; gap: 3px; }
+  .hero-badge-time b { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 800; line-height: 1; }
+  .hero-badge-sub { margin-top: 4px; font-size: 10px; font-weight: 500; letter-spacing: 0.3px; opacity: 0.92; }
 
   /* ── SECTIONS ── */
   .section { max-width: 1120px; margin: 0 auto; padding: 80px 40px; }
@@ -245,7 +248,7 @@
     font-weight: 700; color: var(--deep);
     line-height: 1.15; margin-bottom: 40px; letter-spacing: -0.5px;
   }
-  h2 em { font-style: italic; font-weight: 300; color: var(--terracotta); }
+  h2 em { font-style: italic; font-weight: 400; color: var(--terracotta); }
 
   /* ── STRIPE ── */
   .stripe { background: var(--deep); }
@@ -564,7 +567,8 @@
     .hero-right { padding: 0 24px 48px; }
     .hero-right-inner { max-width: 100%; }
     .hero-badge { bottom: -12px; right: 0; width: 84px; height: 84px; font-size: 10px; }
-    .hero-badge span { font-size: 22px; }
+    .hero-badge-time b { font-size: 24px; }
+    .hero-badge-sub { font-size: 9px; margin-top: 3px; }
     .logo-block { margin-bottom: 32px; }
     .logo-img { width: 70px; height: 70px; }
     .logo-name { font-size: 26px; }
@@ -1446,6 +1450,7 @@ body.carte-page .zone-header h2 em,
 body.calculateur-page h1 em {
   color: var(--T, #A8472A) !important;
   font-style: italic !important;
+  font-weight: 400 !important;
 }
 body .hero-sub,
 body .tarifs-hero-sub,

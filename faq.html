@@ -37,7 +37,7 @@
     :root {
       --T:  #A8472A;
       --T2: #C45B3A;
-      --N:  #1A1A1A;
+      --N:  #1E1812;
       --W:  #FFFFFF;
       --cream: #FBF7F0;
       --warm:  #F0E8DA;
@@ -117,13 +117,18 @@
       animation: fadeUp 0.7s ease both;
     }
     .hero-eyebrow {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       font-family: 'DM Sans', sans-serif;
       font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 3px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--T);
+      color: #A8472A;
+      background: rgba(168,71,42,0.1);
+      padding: 7px 14px;
+      border-radius: 999px;
       margin-bottom: 24px;
     }
     .hero-title {
@@ -421,7 +426,7 @@
       color: var(--W);
       margin-bottom: 16px;
     }
-    .cta-title em { color: rgba(255,255,255,0.85); font-style: italic; }
+    .cta-title em { color: rgba(255,255,255,0.85); font-style: italic; font-weight: 400; }
     .cta-sub {
       font-family: 'DM Sans', sans-serif;
       font-size: 15px;
@@ -701,7 +706,7 @@ body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
       "name": "Pouvez-vous administrer des médicaments à mon chat ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Oui, dans la limite de ce qu'autorise la loi (article L243-1 du Code rural) : comprimés, crèmes, pommades et gouttes. Les injections, perfusions et tout acte invasif sont réservés aux vétérinaires. Cette limite n'est pas un choix, c'est la loi."
+        "text": "Oui, dans la limite de ce qu'autorise la loi (article L243-1 du Code rural) : comprimés, crèmes, pommades, gouttes, aérosols et inhalations. Les injections, perfusions et tout acte invasif sont réservés aux vétérinaires. Cette limite n'est pas un choix, c'est la loi."
       }
     },
     {
@@ -717,7 +722,7 @@ body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
       "name": "Mon chat est âgé, fragile ou sous traitement : pouvez-vous le garder ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Oui, et c'est justement là que je fais la différence. Les chats âgés, sensibles ou craintifs, les chatons, les convalescents, ceux qui ont des besoins alimentaires spécifiques ou un traitement oral ou topique (comprimés, pommades, gouttes) sont pleinement pris en charge. Dix ans en protection féline et six chats au quotidien m'ont appris à repérer tôt un changement, à respecter le rythme de chacun et à ajuster la fréquence des visites. Une seule limite, posée clairement avec vous à la pré-visite : les chats à l'état instable ou nécessitant des injections (diabète sous insuline, perfusions) relèvent du vétérinaire, pas d'un cat-sitter."
+        "text": "Oui, et c'est justement là que je fais la différence. Les chats âgés, sensibles ou craintifs, les chatons, les convalescents, ceux qui ont des besoins alimentaires spécifiques ou un traitement oral, topique ou en inhalation (comprimés, pommades, gouttes, aérosol) sont pleinement pris en charge. Dix ans en protection féline et six chats au quotidien m'ont appris à repérer tôt un changement, à respecter le rythme de chacun et à ajuster la fréquence des visites. Une seule limite, posée clairement avec vous à la pré-visite : les chats à l'état instable ou nécessitant des injections (diabète sous insuline, perfusions) relèvent du vétérinaire, pas d'un cat-sitter."
       }
     },
     {
@@ -1400,6 +1405,7 @@ body.carte-page .zone-header h2 em,
 body.calculateur-page h1 em {
   color: var(--T, #A8472A) !important;
   font-style: italic !important;
+  font-weight: 400 !important;
 }
 body .hero-sub,
 body .tarifs-hero-sub,
@@ -1418,6 +1424,12 @@ body .cta-eyebrow {
   color: var(--T, #A8472A) !important;
   letter-spacing: 0.12em !important;
   text-transform: uppercase !important;
+}
+/* Aligné sur la pastille des autres pages (0.14em).
+   Sélecteur volontairement plus spécifique : le bloc 0.12em ci-dessus
+   est dupliqué trois fois dans ce fichier, l'ordre source ne suffit pas. */
+body .faq-hero .hero-eyebrow {
+  letter-spacing: 0.14em !important;
 }
 
 /* MIAOUCRATIE-TARIFS-V4 */
@@ -1717,7 +1729,7 @@ body.carte-page .zone-header {
 <!-- ─── HEADER ─────────────────────────────────────── -->
 <!-- ─── HERO ───────────────────────────────────────── -->
 <section class="faq-hero">
-<span class="hero-eyebrow">Tout savoir avant de réserver</span>
+<span class="hero-eyebrow"><span aria-hidden="true">💬</span>Tout savoir avant de réserver</span>
 <h1 class="hero-title">Vos <em>questions,</em><br/>mes réponses.</h1>
 <p class="hero-sub">Cat-sitting, réservation, soins, tarifs... Tout ce que vous avez voulu savoir, et que vous n'avez pas toujours osé demander.</p>
 <div class="hero-rule"></div>
@@ -2022,6 +2034,7 @@ body.carte-page .zone-header {
 <div class="tag-list">
 <span class="tag green">✓ Comprimés</span>
 <span class="tag green">✓ Crèmes, pommades et gouttes</span>
+<span class="tag green">✓ Aérosols et inhalations</span>
 <span class="tag red">✗ Injections (ex : insuline)</span>
 <span class="tag red">✗ Perfusions</span>
 <span class="tag red">✗ Tout acte invasif</span>
@@ -2061,7 +2074,7 @@ body.carte-page .zone-header {
 <span class="tag green">✓ Chats âgés, sensibles ou craintifs</span>
 <span class="tag green">✓ Chatons et convalescents</span>
 <span class="tag green">✓ Besoins alimentaires spécifiques</span>
-<span class="tag green">✓ Traitements oraux ou topiques (comprimés, pommades, gouttes)</span>
+<span class="tag green">✓ Traitements oraux, topiques ou en inhalation (comprimés, pommades, gouttes, aérosol)</span>
 </div>
 <p style="margin-top:12px;">Une seule limite, posée clairement à la pré-visite : les chats à l'état instable ou nécessitant des injections (diabète sous insuline, perfusions) relèvent du vétérinaire, pas d'un cat-sitter.</p>
 </div>
