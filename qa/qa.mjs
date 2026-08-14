@@ -78,12 +78,22 @@ function demarrerServeur() {
 /* ─── 1. Empreinte visuelle ──────────────────────────────────────────── */
 
 async function empreinte(page) {
+  // Les polices arrivent du réseau. Mesurer avant qu'elles soient prêtes
+  // donne les métriques de la police de secours, donc des écarts fantômes
+  // sur toute la page. « networkidle » ne suffit pas : le navigateur peut
+  // avoir fini ses requêtes sans avoir fini de composer les glyphes.
+  await page.evaluate(() => document.fonts.ready).catch(() => {});
+
   return page.evaluate(() => {
     const sel = 'h1,h2,h3,h4,p,a,button,img,li,strong,span,div,input,select,textarea';
     return [...document.querySelectorAll(sel)]
       // Leaflet se rend de facon asynchrone : ses elements produisent
       // des ecarts reproductibles mais sans signification.
       .filter((e) => !String(e.className || '').includes('leaflet'))
+      // Le calendrier depend de la date du jour : la case « aujourd'hui »
+      // se deplace et les jours passes deviennent desactives. Sans cette
+      // exclusion, la reference perimerait chaque nuit.
+      .filter((e) => !e.closest('.flatpickr-calendar'))
       .map((e) => {
         const b = e.getBoundingClientRect();
         const c = getComputedStyle(e);
@@ -96,6 +106,48 @@ async function empreinte(page) {
         ].join('|');
       });
   });
+}
+
+/**
+ * Compare deux relevés d'élément.
+ *
+ * Les moteurs de rendu n'arrondissent pas les métriques de police de la même
+ * façon selon le système : la même page mesurée sous Windows et sous Linux
+ * donne 53x43 ici et 52x42 là, une marge de 551.562px devient 551px. Sans
+ * tolérance, la référence générée sur un poste ne vaut rien sur un autre, et
+ * la CI échoue sur du bruit.
+ *
+ * La tolérance ne s'applique qu'aux champs géométriques. Couleurs, polices,
+ * display, visibilité et alignement restent comparés au caractère près : une
+ * régression de style s'y voit toujours, et un décalage réel de mise en page
+ * dépasse toujours largement deux pixels.
+ */
+const CHAMPS_GEOMETRIQUES = new Set([2, 3, 4, 5, 8, 13, 14, 15]);
+const TOLERANCE_PX = 2;
+
+export function memeElement(a, b) {
+  if (a === b) return true;
+  if (a === undefined || b === undefined) return false;
+  const ca = a.split('|');
+  const cb = b.split('|');
+  if (ca.length !== cb.length) return false;
+
+  for (let i = 0; i < ca.length; i++) {
+    if (ca[i] === cb[i]) continue;
+    if (!CHAMPS_GEOMETRIQUES.has(i)) return false;
+
+    // Le squelette non numérique doit être identique : « 4px 8px » et
+    // « 4px » ne sont pas comparables, quelles que soient les valeurs.
+    const nombres = (s) => (s.match(/-?[\d.]+/g) ?? []).map(Number);
+    const squelette = (s) => s.replace(/-?[\d.]+/g, '#');
+    if (squelette(ca[i]) !== squelette(cb[i])) return false;
+
+    const na = nombres(ca[i]);
+    const nb = nombres(cb[i]);
+    if (na.length !== nb.length) return false;
+    if (na.some((v, j) => Math.abs(v - nb[j]) > TOLERANCE_PX)) return false;
+  }
+  return true;
 }
 
 /* ─── 2. Comportement ────────────────────────────────────────────────── */
@@ -333,7 +385,7 @@ async function main() {
         if (!attendu) { echecs.push(`${cle} : absent de la reference`); continue; }
         let n = 0, premier = null;
         for (let i = 0; i < Math.max(attendu.length, actuel.length); i++) {
-          if (attendu[i] !== actuel[i]) {
+          if (!memeElement(attendu[i], actuel[i])) {
             n++;
             premier ??= `\n        avant : ${attendu[i] ?? '(absent)'}\n        apres : ${actuel[i] ?? '(absent)'}`;
           }
@@ -356,4 +408,8 @@ async function main() {
   }
 }
 
-main();
+// Ne s'exécute que lancé directement : le fichier reste importable pour
+// tester ses fonctions sans déclencher toute la campagne.
+if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/').split('/').pop())) {
+  main();
+}
