@@ -55,18 +55,16 @@ jobs:
       - name: Que faire en cas d'échec
         if: failure()
         run: |
-          echo "### La QA a détecté une régression" >> $GITHUB_STEP_SUMMARY
+          echo "### Une fonctionnalité du site est cassée" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Ici la QA ne compare pas l'apparence, seulement le **comportement** :" >> $GITHUB_STEP_SUMMARY
+          echo "menu, accordéon, filtres, recherche, carte, calendrier, anonymat des avis." >> $GITHUB_STEP_SUMMARY
+          echo "Un échec signifie donc qu'une fonction ne répond plus, pas qu'un pixel a bougé." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Le site est **déjà en ligne** : GitHub Pages publie sur push," >> $GITHUB_STEP_SUMMARY
           echo "sans attendre ce workflow. Vérifiez la production." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "En local :" >> $GITHUB_STEP_SUMMARY
+          echo "Pour reproduire en local :" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
           echo 'npm run qa' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Si le changement visuel était **voulu**, validez-le à l'œil puis :" >> $GITHUB_STEP_SUMMARY
-          echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo 'npm run qa:update' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "et commitez la référence mise à jour." >> $GITHUB_STEP_SUMMARY

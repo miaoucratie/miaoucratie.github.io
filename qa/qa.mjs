@@ -34,6 +34,24 @@ const RACINE = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const REFERENCE = join(RACINE, 'qa', 'reference.json');
 const MAJ = process.argv.includes('--update');
 
+/**
+ * L'empreinte visuelle ne franchit pas la frontière entre systèmes.
+ *
+ * Mesurée sous Windows puis sous Ubuntu, la même page donne des largeurs de
+ * texte qui diffèrent de 2 à 3 % : DM Sans est bien chargée des deux côtés,
+ * mais la rastérisation et le crénage diffèrent. Ces écarts s'accumulent
+ * verticalement — jusqu'à 29 px sur la hauteur d'une page. Aucune tolérance
+ * ne règle ça : celle qui absorberait 29 px masquerait aussi la barre passée
+ * de 50 à 67 px, régression réelle rencontrée le 11 août.
+ *
+ * L'empreinte reste donc un outil local, comparée à une référence produite
+ * sur la même machine. En intégration continue, on ne garde que ce qui est
+ * portable : comportement, erreurs JavaScript, débordement. C'est d'ailleurs
+ * ce qui aurait attrapé la panne de la FAQ — menu mort, accordéon figé,
+ * filtres inopérants — sans jamais mesurer un pixel.
+ */
+const COMPORTEMENT_SEUL = process.argv.includes('--comportement') || !!process.env.CI;
+
 const PAGES = [
   'index.html', 'tarifs.html', 'faq.html', 'carte.html', 'reservation.html',
   'cgv.html', 'mentions-legales.html', 'calculateur-miaoucratie.html',
@@ -348,7 +366,7 @@ async function main() {
         await page.goto(`${base}/${nomPage}`, { waitUntil: 'networkidle' }).catch(() => {});
         await attendre(600);
 
-        if (!SANS_EMPREINTE.has(nomPage)) {
+        if (!COMPORTEMENT_SEUL && !SANS_EMPREINTE.has(nomPage)) {
           empreintes[`${nomPage}@${largeur}`] = await empreinte(page);
         }
 
@@ -369,7 +387,10 @@ async function main() {
       await contexte.close();
     }
 
-    if (MAJ) {
+    if (COMPORTEMENT_SEUL) {
+      console.log("Mode comportement : l'empreinte visuelle n'est pas comparée,\n"
+        + 'elle ne serait pas fiable sur un autre système que celui qui l\'a produite.');
+    } else if (MAJ) {
       await mkdir(join(RACINE, 'qa'), { recursive: true });
       await writeFile(REFERENCE, JSON.stringify(empreintes, null, 1), 'utf8');
       const total = Object.values(empreintes).reduce((n, v) => n + v.length, 0);
@@ -401,10 +422,15 @@ async function main() {
   if (echecs.length) {
     console.error(`\n${echecs.length} probleme(s) :\n`);
     for (const e of echecs) console.error('  - ' + e);
-    console.error('\nSi le changement est voulu : npm run qa:update\n');
+    if (!COMPORTEMENT_SEUL) {
+      console.error('\nSi le changement est voulu : npm run qa:update');
+    }
+    console.error('');
     process.exitCode = 1;
   } else if (!MAJ) {
-    console.log(`Aucune regression. ${Object.keys(empreintes).length} vues verifiees.`);
+    console.log(COMPORTEMENT_SEUL
+      ? `Aucune regression de comportement. ${PAGES.length} pages, ${LARGEURS.length} largeurs.`
+      : `Aucune regression. ${Object.keys(empreintes).length} vues verifiees.`);
   }
 }
 
