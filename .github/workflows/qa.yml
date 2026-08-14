@@ -1,0 +1,72 @@
+name: QA
+
+# Attention : GitHub Pages publie sur push, indépendamment de ce workflow.
+# Cette action n'empêche donc pas une mise en ligne, elle vous alerte.
+# Pour un vrai blocage il faudrait piloter le déploiement Pages depuis un
+# workflow, ce qui est un changement plus lourd.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Un push qui en suit un autre annule la vérification devenue obsolète.
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qa:
+    name: Non-régression
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      # Le navigateur pèse ~115 Mo : sans ce cache, chaque exécution
+      # le retélécharge et le workflow prend deux fois plus de temps.
+      - name: Cache du navigateur Playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # postinstall lance « playwright install chromium ». La commande est
+      # idempotente : si le cache a restauré le navigateur, elle le constate
+      # et rend la main aussitôt. On ne cherche donc pas à la court-circuiter,
+      # ce qui laisserait le workflow sans navigateur si le cache était partiel.
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Dépendances système du navigateur
+        run: npx playwright install-deps chromium
+
+      - name: Vérifier le site
+        run: npm run qa
+
+      - name: Que faire en cas d'échec
+        if: failure()
+        run: |
+          echo "### La QA a détecté une régression" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Le site est **déjà en ligne** : GitHub Pages publie sur push," >> $GITHUB_STEP_SUMMARY
+          echo "sans attendre ce workflow. Vérifiez la production." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "En local :" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo 'npm run qa' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Si le changement visuel était **voulu**, validez-le à l'œil puis :" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo 'npm run qa:update' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "et commitez la référence mise à jour." >> $GITHUB_STEP_SUMMARY

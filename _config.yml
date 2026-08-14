@@ -1,0 +1,25 @@
+# Configuration GitHub Pages.
+#
+# GitHub Pages sert TOUT le depot par defaut : sans ce fichier, la
+# documentation technique et le harnais de tests etaient accessibles a
+# l'adresse du site, par exemple https://miaoucratie.fr/qa/reference.json
+# (434 Ko servis publiquement pour rien).
+#
+# Attention : « exclude » REMPLACE la liste par defaut de Jekyll, il faut
+# donc y remettre node_modules et vendor.
+#
+# Attention aussi : ceci retire ces fichiers du SITE, pas du DEPOT. Si le
+# depot est public, ils restent lisibles sur github.com.
+
+exclude:
+  # Valeurs par defaut de Jekyll, a conserver
+  - node_modules/
+  - vendor/
+  - Gemfile
+  - Gemfile.lock
+
+  # Outillage de developpement : sans interet pour un visiteur
+  - package.json
+  - package-lock.json
+  - qa/
+  - README.md
