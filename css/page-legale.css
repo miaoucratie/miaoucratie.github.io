@@ -1,0 +1,118 @@
+/* Mise en page des documents juridiques : CGV et mentions legales.
+   Les deux pages doivent rester jumelles. */
+:root {
+      --T: #A8472A;
+      --N: #1E1812;
+      --cream: #F9F5F0;
+      --rule: #e8ddd4;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--N);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 60px 24px;
+    }
+
+    .cgv-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 52px 24px 72px;
+    }
+
+    /* En-tête */
+    .cgv-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .cgv-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: -1px;
+      color: var(--N);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .cgv-brand em {
+      color: var(--T);
+      font-style: italic;
+    }
+
+    .brand-rule {
+      width: 32px;
+      height: 3px;
+      background: var(--T);
+      margin-bottom: 20px;
+    }
+
+    .cgv-header p {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.6;
+    }
+
+    .cgv-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--N);
+      margin-bottom: 4px;
+    }
+
+    /* Articles */
+    .cgv-article {
+      margin-bottom: 36px;
+    }
+
+    .cgv-article h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--T);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .cgv-article p {
+      margin-bottom: 10px;
+    }
+
+    .cgv-article p:last-child {
+      margin-bottom: 0;
+    }
+
+    .cgv-article ul {
+      padding-left: 16px;
+      margin: 8px 0;
+    }
+
+    .cgv-article ul li {
+      margin-bottom: 4px;
+      padding-left: 4px;
+    }
+
+    .cgv-article ul li::marker {
+      color: var(--T);
+    }
+
+    a {
+      color: var(--T);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }

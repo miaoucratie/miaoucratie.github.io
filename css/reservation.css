@@ -46,7 +46,9 @@ body {
   min-width: 320px;
 }
 
-
+/* Indispensable : [hidden] a une specificite de (0,1,0) et perd face a
+   toute regle de classe posant un display. Sans !important, les champs
+   masques et les boutons conditionnels s'affichent. */
 [hidden] {
   display: none !important;
 }
@@ -77,7 +79,7 @@ a:hover {
 }
 
 .visually-hidden {
-  position: absolute !important;
+  position: absolute;
   width: 1px;
   height: 1px;
   margin: -1px;
@@ -130,138 +132,10 @@ a:hover {
   margin-inline: auto;
 }
 
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  backdrop-filter: blur(18px);
-  background: rgba(246, 239, 233, 0.92);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
-}
-
-.site-header--compact {
-  position: sticky;
-}
-
-.site-header__inner {
-  min-height: var(--header-height);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: baseline;
-  font-family: var(--font-display);
-  font-size: clamp(1.9rem, 2.8vw, 2.3rem);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.brand__miaou {
-  color: var(--color-text);
-}
-
-.brand__cratie {
-  color: var(--color-primary);
-  font-style: italic;
-}
-
-.brand--footer {
-  margin-bottom: 1rem;
-}
-
-.menu-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.8rem 1rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--color-card);
-  color: var(--color-text);
-  box-shadow: var(--shadow-soft);
-}
-
-.site-nav {
-  position: absolute;
-  inset-inline: 1rem;
-  top: calc(100% - 0.45rem);
-  display: grid;
-  gap: 1.2rem;
-  padding: 1.15rem;
-  border-radius: 1.5rem;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: var(--shadow-card);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-0.35rem);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
 .site-nav.is-open {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
-}
-
-.site-nav__links,
-.site-footer__contact {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.site-nav__links {
-  display: grid;
-  gap: 0.4rem;
-}
-
-.site-nav__links a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  padding: 0.55rem 0.25rem;
-  font-weight: 600;
-}
-
-.site-nav__links a[aria-current="page"] {
-  color: var(--color-primary-deep);
-}
-
-.site-nav__meta {
-  display: grid;
-  gap: 0.35rem;
-  color: var(--color-muted);
-  font-size: 0.94rem;
-}
-
-.site-nav__meta a {
-  min-height: 2.5rem;
-  display: inline-flex;
-  align-items: center;
-}
-
-.site-nav--desktop-only {
-  position: static;
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
-  display: none;
-  box-shadow: none;
-  background: transparent;
-  padding: 0;
-  inset: auto;
-}
-
-.site-nav--desktop-only .site-nav__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
 }
 
 .hero {
@@ -343,35 +217,6 @@ body.reservation-page .hero h1 span.nowrap {
 .hero__lead {
   margin: 1.4rem 0 0;
   max-width: 34rem;
-}
-
-.hero__lead--narrow {
-  max-width: 35rem;
-}
-
-.hero__points {
-  display: grid;
-  gap: 0.85rem;
-  padding: 0;
-  margin: 1.8rem 0 0;
-  list-style: none;
-}
-
-.hero__points li {
-  position: relative;
-  padding-left: 1.3rem;
-  color: var(--color-muted);
-}
-
-.hero__points li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.55rem;
-  width: 0.42rem;
-  height: 0.42rem;
-  border-radius: 50%;
-  background: var(--color-primary);
 }
 
 .hero__media {
@@ -645,7 +490,10 @@ textarea:disabled {
   box-shadow: 0 18px 30px rgba(30, 24, 18, 0.12);
 }
 
-.autocomplete__list[hidden] {
+.autocomplete__list/* Indispensable : [hidden] a une specificite de (0,1,0) et perd face a
+   toute regle de classe posant un display. Sans !important, les champs
+   masques et les boutons conditionnels s'affichent. */
+[hidden] {
   display: none !important;
 }
 
@@ -686,27 +534,11 @@ textarea:disabled {
   box-shadow: var(--shadow-soft);
 }
 
-.alert--success {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
-}
-
-.alert--error {
-  background: var(--color-error-bg);
-  color: var(--color-error-text);
-}
-
 .submit-panel {
   display: grid;
   justify-items: center;
   gap: 1rem;
   padding-top: 1.5rem;
-}
-
-.submit-panel__note {
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 0.94rem;
 }
 
 .button {
@@ -789,41 +621,6 @@ textarea:disabled {
   margin: 0;
 }
 
-.success-panel__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  padding-top: 0.5rem;
-}
-
-.site-footer {
-  padding: 3rem 0;
-  background: var(--color-bg-alt);
-}
-
-.site-footer__grid {
-  display: grid;
-  gap: 2rem;
-}
-
-.site-footer__lead {
-  margin: 0 0 1rem;
-  max-width: 32rem;
-}
-
-.site-footer__contact {
-  display: grid;
-  gap: 0.35rem;
-}
-
-.site-footer__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 1.35rem;
-  align-content: start;
-  color: var(--color-muted);
-}
-
 .admin-body {
   background:
     radial-gradient(circle at top right, rgba(201, 107, 62, 0.08), transparent 28%),
@@ -832,10 +629,6 @@ textarea:disabled {
 
 .admin-page {
   min-height: 100vh;
-}
-
-.admin-hero {
-  padding: 4rem 0 1.5rem;
 }
 
 .admin-grid {
@@ -907,9 +700,9 @@ textarea:disabled {
 }
 
 .flatpickr-calendar {
-  border: 0 !important;
-  border-radius: 1.2rem !important;
-  box-shadow: var(--shadow-card) !important;
+  border: 0;
+  border-radius: 1.2rem;
+  box-shadow: var(--shadow-card);
   overflow: hidden;
   font-family: var(--font-body);
 }
@@ -932,8 +725,8 @@ textarea:disabled {
 .flatpickr-day.selected:focus,
 .flatpickr-day.startRange:focus,
 .flatpickr-day.endRange:focus {
-  background: var(--color-primary) !important;
-  border-color: var(--color-primary) !important;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .flatpickr-day.inRange {
@@ -945,7 +738,7 @@ textarea:disabled {
 .flatpickr-day.flatpickr-disabled:hover,
 .flatpickr-day.prevMonthDay.flatpickr-disabled,
 .flatpickr-day.nextMonthDay.flatpickr-disabled {
-  color: rgba(111, 98, 88, 0.35) !important;
+  color: rgba(111, 98, 88, 0.35);
   background: rgba(111, 98, 88, 0.06);
 }
 
@@ -956,51 +749,6 @@ textarea:disabled {
 }
 
 @media (min-width: 48rem) {
-  .site-nav {
-    position: static;
-    inset: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    opacity: 1;
-    pointer-events: auto;
-    transform: none;
-    padding: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .menu-toggle {
-    display: none;
-  }
-
-  .site-nav__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 1.3rem;
-  }
-
-  .site-nav__links a {
-    padding: 0.2rem 0;
-    min-height: auto;
-  }
-
-  .site-nav__meta {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 0.5rem 1rem;
-    font-size: 0.88rem;
-  }
-
-  .site-nav--desktop-only {
-    display: flex;
-  }
-
-  .site-nav__meta a {
-    min-height: auto;
-  }
 
   .hero__grid,
   .site-footer__grid,
@@ -1027,11 +775,6 @@ textarea:disabled {
 
   .step-card {
     padding: 1.8rem 1.95rem;
-  }
-
-  .site-footer__grid {
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    align-items: start;
   }
 
   .admin-panel {
@@ -1086,12 +829,11 @@ textarea:disabled {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
   }
 }
-
 
 /* Intégration Miaoucratie site existant */
 body.reservation-page {
@@ -1127,7 +869,6 @@ body.reservation-page .footer-bar .footer-links a:hover,
 body.reservation-page .footer-bar .footer-legal a:hover {
   color: var(--peach, #F2CDB0);
 }
-
 
 /* Ajustements visuels finaux reservation.html */
 body.reservation-page .hero {
@@ -1198,7 +939,7 @@ body.reservation-page .hero__lead {
 }
 
 body.reservation-page .hero__points {
-  display: none !important;
+  display: none;
 }
 
 body.reservation-page .hero__media {
@@ -1252,7 +993,10 @@ body.reservation-page .autocomplete__list {
   box-shadow: 0 18px 30px rgba(30, 24, 18, 0.12);
 }
 
-body.reservation-page .autocomplete__list[hidden] {
+body.reservation-page .autocomplete__list/* Indispensable : [hidden] a une specificite de (0,1,0) et perd face a
+   toute regle de classe posant un display. Sans !important, les champs
+   masques et les boutons conditionnels s'affichent. */
+[hidden] {
   display: none !important;
 }
 
@@ -1289,7 +1033,7 @@ body.reservation-page .submit-panel {
 
 body.reservation-page .submit-panel__note,
 body.reservation-page .success-panel__actions {
-  display: none !important;
+  display: none;
 }
 
 body.reservation-page .success-panel {
@@ -1363,27 +1107,28 @@ body.reservation-page .section-heading {
   margin-bottom: 2.4rem;
 }
 
-
-
 /* --- Ajustements UI v3 --- */
 body.reservation-page .skip-link:not(:focus):not(:active) {
-  position: fixed !important;
-  left: -100vw !important;
-  top: auto !important;
-  width: 1px !important;
-  height: 1px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  clip: rect(0 0 0 0) !important;
-  clip-path: inset(50%) !important;
-  white-space: nowrap !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+  position: fixed;
+  left: -100vw;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
 }
 
 body.reservation-page .success-panel[hidden],
-body.reservation-page .autocomplete__list[hidden] {
+body.reservation-page .autocomplete__list/* Indispensable : [hidden] a une specificite de (0,1,0) et perd face a
+   toute regle de classe posant un display. Sans !important, les champs
+   masques et les boutons conditionnels s'affichent. */
+[hidden] {
   display: none !important;
 }
 
@@ -1486,11 +1231,10 @@ body.reservation-page .hero__media-frame img {
   object-position: center center;
 }
 
-
 /* --- Hotfix calendrier réservation : en-tête flatpickr + champs internes --- */
 body.reservation-page .flatpickr-calendar {
-  overflow: visible !important;
-  z-index: 90 !important;
+  overflow: visible;
+  z-index: 90;
 }
 
 body.reservation-page .flatpickr-months {
@@ -1500,69 +1244,69 @@ body.reservation-page .flatpickr-months {
 }
 
 body.reservation-page .flatpickr-month {
-  height: 3rem !important;
+  height: 3rem;
 }
 
 body.reservation-page .flatpickr-current-month {
-  position: static !important;
-  left: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 0.35rem !important;
-  width: 100% !important;
-  height: 3rem !important;
-  padding: 0 2.25rem !important;
-  color: var(--deep, #1E1812) !important;
-  font: 600 1rem/1 'DM Sans', sans-serif !important;
+  position: static;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  height: 3rem;
+  padding: 0 2.25rem;
+  color: var(--deep, #1E1812);
+  font: 600 1rem/1 'DM Sans', sans-serif;
 }
 
 body.reservation-page .flatpickr-current-month .flatpickr-monthDropdown-months,
 body.reservation-page .flatpickr-current-month input.cur-year,
 body.reservation-page .flatpickr-current-month .numInputWrapper input.cur-year {
-  width: auto !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  height: auto !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--deep, #1E1812) !important;
-  font: inherit !important;
-  line-height: 1 !important;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--deep, #1E1812);
+  font: inherit;
+  line-height: 1;
 }
 
 body.reservation-page .flatpickr-current-month .flatpickr-monthDropdown-months {
   appearance: none;
-  padding-right: 0.9rem !important;
-  font-weight: 600 !important;
+  padding-right: 0.9rem;
+  font-weight: 600;
 }
 
 body.reservation-page .flatpickr-current-month .numInputWrapper {
-  width: 4.75ch !important;
-  min-width: 4.75ch !important;
-  height: auto !important;
-  padding: 0 !important;
+  width: 4.75ch;
+  min-width: 4.75ch;
+  height: auto;
+  padding: 0;
 }
 
 body.reservation-page .flatpickr-current-month .numInputWrapper span.arrowUp,
 body.reservation-page .flatpickr-current-month .numInputWrapper span.arrowDown {
-  right: -0.25rem !important;
+  right: -0.25rem;
 }
 
 body.reservation-page .flatpickr-months .flatpickr-prev-month,
 body.reservation-page .flatpickr-months .flatpickr-next-month {
-  top: 0.65rem !important;
-  padding: 0.15rem 0.45rem !important;
+  top: 0.65rem;
+  padding: 0.15rem 0.45rem;
 }
 
 body.reservation-page .flatpickr-months .flatpickr-prev-month svg,
 body.reservation-page .flatpickr-months .flatpickr-next-month svg {
-  width: 14px !important;
-  height: 14px !important;
+  width: 14px;
+  height: 14px;
 }
 
 body.reservation-page .flatpickr-weekdays {
@@ -1572,6 +1316,6 @@ body.reservation-page .flatpickr-weekdays {
 body.reservation-page .flatpickr-alt-input[aria-invalid="true"],
 body.reservation-page .flatpickr-input[aria-invalid="true"] + .flatpickr-alt-input,
 body.reservation-page input.flatpickr-input[aria-invalid="true"] {
-  border-color: rgba(157, 59, 35, 0.45) !important;
-  background: #fff7f6 !important;
+  border-color: rgba(157, 59, 35, 0.45);
+  background: #fff7f6;
 }

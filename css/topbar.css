@@ -1,0 +1,37 @@
+/* Barre de navigation, partagee par index, faq et cgv.
+   Etait recopiee a l'identique dans les trois pages. */
+/* ── Topbar inline ───────────────────────── */
+.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;animation:none!important}
+.tmenu-wrap{position:relative;flex-shrink:0}
+.tmenu-btn{background:none;border:none;cursor:pointer;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:12px 0;transition:color .2s}
+.tmenu-btn:hover{color:#F2CDB0}
+.tmenu-panel{flex-direction:column;gap:2px;position:absolute;top:calc(100% + 6px);left:0;min-width:200px;padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#1E1812;box-shadow:0 20px 48px rgba(0,0,0,.4);z-index:1000}
+.tmenu-panel a{display:block;padding:9px 14px;border-radius:8px;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;text-decoration:none;transition:background .15s,color .15s}
+.tmenu-panel a:hover{background:rgba(255,255,255,.07);color:#FBF7F0}
+.tmenu-panel a.is-current{color:#F2CDB0;background:rgba(242,205,176,.08)}
+.topbar-links{margin-left:auto;display:flex;align-items:center;gap:16px}
+.topbar-links a{color:#D4BEA8;text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:color .2s;font-family:'DM Sans',sans-serif}
+.topbar-links a:hover{color:#F2CDB0}
+.tsep{width:1px;height:16px;background:rgba(255,255,255,.12);flex-shrink:0}
+/* ── Footer bar inline ───────────────────── */
+.footer-bar{background:#1E1812;padding:28px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-bar .footer-logo{display:flex;align-items:center;gap:12px}
+.footer-bar .footer-logo img{width:40px;height:40px;border-radius:50%;object-fit:cover;opacity:.9}
+.footer-bar .footer-logo span{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;letter-spacing:-.5px;color:#FBF7F0}
+.footer-bar .footer-logo em{color:#C8603A;font-style:italic}
+.footer-bar .footer-links{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.footer-bar .footer-links a{color:#B89B80;text-decoration:none;font-size:13px;font-family:'DM Sans',sans-serif;transition:color .2s}
+.footer-bar .footer-links a:hover{color:#F2CDB0}
+.footer-bar .footer-legal{font-size:12px;color:rgba(255,255,255,.4);font-family:'DM Sans',sans-serif}
+.footer-bar .footer-legal a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
+.footer-bar .footer-legal a:hover{color:rgba(255,255,255,.7)}
+@media(max-width:768px){
+  .topbar{padding:0 20px}
+  .footer-bar{flex-direction:column;text-align:center;padding:24px 20px}
+  .footer-bar .footer-links{justify-content:center}
+  .tsep{display:none}
+  .topbar-links a[href^="mailto"]{display:none}
+}
+@media(max-width:600px){
+  .topbar-links{gap:8px}
+}

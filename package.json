@@ -1,0 +1,15 @@
+{
+  "name": "miaoucratie-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site vitrine Miaoucratie — garde de chats a domicile",
+  "type": "module",
+  "scripts": {
+    "qa": "node qa/qa.mjs",
+    "qa:update": "node qa/qa.mjs --update",
+    "postinstall": "playwright install chromium"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

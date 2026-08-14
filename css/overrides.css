@@ -1,0 +1,120 @@
+/* Correctifs partages par index, faq, cgv et calculateur.
+   Ce bloc etait recopie a l'identique dans les 4 pages.
+   Charge a la position exacte de l'ancien <style> pour preserver la cascade. */
+
+/* MIAOUCRATIE-TOPBAR-V2 */
+.topbar {
+  width: 100%;
+  align-self: stretch;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--deep, #1E1812);
+  padding: 12px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 20px;
+  flex-wrap: wrap;
+}
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+.topbar a {
+  color: var(--light, #D4BEA8);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+.topbar a:hover {
+  color: var(--peach, #F2CDB0);
+}
+.topbar .sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.15);
+}
+.topbar-menu-panel a.is-current {
+  background: rgba(255,255,255,0.06);
+  color: var(--peach, #F2CDB0);
+}
+.topbar-menu-panel a:focus-visible,
+.topbar a:focus-visible {
+  outline: 2px solid rgba(242,205,176,0.8);
+  outline-offset: 2px;
+}
+@media (max-width: 768px) {
+  .topbar {
+    padding: 12px 20px;
+    gap: 12px 14px;
+  }
+  .topbar-links {
+    gap: 12px;
+  }
+}
+
+/* MIAOUCRATIE-TITLE-V2 */
+body .faq-hero .hero-title,
+body .tarifs-hero h1,
+body.carte-page .zone-header h2,
+body .cgv-title,
+body .container > header h1,
+body .hero-title {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -3px !important;
+  line-height: 1 !important;
+  color: var(--deep, #1E1812) !important;
+}
+body .faq-hero .hero-title,
+body .tarifs-hero h1,
+body .container > header h1,
+body .hero-title {
+  font-size: clamp(52px, 7vw, 88px) !important;
+}
+body.carte-page .zone-header h2,
+body .cgv-title {
+  font-size: clamp(32px, 5vw, 64px) !important;
+}
+body .faq-hero .hero-sub,
+body .tarifs-hero-sub,
+body.carte-page .zone-desc,
+body .cgv-header p,
+body .container .subtitle {
+  font-family: 'DM Sans', sans-serif !important;
+  color: var(--muted, #7A6B5E) !important;
+  line-height: 1.8 !important;
+}
+body.tarifs-page .tarifs-hero-cta .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+body.tarifs-page .tarifs-hero-cta .btn-secondary {
+  display: none !important;
+}
+body.tarifs-page .tarifs-bg > .section > h2,
+body.tarifs-page .tarifs-bg h2.tarifs-duplicate-title {
+  display: none !important;
+}
+@media (max-width: 1024px) {
+}
+@media (max-width: 768px) {
+}
+
+/* MIAOUCRATIE-STANDALONE-V2 */
+body.standalone-page {
+  background: var(--cream, #FBF7F0);
+  color: var(--deep, #1E1812);
+}
