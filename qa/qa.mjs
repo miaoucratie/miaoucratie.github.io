@@ -35,6 +35,13 @@ const REFERENCE = join(RACINE, 'qa', 'reference.json');
 const MAJ = process.argv.includes('--update');
 
 /**
+ * Par defaut un ecart visuel n'affiche que son premier exemple : de quoi
+ * signaler une regression, pas de quoi conduire un refactoring. Le mode
+ * detaille les liste tous, avec la vue et l'element concernes.
+ */
+const DETAIL = process.argv.includes('--detail');
+
+/**
  * L'empreinte visuelle ne franchit pas la frontière entre systèmes.
  *
  * Mesurée sous Windows puis sous Ubuntu, la même page donne des largeurs de
@@ -95,13 +102,55 @@ function demarrerServeur() {
 
 /* ─── 1. Empreinte visuelle ──────────────────────────────────────────── */
 
-async function empreinte(page) {
-  // Les polices arrivent du réseau. Mesurer avant qu'elles soient prêtes
-  // donne les métriques de la police de secours, donc des écarts fantômes
-  // sur toute la page. « networkidle » ne suffit pas : le navigateur peut
-  // avoir fini ses requêtes sans avoir fini de composer les glyphes.
-  await page.evaluate(() => document.fonts.ready).catch(() => {});
+/**
+ * Vérifie que les polices sont réellement utilisables avant toute mesure.
+ * Renvoie la liste des familles déclarées mais indisponibles.
+ *
+ * Trois attentes successives se sont révélées insuffisantes, et l'ordre dans
+ * lequel elles tombent explique le reste :
+ *
+ * 1. « networkidle » — le navigateur peut avoir fini ses requêtes sans avoir
+ *    composé les glyphes.
+ * 2. `document.fonts.ready` — il ne résout que les chargements *déjà
+ *    engagés* ; une face demandée tardivement lui échappe.
+ * 3. Forcer `load()` sur chaque face déclarée — inopérant quand la requête
+ *    elle-même échoue : les polices viennent de fonts.gstatic.com, et ce
+ *    trajet réseau casse par intermittence.
+ *
+ * Mesurée dans cet état, la page rend les métriques de la police de secours :
+ * la barre de navigation passe de 566 à 540 px et toutes les pages s'écartent
+ * en bloc — jusqu'à 503 différences sur la FAQ, pour un CSS pourtant
+ * inchangé. Constaté environ une fois sur sept.
+ *
+ * Recharger ne rattrape pas : mesuré sur les cas observés, quatre tentatives
+ * successives échouent toutes. La panne colle au processus du navigateur, ce
+ * qui explique aussi pourquoi les neuf pages s'écartent d'un seul coup — la
+ * QA partage un contexte entre elles.
+ *
+ * Un oracle qui échoue au hasard est pire que pas d'oracle : il fait douter
+ * de changements corrects, et il finit par se faire ignorer. Faute de pouvoir
+ * garantir la police, on refuse de mesurer sans elle : la vue n'est pas
+ * comparée, et le manque est signalé pour ce qu'il est au lieu d'être
+ * maquillé en régression visuelle. Le remède de fond serait d'héberger les
+ * deux familles avec le site, ce qui supprimerait la dépendance réseau.
+ */
+const FAMILLES = ['DM Sans', 'Cormorant Garamond'];
 
+async function attendrePolices(page) {
+  return page.evaluate(async (familles) => {
+    await document.fonts.ready;
+    await Promise.all([...document.fonts].map((f) => f.load().catch(() => {})));
+    await document.fonts.ready;
+    // Une famille absente de la page n'a pas à être exigée : seules comptent
+    // celles que la page déclare vraiment.
+    const declarees = new Set([...document.fonts].map((f) => f.family.replace(/^['"]|['"]$/g, '')));
+    return familles
+      .filter((f) => declarees.has(f))
+      .filter((f) => !document.fonts.check(`400 16px "${f}"`));
+  }, FAMILLES);
+}
+
+async function empreinte(page) {
   return page.evaluate(() => {
     const sel = 'h1,h2,h3,h4,p,a,button,img,li,strong,span,div,input,select,textarea';
     return [...document.querySelectorAll(sel)]
@@ -367,7 +416,13 @@ async function main() {
         await attendre(600);
 
         if (!COMPORTEMENT_SEUL && !SANS_EMPREINTE.has(nomPage)) {
-          empreintes[`${nomPage}@${largeur}`] = await empreinte(page);
+          const manquantes = await attendrePolices(page);
+          if (manquantes.length) {
+            echecs.push(`${nomPage} @${largeur}px : police non chargee — ${manquantes.join(', ')}. `
+              + "L'empreinte serait mesuree avec la police de secours : releve ignore.");
+          } else {
+            empreintes[`${nomPage}@${largeur}`] = await empreinte(page);
+          }
         }
 
         const debordement = await page.evaluate((l) => document.documentElement.scrollWidth > l, largeur);
@@ -391,6 +446,16 @@ async function main() {
       console.log("Mode comportement : l'empreinte visuelle n'est pas comparée,\n"
         + 'elle ne serait pas fiable sur un autre système que celui qui l\'a produite.');
     } else if (MAJ) {
+      // Une vue dont la police a manqué n'a pas été relevée. L'écrire quand
+      // même amputerait la référence des vues concernées, et le manque se
+      // lirait ensuite comme « absent de la reference » sur toutes les
+      // exécutions suivantes.
+      if (echecs.some((e) => e.includes('police non chargee'))) {
+        console.error('\nReference non regeneree : une police a manque, le releve serait incomplet.');
+        console.error('Relancez la commande.\n');
+        process.exitCode = 1;
+        return;
+      }
       await mkdir(join(RACINE, 'qa'), { recursive: true });
       await writeFile(REFERENCE, JSON.stringify(empreintes, null, 1), 'utf8');
       const total = Object.values(empreintes).reduce((n, v) => n + v.length, 0);
@@ -405,13 +470,16 @@ async function main() {
         const attendu = ref[cle];
         if (!attendu) { echecs.push(`${cle} : absent de la reference`); continue; }
         let n = 0, premier = null;
+        const tous = [];
         for (let i = 0; i < Math.max(attendu.length, actuel.length); i++) {
           if (!memeElement(attendu[i], actuel[i])) {
             n++;
-            premier ??= `\n        avant : ${attendu[i] ?? '(absent)'}\n        apres : ${actuel[i] ?? '(absent)'}`;
+            const paire = `\n        avant : ${attendu[i] ?? '(absent)'}\n        apres : ${actuel[i] ?? '(absent)'}`;
+            premier ??= paire;
+            if (DETAIL) tous.push(`\n      [${i}]${paire}`);
           }
         }
-        if (n) echecs.push(`${cle} : ${n} ecart(s) visuel(s)${premier}`);
+        if (n) echecs.push(`${cle} : ${n} ecart(s) visuel(s)${DETAIL ? tous.join('') : premier}`);
       }
     }
   } finally {
