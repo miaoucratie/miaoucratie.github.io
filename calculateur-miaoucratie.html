@@ -42,20 +42,20 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --cream: #fdf8f2;
-    --warm: #f5ede0;
-    --terracotta: #c4623a;
+    --calc-cream: #fdf8f2;
+    --calc-warm: #f5ede0;
+    --calc-terracotta: #c4623a;
     --terracotta-light: #e8845f;
     --dark: #2a1f1a;
-    --mid: #7a6358;
-    --light: #b8a598;
+    --calc-mid: #7a6358;
+    --calc-light: #b8a598;
     --green: #4a7c59;
     --green-light: #e8f2eb;
     --border: #e2d5c8;
   }
 
   body {
-    background: var(--cream);
+    background: var(--calc-cream);
     color: var(--dark);
     font-family: 'DM Sans', sans-serif;
     font-weight: 300;
@@ -116,12 +116,12 @@
 
   h1 em {
     font-style: italic;
-    color: var(--terracotta);
+    color: var(--calc-terracotta);
   }
 
   .subtitle {
     margin-top: 8px;
-    color: var(--mid);
+    color: var(--calc-mid);
     font-size: 0.9rem;
     letter-spacing: 0.5px;
   }
@@ -151,7 +151,7 @@
     font-weight: 500;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--light);
+    color: var(--calc-light);
     margin-bottom: 16px;
     margin-top: 28px;
   }
@@ -167,13 +167,13 @@
     display: block;
     font-size: 0.88rem;
     font-weight: 500;
-    color: var(--mid);
+    color: var(--calc-mid);
     margin-bottom: 8px;
   }
 
   label span.hint {
     font-weight: 300;
-    color: var(--light);
+    color: var(--calc-light);
     font-size: 0.8rem;
   }
 
@@ -186,7 +186,7 @@
     border-radius: 12px;
     overflow: hidden;
     width: fit-content;
-    background: var(--cream);
+    background: var(--calc-cream);
   }
 
   .stepper button {
@@ -195,13 +195,13 @@
     width: 44px;
     height: 44px;
     font-size: 1.3rem;
-    color: var(--terracotta);
+    color: var(--calc-terracotta);
     cursor: pointer;
     transition: background 0.15s;
     font-family: inherit;
   }
 
-  .stepper button:hover { background: var(--warm); }
+  .stepper button:hover { background: var(--calc-warm); }
   .stepper button:active { background: var(--border); }
 
   .stepper .val {
@@ -235,8 +235,8 @@
     transition: all 0.2s;
     user-select: none;
     font-size: 0.88rem;
-    color: var(--mid);
-    background: var(--cream);
+    color: var(--calc-mid);
+    background: var(--calc-cream);
   }
 
   .toggle input { display: none; }
@@ -251,14 +251,14 @@
   }
 
   .toggle.active {
-    border-color: var(--terracotta);
+    border-color: var(--calc-terracotta);
     background: #fdf2ed;
     color: var(--dark);
   }
 
   .toggle.active .dot {
-    background: var(--terracotta);
-    border-color: var(--terracotta);
+    background: var(--calc-terracotta);
+    border-color: var(--calc-terracotta);
   }
 
   /* Km input */
@@ -269,7 +269,7 @@
     border: 1.5px solid var(--border);
     border-radius: 12px;
     padding: 0 16px;
-    background: var(--cream);
+    background: var(--calc-cream);
     width: fit-content;
   }
 
@@ -290,7 +290,7 @@
 
   .km-label {
     font-size: 0.85rem;
-    color: var(--light);
+    color: var(--calc-light);
   }
 
   /* Divider */
@@ -380,7 +380,7 @@
 
   .breakdown-item .b-label {
     font-size: 0.75rem;
-    color: var(--light);
+    color: var(--calc-light);
     margin-bottom: 4px;
   }
 
@@ -398,7 +398,7 @@
   .empty-state {
     text-align: center;
     padding: 20px 0;
-    color: var(--light);
+    color: var(--calc-light);
     font-size: 0.9rem;
   }
 
@@ -408,7 +408,7 @@
   .mention {
     text-align: center;
     font-size: 0.75rem;
-    color: var(--light);
+    color: var(--calc-light);
     margin-top: 20px;
   }
 
@@ -463,7 +463,7 @@ html, body {
   width: 100%;
 }
 body {
-  background: var(--cream, #FBF7F0);
+  background: var(--calc-cream, #FBF7F0);
   color: var(--N, #1A1A1A);
   overflow-x: hidden;
 }
@@ -489,7 +489,7 @@ body {
   margin-left: auto;
 }
 .topbar a {
-  color: var(--light, #D4BEA8);
+  color: var(--calc-light, #D4BEA8);
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
@@ -519,7 +519,7 @@ body {
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--light, #D4BEA8);
+  color: var(--calc-light, #D4BEA8);
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -556,7 +556,7 @@ body {
   display: block;
   padding: 10px 12px;
   border-radius: 8px;
-  color: var(--light, #D4BEA8);
+  color: var(--calc-light, #D4BEA8);
   text-decoration: none;
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
@@ -654,7 +654,7 @@ body .cta-eyebrow {
 
 /* MIAOUCRATIE-TARIFS-V4 */
 body.tarifs-page {
-  background: var(--cream, #FBF7F0);
+  background: var(--calc-cream, #FBF7F0);
 }
 body.tarifs-page .tarifs-hero {
   max-width: 1120px;
@@ -696,10 +696,10 @@ body.tarifs-page .tarifs-summary-grid {
 }
 body.tarifs-page .tarifs-summary-item {
   background: #fff;
-  border: 1px solid var(--warm, #F0E8DA);
+  border: 1px solid var(--calc-warm, #F0E8DA);
   border-radius: 18px;
   padding: 16px 18px;
-  color: var(--mid, #4A3728);
+  color: var(--calc-mid, #4A3728);
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   line-height: 1.6;
@@ -714,7 +714,7 @@ body.tarifs-page .tarifs-summary-item strong {
   margin-bottom: 6px;
 }
 body.tarifs-page .tarifs-bg {
-  background: var(--cream, #FBF7F0) !important;
+  background: var(--calc-cream, #FBF7F0) !important;
 }
 body.tarifs-page .tarifs-bg > .section > h2,
 body.tarifs-page .tarifs-bg .section-label {
@@ -736,12 +736,12 @@ body.tarifs-page .tarif-main,
 body.tarifs-page .tarif-info-card,
 body.tarifs-page .tarif-promo {
   background: #fff !important;
-  border-color: var(--warm, #F0E8DA) !important;
+  border-color: var(--calc-warm, #F0E8DA) !important;
   border-radius: 22px;
 }
 body.tarifs-page .tarif-header,
 body.tarifs-page .tarif-info-header {
-  background: var(--terracotta, #C8603A) !important;
+  background: var(--calc-terracotta, #C8603A) !important;
 }
 body.tarifs-page .tarif-header h3,
 body.tarifs-page .tarif-info-header h3 {
@@ -757,10 +757,10 @@ body.tarifs-page .tarif-info-header p {
 body.tarifs-page .tarif-row-label,
 body.tarifs-page .tarif-info-line,
 body.tarifs-page .tarif-promo-body {
-  color: var(--mid, #4A3728) !important;
+  color: var(--calc-mid, #4A3728) !important;
 }
 body.tarifs-page .tarif-row-price {
-  color: var(--terracotta, #C8603A) !important;
+  color: var(--calc-terracotta, #C8603A) !important;
   font-weight: 700;
 }
 body.tarifs-page .badge-amount,
@@ -785,14 +785,14 @@ body.tarifs-page .tarif-info-blocks {
   padding: 18px;
 }
 body.tarifs-page .tarif-info-block {
-  border: 1px solid var(--warm, #F0E8DA);
+  border: 1px solid var(--calc-warm, #F0E8DA);
   border-radius: 18px;
   padding: 18px;
   background: #fff;
   border-bottom: none !important;
 }
 body.tarifs-page .tarif-info-block:last-child {
-  border-bottom: 1px solid var(--warm, #F0E8DA) !important;
+  border-bottom: 1px solid var(--calc-warm, #F0E8DA) !important;
 }
 body.tarifs-page .tarif-info-cta {
   display: none !important;
@@ -830,7 +830,7 @@ body.standalone-page,
 body.calculateur-page,
 body.cgv-page,
 body.carte-page {
-  background: var(--cream, #FBF7F0);
+  background: var(--calc-cream, #FBF7F0);
   color: var(--deep, #1E1812);
 }
 body.standalone-page,
@@ -878,7 +878,7 @@ body.cgv-page .brand-rule {
 }
 body.carte-page .zone-section {
   width: 100%;
-  background: var(--cream, #FBF7F0) !important;
+  background: var(--calc-cream, #FBF7F0) !important;
   padding: 0 0 80px;
   overflow: hidden;
 }
@@ -979,7 +979,7 @@ body.calculateur-page .container { flex: 1 !important; }
 </div>
 </div>
 <!-- Distance -->
-<p class="section-label">Distance hors zone <span style="font-size:0.75rem;color:var(--light);text-transform:none;letter-spacing:0">(au-delà de 20 km de Châteaubourg par la route)</span></p>
+<p class="section-label">Distance hors zone <span style="font-size:0.75rem;color:var(--calc-light);text-transform:none;letter-spacing:0">(au-delà de 20 km de Châteaubourg par la route)</span></p>
 <div class="field">
 <div class="km-input">
 <input id="km-input" min="0" oninput="calculate()" type="number" value="0"/>
@@ -1098,7 +1098,7 @@ body.calculateur-page .container { flex: 1 !important; }
             <div class="b-amount">${fmt(solde)}</div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--mid);margin-top:12px;text-align:center;">Estimation indicative · devis personnalisé sur demande</p>
+        <p style="font-size:12px;color:var(--calc-mid);margin-top:12px;text-align:center;">Estimation indicative · devis personnalisé sur demande</p>
       </div>`;
     document.getElementById('result-area').style.display = 'block';
   }
