@@ -108,10 +108,8 @@ body.tarifs-page .tarifs-bg > .section > h2,
 body.tarifs-page .tarifs-bg h2.tarifs-duplicate-title {
   display: none !important;
 }
-@media (max-width: 1024px) {
-}
-@media (max-width: 768px) {
-}
+
+
 
 /* MIAOUCRATIE-STANDALONE-V2 */
 body.standalone-page {
