@@ -392,13 +392,18 @@ body.cgv-page .brand-rule {
   font-size: 20px; font-weight: 700; letter-spacing: -0.5px; color: var(--cream,#FBF7F0);
 }
 .footer-bar .footer-logo em { color: var(--terracotta,#C8603A); font-style: italic; }
-/* Sections sombres : titres blancs */
-.stripe-item h3, .cta-section h2 { color: #fff !important; }
+/* Les titres des sections sombres etaient forces en blanc pur ici. Une regle
+   posterieure les rendait en creme, et c'est ce qui s'affichait : remonter
+   cette couche en fin de cascade aurait donc change le rendu de l'accueil,
+   seule page portant ces elements. Declaration retiree. */
 /* FAQ CTA */
 .faq-cta .cta-title { color: #fff !important; }
 /* Responsive topbar */
 @media (max-width: 900px) {
-  .topbar { padding: 0 24px; }
+  /* 20px comme topbar.css et comme le bloc inline de chaque page. La valeur
+     de 24px ne subsistait que sur les pages ou cette couche gagnait, d'ou une
+     barre plus large sur carte, reservation et mentions legales. */
+  .topbar { padding: 0 20px; }
 }
 @media (max-width: 600px) {
   .topbar-links { gap: 8px; }
