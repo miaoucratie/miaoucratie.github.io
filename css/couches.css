@@ -7,66 +7,6 @@
  * leur place.
  */
 
-/* MIAOUCRATIE-TOPBAR-V2 */
-.topbar {
-  width: 100%;
-  align-self: stretch;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--deep, #1E1812);
-  padding: 12px 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px 20px;
-  flex-wrap: wrap;
-}
-.topbar-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  margin-left: auto;
-}
-.topbar a {
-  color: var(--light, #D4BEA8);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  transition: color 0.2s ease, opacity 0.2s ease;
-}
-.topbar a:hover {
-  color: var(--peach, #F2CDB0);
-}
-.topbar .sep {
-  width: 1px;
-  height: 16px;
-  background: rgba(255,255,255,0.15);
-}
-.topbar-menu-panel a.is-current {
-  background: rgba(255,255,255,0.06);
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu-panel a:focus-visible,
-.topbar a:focus-visible {
-  outline: 2px solid rgba(242,205,176,0.8);
-  outline-offset: 2px;
-}
-@media (max-width: 768px) {
-  .topbar {
-    padding: 12px 20px;
-    gap: 12px 14px;
-  }
-  .topbar-links {
-    gap: 12px;
-  }
-}
-
 /* MIAOUCRATIE-TITLE-V2 */
 body .faq-hero .hero-title,
 body .tarifs-hero h1,
@@ -137,76 +77,6 @@ body > *:nth-child(3) { animation-delay: .06s; }
 body > *:nth-child(4) { animation-delay: .09s; }
 body > *:nth-child(5) { animation-delay: .12s; }
 body > *:nth-child(6) { animation-delay: .15s; }
-
-/* MIAOUCRATIE-TOPBAR-V4 */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-body {
-  background: var(--cream, #FBF7F0);
-  color: var(--N, #1A1A1A);
-  overflow-x: hidden;
-}
-.topbar {
-  width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  background: var(--deep, #1E1812);
-  padding: 12px 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px 20px;
-  flex-wrap: wrap;
-}
-.topbar-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  margin-left: auto;
-}
-.topbar a {
-  color: var(--light, #D4BEA8);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  transition: color 0.2s ease, opacity 0.2s ease;
-}
-.topbar a:hover {
-  color: var(--peach, #F2CDB0);
-}
-.topbar .sep {
-  width: 1px;
-  height: 16px;
-  background: rgba(255,255,255,0.15);
-}
-.topbar-menu-panel a.is-current {
-  background: rgba(255,255,255,0.06);
-  color: var(--peach, #F2CDB0);
-}
-.topbar a:focus-visible,
-.topbar-menu > summary:focus-visible,
-.topbar-menu-panel a:focus-visible {
-  outline: 2px solid rgba(242,205,176,0.8);
-  outline-offset: 2px;
-}
-@media (max-width: 768px) {
-  .topbar {
-    padding: 12px 20px;
-    gap: 12px 14px;
-  }
-  .topbar-links {
-    gap: 12px;
-  }
-}
 
 /* MIAOUCRATIE-TITLES-V5 */
 body h1,
@@ -340,13 +210,33 @@ body.cgv-page .brand-rule {
 }
 
 
-/* ── TOPBAR menu déroulant ────────────────────────── */
+/* ── TOPBAR ───────────────────────────────────────────
+   Definition unique de la barre. Elle reprend ici les trois proprietes de
+   mise en page que portaient les couches TOPBAR-V2 et V4, supprimees : sans
+   elles, la barre se reagence en dessous de 768px sur les pages qui ne
+   chargent pas topbar.css. */
 .topbar {
   position: sticky; top: 0; z-index: 200;
   background: var(--deep, #1E1812);
   display: flex; align-items: center;
+  width: 100%; justify-content: space-between; flex-wrap: wrap;
+  gap: 16px 20px;
   padding: 0 40px; min-height: 50px;
   animation: none !important;
+}
+.topbar a {
+  color: var(--light, #D4BEA8);
+  text-decoration: none;
+  font-size: 13px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+.topbar a:hover { color: var(--peach, #F2CDB0); }
+.topbar .sep { width: 1px; height: 16px; background: rgba(255,255,255,0.15); }
+.topbar a:focus-visible,
+.tmenu-panel a:focus-visible {
+  outline: 2px solid rgba(242,205,176,0.8);
+  outline-offset: 2px;
 }
 .tmenu-wrap { position: relative; flex-shrink: 0; }
 .tmenu-btn {
@@ -409,6 +299,12 @@ body.cgv-page .brand-rule {
      de 24px ne subsistait que sur les pages ou cette couche gagnait, d'ou une
      barre plus large sur carte, reservation et mentions legales. */
   .topbar { padding: 0 20px; }
+}
+@media (max-width: 768px) {
+  /* La barre passe a la ligne a cette largeur : sans cet interstice, elle
+     perd 4px de hauteur et tout ce qu'elle contient remonte. */
+  .topbar { gap: 12px 14px; }
+  .topbar-links { gap: 12px; }
 }
 @media (max-width: 600px) {
   .topbar-links { gap: 8px; }
