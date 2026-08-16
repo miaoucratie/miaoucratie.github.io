@@ -170,6 +170,11 @@ async function empreinte(page) {
           c.color, c.backgroundColor, c.fontSize, c.fontWeight, c.fontStyle,
           c.fontFamily.split(',')[0], c.display, c.borderRadius, c.padding, c.margin,
           c.textAlign, c.opacity, c.visibility,
+          // Interlignage et interlettrage : ils ne deplacent rien par
+          // eux-memes mais changent la hauteur et la largeur du texte. Sans
+          // eux, une regression d'interlignage n'apparaissait qu'en ricochet,
+          // sous la forme de centaines de decalages sans cause lisible.
+          c.lineHeight, c.letterSpacing,
         ].join('|');
       });
   });
@@ -189,7 +194,7 @@ async function empreinte(page) {
  * régression de style s'y voit toujours, et un décalage réel de mise en page
  * dépasse toujours largement deux pixels.
  */
-const CHAMPS_GEOMETRIQUES = new Set([2, 3, 4, 5, 8, 13, 14, 15]);
+const CHAMPS_GEOMETRIQUES = new Set([2, 3, 4, 5, 8, 13, 14, 15, 19, 20]);
 const TOLERANCE_PX = 2;
 
 export function memeElement(a, b) {
