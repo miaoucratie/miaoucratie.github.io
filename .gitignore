@@ -1,3 +1,15 @@
+# Le depot est public : tout ce qui y entre est servi et indexe.
+# N'y mettre que ce qui compose le site ou sert a le verifier.
+
+# Outillage local, sans rapport avec le site
 .claude/
+.agents/
+skills-lock.json
+
+# Etat local de wrangler : cache de compte, identifiants de session
+api/.wrangler/
+
+# Ancienne version conservee hors ligne
 .old/
+
 node_modules/
