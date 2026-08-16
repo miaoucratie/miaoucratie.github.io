@@ -44,11 +44,8 @@ Pour voir tous les écarts au lieu du premier seulement :
 npm run qa -- --detail
 ```
 
-Deux messages ne signalent **pas** une régression, seulement une dépendance réseau
-qui a lâché — il suffit de relancer :
-
-- « police non chargée » : la page aurait été mesurée avec la police de secours ;
-- un échec en bloc sur la carte, qui interroge l'API adresse pour de vrai.
+Un échec en bloc sur la carte ne signale **pas** une régression : elle interroge
+l'API adresse pour de vrai, et ce trajet lâche parfois. Relancer avant de conclure.
 
 Éteindre le serveur de prévisualisation avant de lancer la vérification : deux
 serveurs sur le même port donnent des écarts fantômes.
@@ -57,15 +54,18 @@ Les options et les pièges connus du harnais sont décrits en tête de `qa/qa.mj
 
 ## Ajouter une page
 
-Une page neuve hérite de tout le style commun en chargeant deux feuilles, dans cet
-ordre, la seconde en **dernier** dans le `<head>` :
+Une page neuve hérite de tout le style commun en chargeant trois feuilles, dans cet
+ordre, la dernière en **fin** de `<head>` :
 
 ```html
+<link rel="stylesheet" href="css/polices.css">
 <link rel="stylesheet" href="css/style.css">
 <!-- ... styles propres à la page ... -->
 <link rel="stylesheet" href="css/couches.css">
 ```
 
+`polices.css` déclare les deux familles, servies depuis `fonts/` : le site ne
+dépend d'aucun fournisseur extérieur pour sa typographie.
 `style.css` porte la base : palette, typographie, boutons, mise en page.
 `couches.css` porte la barre de navigation, le pied de page et les titres, et doit
 rester la dernière chargée — c'est ce qui lui permet d'imposer le commun sans

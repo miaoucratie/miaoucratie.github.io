@@ -28,18 +28,16 @@
  *    depend d'un appel reseau, sa presence varie d'un chargement a l'autre ;
  *  - les ressources CDN (Flatpickr, hCaptcha) chargent de facon asynchrone :
  *    on attend explicitement leur presence plutot qu'un delai fixe ;
- *  - les polices viennent de fonts.gstatic.com et ce trajet casse par
- *    intermittence. Sans elles la page serait mesuree avec la police de
- *    secours, ce qui produirait des centaines d'ecarts fantomes : la vue est
- *    alors ecartee et le manque signale. Voir attendrePolices().
+ *  - les polices sont servies par le site depuis le 16 aout 2026. Elles
+ *    venaient de fonts.gstatic.com et ce trajet cassait environ une fois sur
+ *    sept, ce qui rendait la verification aleatoire. Le controle reste en
+ *    place — il attraperait desormais un chemin casse dans polices.css.
  *
- * Deux dependances reseau restent NON maitrisees, et peuvent faire echouer une
- * execution sans qu'aucune regression n'existe :
- *  - les polices, ci-dessus : le message dit « police non chargee », il suffit
- *    de relancer ;
- *  - l'API adresse de la carte (geo.api.gouv.fr), interrogee pour de vrai par
- *    testerCarte. Un echec en bloc sur la carte — commune mal classee,
- *    reinitialisation incomplete — se relance avant d'etre cru.
+ * Une dependance reseau reste NON maitrisee, et peut faire echouer une
+ * execution sans qu'aucune regression n'existe : l'API adresse de la carte
+ * (geo.api.gouv.fr), interrogee pour de vrai par testerCarte et par le
+ * parcours qui passe par elle. Un echec en bloc sur la carte — commune mal
+ * classee, reinitialisation incomplete — se relance avant d'etre cru.
  */
 
 import { chromium } from 'playwright';
@@ -124,6 +122,11 @@ function demarrerServeur() {
 /**
  * Vérifie que les polices sont réellement utilisables avant toute mesure.
  * Renvoie la liste des familles déclarées mais indisponibles.
+ *
+ * Depuis que le site sert ses propres polices, ce contrôle ne devrait plus
+ * jamais échouer : il protège d'un chemin cassé dans `css/polices.css`. Ce qui
+ * suit vaut pour l'histoire, et pour le jour où l'on serait tenté de revenir à
+ * un fournisseur extérieur.
  *
  * Trois attentes successives se sont révélées insuffisantes, et l'ordre dans
  * lequel elles tombent explique le reste :
