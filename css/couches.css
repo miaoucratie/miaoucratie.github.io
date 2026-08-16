@@ -74,30 +74,33 @@ body.carte-page .zone-header h2,
 body .cgv-title,
 body .container > header h1,
 body .hero-title {
-  font-family: 'Cormorant Garamond', serif !important;
-  font-weight: 700 !important;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  /* Ces deux-la portent encore, et seulement sur le titre de la FAQ : le
+     selecteur « body .faq-hero .hero-title » est plus specifique que celui de
+     la couche TITLES-V5, qui imposerait sinon 1.08 et -0.02em. */
   letter-spacing: -3px !important;
   line-height: 1 !important;
-  color: var(--deep, #1E1812) !important;
+  color: var(--deep, #1E1812);
 }
 body .faq-hero .hero-title,
 body .tarifs-hero h1,
 body .container > header h1,
 body .hero-title {
-  font-size: clamp(52px, 7vw, 88px) !important;
+  font-size: clamp(52px, 7vw, 88px);
 }
 body.carte-page .zone-header h2,
 body .cgv-title {
-  font-size: clamp(32px, 5vw, 64px) !important;
+  font-size: clamp(32px, 5vw, 64px);
 }
 body .faq-hero .hero-sub,
 body .tarifs-hero-sub,
 body.carte-page .zone-desc,
 body .cgv-header p,
 body .container .subtitle {
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--muted, #7A6B5E) !important;
-  line-height: 1.8 !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted, #7A6B5E);
+  line-height: 1.8;
 }
 body.tarifs-page .tarifs-hero-cta .btn-primary {
   display: inline-flex;
@@ -107,11 +110,11 @@ body.tarifs-page .tarifs-hero-cta .btn-primary {
   text-decoration: none;
 }
 body.tarifs-page .tarifs-hero-cta .btn-secondary {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarifs-bg > .section > h2,
 body.tarifs-page .tarifs-bg h2.tarifs-duplicate-title {
-  display: none !important;
+  display: none;
 }
 
 
@@ -137,8 +140,8 @@ body > *:nth-child(6) { animation-delay: .15s; }
 
 /* MIAOUCRATIE-TOPBAR-V4 */
 html, body {
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
   width: 100%;
 }
 body {
@@ -245,9 +248,9 @@ body .tarifs-hero h1 em,
 body .cgv-title em,
 body.carte-page .zone-header h2 em,
 body.calculateur-page h1 em {
-  color: var(--T, #A8472A) !important;
-  font-style: italic !important;
-  font-weight: 400 !important;
+  color: var(--T, #A8472A);
+  font-style: italic;
+  font-weight: 400;
 }
 body .hero-sub,
 body .tarifs-hero-sub,
@@ -255,17 +258,17 @@ body .subtitle,
 body .cgv-header p,
 body.carte-page .zone-desc,
 body.calculateur-page .subtitle {
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--muted, #7A6B5E) !important;
-  line-height: 1.8 !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted, #7A6B5E);
+  line-height: 1.8;
 }
 body .section-label,
 body .hero-eyebrow,
 body .cta-eyebrow {
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--T, #A8472A) !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--T, #A8472A);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 body.tarifs-page .tarifs-hero-cta .btn-primary {
   display: inline-flex;
@@ -275,11 +278,11 @@ body.tarifs-page .tarifs-hero-cta .btn-primary {
   text-decoration: none;
 }
 body.tarifs-page .tarifs-hero-cta .btn-secondary {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarifs-bg > .section > h2,
 body.tarifs-page .tarifs-bg .section-label {
-  display: none !important;
+  display: none;
 }
 
 
@@ -296,9 +299,9 @@ body.standalone-page,
 body.calculateur-page,
 body.cgv-page,
 body.carte-page {
-  margin: 0 !important;
-  padding: 0 !important;
-  display: block !important;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 body.standalone-page .topbar,
 body.calculateur-page .topbar,
@@ -397,6 +400,8 @@ body.cgv-page .brand-rule {
    cette couche en fin de cascade aurait donc change le rendu de l'accueil,
    seule page portant ces elements. Declaration retiree. */
 /* FAQ CTA */
+/* Porte : sans priorite, le titre du bloc d appel de la FAQ repasse en sombre
+   sur son fond fonce. */
 .faq-cta .cta-title { color: #fff !important; }
 /* Responsive topbar */
 @media (max-width: 900px) {
@@ -420,13 +425,13 @@ body.cgv-page .brand-rule {
   min-width: 194px;
   padding: 14px 36px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.06) !important;
-  color: #F6E8DB !important;
-  border: 1.5px solid rgba(242,205,176,0.42) !important;
-  font-family: 'DM Sans', sans-serif !important;
-  font-size: 15px !important;
-  font-weight: 500 !important;
-  text-decoration: none !important;
+  background: rgba(255,255,255,0.06);
+  color: #F6E8DB;
+  border: 1.5px solid rgba(242,205,176,0.42);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 

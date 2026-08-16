@@ -1,7 +1,7 @@
 /* Barre de navigation, partagee par index, faq et cgv.
    Etait recopiee a l'identique dans les trois pages. */
 /* ── Topbar inline ───────────────────────── */
-.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;animation:none!important}
+.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;animation:none}
 .tmenu-wrap{position:relative;flex-shrink:0}
 .tmenu-btn{background:none;border:none;cursor:pointer;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:12px 0;transition:color .2s}
 .tmenu-btn:hover{color:#F2CDB0}

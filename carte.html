@@ -147,11 +147,11 @@
     .autocomplete button:hover,.autocomplete button.active{background:rgba(122,158,142,.08)}
     .autocomplete small{color:var(--muted);font-weight:700;white-space:nowrap}
 
-    .result{margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px;display:flex !important;flex-direction:column;gap:4px;min-height:88px;line-height:1.5}
-    .result.free{background:rgba(122,158,142,.12);color:var(--deep) !important}
-    .result.paid{background:rgba(200,96,58,.10);color:var(--deep) !important}
-    .result.out{background:rgba(214,69,69,.10);color:var(--deep) !important}
-    .result .result-prefix,.result .result-label,.result .result-text{display:block !important;color:inherit !important}
+    .result{margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:4px;min-height:88px;line-height:1.5}
+    .result.free{background:rgba(122,158,142,.12);color:var(--deep)}
+    .result.paid{background:rgba(200,96,58,.10);color:var(--deep)}
+    .result.out{background:rgba(214,69,69,.10);color:var(--deep)}
+    .result .result-prefix,.result .result-label,.result .result-text{display:block;color:inherit}
     .result .result-prefix,.result .result-label{font-weight:700}
     .result .result-text{white-space:normal;font-weight:400}
     .result-prefix.boost{animation:resultPulse .72s cubic-bezier(.2,.8,.2,1) both}
@@ -247,7 +247,7 @@
     @media (prefers-reduced-motion: reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 /* topbar */
-.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;width:100%;animation:none!important}
+.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;width:100%;animation:none}
 .tmenu-wrap{position:relative;flex-shrink:0}
 .tmenu-btn{background:none;border:none;cursor:pointer;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:12px 0;transition:color .2s}
 .tmenu-btn:hover{color:#F2CDB0}

@@ -494,7 +494,7 @@ textarea:disabled {
    toute regle de classe posant un display. Sans !important, les champs
    masques et les boutons conditionnels s'affichent. */
 [hidden] {
-  display: none !important;
+  display: none;
 }
 
 .autocomplete__option {
@@ -997,7 +997,7 @@ body.reservation-page .autocomplete__list/* Indispensable : [hidden] a une speci
    toute regle de classe posant un display. Sans !important, les champs
    masques et les boutons conditionnels s'affichent. */
 [hidden] {
-  display: none !important;
+  display: none;
 }
 
 body.reservation-page .autocomplete__option {
@@ -1129,7 +1129,7 @@ body.reservation-page .autocomplete__list/* Indispensable : [hidden] a une speci
    toute regle de classe posant un display. Sans !important, les champs
    masques et les boutons conditionnels s'affichent. */
 [hidden] {
-  display: none !important;
+  display: none;
 }
 
 body.reservation-page .reservation-kicker,

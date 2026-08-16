@@ -543,7 +543,7 @@
 }
 .tarifs-page .tarifs-bg h2,
 .tarifs-page .tarifs-bg .section-label {
-  color: var(--deep, #1E1812) !important;
+  color: var(--deep, #1E1812);
 }
 
 

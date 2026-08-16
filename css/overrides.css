@@ -69,30 +69,30 @@ body.carte-page .zone-header h2,
 body .cgv-title,
 body .container > header h1,
 body .hero-title {
-  font-family: 'Cormorant Garamond', serif !important;
-  font-weight: 700 !important;
-  letter-spacing: -3px !important;
-  line-height: 1 !important;
-  color: var(--deep, #1E1812) !important;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  letter-spacing: -3px;
+  line-height: 1;
+  color: var(--deep, #1E1812);
 }
 body .faq-hero .hero-title,
 body .tarifs-hero h1,
 body .container > header h1,
 body .hero-title {
-  font-size: clamp(52px, 7vw, 88px) !important;
+  font-size: clamp(52px, 7vw, 88px);
 }
 body.carte-page .zone-header h2,
 body .cgv-title {
-  font-size: clamp(32px, 5vw, 64px) !important;
+  font-size: clamp(32px, 5vw, 64px);
 }
 body .faq-hero .hero-sub,
 body .tarifs-hero-sub,
 body.carte-page .zone-desc,
 body .cgv-header p,
 body .container .subtitle {
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--muted, #7A6B5E) !important;
-  line-height: 1.8 !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted, #7A6B5E);
+  line-height: 1.8;
 }
 body.tarifs-page .tarifs-hero-cta .btn-primary {
   display: inline-flex;
@@ -102,11 +102,11 @@ body.tarifs-page .tarifs-hero-cta .btn-primary {
   text-decoration: none;
 }
 body.tarifs-page .tarifs-hero-cta .btn-secondary {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarifs-bg > .section > h2,
 body.tarifs-page .tarifs-bg h2.tarifs-duplicate-title {
-  display: none !important;
+  display: none;
 }
 
 
