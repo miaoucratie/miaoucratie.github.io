@@ -6,9 +6,26 @@ Site statique, sans framework ni étape de compilation, publié par GitHub Pages
 
 ## Publier
 
+GitHub Pages publie **dès le push sur `main`**, sans attendre la vérification.
+Pousser directement sur `main` met donc en ligne avant tout contrôle : si la
+vérification échoue ensuite, la régression est déjà chez les visiteurs.
+
+Le travail passe donc par une branche et une pull request, où la vérification
+s'exécute **avant** la fusion :
+
 ```bash
-git push origin main
+git checkout -b ma-modification
 ```
+
+```bash
+git push -u origin ma-modification
+```
+
+Ouvrir la pull request, attendre que « QA / Non-régression » soit au vert, puis
+fusionner. C'est la fusion qui publie.
+
+Pour une correction d'urgence assumée, pousser sur `main` reste possible — mais
+c'est un choix, pas la marche normale.
 
 ## Vérifier
 
@@ -52,8 +69,9 @@ Pour voir tous les écarts au lieu du premier seulement :
 npm run qa -- --detail
 ```
 
-Un échec en bloc sur la carte ne signale **pas** une régression : elle interroge
-l'API adresse pour de vrai, et ce trajet lâche parfois. Relancer avant de conclure.
+Un échec sur la carte est désormais un vrai échec : l'API adresse est servie
+depuis `qa/fixtures/geo-api.json` et ne dépend plus du réseau. Relancer ne le
+fera pas disparaître.
 
 Éteindre le serveur de prévisualisation avant de lancer la vérification : deux
 serveurs sur le même port donnent des écarts fantômes.

@@ -1,9 +1,16 @@
 name: QA
 
-# Attention : GitHub Pages publie sur push, indépendamment de ce workflow.
-# Cette action n'empêche donc pas une mise en ligne, elle vous alerte.
-# Pour un vrai blocage il faudrait piloter le déploiement Pages depuis un
-# workflow, ce qui est un changement plus lourd.
+# GitHub Pages publie sur push, indépendamment de ce workflow : sur un push
+# direct vers main, cette action n'empêche rien, elle alerte après coup.
+#
+# C'est pourquoi le travail passe par une pull request. La vérification s'y
+# exécute AVANT la fusion, et comme c'est la fusion qui publie, un échec arrête
+# la mise en ligne. Le README décrit la marche à suivre.
+#
+# Pour rendre la règle contraignante plutôt que volontaire : Settings → Rules →
+# protéger main en exigeant le contrôle « Non-régression ». Le déploiement
+# piloté par workflow (actions/deploy-pages) donnerait le même résultat, au prix
+# d'une infrastructure que ce site vitrine ne justifie pas.
 
 on:
   push:
@@ -67,8 +74,13 @@ jobs:
           echo "menu, accordéon, filtres, recherche, carte, calendrier, anonymat des avis." >> $GITHUB_STEP_SUMMARY
           echo "Un échec signifie donc qu'une fonction ne répond plus, pas qu'un pixel a bougé." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Le site est **déjà en ligne** : GitHub Pages publie sur push," >> $GITHUB_STEP_SUMMARY
-          echo "sans attendre ce workflow. Vérifiez la production." >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Rien n'est en ligne : cette vérification précède la fusion." >> $GITHUB_STEP_SUMMARY
+            echo "Corrigez sur la branche, la publication attendra." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Le site est **déjà en ligne** : GitHub Pages publie sur push," >> $GITHUB_STEP_SUMMARY
+            echo "sans attendre ce workflow. Vérifiez la production." >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Pour reproduire en local :" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
