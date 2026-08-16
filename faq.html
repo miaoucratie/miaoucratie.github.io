@@ -152,16 +152,22 @@
       font-size: 17px;
       color: var(--muted);
       font-weight: 300;
-      max-width: 540px;
+      /* 600px plutot que 540 : la seconde phrase tient alors sur une ligne.
+         A 540 le mot « complètes » restait seul en bas. */
+      max-width: 600px;
       margin: 0 auto;
       line-height: 1.7;
+      /* Pour les largeurs intermediaires, ou la phrase doit bien se couper. */
+      text-wrap: balance;
     }
     .hero-rule {
-      width: 52px;
-      height: 6px;
-      background: var(--T);
+      /* Trait d'intensite variable plutot qu'un aplat epais : il s'eteint aux
+         deux bouts, comme les connecteurs entre les etapes de l'accueil. */
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--T) 35%, var(--T) 65%, transparent);
       margin: 36px auto 0;
-      border-radius: 3px;
+      border-radius: 2px;
     }
 
     /* ─── FILTERS ────────────────────────────────────── */
@@ -552,20 +558,25 @@
 body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
 body .faq-cta .cta-sub { color: rgba(255,255,255,0.60); }
 
-    .reservation-shortcut {
+    /* Appel a l'action en fin de reponse. Un seul motif pour toutes les
+       reponses qui en portent un : il y en avait deux, l'un pale au point
+       d'etre invisible, l'autre glisse au fil d'une phrase. */
+    .acc-cta {
       margin-top: 18px;
       display: flex;
       justify-content: flex-start;
     }
-    .reservation-shortcut .btn-secondary {
+    .acc-cta .btn-secondary {
       padding: 12px 22px;
       font-size: 14px;
-      border-color: var(--warm);
-      background: rgba(168, 71, 42, 0.03);
+      font-weight: 600;
+      color: var(--T);
+      border: 1.5px solid var(--T);
+      background: transparent;
     }
-    .reservation-shortcut .btn-secondary:hover {
-      border-color: var(--T);
-      background: rgba(168, 71, 42, 0.07);
+    .acc-cta .btn-secondary:hover {
+      color: var(--W);
+      background: var(--T);
     }
 </style>
 <!-- ─── SEO : FAQPage Schema ──────────────────────── -->
@@ -1418,7 +1429,9 @@ body.carte-page .zone-header {
 <div class="acc-content">
 <p>Je pars de <strong>Domagné</strong> et j'interviens jusqu'à 20 km par la route, avec un peu de souplesse selon les disponibilités. Les communes les plus fréquentes : Domagné, Châteaubourg, Châteaugiron et Vitré. Janzé et d'autres communes sont possibles selon les tournées.</p>
 <p>Au-delà de 20 km et jusqu'à 45 km, c'est possible sur devis, avec des frais kilométriques de 0,70 €/km. Rennes et les communes hors Ille-et-Vilaine ne sont pas couvertes.</p>
-<p>Vérifiez la zone d’intervention ici : <a class="inline-cta" href="carte.html">Voir la carte</a></p></div>
+<p>Vérifiez votre commune sur la carte.</p>
+<hr class="divider"/>
+<div class="acc-cta"><a class="btn-secondary" href="carte.html">Voir la carte</a></div></div>
 </div>
 </div>
 <div class="acc-item">
@@ -1470,7 +1483,7 @@ body.carte-page .zone-header {
 </div>
 <p style="margin-top:12px;">Le devis et la pré-visite peuvent se faire dans l'ordre qui vous convient : un devis avant la pré-visite, ou une pré-visite en amont pour qu'on se rencontre d'abord.</p>
 <hr class="divider"/>
-<div class="reservation-shortcut"><a class="btn-secondary" href="reservation.html">Réserver une garde</a></div>
+<div class="acc-cta"><a class="btn-secondary" href="reservation.html">Réserver une garde</a></div>
 </div>
 </div>
 </div>

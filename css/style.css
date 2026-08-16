@@ -339,7 +339,9 @@
      qui s'eclaircit derriere et s'affirme devant, donne le sens de lecture
      sans ajouter de symbole. Chacun se cale au milieu de l'espace separant
      deux pastilles. */
-  .step + .step::before {
+  /* Restreint a .steps-row : la classe .step sert aussi aux listes numerotees
+     des reponses de la FAQ, ou ce connecteur n'a rien a faire. */
+  .steps-row .step + .step::before {
     content: ''; position: absolute; top: 36px; left: -8px;
     transform: translate(-50%, -50%);
     width: 96px; height: 2px; border-radius: 2px;
@@ -525,7 +527,7 @@
     .steps-row { grid-template-columns: 1fr 1fr; gap: 24px; }
     /* La rangee passe sur deux colonnes : un trait horizontal n'aurait plus
        de sens entre des etapes qui ne se suivent plus de gauche a droite. */
-    .step + .step::before { display: none; }
+    .steps-row .step + .step::before { display: none; }
 
     .cred-layout { grid-template-columns: 1fr; gap: 36px; }
     .cred-grid { grid-template-columns: 1fr; }
