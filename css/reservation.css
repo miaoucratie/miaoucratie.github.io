@@ -394,6 +394,12 @@ body.reservation-page .hero h1 span.nowrap {
 .field {
   display: grid;
   gap: 0.45rem;
+  /* Sans ceci, la grille etire ses lignes pour remplir la hauteur imposee par
+     le champ voisin, et l'espace se repartit entre elles. Deux champs cote a
+     cote n'ayant pas le meme nombre de lignes — l'un a un texte d'aide, pas
+     l'autre — leurs libelles grandissaient differemment et les controles ne
+     demarraient plus a la meme hauteur. */
+  align-content: start;
 }
 
 .field--honeypot {
