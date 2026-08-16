@@ -1,8 +1,14 @@
 /**
  * Harnais de non-regression du site Miaoucratie.
  *
- *   npm run qa          verifie le site contre la reference
- *   npm run qa:update   regenere la reference (a faire APRES avoir valide un changement voulu)
+ * Ce commentaire est la reference des options : le README y renvoie plutot
+ * que de les recopier, pour qu'il n'y ait qu'un seul endroit a tenir a jour.
+ *
+ *   npm run qa                    verifie le site contre la reference
+ *   npm run qa -- --detail        liste TOUS les ecarts, pas seulement le premier
+ *   npm run qa -- --comportement  ignore l'apparence, ne teste que le comportement
+ *   npm run qa:update             regenere la reference, APRES avoir valide a l'oeil
+ *                                 que le changement visuel est bien celui qu'on voulait
  *
  * Deux familles de controles :
  *
@@ -12,15 +18,28 @@
  *     d'une modification CSS.
  *
  *  2. Comportement. Menu, accordeon, filtres, recherche, moteur de communes,
- *     initialisation du calendrier. C'est ce qui attrape les regressions
- *     silencieuses d'une modification HTML ou JS — une page peut avoir des
- *     balises parfaitement equilibrees et n'avoir plus aucun JavaScript.
+ *     initialisation du calendrier, anonymat des avis. C'est ce qui attrape les
+ *     regressions silencieuses d'une modification HTML ou JS — une page peut
+ *     avoir des balises parfaitement equilibrees et n'avoir plus aucun
+ *     JavaScript.
  *
  * Pieges connus, traites ici :
  *  - les elements Leaflet sont exclus de l'empreinte : le marqueur de depart
  *    depend d'un appel reseau, sa presence varie d'un chargement a l'autre ;
  *  - les ressources CDN (Flatpickr, hCaptcha) chargent de facon asynchrone :
- *    on attend explicitement leur presence plutot qu'un delai fixe.
+ *    on attend explicitement leur presence plutot qu'un delai fixe ;
+ *  - les polices viennent de fonts.gstatic.com et ce trajet casse par
+ *    intermittence. Sans elles la page serait mesuree avec la police de
+ *    secours, ce qui produirait des centaines d'ecarts fantomes : la vue est
+ *    alors ecartee et le manque signale. Voir attendrePolices().
+ *
+ * Deux dependances reseau restent NON maitrisees, et peuvent faire echouer une
+ * execution sans qu'aucune regression n'existe :
+ *  - les polices, ci-dessus : le message dit « police non chargee », il suffit
+ *    de relancer ;
+ *  - l'API adresse de la carte (geo.api.gouv.fr), interrogee pour de vrai par
+ *    testerCarte. Un echec en bloc sur la carte — commune mal classee,
+ *    reinitialisation incomplete — se relance avant d'etre cru.
  */
 
 import { chromium } from 'playwright';

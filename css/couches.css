@@ -211,10 +211,10 @@ body.cgv-page .brand-rule {
 
 
 /* ── TOPBAR ───────────────────────────────────────────
-   Definition unique de la barre. Elle reprend ici les trois proprietes de
-   mise en page que portaient les couches TOPBAR-V2 et V4, supprimees : sans
-   elles, la barre se reagence en dessous de 768px sur les pages qui ne
-   chargent pas topbar.css. */
+   Seule definition de la barre sur tout le site. Elle en a compte quatre :
+   les couches TOPBAR-V2 et V4, une feuille topbar.css chargee sur trois
+   pages, et une copie inline sur trois autres. Toute modification de la barre
+   se fait ici, et nulle part ailleurs. */
 .topbar {
   position: sticky; top: 0; z-index: 200;
   background: var(--deep, #1E1812);
