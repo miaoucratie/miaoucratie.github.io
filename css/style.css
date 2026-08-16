@@ -334,9 +334,17 @@
     display: grid; grid-template-columns: repeat(5, 1fr);
     gap: 16px; position: relative; margin-top: 8px;
   }
-  .steps-row::before {
-    content: ''; position: absolute; top: 36px; left: 48px; right: 48px; height: 2px;
-    background: repeating-linear-gradient(90deg, var(--sand) 0, var(--sand) 6px, transparent 6px, transparent 14px);
+  /* Un trait pointille reliait les etapes sans les orienter : il disait « ces
+     cinq choses vont ensemble », pas « on avance ». Un degre par intervalle,
+     qui s'eclaircit derriere et s'affirme devant, donne le sens de lecture
+     sans ajouter de symbole. Chacun se cale au milieu de l'espace separant
+     deux pastilles. */
+  .step + .step::before {
+    content: ''; position: absolute; top: 36px; left: -8px;
+    transform: translate(-50%, -50%);
+    width: 96px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, rgba(200,96,58,0.05), var(--terracotta));
+    pointer-events: none;
   }
   .step { display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1; }
   /* Pastille teintee, sans anneau ni ombre : l'aplat sombre d'origine etait
@@ -344,8 +352,18 @@
      chiffre passe de 22 a 34px, il se perdait dans un cercle de 72px. */
   .step-bubble {
     width: 72px; height: 72px; border-radius: 50%;
-    background: rgba(200,96,58,0.10); color: var(--rust);
+    /* Fond opaque, et non une teinte translucide : le trait pointille qui
+       relie les etapes passe a 36px, soit en plein milieu de la pastille, et
+       se voyait au travers — il barrait les chiffres. */
+    background: linear-gradient(rgba(200,96,58,0.10), rgba(200,96,58,0.10)), var(--warm);
+    color: var(--rust);
     font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 700;
+    /* Cormorant compose des chiffres elzeviers : le 3 et le 5 descendent de
+       10px sous la ligne de base, le 4 de 7, alors que le 1 et le 2 n'ont
+       aucun jambage. Dans une rangee de pastilles, ils semblaient poses de
+       travers. Cette ligne demande les chiffres alignes, que la police fournit. */
+    font-variant-numeric: lining-nums;
+    font-feature-settings: 'lnum' 1;
     line-height: 1;
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 16px; flex-shrink: 0;
@@ -505,7 +523,9 @@
     .cards-grid { grid-template-columns: 1fr; }
 
     .steps-row { grid-template-columns: 1fr 1fr; gap: 24px; }
-    .steps-row::before { display: none; }
+    /* La rangee passe sur deux colonnes : un trait horizontal n'aurait plus
+       de sens entre des etapes qui ne se suivent plus de gauche a droite. */
+    .step + .step::before { display: none; }
 
     .cred-layout { grid-template-columns: 1fr; gap: 36px; }
     .cred-grid { grid-template-columns: 1fr; }
