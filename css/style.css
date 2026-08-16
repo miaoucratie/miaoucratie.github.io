@@ -511,10 +511,6 @@
 
 .footer-legal a { color: var(--sand); text-decoration: none; font-size: 13px; transition: color 0.2s; }
 .footer-legal a:hover { color: var(--peach); }
-.site-menu-panel a.is-current {
-  background: rgba(168,71,42,0.10);
-  color: var(--T, #A8472A);
-}
 .inline-cta {
   display: inline-flex;
   align-items: center;
@@ -547,10 +543,6 @@
 }
 
 
-.site-menu-panel a.is-current {
-  background: rgba(168,71,42,0.10);
-  color: var(--T, #A8472A);
-}
 .inline-cta {
   display: inline-flex;
   align-items: center;

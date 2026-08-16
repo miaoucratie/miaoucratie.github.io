@@ -241,73 +241,7 @@ body {
   height: 16px;
   background: rgba(255,255,255,0.15);
 }
-.topbar-menu {
-  position: relative;
-  flex-shrink: 0;
-}
-.topbar-menu > summary {
-  list-style: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--light, #D4BEA8);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  user-select: none;
-}
-.topbar-menu > summary::before {
-  content: '☰';
-  font-size: 16px;
-  line-height: 1;
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu > summary::-webkit-details-marker {
-  display: none;
-}
-.topbar-menu[open] > summary,
-.topbar-menu > summary:hover {
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu-panel {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
-  min-width: 220px;
-  padding: 10px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: var(--deep, #1E1812);
-  box-shadow: 0 14px 30px rgba(0,0,0,.18);
-  z-index: 1000;
-  display: grid;
-  gap: 4px;
-}
-.topbar-menu-panel a {
-  display: block;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: var(--light, #D4BEA8);
-  text-decoration: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-}
-.topbar-menu-panel a:hover {
-  background: rgba(255,255,255,0.06);
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu-panel a.is-current {
-  background: rgba(255,255,255,0.06);
-  color: var(--peach, #F2CDB0);
-}
-.topbar a:focus-visible,
-.topbar-menu > summary:focus-visible,
-.topbar-menu-panel a:focus-visible {
+.topbar a:focus-visible {
   outline: 2px solid rgba(242,205,176,0.8);
   outline-offset: 2px;
 }
@@ -319,10 +253,7 @@ body {
   .topbar-links {
     gap: 12px;
   }
-  .topbar-menu-panel {
-    min-width: 190px;
   }
-}
 
 /* MIAOUCRATIE-TITLES-V5 */
 body h1,
