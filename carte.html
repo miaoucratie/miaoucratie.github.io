@@ -26,9 +26,7 @@
   <link rel="canonical" href="https://miaoucratie.fr/carte.html">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/polices.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <meta property="og:locale" content="fr_FR">
@@ -78,16 +76,6 @@
 
   <style>
     :root{
-      --cream:#FBF7F0;
-      --warm:#F0E8DA;
-      --peach:#F2CDB0;
-      --terracotta:#C8603A;
-      --rust:#A8472A;
-      --sage:#7A9E8E;
-      --deep:#1E1812;
-      --mid:#4A3728;
-      --sand:#B89B80;
-      --light:#D4BEA8;
       --card:#FFFDFC;
       --line:#E8DAC8;
       --muted:#735F50;
@@ -108,10 +96,13 @@
     .grid-hero{grid-template-columns:1.08fr .92fr;margin-bottom:20px}
     .grid-main{grid-template-columns:minmax(0,1.28fr) minmax(320px,.72fr)}
 
-    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);padding:24px;margin-bottom:24px}
-    .hero-left{padding:30px}
-    .hero-right{padding:0;display:flex;flex-direction:column;gap:20px}
-    .search-card,.legend,.rule-card,.info-card{padding:18px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);padding:32px;margin-bottom:24px}
+    .hero-left{padding:32px}
+    /* align-items:stretch est indispensable : style.css centre cette colonne,
+       et les cartes prenaient alors la largeur de leur contenu. « Hors zone »
+       faisait 499px face aux 558px de « Comment je fonctionne ». */
+    .hero-right{padding:0;display:flex;flex-direction:column;gap:20px;align-items:stretch}
+    .search-card,.legend,.rule-card,.info-card{padding:32px}
 
     .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rust,#A8472A);background:rgba(168,71,42,.1);border-radius:999px;padding:7px 14px;margin-bottom:18px}
     .kicker svg{width:14px;height:14px;flex:none}
@@ -120,7 +111,10 @@
     .intro{margin:0;max-width:72ch;color:var(--muted);font-size:16px}
 
     .hero-points{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-    .mini{padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff}
+    /* Meme animation au survol que les cartes de « Comment je fonctionne » :
+       ce sont les memes petites cartes, elles doivent reagir pareil. */
+    .mini{padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;transition:transform .15s ease,box-shadow .15s ease}
+    .mini:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(30,24,18,.08)}
     .mini strong{display:block;font-family:'Cormorant Garamond',serif;font-size:25px;line-height:1;color:var(--deep);margin-bottom:6px}
     .mini span{font-size:13px;color:var(--muted)}
 
@@ -132,7 +126,7 @@
     .hero-right .stat strong{display:block;font-family:'Cormorant Garamond',serif;font-size:42px;line-height:1;color:var(--terracotta);letter-spacing:-.04em;margin-bottom:6px}
     .hero-right .stat span{color:var(--muted);font-size:13px}
 
-    .zone-card{padding:24px;border-radius:18px;border:1px solid var(--line);background:#fff;margin-bottom:24px}
+    .zone-card{padding:32px;border-radius:18px;border:1px solid var(--line);background:#fff;margin-bottom:24px}
     .zone-card h2,.rule-card h2,.legend h2,.info-card h2,.map-title strong{font-family:'Cormorant Garamond',serif;letter-spacing:-.03em}
     .zone-card h2,.rule-card h2,.legend h2,.info-card h2{font-size:28px;line-height:1.05;margin:0 0 12px}
     .zone-card ul{margin:0;padding:0 0 0 18px;color:var(--mid)}
@@ -157,11 +151,11 @@
     .autocomplete button:hover,.autocomplete button.active{background:rgba(122,158,142,.08)}
     .autocomplete small{color:var(--muted);font-weight:700;white-space:nowrap}
 
-    .result{margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px;display:flex !important;flex-direction:column;gap:4px;min-height:88px;line-height:1.5}
-    .result.free{background:rgba(122,158,142,.12);color:var(--deep) !important}
-    .result.paid{background:rgba(200,96,58,.10);color:var(--deep) !important}
-    .result.out{background:rgba(214,69,69,.10);color:var(--deep) !important}
-    .result .result-prefix,.result .result-label,.result .result-text{display:block !important;color:inherit !important}
+    .result{margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:4px;min-height:88px;line-height:1.5}
+    .result.free{background:rgba(122,158,142,.12);color:var(--deep)}
+    .result.paid{background:rgba(200,96,58,.10);color:var(--deep)}
+    .result.out{background:rgba(214,69,69,.10);color:var(--deep)}
+    .result .result-prefix,.result .result-label,.result .result-text{display:block;color:inherit}
     .result .result-prefix,.result .result-label{font-weight:700}
     .result .result-text{white-space:normal;font-weight:400}
     .result-prefix.boost{animation:resultPulse .72s cubic-bezier(.2,.8,.2,1) both}
@@ -201,7 +195,7 @@
     .legend-item strong{display:block;margin-bottom:2px}
     .legend-item p{margin:0;color:var(--muted);font-size:13px}
 
-    .rule-card{margin-top:0;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:none;padding:24px;margin-bottom:24px}
+    .rule-card{margin-top:0;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:none;padding:32px;margin-bottom:24px}
     .rule-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
     .rule-item{padding:18px;border-radius:18px;border:1px solid var(--line);background:#fff;transition:transform .15s ease,box-shadow .15s ease}
     .rule-item:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(30,24,18,.08)}
@@ -257,39 +251,11 @@
     @media (prefers-reduced-motion: reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 /* topbar */
-.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;width:100%;animation:none!important}
-.tmenu-wrap{position:relative;flex-shrink:0}
-.tmenu-btn{background:none;border:none;cursor:pointer;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:12px 0;transition:color .2s}
-.tmenu-btn:hover{color:#F2CDB0}
-.tmenu-panel{flex-direction:column;gap:2px;position:absolute;top:calc(100% + 6px);left:0;min-width:200px;padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#1E1812;box-shadow:0 20px 48px rgba(0,0,0,.4);z-index:1000}
-.tmenu-panel a{display:block;padding:9px 14px;border-radius:8px;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;text-decoration:none;transition:background .15s,color .15s}
-.tmenu-panel a:hover{background:rgba(255,255,255,.07);color:#FBF7F0}
-.tmenu-panel a.is-current{color:#F2CDB0;background:rgba(242,205,176,.08)}
-.topbar-links{margin-left:auto;display:flex;align-items:center;gap:16px}
-.topbar-links a{color:#D4BEA8;text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:color .2s;font-family:'DM Sans',sans-serif}
-.topbar-links a:hover{color:#F2CDB0}
-.tsep{width:1px;height:16px;background:rgba(255,255,255,.12);flex-shrink:0}
 /* footer */
-.footer-bar{background:#1E1812;padding:28px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;width:100%}
-.footer-bar .footer-logo{display:flex;align-items:center;gap:12px}
-.footer-bar .footer-logo img{width:40px;height:40px;border-radius:50%;object-fit:cover;opacity:.9}
-.footer-bar .footer-logo span{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;letter-spacing:-.5px;color:#FBF7F0}
-.footer-bar .footer-logo em{color:#C8603A;font-style:italic}
-.footer-bar .footer-links{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
-.footer-bar .footer-links a{color:#B89B80;text-decoration:none;font-size:13px;font-family:'DM Sans',sans-serif;transition:color .2s}
-.footer-bar .footer-links a:hover{color:#F2CDB0}
-.footer-bar .footer-legal{font-size:12px;color:rgba(255,255,255,.4);font-family:'DM Sans',sans-serif}
-.footer-bar .footer-legal a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
-.footer-bar .footer-legal a:hover{color:rgba(255,255,255,.7)}
 @media(max-width:768px){
-  .topbar{padding:0 20px}
-  .footer-bar{flex-direction:column;text-align:center;padding:24px 20px}
-  .footer-bar .footer-links{justify-content:center}
-  .tsep{display:none}
-  .topbar-links a[href^="mailto"]{display:none}
 }
   </style>
-<link href="css/style.css" rel="stylesheet"/>
+<link rel="stylesheet" href="css/couches.css">
 </head>
 <body>
 <div class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
@@ -308,7 +274,7 @@
 
         <div class="hero-points">
           <div class="mini"><strong>20 km</strong><span>déplacement inclus autour de Domagné</span></div>
-          <div class="mini"><strong>Souplesse</strong><span>j'étudie les communes en limite selon mes tournées</span></div>
+          <div class="mini"><strong>Souplesse</strong><span>j'étudie les communes limitrophes selon mes tournées</span></div>
           <div class="mini"><strong>45 km</strong><span>au-delà, je ne peux pas venir</span></div>
         </div>
 
@@ -316,7 +282,7 @@
           <strong>J'interviens jusqu'à 20 km par la route autour de Domagné, et jusqu'à 45 km sur devis.</strong>
           <span style="margin-top:6px;display:block;">Notamment : Châteaubourg, Châteaugiron, Vitré, Janzé, Piré-sur-Seiche et alentours.</span>
           <span>Je pars toujours de Domagné, et les distances se comptent <strong>par la route</strong>, pas à vol d'oiseau.</span>
-          <span style="margin-top:6px;display:block;">Au-delà des 20 km, je peux venir sur devis, avec des frais de <strong>0,70 €/km</strong>. Ce tarif suit le prix du carburant et peut donc bouger.</span>
+          <span style="margin-top:6px;display:block;">Au-delà des 20 km, je peux venir sur devis, avec des frais de <strong>0,70 €/km</strong>.<br>Ce tarif suit le prix du carburant et peut donc bouger.</span>
         </div>
 
         <div class="search-card card" id="searchSection">
@@ -353,9 +319,9 @@
         <div class="rule-card" style="margin-top:0">
           <h2>Comment je fonctionne</h2>
           <div class="rule-grid">
-            <div class="rule-item"><strong>Une réponse immédiate</strong><span>Vous savez tout de suite si votre commune est couverte.</span></div>
+            <div class="rule-item"><strong>Zone vérifiée</strong><span>La recherche vous dit tout de suite si votre commune est couverte.</span></div>
             <div class="rule-item"><strong>Les limites se discutent</strong><span>Votre commune tombe juste au-delà ? Écrivez-moi, je regarde mes tournées.</span></div>
-            <div class="rule-item"><strong>Personne entre nous</strong><span>Vous m'écrivez, c'est moi qui vous réponds.</span></div>
+            <div class="rule-item"><strong>Aucun intermédiaire</strong><span>Vous écrivez à la personne qui gardera votre chat.</span></div>
           </div>
         </div>
       </aside>

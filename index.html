@@ -159,7 +159,7 @@
 <link href="sitemap.xml" rel="sitemap" type="application/xml"/>
 <link rel="stylesheet" href="css/overrides.css"><style>
 h1, .hero-title {
-  font-family: 'Cormorant Garamond', serif !important;
+  font-family: 'Cormorant Garamond', serif;
   font-size: clamp(52px, 7vw, 88px);
   font-weight: 700;
 }
@@ -169,11 +169,11 @@ h1, .hero-title {
 }
 </style><style>
 body {
-  margin:0 !important;
-  padding:0 !important;
+  margin:0;
+  padding:0;
 }
 .tarifs-layout {
-  display:block !important;
+  display:block;
 }
 </style><style>
 /* MIAOUCRATIE-FADE-V4 */
@@ -189,12 +189,12 @@ body > *:nth-child(3) { animation-delay: .06s; }
 body > *:nth-child(4) { animation-delay: .09s; }
 body > *:nth-child(5) { animation-delay: .12s; }
 body > *:nth-child(6) { animation-delay: .15s; }
-.topbar { animation: none !important; }
+.topbar { animation: none; }
 
 /* MIAOUCRATIE-TOPBAR-V4 */
 html, body {
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
   width: 100%;
 }
 body {
@@ -241,73 +241,7 @@ body {
   height: 16px;
   background: rgba(255,255,255,0.15);
 }
-.topbar-menu {
-  position: relative;
-  flex-shrink: 0;
-}
-.topbar-menu > summary {
-  list-style: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--light, #D4BEA8);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  user-select: none;
-}
-.topbar-menu > summary::before {
-  content: '☰';
-  font-size: 16px;
-  line-height: 1;
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu > summary::-webkit-details-marker {
-  display: none;
-}
-.topbar-menu[open] > summary,
-.topbar-menu > summary:hover {
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu-panel {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
-  min-width: 220px;
-  padding: 10px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: var(--deep, #1E1812);
-  box-shadow: 0 14px 30px rgba(0,0,0,.18);
-  z-index: 1000;
-  display: grid;
-  gap: 4px;
-}
-.topbar-menu-panel a {
-  display: block;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: var(--light, #D4BEA8);
-  text-decoration: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-}
-.topbar-menu-panel a:hover {
-  background: rgba(255,255,255,0.06);
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu-panel a.is-current {
-  background: rgba(255,255,255,0.06);
-  color: var(--peach, #F2CDB0);
-}
-.topbar a:focus-visible,
-.topbar-menu > summary:focus-visible,
-.topbar-menu-panel a:focus-visible {
+.topbar a:focus-visible {
   outline: 2px solid rgba(242,205,176,0.8);
   outline-offset: 2px;
 }
@@ -319,10 +253,7 @@ body {
   .topbar-links {
     gap: 12px;
   }
-  .topbar-menu-panel {
-    min-width: 190px;
   }
-}
 
 /* MIAOUCRATIE-TITLES-V5 */
 body h1,
@@ -353,24 +284,24 @@ body .tarifs-hero h1,
 body .cgv-title,
 body.carte-page .zone-header h2,
 body.calculateur-page h1 {
-  font-size: clamp(52px, 7vw, 88px) !important;
+  font-size: clamp(52px, 7vw, 88px);
 }
 body h2,
 body .section-title,
 body .acc-question {
-  font-size: clamp(22px, 2.3vw, 30px) !important;
+  font-size: clamp(22px, 2.3vw, 30px);
 }
 body h3 {
-  font-size: clamp(18px, 1.8vw, 24px) !important;
+  font-size: clamp(18px, 1.8vw, 24px);
 }
 body .hero-title em,
 body .tarifs-hero h1 em,
 body .cgv-title em,
 body.carte-page .zone-header h2 em,
 body.calculateur-page h1 em {
-  color: var(--T, #A8472A) !important;
-  font-style: italic !important;
-  font-weight: 400 !important;
+  color: var(--T, #A8472A);
+  font-style: italic;
+  font-weight: 400;
 }
 body .hero-sub,
 body .tarifs-hero-sub,
@@ -378,17 +309,17 @@ body .subtitle,
 body .cgv-header p,
 body.carte-page .zone-desc,
 body.calculateur-page .subtitle {
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--muted, #7A6B5E) !important;
-  line-height: 1.8 !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted, #7A6B5E);
+  line-height: 1.8;
 }
 body .section-label,
 body .hero-eyebrow,
 body .cta-eyebrow {
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--T, #A8472A) !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--T, #A8472A);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 /* ── STRIPE ANIMATIONS ────────────────────────────────── */
@@ -455,8 +386,8 @@ body .cta-eyebrow {
   color: #FBF7F0 !important;
 }
 .cta-section h2 em {
-  color: #C8603A !important;
-  font-style: italic !important;
+  color: #C8603A;
+  font-style: italic;
 }
 
 /* MIAOUCRATIE-TARIFS-V4 */
@@ -489,7 +420,7 @@ body.tarifs-page .tarifs-hero-cta .btn-primary {
   text-decoration: none;
 }
 body.tarifs-page .tarifs-hero-cta .btn-secondary {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarifs-summary {
   max-width: 1120px;
@@ -521,15 +452,15 @@ body.tarifs-page .tarifs-summary-item strong {
   margin-bottom: 6px;
 }
 body.tarifs-page .tarifs-bg {
-  background: var(--cream, #FBF7F0) !important;
+  background: var(--cream, #FBF7F0);
 }
 body.tarifs-page .tarifs-bg > .section > h2,
 body.tarifs-page .tarifs-bg .section-label {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarifs-layout {
   display: grid;
-  grid-template-columns: 1fr !important;
+  grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
 }
@@ -542,13 +473,13 @@ body.tarifs-page .tarif-right-wrapper {
 body.tarifs-page .tarif-main,
 body.tarifs-page .tarif-info-card,
 body.tarifs-page .tarif-promo {
-  background: #fff !important;
-  border-color: var(--warm, #F0E8DA) !important;
+  background: #fff;
+  border-color: var(--warm, #F0E8DA);
   border-radius: 22px;
 }
 body.tarifs-page .tarif-header,
 body.tarifs-page .tarif-info-header {
-  background: var(--terracotta, #C8603A) !important;
+  background: var(--terracotta, #C8603A);
 }
 body.tarifs-page .tarif-header h3,
 body.tarifs-page .tarif-info-header h3 {
@@ -559,35 +490,35 @@ body.tarifs-page .tarif-info-header h3 {
 }
 body.tarifs-page .tarif-header p,
 body.tarifs-page .tarif-info-header p {
-  color: rgba(255,255,255,0.88) !important;
+  color: rgba(255,255,255,0.88);
 }
 body.tarifs-page .tarif-row-label,
 body.tarifs-page .tarif-info-line,
 body.tarifs-page .tarif-promo-body {
-  color: var(--mid, #4A3728) !important;
+  color: var(--mid, #4A3728);
 }
 body.tarifs-page .tarif-row-price {
-  color: var(--terracotta, #C8603A) !important;
+  color: var(--terracotta, #C8603A);
   font-weight: 700;
 }
 body.tarifs-page .badge-amount,
 body.tarifs-page .tarif-promo strong,
 body.tarifs-page .tarif-info-block-title {
-  color: var(--sage, #6E8E7C) !important;
+  color: var(--sage, #6E8E7C);
   font-weight: 700;
 }
 body.tarifs-page .tarif-tva,
 body.tarifs-page .tarif-promo-note {
-  color: var(--sand, #B89B80) !important;
+  color: var(--sand, #B89B80);
   font-style: italic;
 }
 body.tarifs-page .tarif-promo-badge {
-  background: rgba(110,142,124,0.08) !important;
-  border-color: rgba(110,142,124,0.18) !important;
+  background: rgba(110,142,124,0.08);
+  border-color: rgba(110,142,124,0.18);
 }
 body.tarifs-page .tarif-info-blocks {
   display: grid;
-  grid-template-columns: 1fr !important;
+  grid-template-columns: 1fr;
   gap: 12px;
   padding: 18px;
 }
@@ -596,13 +527,13 @@ body.tarifs-page .tarif-info-block {
   border-radius: 18px;
   padding: 18px;
   background: #fff;
-  border-bottom: none !important;
+  border-bottom: none;
 }
 body.tarifs-page .tarif-info-block:last-child {
-  border-bottom: 1px solid var(--warm, #F0E8DA) !important;
+  border-bottom: 1px solid var(--warm, #F0E8DA);
 }
 body.tarifs-page .tarif-info-cta {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarif-right-wrapper {
   gap: 0;
@@ -644,9 +575,9 @@ body.standalone-page,
 body.calculateur-page,
 body.cgv-page,
 body.carte-page {
-  margin: 0 !important;
-  padding: 0 !important;
-  display: block !important;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 body.standalone-page .topbar,
 body.calculateur-page .topbar,
@@ -685,7 +616,7 @@ body.cgv-page .brand-rule {
 }
 body.carte-page .zone-section {
   width: 100%;
-  background: var(--cream, #FBF7F0) !important;
+  background: var(--cream, #FBF7F0);
   padding: 0 0 80px;
   overflow: hidden;
 }
@@ -705,10 +636,9 @@ body.carte-page .zone-header {
     padding: 0 24px 40px;
   }
 }
-</style><link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="css/topbar.css">
+</style>
+  <link rel="stylesheet" href="css/polices.css">
+<link rel="stylesheet" href="css/couches.css">
 </head>
 <body class="home-page"><div class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
     <a href="index.html" class="is-current">Accueil</a>
@@ -797,13 +727,13 @@ body.carte-page .zone-header {
 <h2>Vous ne confiez pas votre chat <em>à n'importe qui</em></h2>
 <div class="cred-layout">
 <div class="cred-left">
-<img alt="Irina Talbot – Miaoucratie" class="cred-photo" src="images/irina.webp"/>
+<img alt="Irina, créatrice de Miaoucratie" class="cred-photo" src="images/irina.webp"/>
 <div>
-<div class="cred-name">Irina Talbot</div>
-<div class="cred-role">Fondatrice · Cat-sitter professionnelle</div>
+<div class="cred-name">Irina</div>
+<div class="cred-role">Créatrice de Miaoucratie</div>
 </div>
 <div class="rc-badge">🛡️ Couverte par une assurance<br/>Responsabilité Civile Professionnelle</div>
-<p class="cred-quote-text">"S'occuper vraiment d'un chat, ce n'est pas remplir une gamelle. C'est comprendre le vôtre et respecter son rythme, pour que vous partiez l'esprit tranquille."</p>
+<p class="cred-quote-text">«&nbsp;Je fais comme j'aimerais qu'on le fasse pour moi : vous savez ce qu'il a mangé, où il s'est installé, s'il est venu ou s'il a&nbsp;boudé.&nbsp;»</p>
 <a class="cred-label-link" href="https://www.syndicat-des-gratouilles.fr" target="_blank" rel="noopener" aria-label="Membre du Syndicat des Gratouilles">
 <img alt="Membre du Syndicat des Gratouilles" class="cred-label-img--syndicat" src="images/label-syndicat-gratouilles.webp" loading="lazy"/>
 </a>
@@ -984,11 +914,11 @@ body.carte-page .zone-header {
 <p class="section-label">Comment je travaille</p>
 <h2>En 5 étapes, tout est calé <em>avant votre départ</em></h2>
 <div class="steps-row">
-<div class="step"><div class="step-bubble">1</div><h4 style="font-size:18px;font-weight:700;color:var(--deep);">Prise de contact</h4><p>Téléphone, WhatsApp ou mail.</p></div>
-<div class="step"><div class="step-bubble">2</div><h4 style="font-size:18px;font-weight:700;color:var(--deep);">Échange et devis</h4><p>Premier échange, devis personnalisé envoyé.</p></div>
-<div class="step"><div class="step-bubble">3</div><h4 style="font-size:18px;font-weight:700;color:var(--deep);">Pré-visite offerte</h4><p>Rencontre à domicile. Si accord : signature et acompte de 30&nbsp;% pour bloquer les dates.</p></div>
-<div class="step"><div class="step-bubble">4</div><h4 style="font-size:18px;font-weight:700;color:var(--deep);">Contrat, clés &amp; garde</h4><p>Signature du contrat, remise des clés. La garde commence.</p></div>
-<div class="step"><div class="step-bubble">5</div><h4 style="font-size:18px;font-weight:700;color:var(--deep);">Règlement &amp; restitution</h4><p>Solde à la dernière visite, restitution des clés.</p></div>
+<div class="step"><div class="step-bubble">1</div><h4>Prise de contact</h4><p><a href="reservation.html">Le formulaire</a> est le plus rapide. Sinon téléphone, WhatsApp ou mail.</p></div>
+<div class="step"><div class="step-bubble">2</div><h4>Échange et devis</h4><p>On fait le point sur votre chat et vos dates. Je vous envoie un devis.</p></div>
+<div class="step"><div class="step-bubble">3</div><h4>Pré-visite offerte</h4><p>Avant ou après le devis. Si on est d'accord : acompte de 30&nbsp;%, vos dates sont bloquées.</p></div>
+<div class="step"><div class="step-bubble">4</div><h4>Contrat, clés et garde</h4><p>Contrat en ligne ou papier à la remise des clés. Puis des nouvelles à chaque visite.</p></div>
+<div class="step"><div class="step-bubble">5</div><h4>Règlement et restitution</h4><p>Clés rendues en main propre. Facture à la dernière visite, à régler sous 10 jours.</p></div>
 </div>
 </div>
 <!-- ZONE D'INTERVENTION -->

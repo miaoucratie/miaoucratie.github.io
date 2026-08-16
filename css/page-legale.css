@@ -3,7 +3,9 @@
 :root {
       --T: #A8472A;
       --N: #1E1812;
-      --cream: #F9F5F0;
+      /* Nom propre a ces pages : redefinir --cream le faisait deteindre sur
+         tout ce qui utilise la creme de la palette, jusqu'au logo du pied. */
+      --fond-legal: #F9F5F0;
       --rule: #e8ddd4;
     }
 
@@ -14,7 +16,7 @@
     }
 
     body {
-      background: var(--cream);
+      background: var(--fond-legal);
       color: var(--N);
       font-family: 'DM Sans', sans-serif;
       font-size: 15px;

@@ -26,7 +26,6 @@
 
   <link rel="canonical" href="https://miaoucratie.fr/tarifs.html">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-  <link rel="stylesheet" href="css/style.css">
 
   <meta property="og:locale" content="fr_FR">
   <meta property="og:type" content="website">
@@ -37,27 +36,13 @@
 
   <meta name="twitter:card" content="summary">
 
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/polices.css">
 <link href="css/style.css" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size:16px;line-height:1.7;overflow-x:hidden}
 
-.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;width:100%;animation:none!important}
-.tmenu-wrap{position:relative;flex-shrink:0}
-.tmenu-btn{background:none;border:none;cursor:pointer;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:12px 0;transition:color .2s}
-.tmenu-btn:hover{color:#F2CDB0}
-.tmenu-panel{flex-direction:column;gap:2px;position:absolute;top:calc(100% + 6px);left:0;min-width:200px;padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#1E1812;box-shadow:0 20px 48px rgba(0,0,0,.4);z-index:1000}
-.tmenu-panel a{display:block;padding:9px 14px;border-radius:8px;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;text-decoration:none;transition:background .15s,color .15s}
-.tmenu-panel a:hover{background:rgba(255,255,255,.07);color:#FBF7F0}
-.tmenu-panel a.is-current{color:#F2CDB0;background:rgba(242,205,176,.08)}
-.topbar-links{margin-left:auto;display:flex;align-items:center;gap:16px}
-.topbar-links a{color:#D4BEA8;text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:color .2s;font-family:'DM Sans',sans-serif}
-.topbar-links a:hover{color:#F2CDB0}
-.tsep{width:1px;height:16px;background:rgba(255,255,255,.12);flex-shrink:0}
 
 .page-wrap{max-width:1100px;margin:0 auto;padding:52px 40px 80px}
 
@@ -68,8 +53,6 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 .t-hero h1 em{font-style:italic;font-weight:400;color:#C8603A}
 .t-hero-sub{font-size:16px;color:#7A6B5E;max-width:660px;line-height:1.8;margin-bottom:32px}
 .t-hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.btn-primary{display:inline-flex;align-items:center;gap:8px;background:#C8603A;color:#fff;font-family:'DM Sans',sans-serif;font-weight:500;font-size:14px;padding:13px 28px;border-radius:100px;text-decoration:none;transition:background .2s,transform .15s;box-shadow:0 4px 16px rgba(200,96,58,.28)}
-.btn-primary:hover{background:#A8472A;transform:translateY(-2px)}
 .btn-ghost-link{font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:none;border-bottom:1px solid #D4BEA8;padding-bottom:2px;transition:color .2s,border-color .2s}
 .btn-ghost-link:hover{color:#1E1812;border-color:#1E1812}
 
@@ -136,57 +119,40 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 .btn-cta-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
 
 /* Footer */
-.footer-bar{background:#1E1812;padding:28px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-.footer-bar .footer-logo{display:flex;align-items:center;gap:12px}
-.footer-bar .footer-logo img{width:40px;height:40px;border-radius:50%;object-fit:cover;opacity:.9}
-.footer-bar .footer-logo span{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;letter-spacing:-.5px;color:#FBF7F0}
-.footer-bar .footer-logo em{color:#C8603A;font-style:italic}
-.footer-bar .footer-links{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
-.footer-bar .footer-links a{color:#B89B80;text-decoration:none;font-size:13px;transition:color .2s}
-.footer-bar .footer-links a:hover{color:#F2CDB0}
-.footer-bar .footer-legal{font-size:12px;color:rgba(255,255,255,.4)}
-.footer-bar .footer-legal a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
-.footer-bar .footer-legal a:hover{color:rgba(255,255,255,.7)}
 
 @media(max-width:900px){
   .t-tarifs-grid,.t-cond-grid{grid-template-columns:1fr}
   .t-usps{grid-template-columns:1fr}
   .t-cta{flex-direction:column;padding:32px 28px;text-align:center}
   .t-cta-btns{width:100%}
-  .topbar{padding:0 20px}
 }
 @media(max-width:768px){
   .page-wrap{padding:32px 20px 56px}
-  .tsep{display:none}
-  .topbar-links a[href^="mailto"]{display:none}
-  .footer-bar{flex-direction:column;text-align:center;padding:24px 20px}
-  .footer-bar .footer-links{justify-content:center}
 }
 
 /* ── Miaoucratie corrections ── */
 .t-usp-icon{font-size:42px!important;line-height:1.15!important;margin-bottom:14px!important;display:block!important}
 .t-usp{border-top:3px solid transparent;transition:border-color .25s}.t-usp:hover{border-top-color:#A8472A}
-.t-eyebrow{color:#A8472A!important;background:rgba(168,71,42,.1)!important}
-.t-hero h1 em,.t-section-title em{color:#A8472A!important}
-.btn-primary{background:#A8472A!important;color:#fff!important}
-.btn-primary:hover{background:#8B3921!important}
-.t-price-header{background:#A8472A!important}
-.t-price-amount strong{color:#A8472A!important}
-.t-cond-line::before{color:#A8472A!important}
-.t-remise-badge strong{color:#5E9080!important}
-.t-cta{background:#F0E8DA!important;border:1.5px solid #E8DDD0!important}
-.t-cta-left h2{color:#1E1812!important}
-.t-cta-left h2 em{color:#A8472A!important;font-style:italic!important}
-.t-cta-left p{color:#7A6B5E!important}
-.btn-cta-white{background:#A8472A!important;color:#fff!important;box-shadow:0 4px 16px rgba(168,71,42,.28)!important}
+.t-eyebrow{color:#A8472A;background:rgba(168,71,42,.1)}
+.t-hero h1 em,.t-section-title em{color:#A8472A}
+.t-price-header{background:#A8472A}
+.t-price-amount strong{color:#A8472A}
+.t-cond-line::before{color:#A8472A}
+.t-remise-badge strong{color:#5E9080}
+.t-cta{background:#F0E8DA;border:1.5px solid #E8DDD0}
+.t-cta-left h2{color:#1E1812}
+.t-cta-left h2 em{color:#A8472A;font-style:italic}
+.t-cta-left p{color:#7A6B5E}
+.btn-cta-white{background:#A8472A;color:#fff;box-shadow:0 4px 16px rgba(168,71,42,.28)}
 .btn-cta-white:hover{background:#8B3921!important}
-.btn-cta-ghost{color:#4A3728!important;border:1.5px solid #C8B8A2!important;background:transparent!important}
+.btn-cta-ghost{color:#4A3728;border:1.5px solid #C8B8A2;background:transparent}
 .btn-cta-ghost:hover{border-color:#A8472A!important;color:#A8472A!important}
-html{height:100%}body{min-height:100vh;display:flex!important;flex-direction:column!important}
-.page-wrap{flex:1!important}
+html{height:100%}body{min-height:100vh;display:flex;flex-direction:column}
+.page-wrap{flex:1}
 
 </style>
-</link></head>
+</link><link rel="stylesheet" href="css/couches.css">
+</head>
 <body>
 <div class="topbar"><div class="tmenu-wrap"><button aria-expanded="false" class="tmenu-btn" id="tmenuBtn">☰ Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
 <a href="index.html">Accueil</a>
@@ -267,7 +233,7 @@ html{height:100%}body{min-height:100vh;display:flex!important;flex-direction:col
 <div class="t-cond-block">
 <div class="t-cond-block-title">💳 Paiement</div>
 <div class="t-cond-line">Acompte de 30 % à la réservation</div>
-<div class="t-cond-line">Solde réglé à la remise des clés</div>
+<div class="t-cond-line">Facture de solde à la dernière visite, à régler sous 10 jours</div>
 <div class="t-cond-line">Virement bancaire ou espèces</div>
 </div>
 <div class="t-cond-block">

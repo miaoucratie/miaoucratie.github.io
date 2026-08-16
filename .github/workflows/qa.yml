@@ -49,6 +49,12 @@ jobs:
       - name: Dépendances système du navigateur
         run: npx playwright install-deps chromium
 
+      # Les regles de reservation sont des fonctions pures : elles se testent
+      # sans navigateur, en une seconde, et rien ne sert de lancer le reste
+      # si elles sont cassees.
+      - name: Tester les règles de réservation
+        run: npm test
+
       - name: Vérifier le site
         run: npm run qa
 

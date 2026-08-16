@@ -27,9 +27,7 @@
   <link rel="canonical" href="https://miaoucratie.fr/calculateur-miaoucratie.html">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/polices.css">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Miaoucratie">
@@ -42,20 +40,20 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --cream: #fdf8f2;
-    --warm: #f5ede0;
-    --terracotta: #c4623a;
+    --calc-cream: #fdf8f2;
+    --calc-warm: #f5ede0;
+    --calc-terracotta: #c4623a;
     --terracotta-light: #e8845f;
     --dark: #2a1f1a;
-    --mid: #7a6358;
-    --light: #b8a598;
+    --calc-mid: #7a6358;
+    --calc-light: #b8a598;
     --green: #4a7c59;
     --green-light: #e8f2eb;
     --border: #e2d5c8;
   }
 
   body {
-    background: var(--cream);
+    background: var(--calc-cream);
     color: var(--dark);
     font-family: 'DM Sans', sans-serif;
     font-weight: 300;
@@ -116,12 +114,12 @@
 
   h1 em {
     font-style: italic;
-    color: var(--terracotta);
+    color: var(--calc-terracotta);
   }
 
   .subtitle {
     margin-top: 8px;
-    color: var(--mid);
+    color: var(--calc-mid);
     font-size: 0.9rem;
     letter-spacing: 0.5px;
   }
@@ -151,7 +149,7 @@
     font-weight: 500;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--light);
+    color: var(--calc-light);
     margin-bottom: 16px;
     margin-top: 28px;
   }
@@ -167,13 +165,13 @@
     display: block;
     font-size: 0.88rem;
     font-weight: 500;
-    color: var(--mid);
+    color: var(--calc-mid);
     margin-bottom: 8px;
   }
 
   label span.hint {
     font-weight: 300;
-    color: var(--light);
+    color: var(--calc-light);
     font-size: 0.8rem;
   }
 
@@ -186,7 +184,7 @@
     border-radius: 12px;
     overflow: hidden;
     width: fit-content;
-    background: var(--cream);
+    background: var(--calc-cream);
   }
 
   .stepper button {
@@ -195,13 +193,13 @@
     width: 44px;
     height: 44px;
     font-size: 1.3rem;
-    color: var(--terracotta);
+    color: var(--calc-terracotta);
     cursor: pointer;
     transition: background 0.15s;
     font-family: inherit;
   }
 
-  .stepper button:hover { background: var(--warm); }
+  .stepper button:hover { background: var(--calc-warm); }
   .stepper button:active { background: var(--border); }
 
   .stepper .val {
@@ -235,8 +233,8 @@
     transition: all 0.2s;
     user-select: none;
     font-size: 0.88rem;
-    color: var(--mid);
-    background: var(--cream);
+    color: var(--calc-mid);
+    background: var(--calc-cream);
   }
 
   .toggle input { display: none; }
@@ -251,14 +249,14 @@
   }
 
   .toggle.active {
-    border-color: var(--terracotta);
+    border-color: var(--calc-terracotta);
     background: #fdf2ed;
     color: var(--dark);
   }
 
   .toggle.active .dot {
-    background: var(--terracotta);
-    border-color: var(--terracotta);
+    background: var(--calc-terracotta);
+    border-color: var(--calc-terracotta);
   }
 
   /* Km input */
@@ -269,7 +267,7 @@
     border: 1.5px solid var(--border);
     border-radius: 12px;
     padding: 0 16px;
-    background: var(--cream);
+    background: var(--calc-cream);
     width: fit-content;
   }
 
@@ -290,7 +288,7 @@
 
   .km-label {
     font-size: 0.85rem;
-    color: var(--light);
+    color: var(--calc-light);
   }
 
   /* Divider */
@@ -380,7 +378,7 @@
 
   .breakdown-item .b-label {
     font-size: 0.75rem;
-    color: var(--light);
+    color: var(--calc-light);
     margin-bottom: 4px;
   }
 
@@ -398,7 +396,7 @@
   .empty-state {
     text-align: center;
     padding: 20px 0;
-    color: var(--light);
+    color: var(--calc-light);
     font-size: 0.9rem;
   }
 
@@ -408,7 +406,7 @@
   .mention {
     text-align: center;
     font-size: 0.75rem;
-    color: var(--light);
+    color: var(--calc-light);
     margin-top: 20px;
   }
 
@@ -425,7 +423,7 @@
 </style>
 <link rel="stylesheet" href="css/overrides.css"><style>
 h1, .hero-title {
-  font-family: 'Cormorant Garamond', serif !important;
+  font-family: 'Cormorant Garamond', serif;
   font-size: clamp(52px, 7vw, 88px);
   font-weight: 700;
 }
@@ -435,11 +433,11 @@ h1, .hero-title {
 }
 </style><style>
 body {
-  margin:0 !important;
-  padding:0 !important;
+  margin:0;
+  padding:0;
 }
 .tarifs-layout {
-  display:block !important;
+  display:block;
 }
 </style><style>
 /* MIAOUCRATIE-FADE-V4 */
@@ -458,12 +456,12 @@ body > *:nth-child(6) { animation-delay: .15s; }
 
 /* MIAOUCRATIE-TOPBAR-V4 */
 html, body {
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
   width: 100%;
 }
 body {
-  background: var(--cream, #FBF7F0);
+  background: var(--calc-cream, #FBF7F0);
   color: var(--N, #1A1A1A);
   overflow-x: hidden;
 }
@@ -489,7 +487,7 @@ body {
   margin-left: auto;
 }
 .topbar a {
-  color: var(--light, #D4BEA8);
+  color: var(--calc-light, #D4BEA8);
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
@@ -506,73 +504,7 @@ body {
   height: 16px;
   background: rgba(255,255,255,0.15);
 }
-.topbar-menu {
-  position: relative;
-  flex-shrink: 0;
-}
-.topbar-menu > summary {
-  list-style: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--light, #D4BEA8);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  user-select: none;
-}
-.topbar-menu > summary::before {
-  content: '☰';
-  font-size: 16px;
-  line-height: 1;
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu > summary::-webkit-details-marker {
-  display: none;
-}
-.topbar-menu[open] > summary,
-.topbar-menu > summary:hover {
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu-panel {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
-  min-width: 220px;
-  padding: 10px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: var(--deep, #1E1812);
-  box-shadow: 0 14px 30px rgba(0,0,0,.18);
-  z-index: 1000;
-  display: grid;
-  gap: 4px;
-}
-.topbar-menu-panel a {
-  display: block;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: var(--light, #D4BEA8);
-  text-decoration: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-}
-.topbar-menu-panel a:hover {
-  background: rgba(255,255,255,0.06);
-  color: var(--peach, #F2CDB0);
-}
-.topbar-menu-panel a.is-current {
-  background: rgba(255,255,255,0.06);
-  color: var(--peach, #F2CDB0);
-}
-.topbar a:focus-visible,
-.topbar-menu > summary:focus-visible,
-.topbar-menu-panel a:focus-visible {
+.topbar a:focus-visible {
   outline: 2px solid rgba(242,205,176,0.8);
   outline-offset: 2px;
 }
@@ -584,10 +516,7 @@ body {
   .topbar-links {
     gap: 12px;
   }
-  .topbar-menu-panel {
-    min-width: 190px;
   }
-}
 
 /* MIAOUCRATIE-TITLES-V5 */
 body h1,
@@ -600,11 +529,11 @@ body .cgv-title,
 body.carte-page .zone-header h2,
 body.calculateur-page h1,
 body .tarifs-hero h1 {
-  font-family: 'Cormorant Garamond', serif !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.02em !important;
-  line-height: 1.08 !important;
-  color: var(--N, #1A1A1A) !important;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: var(--N, #1A1A1A);
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
   font-synthesis: none;
@@ -614,24 +543,24 @@ body .tarifs-hero h1,
 body .cgv-title,
 body.carte-page .zone-header h2,
 body.calculateur-page h1 {
-  font-size: clamp(52px, 7vw, 88px) !important;
+  font-size: clamp(52px, 7vw, 88px);
 }
 body h2,
 body .section-title,
 body .acc-question {
-  font-size: clamp(22px, 2.3vw, 30px) !important;
+  font-size: clamp(22px, 2.3vw, 30px);
 }
 body h3 {
-  font-size: clamp(18px, 1.8vw, 24px) !important;
+  font-size: clamp(18px, 1.8vw, 24px);
 }
 body .hero-title em,
 body .tarifs-hero h1 em,
 body .cgv-title em,
 body.carte-page .zone-header h2 em,
 body.calculateur-page h1 em {
-  color: var(--T, #A8472A) !important;
-  font-style: italic !important;
-  font-weight: 400 !important;
+  color: var(--T, #A8472A);
+  font-style: italic;
+  font-weight: 400;
 }
 body .hero-sub,
 body .tarifs-hero-sub,
@@ -639,22 +568,22 @@ body .subtitle,
 body .cgv-header p,
 body.carte-page .zone-desc,
 body.calculateur-page .subtitle {
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--muted, #7A6B5E) !important;
-  line-height: 1.8 !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted, #7A6B5E);
+  line-height: 1.8;
 }
 body .section-label,
 body .hero-eyebrow,
 body .cta-eyebrow {
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--T, #A8472A) !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--T, #A8472A);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 /* MIAOUCRATIE-TARIFS-V4 */
 body.tarifs-page {
-  background: var(--cream, #FBF7F0);
+  background: var(--calc-cream, #FBF7F0);
 }
 body.tarifs-page .tarifs-hero {
   max-width: 1120px;
@@ -682,7 +611,7 @@ body.tarifs-page .tarifs-hero-cta .btn-primary {
   text-decoration: none;
 }
 body.tarifs-page .tarifs-hero-cta .btn-secondary {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarifs-summary {
   max-width: 1120px;
@@ -696,10 +625,10 @@ body.tarifs-page .tarifs-summary-grid {
 }
 body.tarifs-page .tarifs-summary-item {
   background: #fff;
-  border: 1px solid var(--warm, #F0E8DA);
+  border: 1px solid var(--calc-warm, #F0E8DA);
   border-radius: 18px;
   padding: 16px 18px;
-  color: var(--mid, #4A3728);
+  color: var(--calc-mid, #4A3728);
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   line-height: 1.6;
@@ -714,15 +643,15 @@ body.tarifs-page .tarifs-summary-item strong {
   margin-bottom: 6px;
 }
 body.tarifs-page .tarifs-bg {
-  background: var(--cream, #FBF7F0) !important;
+  background: var(--calc-cream, #FBF7F0);
 }
 body.tarifs-page .tarifs-bg > .section > h2,
 body.tarifs-page .tarifs-bg .section-label {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarifs-layout {
   display: grid;
-  grid-template-columns: 1fr !important;
+  grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
 }
@@ -735,13 +664,13 @@ body.tarifs-page .tarif-right-wrapper {
 body.tarifs-page .tarif-main,
 body.tarifs-page .tarif-info-card,
 body.tarifs-page .tarif-promo {
-  background: #fff !important;
-  border-color: var(--warm, #F0E8DA) !important;
+  background: #fff;
+  border-color: var(--calc-warm, #F0E8DA);
   border-radius: 22px;
 }
 body.tarifs-page .tarif-header,
 body.tarifs-page .tarif-info-header {
-  background: var(--terracotta, #C8603A) !important;
+  background: var(--calc-terracotta, #C8603A);
 }
 body.tarifs-page .tarif-header h3,
 body.tarifs-page .tarif-info-header h3 {
@@ -752,50 +681,50 @@ body.tarifs-page .tarif-info-header h3 {
 }
 body.tarifs-page .tarif-header p,
 body.tarifs-page .tarif-info-header p {
-  color: rgba(255,255,255,0.88) !important;
+  color: rgba(255,255,255,0.88);
 }
 body.tarifs-page .tarif-row-label,
 body.tarifs-page .tarif-info-line,
 body.tarifs-page .tarif-promo-body {
-  color: var(--mid, #4A3728) !important;
+  color: var(--calc-mid, #4A3728);
 }
 body.tarifs-page .tarif-row-price {
-  color: var(--terracotta, #C8603A) !important;
+  color: var(--calc-terracotta, #C8603A);
   font-weight: 700;
 }
 body.tarifs-page .badge-amount,
 body.tarifs-page .tarif-promo strong,
 body.tarifs-page .tarif-info-block-title {
-  color: var(--sage, #6E8E7C) !important;
+  color: var(--sage, #6E8E7C);
   font-weight: 700;
 }
 body.tarifs-page .tarif-tva,
 body.tarifs-page .tarif-promo-note {
-  color: var(--sand, #B89B80) !important;
+  color: var(--sand, #B89B80);
   font-style: italic;
 }
 body.tarifs-page .tarif-promo-badge {
-  background: rgba(110,142,124,0.08) !important;
-  border-color: rgba(110,142,124,0.18) !important;
+  background: rgba(110,142,124,0.08);
+  border-color: rgba(110,142,124,0.18);
 }
 body.tarifs-page .tarif-info-blocks {
   display: grid;
-  grid-template-columns: 1fr !important;
+  grid-template-columns: 1fr;
   gap: 12px;
   padding: 18px;
 }
 body.tarifs-page .tarif-info-block {
-  border: 1px solid var(--warm, #F0E8DA);
+  border: 1px solid var(--calc-warm, #F0E8DA);
   border-radius: 18px;
   padding: 18px;
   background: #fff;
-  border-bottom: none !important;
+  border-bottom: none;
 }
 body.tarifs-page .tarif-info-block:last-child {
-  border-bottom: 1px solid var(--warm, #F0E8DA) !important;
+  border-bottom: 1px solid var(--calc-warm, #F0E8DA);
 }
 body.tarifs-page .tarif-info-cta {
-  display: none !important;
+  display: none;
 }
 body.tarifs-page .tarif-right-wrapper {
   gap: 0;
@@ -830,16 +759,16 @@ body.standalone-page,
 body.calculateur-page,
 body.cgv-page,
 body.carte-page {
-  background: var(--cream, #FBF7F0);
+  background: var(--calc-cream, #FBF7F0);
   color: var(--deep, #1E1812);
 }
 body.standalone-page,
 body.calculateur-page,
 body.cgv-page,
 body.carte-page {
-  margin: 0 !important;
-  padding: 0 !important;
-  display: block !important;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 body.standalone-page .topbar,
 body.calculateur-page .topbar,
@@ -878,7 +807,7 @@ body.cgv-page .brand-rule {
 }
 body.carte-page .zone-section {
   width: 100%;
-  background: var(--cream, #FBF7F0) !important;
+  background: var(--calc-cream, #FBF7F0);
   padding: 0 0 80px;
   overflow: hidden;
 }
@@ -901,42 +830,15 @@ body.carte-page .zone-header {
 
 /* ──────── */
 /* topbar */
-.topbar{position:sticky;top:0;z-index:200;background:#1E1812;display:flex;align-items:center;padding:0 40px;min-height:50px;width:100%;animation:none!important}
-.tmenu-wrap{position:relative;flex-shrink:0}
-.tmenu-btn{background:none;border:none;cursor:pointer;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:12px 0;transition:color .2s}
-.tmenu-btn:hover{color:#F2CDB0}
-.tmenu-panel{flex-direction:column;gap:2px;position:absolute;top:calc(100% + 6px);left:0;min-width:200px;padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#1E1812;box-shadow:0 20px 48px rgba(0,0,0,.4);z-index:1000}
-.tmenu-panel a{display:block;padding:9px 14px;border-radius:8px;color:#D4BEA8;font-family:'DM Sans',sans-serif;font-size:14px;text-decoration:none;transition:background .15s,color .15s}
-.tmenu-panel a:hover{background:rgba(255,255,255,.07);color:#FBF7F0}
-.tmenu-panel a.is-current{color:#F2CDB0;background:rgba(242,205,176,.08)}
-.topbar-links{margin-left:auto;display:flex;align-items:center;gap:16px}
-.topbar-links a{color:#D4BEA8;text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:color .2s;font-family:'DM Sans',sans-serif}
-.topbar-links a:hover{color:#F2CDB0}
-.tsep{width:1px;height:16px;background:rgba(255,255,255,.12);flex-shrink:0}
 /* footer */
-.footer-bar{background:#1E1812;padding:28px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;width:100%}
-.footer-bar .footer-logo{display:flex;align-items:center;gap:12px}
-.footer-bar .footer-logo img{width:40px;height:40px;border-radius:50%;object-fit:cover;opacity:.9}
-.footer-bar .footer-logo span{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;letter-spacing:-.5px;color:#FBF7F0}
-.footer-bar .footer-logo em{color:#C8603A;font-style:italic}
-.footer-bar .footer-links{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
-.footer-bar .footer-links a{color:#B89B80;text-decoration:none;font-size:13px;font-family:'DM Sans',sans-serif;transition:color .2s}
-.footer-bar .footer-links a:hover{color:#F2CDB0}
-.footer-bar .footer-legal{font-size:12px;color:rgba(255,255,255,.4);font-family:'DM Sans',sans-serif}
-.footer-bar .footer-legal a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
-.footer-bar .footer-legal a:hover{color:rgba(255,255,255,.7)}
 @media(max-width:768px){
-  .topbar{padding:0 20px}
-  .footer-bar{flex-direction:column;text-align:center;padding:24px 20px}
-  .footer-bar .footer-links{justify-content:center}
-  .tsep{display:none}
-  .topbar-links a[href^="mailto"]{display:none}
 }
 
 /* OVERRIDE: footer fix + font fix */
-body.calculateur-page { display: flex !important; flex-direction: column !important; min-height: 100vh !important; }
-body.calculateur-page .container { flex: 1 !important; }
+body.calculateur-page { display: flex; flex-direction: column; min-height: 100vh; }
+body.calculateur-page .container { flex: 1; }
 </style>
+<link rel="stylesheet" href="css/couches.css">
 </head>
 <body class="standalone-page calculateur-page" style="min-height:100vh;display:flex!important;flex-direction:column"><div class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
   <a href="index.html">Accueil</a>
@@ -979,7 +881,7 @@ body.calculateur-page .container { flex: 1 !important; }
 </div>
 </div>
 <!-- Distance -->
-<p class="section-label">Distance hors zone <span style="font-size:0.75rem;color:var(--light);text-transform:none;letter-spacing:0">(au-delà de 20 km de Châteaubourg par la route)</span></p>
+<p class="section-label">Distance hors zone <span style="font-size:0.75rem;color:var(--calc-light);text-transform:none;letter-spacing:0">(au-delà de 20 km de Châteaubourg par la route)</span></p>
 <div class="field">
 <div class="km-input">
 <input id="km-input" min="0" oninput="calculate()" type="number" value="0"/>
@@ -1098,7 +1000,7 @@ body.calculateur-page .container { flex: 1 !important; }
             <div class="b-amount">${fmt(solde)}</div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--mid);margin-top:12px;text-align:center;">Estimation indicative · devis personnalisé sur demande</p>
+        <p style="font-size:12px;color:var(--calc-mid);margin-top:12px;text-align:center;">Estimation indicative · devis personnalisé sur demande</p>
       </div>`;
     document.getElementById('result-area').style.display = 'block';
   }

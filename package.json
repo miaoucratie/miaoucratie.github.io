@@ -5,6 +5,7 @@
   "description": "Site vitrine Miaoucratie — garde de chats a domicile",
   "type": "module",
   "scripts": {
+    "test": "node --test",
     "qa": "node qa/qa.mjs",
     "qa:update": "node qa/qa.mjs --update",
     "postinstall": "playwright install chromium"

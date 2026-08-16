@@ -132,11 +132,6 @@ a:hover {
   margin-inline: auto;
 }
 
-.site-nav.is-open {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
 
 .hero {
   padding: 4.5rem 0 2rem;
@@ -153,7 +148,6 @@ a:hover {
 }
 
 .eyebrow,
-.section-heading__eyebrow,
 .step-card__eyebrow,
 .success-panel__eyebrow {
   margin: 0 0 0.8rem;
@@ -208,8 +202,7 @@ body.reservation-page .hero h1 span.nowrap {
 }
 
 .hero__lead,
-.section-heading__lead,
-.site-footer__lead {
+.section-heading__lead {
   color: var(--color-muted);
   font-size: 1rem;
 }
@@ -394,6 +387,12 @@ body.reservation-page .hero h1 span.nowrap {
 .field {
   display: grid;
   gap: 0.45rem;
+  /* Sans ceci, la grille etire ses lignes pour remplir la hauteur imposee par
+     le champ voisin, et l'espace se repartit entre elles. Deux champs cote a
+     cote n'ayant pas le meme nombre de lignes — l'un a un texte d'aide, pas
+     l'autre — leurs libelles grandissaient differemment et les controles ne
+     demarraient plus a la meme hauteur. */
+  align-content: start;
 }
 
 .field--honeypot {
@@ -424,6 +423,17 @@ textarea {
   background: #faf7f4;
   color: var(--color-text);
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+/* Hauteur commune a tous les champs d'une seule ligne.
+   `min-height` ne suffisait pas : les trois familles de controles se calent
+   differemment. Les champs texte faisaient 57,6px, le select 54,4 — il tombe
+   sur le minimum, son interlignage natif etant plus court — et le champ
+   nombre 75,5, sa fleche native etirant la boite. Trois hauteurs cote a cote
+   sur la meme ligne du formulaire. */
+input:not([type='hidden']),
+select {
+  height: 3.6rem;
 }
 
 textarea {
@@ -494,7 +504,7 @@ textarea:disabled {
    toute regle de classe posant un display. Sans !important, les champs
    masques et les boutons conditionnels s'affichent. */
 [hidden] {
-  display: none !important;
+  display: none;
 }
 
 .autocomplete__option {
@@ -751,7 +761,6 @@ textarea:disabled {
 @media (min-width: 48rem) {
 
   .hero__grid,
-  .site-footer__grid,
   .admin-grid {
     grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
   }
@@ -972,9 +981,6 @@ body.reservation-page .hero__media-frame img {
   box-shadow: 0 14px 30px rgba(38, 22, 10, 0.14);
 }
 
-body.reservation-page .autocomplete {
-  position: relative;
-}
 
 body.reservation-page .autocomplete__list {
   position: absolute;
@@ -997,7 +1003,7 @@ body.reservation-page .autocomplete__list/* Indispensable : [hidden] a une speci
    toute regle de classe posant un display. Sans !important, les champs
    masques et les boutons conditionnels s'affichent. */
 [hidden] {
-  display: none !important;
+  display: none;
 }
 
 body.reservation-page .autocomplete__option {
@@ -1129,7 +1135,7 @@ body.reservation-page .autocomplete__list/* Indispensable : [hidden] a une speci
    toute regle de classe posant un display. Sans !important, les champs
    masques et les boutons conditionnels s'affichent. */
 [hidden] {
-  display: none !important;
+  display: none;
 }
 
 body.reservation-page .reservation-kicker,
