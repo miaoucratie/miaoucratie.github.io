@@ -414,6 +414,108 @@ async function testerAnonymatDesAvis(page, echecs) {
   }
 }
 
+/* ─── 3. Coherence d'affichage ───────────────────────────────────────── */
+
+/**
+ * Divergences volontaires entre pages, avec leur raison. Toute autre
+ * divergence est signalee. Cette liste doit rester tres courte : chaque
+ * entree est une exception a la regle « le site se ressemble partout ».
+ */
+const DIVERGENCES_ADMISES = new Map([
+  ['barre.position', {
+    pages: ['reservation.html', 'admin-indisponibilites.html'],
+    raison: 'La barre n\'est pas collante dans le tunnel de reservation. Elle '
+      + 'prendrait 50px de haut sur un formulaire long, et toute la page est '
+      + 'empilee sous elle : calendrier a 90, listes de suggestion a 40 et 50. '
+      + 'La rendre collante demanderait de relever ces quatre couches. Choix '
+      + 'de conversion autant que technique, a rediscuter si besoin.',
+  }],
+]);
+
+/**
+ * Verifie des regles d'harmonie que le site doit toujours respecter.
+ *
+ * L'empreinte visuelle compare a une reference : elle detecte un changement,
+ * jamais un defaut deja present. Les trois defauts trouves a l'oeil le 16
+ * aout 2026 — champs de hauteurs differentes sur la reservation, cartes de
+ * largeurs differentes sur la carte, accent invisible sur la FAQ — etaient
+ * tous dans la reference, donc verts. Ces controles-ci n'ont pas de
+ * reference : ils posent une regle et la verifient.
+ *
+ * Renvoie aussi la signature de la barre et du pied, comparee ensuite d'une
+ * page a l'autre : ces deux blocs doivent etre rigoureusement identiques
+ * partout.
+ */
+async function relevesCoherence(page) {
+  return page.evaluate(() => {
+    const defauts = [];
+    const arrondi = (n) => Math.round(n);
+    const visible = (e) => e.offsetParent !== null || getComputedStyle(e).position === 'fixed';
+
+    // 1. Deux champs de formulaire cote a cote demarrent a la meme hauteur et
+    //    ont la meme taille. C'est ce qui manquait sur la reservation.
+    const parLigne = new Map();
+    for (const f of document.querySelectorAll('.field')) {
+      if (!visible(f)) continue;
+      const c = f.querySelector('input:not([type="hidden"]), select, textarea');
+      if (!c) continue;
+      const b = c.getBoundingClientRect();
+      const cle = arrondi(f.getBoundingClientRect().top);
+      if (!parLigne.has(cle)) parLigne.set(cle, []);
+      parLigne.get(cle).push({
+        nom: f.dataset.field || c.id || c.name || c.tagName.toLowerCase(),
+        haut: arrondi(b.top), hauteur: arrondi(b.height), balise: c.tagName.toLowerCase(),
+      });
+    }
+    for (const groupe of parLigne.values()) {
+      if (groupe.length < 2) continue;
+      // Une zone de texte est plus haute par nature : on ne la compare pas.
+      const simples = groupe.filter((g) => g.balise !== 'textarea');
+      if (simples.length < 2) continue;
+      const hauts = new Set(simples.map((g) => g.haut));
+      const hauteurs = new Set(simples.map((g) => g.hauteur));
+      if (hauts.size > 1) defauts.push(`champs desalignes : ${simples.map((g) => `${g.nom} commence a ${g.haut}px`).join(', ')}`);
+      if (hauteurs.size > 1) defauts.push(`champs de hauteurs differentes : ${simples.map((g) => `${g.nom} fait ${g.hauteur}px`).join(', ')}`);
+    }
+
+    // 2. Des cartes soeurs, empilees dans la meme colonne, ont la meme
+    //    largeur. C'est ce qui manquait sur la carte.
+    const conteneurs = new Set();
+    for (const c of document.querySelectorAll('.card, .zone-card, .rule-card')) {
+      if (visible(c) && c.parentElement) conteneurs.add(c.parentElement);
+    }
+    for (const parent of conteneurs) {
+      const s = getComputedStyle(parent);
+      if (s.display !== 'flex' || !s.flexDirection.startsWith('column')) continue;
+      const soeurs = [...parent.children]
+        .filter((e) => visible(e) && /(^|\s)(card|zone-card|rule-card)(\s|$)/.test(e.className));
+      if (soeurs.length < 2) continue;
+      const largeurs = new Set(soeurs.map((e) => arrondi(e.getBoundingClientRect().width)));
+      if (largeurs.size > 1) {
+        defauts.push(`cartes de largeurs differentes dans la meme colonne : `
+          + soeurs.map((e) => `${String(e.className).trim()} fait ${arrondi(e.getBoundingClientRect().width)}px`).join(', '));
+      }
+    }
+
+    // 3. Signature de la barre et du pied, propriete par propriete, pour
+    //    comparaison d'une page a l'autre.
+    const signer = (sel, props) => {
+      const e = document.querySelector(sel);
+      if (!e) return null;
+      const s = getComputedStyle(e);
+      return Object.fromEntries(props.map((p) => [p, s[p]]));
+    };
+    const signature = {
+      barre: signer('.topbar', ['minHeight', 'padding', 'backgroundColor', 'position']),
+      lienBarre: signer('.topbar-links a', ['color', 'fontSize', 'fontWeight', 'fontFamily']),
+      pied: signer('.footer-bar', ['padding', 'backgroundColor', 'flexDirection']),
+      mentionLegale: signer('.footer-bar .footer-legal', ['color', 'fontSize']),
+    };
+
+    return { defauts, signature };
+  });
+}
+
 /* ─── Execution ──────────────────────────────────────────────────────── */
 
 async function main() {
@@ -422,6 +524,9 @@ async function main() {
   const navigateur = await chromium.launch();
   const echecs = [];
   const empreintes = {};
+  // Signature de la barre et du pied par page : ces blocs doivent etre
+  // identiques partout. Plusieurs signatures pour un meme bloc = divergence.
+  const signatures = new Map();
 
   try {
     for (const largeur of LARGEURS) {
@@ -456,6 +561,19 @@ async function main() {
         const debordement = await page.evaluate((l) => document.documentElement.scrollWidth > l, largeur);
         if (debordement) echecs.push(`${nomPage} @${largeur}px : debordement horizontal`);
 
+        const coherence = await relevesCoherence(page);
+        for (const d of coherence.defauts) echecs.push(`${nomPage} @${largeur}px : ${d}`);
+        for (const [bloc, sig] of Object.entries(coherence.signature)) {
+          if (!sig) continue;
+          for (const [prop, valeur] of Object.entries(sig)) {
+            const cle = `${bloc}.${prop}@${largeur}`;
+            if (!signatures.has(cle)) signatures.set(cle, new Map());
+            const vues = signatures.get(cle);
+            if (!vues.has(valeur)) vues.set(valeur, []);
+            vues.get(valeur).push(nomPage);
+          }
+        }
+
         if (largeur === LARGEURS[0]) {
           await testerMenu(page, echecs, nomPage);
           if (nomPage === 'faq.html') await testerFaq(page, echecs);
@@ -468,6 +586,22 @@ async function main() {
         await page.close();
       }
       await contexte.close();
+    }
+
+    // Barre et pied de page : une seule valeur attendue par propriete, sur
+    // toutes les pages. C'est ce controle qui aurait signale les deux
+    // incoherences du 16 aout — une barre a 20px sur cinq pages et 24 sur
+    // trois, une mention legale illisible sur deux pages seulement.
+    for (const [cle, vues] of signatures) {
+      if (vues.size < 2) continue;
+      const [blocProp, largeur] = cle.split('@');
+      const admise = DIVERGENCES_ADMISES.get(blocProp);
+      const pagesDivergentes = [...vues.values()].sort((a, b) => a.length - b.length)[0];
+      if (admise && pagesDivergentes.every((p) => admise.pages.includes(p))) continue;
+      const detail = [...vues.entries()]
+        .map(([v, pages]) => `\n        ${v}  —  ${pages.join(', ')}`)
+        .join('');
+      echecs.push(`${blocProp} @${largeur}px : ${vues.size} valeurs differentes selon la page${detail}`);
     }
 
     if (COMPORTEMENT_SEUL) {
