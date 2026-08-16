@@ -373,8 +373,22 @@
   }
   .cred-quote-text {
     font-family: 'Cormorant Garamond', serif; font-style: italic;
-    font-size: 17px; color: var(--mid); line-height: 1.6;
-    border-left: 3px solid var(--terracotta); padding-left: 20px;
+    /* Cormorant est une serif de titrage : sa hauteur d'oeil est bien plus
+       petite que celle de DM Sans a taille egale. A 17px cette citation avait
+       exactement l'oeil du texte courant a 13px — nominalement plus grande,
+       lue plus petite, et donc le texte le moins lisible du bloc. A 24px son
+       oeil equivaut a du DM Sans 20px : elle se lit enfin comme une citation. */
+    font-size: clamp(22px, 2.2vw, 24px); color: var(--mid); line-height: 1.6;
+    /* Repartit le texte sur des lignes de longueur egale. Sans cela le dernier
+       mot se retrouvait seul et centre, isole au milieu du vide. Les
+       navigateurs qui ignorent cette propriete retombent sur l'espace
+       insecable pose dans le texte, qui garde au moins deux mots ensemble. */
+    text-wrap: balance;
+    /* Ni barre verticale, ni marque decorative. La barre supposait un texte
+       aligne a gauche alors que celui-ci est centre, et un chevron pose au-
+       dessus se lisait comme un caractere egare. Les guillemets francais
+       encadrent le texte dans le balisage : rien ne flotte, et rien ne vient
+       gener une lecture qui etait deja le probleme. */
   }
   .cred-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 	/* Le 5ème item s'étale sur 2 colonnes pour rester centré */
