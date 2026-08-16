@@ -515,7 +515,27 @@ async function relevesCoherence(page) {
       mentionLegale: signer('.footer-bar .footer-legal', ['color', 'fontSize']),
     };
 
-    return { defauts, signature };
+    // 4. La navigation est recopiee dans chaque page : neuf exemplaires du
+    //    menu, de la barre et du pied. Les mentions legales avaient ainsi
+    //    diverge en cinq versions, dont deux avaient perdu le bureau
+    //    d'enregistrement du domaine. Tant que le balisage reste duplique,
+    //    c'est ce controle qui empeche l'histoire de se repeter.
+    const liens = (sel) => {
+      const trouves = [...document.querySelectorAll(sel)];
+      if (!trouves.length) return null;
+      return {
+        liste: trouves
+          .map((a) => `${a.getAttribute('href')} « ${a.textContent.replace(/\s+/g, ' ').trim()} »`)
+          .join(' | '),
+      };
+    };
+    const navigation = {
+      menu: liens('.tmenu-panel a'),
+      liensBarre: liens('.topbar-links a'),
+      liensPied: liens('.footer-bar a'),
+    };
+
+    return { defauts, signature: { ...signature, ...navigation } };
   });
 }
 

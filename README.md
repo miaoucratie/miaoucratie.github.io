@@ -24,7 +24,15 @@ Trois familles de contrôles :
    Elle détecte un changement, jamais un défaut déjà présent.
 3. **Cohérence** — des règles sans référence : deux champs côte à côte s'alignent,
    des cartes empilées dans la même colonne ont la même largeur, la barre et le
-   pied de page sont identiques d'une page à l'autre.
+   pied de page sont identiques d'une page à l'autre, menus compris.
+4. **Parcours** — trois chemins suivis de bout en bout jusqu'au formulaire, en
+   cliquant les appels à l'action du contenu.
+
+Les règles de réservation, elles, se testent sans navigateur :
+
+```bash
+npm test
+```
 
 En intégration continue, l'apparence n'est pas comparée — les métriques de police
 diffèrent trop d'un système à l'autre pour qu'une référence soit transportable.
@@ -78,5 +86,10 @@ Deux règles pour ne pas casser le reste :
   les titres. Préfixer, comme `--calc-light` ou `--fond-legal` ;
 - **ne pas recopier la barre ni le pied** : ils sont définis une seule fois dans
   `couches.css`.
+
+La barre de navigation, le menu et le pied de page sont recopiés dans chaque page.
+Reprendre ces trois blocs depuis une page existante, sans les modifier : la
+vérification compare la liste des liens d'une page à l'autre et signale toute
+divergence, en nommant la page fautive.
 
 Ajouter enfin la page à la liste `PAGES` de `qa/qa.mjs`, puis `npm run qa:update`.
