@@ -560,24 +560,6 @@
 
 .footer-legal a { color: var(--sand); text-decoration: none; font-size: 13px; transition: color 0.2s; }
 .footer-legal a:hover { color: var(--peach); }
-.inline-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--sand, #E8DDD0);
-  background: var(--W, #FFFFFF);
-  color: var(--T, #A8472A);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 13.5px;
-}
-.inline-cta:hover {
-  border-color: var(--T, #A8472A);
-  background: rgba(168,71,42,0.04);
-}
 .tarifs-page .tarifs-hero-cta .btn-primary,
 .tarifs-page .tarifs-hero-cta .btn-secondary {
   display: inline-flex;
@@ -592,21 +574,3 @@
 }
 
 
-.inline-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--sand, #E8DDD0);
-  background: var(--W, #FFFFFF);
-  color: var(--T, #A8472A);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 13.5px;
-}
-.inline-cta:hover {
-  border-color: var(--T, #A8472A);
-  background: rgba(168,71,42,0.04);
-}

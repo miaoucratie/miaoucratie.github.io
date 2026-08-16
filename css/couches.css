@@ -42,16 +42,6 @@ body .container .subtitle {
   color: var(--muted, #7A6B5E);
   line-height: 1.8;
 }
-body.tarifs-page .tarifs-hero-cta .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-}
-body.tarifs-page .tarifs-hero-cta .btn-secondary {
-  display: none;
-}
 body.tarifs-page .tarifs-bg > .section > h2,
 body.tarifs-page .tarifs-bg h2.tarifs-duplicate-title {
   display: none;
