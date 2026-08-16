@@ -516,6 +516,91 @@ async function relevesCoherence(page) {
   });
 }
 
+/* ─── 4. Parcours utilisateurs ───────────────────────────────────────── */
+
+/**
+ * Suit un visiteur d'un bout a l'autre, en cliquant pour de vrai.
+ *
+ * Les controles de comportement testent chaque page isolement : le menu ici,
+ * l'accordeon la, la carte ailleurs. Aucun ne verifiait le chemin qui fait
+ * vivre l'entreprise — arriver, se renseigner, aboutir au formulaire.
+ *
+ * On clique volontairement les appels a l'action du contenu, jamais ceux du
+ * menu : le menu est deja teste, et ce n'est pas lui qui convertit. Une page
+ * sans lien vers la reservation en dehors de sa navigation est signalee.
+ */
+const PARCOURS = [
+  {
+    nom: 'accueil → carte → reservation',
+    etapes: ['index.html', 'carte.html', 'reservation.html'],
+    // Sur la carte, rien ne mene a la reservation tant que le visiteur n'a pas
+    // verifie sa commune : l'appel a l'action n'apparait qu'apres la recherche.
+    // C'est le parcours reel, le test le suit.
+    avant: {
+      'carte.html': async (page) => {
+        await page.fill('#searchInput', 'Vitré');
+        await page.click('#searchBtn');
+        await attendre(1400);
+      },
+    },
+  },
+  { nom: 'accueil → tarifs → reservation', etapes: ['index.html', 'tarifs.html', 'reservation.html'] },
+  { nom: 'faq → reservation', etapes: ['faq.html', 'reservation.html'] },
+];
+
+/** Ce qui prouve qu'on est bien arrive, et que la page a repris la main. */
+const REPERE = {
+  'index.html': '.hero-title',
+  'carte.html': '#searchInput',
+  'tarifs.html': '.t-price-header, .tarifs-hero h1',
+  'faq.html': '.acc-question',
+  'reservation.html': '#reservation-form',
+};
+
+async function testerParcours(contexte, base, echecs) {
+  for (const { nom, etapes, avant = {} } of PARCOURS) {
+    const page = await contexte.newPage();
+    try {
+      await page.goto(`${base}/${etapes[0]}`, { waitUntil: 'networkidle' });
+      if (avant[etapes[0]]) await avant[etapes[0]](page);
+
+      for (let i = 1; i < etapes.length; i++) {
+        const cible = etapes[i];
+        // Un lien du contenu, ni dans la barre ni dans le menu deroulant.
+        const lien = page.locator(
+          `a[href="${cible}"]:not(.tmenu-panel a):not(.topbar-links a):not(.footer-bar a)`,
+        ).filter({ visible: true }).first();
+
+        if (!(await lien.count())) {
+          echecs.push(`parcours ${nom} : aucun lien vers ${cible} dans le contenu de ${etapes[i - 1]}`);
+          break;
+        }
+
+        await lien.click();
+        await page.waitForLoadState('networkidle').catch(() => {});
+        await attendre(400);
+
+        if (!page.url().endsWith(cible)) {
+          echecs.push(`parcours ${nom} : le lien vers ${cible} a mene a ${page.url().split('/').pop()}`);
+          break;
+        }
+
+        const repere = page.locator(REPERE[cible]).first();
+        if (!(await repere.count())) {
+          echecs.push(`parcours ${nom} : ${cible} atteinte, mais « ${REPERE[cible]} » est absent`);
+          break;
+        }
+
+        if (avant[cible]) await avant[cible](page);
+      }
+    } catch (e) {
+      echecs.push(`parcours ${nom} : interrompu — ${e.message.split('\n')[0]}`);
+    } finally {
+      await page.close();
+    }
+  }
+}
+
 /* ─── Execution ──────────────────────────────────────────────────────── */
 
 async function main() {
@@ -585,6 +670,9 @@ async function main() {
         if (erreursJs.length) echecs.push(`${nomPage} @${largeur}px : erreur JS — ${erreursJs[0]}`);
         await page.close();
       }
+      // Les parcours se suivent une fois, en desktop : ils testent des liens,
+      // pas une mise en page.
+      if (largeur === LARGEURS[0]) await testerParcours(contexte, base, echecs);
       await contexte.close();
     }
 
