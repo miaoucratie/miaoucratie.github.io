@@ -279,12 +279,37 @@ body.cgv-page .brand-rule {
 }
 .topbar-links a:hover { color: var(--peach,#F2CDB0); }
 .tsep { width: 1px; height: 16px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
-/* Footer logo em */
+/* ── PIED DE PAGE ─────────────────────────────────────
+   Repris de topbar.css, supprimee : la barre et le pied y etaient definis une
+   troisieme fois, apres cette feuille, pour trois pages seulement. */
+.footer-bar {
+  background: var(--deep, #1E1812);
+  padding: 28px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px; width: 100%;
+}
+.footer-bar .footer-logo { display: flex; align-items: center; gap: 12px; }
+.footer-bar .footer-logo img {
+  width: 40px; height: 40px; border-radius: 50%; object-fit: cover; opacity: .9;
+}
 .footer-bar .footer-logo span {
   font-family: 'Cormorant Garamond', serif;
   font-size: 20px; font-weight: 700; letter-spacing: -0.5px; color: var(--cream,#FBF7F0);
 }
 .footer-bar .footer-logo em { color: var(--terracotta,#C8603A); font-style: italic; }
+.footer-bar .footer-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+.footer-bar .footer-links a {
+  color: var(--sand,#B89B80); text-decoration: none; font-size: 13px;
+  font-family: 'DM Sans', sans-serif; transition: color .2s;
+}
+.footer-bar .footer-links a:hover { color: var(--peach,#F2CDB0); }
+.footer-bar .footer-legal {
+  font-size: 12px; color: rgba(255,255,255,.4); font-family: 'DM Sans', sans-serif;
+}
+.footer-bar .footer-legal a {
+  color: rgba(255,255,255,.4); text-decoration: none; transition: color .2s;
+}
+.footer-bar .footer-legal a:hover { color: rgba(255,255,255,.7); }
 /* Les titres des sections sombres etaient forces en blanc pur ici. Une regle
    posterieure les rendait en creme, et c'est ce qui s'affichait : remonter
    cette couche en fin de cascade aurait donc change le rendu de l'accueil,
@@ -305,11 +330,16 @@ body.cgv-page .brand-rule {
      perd 4px de hauteur et tout ce qu'elle contient remonte. */
   .topbar { gap: 12px 14px; }
   .topbar-links { gap: 12px; }
+  /* Le separateur et l'adresse mail disparaissent ici, comme le faisait
+     topbar.css. Cette feuille les masquait a 600px : selon la page, la barre
+     se degarnissait donc a deux largeurs differentes. */
+  .tsep { display: none; }
+  .topbar-links a[href^="mailto"] { display: none; }
+  .footer-bar { flex-direction: column; text-align: center; padding: 24px 20px; }
+  .footer-bar .footer-links { justify-content: center; }
 }
 @media (max-width: 600px) {
   .topbar-links { gap: 8px; }
-  .tsep { display: none; }
-  .topbar-links a[href^="mailto"] { display: none; }
   .topbar-links a span { display: none; }
 }
 
