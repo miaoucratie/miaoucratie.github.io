@@ -339,15 +339,21 @@
     background: repeating-linear-gradient(90deg, var(--sand) 0, var(--sand) 6px, transparent 6px, transparent 14px);
   }
   .step { display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1; }
+  /* Pastille teintee, sans anneau ni ombre : l'aplat sombre d'origine etait
+     dur, et l'anneau fin qui l'avait remplace laissait le cercle creux. Le
+     chiffre passe de 22 a 34px, il se perdait dans un cercle de 72px. */
   .step-bubble {
     width: 72px; height: 72px; border-radius: 50%;
-    background: var(--deep); color: var(--cream);
-    font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700;
+    background: rgba(200,96,58,0.10); color: var(--rust);
+    font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 700;
+    line-height: 1;
     display: flex; align-items: center; justify-content: center;
-    margin-bottom: 16px; box-shadow: 0 4px 16px rgba(30,24,18,0.15); flex-shrink: 0;
+    margin-bottom: 16px; flex-shrink: 0;
   }
-  .step h4 { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: var(--deep); margin-bottom: 6px; }
+  /* Taille et graisse reprises des cinq styles en ligne qu'elles remplacent. */
+  .step h4 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--deep); margin-bottom: 6px; }
   .step p { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .step p a { color: var(--rust); text-decoration: underline; text-underline-offset: 2px; }
 .tarifs-bg .section-label { color: var(--peach); }
 
 
@@ -362,7 +368,8 @@
     border: 4px solid #fff;
     box-shadow: 0 12px 40px rgba(200,96,58,0.25);
   }
-  .cred-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--deep); line-height: 1.2; }
+  /* Reste sous les titres de section, qui plafonnent a 30px. */
+  .cred-name { font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 2vw, 26px); font-weight: 700; color: var(--deep); line-height: 1.1; }
   .cred-role { font-size: 13px; color: var(--sand); font-weight: 500; letter-spacing: 1px; }
   /* Meme langage que .cred-item : carte blanche, filet terracotta a gauche.
      Cette mention etait la seule etiquette en aplat sombre de la page — 16,5
