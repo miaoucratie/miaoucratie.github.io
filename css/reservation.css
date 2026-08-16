@@ -426,6 +426,17 @@ textarea {
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
+/* Hauteur commune a tous les champs d'une seule ligne.
+   `min-height` ne suffisait pas : les trois familles de controles se calent
+   differemment. Les champs texte faisaient 57,6px, le select 54,4 — il tombe
+   sur le minimum, son interlignage natif etant plus court — et le champ
+   nombre 75,5, sa fleche native etirant la boite. Trois hauteurs cote a cote
+   sur la meme ligne du formulaire. */
+input:not([type='hidden']),
+select {
+  height: 3.6rem;
+}
+
 textarea {
   min-height: 12rem;
   resize: vertical;

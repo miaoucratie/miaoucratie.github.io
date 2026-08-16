@@ -100,7 +100,10 @@
 
     .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);padding:32px;margin-bottom:24px}
     .hero-left{padding:32px}
-    .hero-right{padding:0;display:flex;flex-direction:column;gap:20px}
+    /* align-items:stretch est indispensable : style.css centre cette colonne,
+       et les cartes prenaient alors la largeur de leur contenu. « Hors zone »
+       faisait 499px face aux 558px de « Comment je fonctionne ». */
+    .hero-right{padding:0;display:flex;flex-direction:column;gap:20px;align-items:stretch}
     .search-card,.legend,.rule-card,.info-card{padding:32px}
 
     .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rust,#A8472A);background:rgba(168,71,42,.1);border-radius:999px;padding:7px 14px;margin-bottom:18px}
@@ -110,7 +113,10 @@
     .intro{margin:0;max-width:72ch;color:var(--muted);font-size:16px}
 
     .hero-points{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-    .mini{padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff}
+    /* Meme animation au survol que les cartes de « Comment je fonctionne » :
+       ce sont les memes petites cartes, elles doivent reagir pareil. */
+    .mini{padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;transition:transform .15s ease,box-shadow .15s ease}
+    .mini:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(30,24,18,.08)}
     .mini strong{display:block;font-family:'Cormorant Garamond',serif;font-size:25px;line-height:1;color:var(--deep);margin-bottom:6px}
     .mini span{font-size:13px;color:var(--muted)}
 

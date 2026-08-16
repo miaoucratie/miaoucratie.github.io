@@ -429,7 +429,9 @@
       color: var(--W);
       margin-bottom: 16px;
     }
-    .cta-title em { color: rgba(255,255,255,0.85); font-style: italic; font-weight: 400; }
+    /* Seule regle qui colore ce fragment. Trois autres l'ecrasaient plus bas,
+       en peche puis en blanc, si bien qu'il ne se detachait plus du titre. */
+    .cta-title em { color: var(--terracotta, #C8603A); font-style: italic; font-weight: 400; }
     .cta-sub {
       font-family: 'DM Sans', sans-serif;
       font-size: 15px;
@@ -547,14 +549,8 @@
       .site-footer { padding: 32px 24px; flex-direction: column; gap: 12px; text-align: center; }
     }
   body .faq-cta .cta-title { color: #fff; }
-body .faq-cta .cta-title em { color: #F2CDB0 !important; font-style: italic; }
-body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.65) !important; }
-body .faq-cta .cta-sub { color: rgba(255,255,255,0.60); }
-body .faq-cta .cta-title em { color: #F2CDB0 !important; font-style: italic; }
-body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.65) !important; }
-body .faq-cta .cta-sub { color: rgba(255,255,255,0.60); }
-body .faq-cta .cta-title em { color: rgba(255,255,255,0.85) !important; }
 body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
+body .faq-cta .cta-sub { color: rgba(255,255,255,0.60); }
 
     .reservation-shortcut {
       margin-top: 18px;

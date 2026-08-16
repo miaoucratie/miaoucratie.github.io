@@ -171,7 +171,11 @@ async function attendrePolices(page) {
 
 async function empreinte(page) {
   return page.evaluate(() => {
-    const sel = 'h1,h2,h3,h4,p,a,button,img,li,strong,span,div,input,select,textarea';
+    // em porte la couleur d'accent de la marque, dans les titres de chaque
+    // page et dans le logo du pied. label et blockquote portent le style des
+    // formulaires et du carrousel d'avis. Aucun n'etait releve : une couleur
+    // pouvait y changer sans que rien ne le signale.
+    const sel = 'h1,h2,h3,h4,p,a,button,img,li,strong,em,span,div,label,blockquote,input,select,textarea';
     return [...document.querySelectorAll(sel)]
       // Leaflet se rend de facon asynchrone : ses elements produisent
       // des ecarts reproductibles mais sans signification.
