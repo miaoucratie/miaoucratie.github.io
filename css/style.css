@@ -146,7 +146,9 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--terracotta);
+    /* Rouille, teinte unique du bouton principal sur tout le site. Chaque
+       page en redefinissait une variante ; elles ont ete retirees. */
+    background: var(--rust);
     color: #fff;
     font-weight: 600;
     font-size: 14px;
@@ -154,9 +156,9 @@
     border-radius: 100px;
     text-decoration: none;
     transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 16px rgba(200,96,58,0.3);
+    box-shadow: 0 4px 16px rgba(168,71,42,0.3);
   }
-  .btn-primary:hover { background: var(--rust); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,96,58,0.4); }
+  .btn-primary:hover { background: #8B3921; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(168,71,42,0.4); }
   .btn-secondary {
     display: inline-flex;
     align-items: center;
