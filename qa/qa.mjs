@@ -31,13 +31,16 @@
  *  - les polices sont servies par le site depuis le 16 aout 2026. Elles
  *    venaient de fonts.gstatic.com et ce trajet cassait environ une fois sur
  *    sept, ce qui rendait la verification aleatoire. Le controle reste en
- *    place — il attraperait desormais un chemin casse dans polices.css.
+ *    place — il attraperait desormais un chemin casse dans polices.css ;
+ *  - l'API adresse (geo.api.gouv.fr) est interceptee depuis le 17 aout 2026 et
+ *    servie depuis qa/fixtures/geo-api.json. Elle faisait echouer la carte en
+ *    bloc — Rennes classee « sur devis », reinitialisation incomplete — puis
+ *    repassait au vert au tour suivant sans qu'une ligne ait bouge. Voir
+ *    figerApiAdresse plus bas.
  *
- * Une dependance reseau reste NON maitrisee, et peut faire echouer une
- * execution sans qu'aucune regression n'existe : l'API adresse de la carte
- * (geo.api.gouv.fr), interrogee pour de vrai par testerCarte et par le
- * parcours qui passe par elle. Un echec en bloc sur la carte — commune mal
- * classee, reinitialisation incomplete — se relance avant d'etre cru.
+ * Le harnais teste ses propres fonctions : `node --test` couvre memeElement,
+ * l'oracle qui decide si deux releves sont identiques. Sans ce filet, une
+ * tolerance trop large rendrait la QA verte pour de mauvaises raisons.
  */
 
 import { chromium } from 'playwright';
@@ -115,6 +118,114 @@ function demarrerServeur() {
     }
   });
   return new Promise((ok) => serveur.listen(0, '127.0.0.1', () => ok(serveur)));
+}
+
+/* ─── API adresse : reponses figees ──────────────────────────────────── */
+
+/**
+ * La carte et le formulaire de reservation interrogent geo.api.gouv.fr. Tant
+ * que l'appel partait sur le vrai reseau, la QA pouvait echouer en bloc —
+ * Rennes classee « sur devis », reinitialisation incomplete — puis repasser au
+ * vert au tour suivant sans qu'une ligne ait bouge. Un oracle qui echoue au
+ * hasard est pire que pas d'oracle : on finit par ne plus croire ses rouges.
+ *
+ * Les reponses sont donc servies depuis qa/fixtures/geo-api.json, capture
+ * reelle du 17 aout 2026. La logique de classification reste integralement
+ * testee — c'est elle qui nous interesse — mais elle l'est sur une entree
+ * constante.
+ *
+ * Ce qui est conserve de la vraie API, parce que la page s'en sert :
+ *  - les homonymes (Vitreux pour « Vitré », Rennes-le-Château pour « Rennes »),
+ *    qui font travailler pickBestFeature ;
+ *  - codeDepartement, sur lequel repose l'exclusion hors Ille-et-Vilaine ;
+ *  - les coordonnees exactes des mairies, dont depend le calcul de distance,
+ *    donc le classement en zone incluse, sur devis ou hors zone.
+ *
+ * Ce qui est synthetise : les contours. Ils pesent 53 Ko pour la seule ville
+ * de Rennes, et classifyFeature ne les lit jamais — ils ne servent qu'au
+ * trace Leaflet, lui-meme exclu de l'empreinte. Un carre autour de la mairie
+ * suffit a ce que la carte ait quelque chose a dessiner.
+ *
+ * Pour rafraichir la capture, rejouer les requetes de la fonction ci-dessous
+ * contre la vraie API et remplacer le fichier.
+ */
+const FIXTURE_GEO = join(RACINE, 'qa', 'fixtures', 'geo-api.json');
+
+/** Meme normalisation que celle de carte.html : minuscules, sans accents. */
+const sansAccents = (s = '') =>
+  String(s).normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+
+/** Un carre de ~2 km de cote autour du point, de quoi tracer sans mentir sur la position. */
+function contourAutourDe(point) {
+  const [lon, lat] = point.coordinates;
+  const d = 0.01;
+  return {
+    type: 'Polygon',
+    coordinates: [[
+      [lon - d, lat - d], [lon + d, lat - d],
+      [lon + d, lat + d], [lon - d, lat + d],
+      [lon - d, lat - d],
+    ]],
+  };
+}
+
+async function figerApiAdresse(contexte, requetesInconnues) {
+  const fixture = JSON.parse(await readFile(FIXTURE_GEO, 'utf8'));
+  const parRequete = fixture.requetes;
+  const parCode = new Map();
+  for (const features of Object.values(parRequete)) {
+    for (const f of features) parCode.set(String(f.properties.code), f);
+  }
+
+  await contexte.route('**://geo.api.gouv.fr/**', async (route) => {
+    const url = new URL(route.request().url());
+    const geojson = url.searchParams.get('format') === 'geojson';
+    const contour = url.searchParams.get('geometry') === 'contour';
+
+    // /communes/{code} : une commune precise, demandee quand la recherche par
+    // nom n'a pas rendu de contour exploitable.
+    const parId = url.pathname.match(/^\/communes\/(\d+)$/);
+    let features;
+
+    if (parId) {
+      const f = parCode.get(parId[1]);
+      features = f ? [f] : [];
+    } else {
+      const nom = url.searchParams.get('nom');
+      const codePostal = url.searchParams.get('codePostal');
+      if (nom) {
+        features = parRequete[sansAccents(nom)];
+        if (!features) {
+          // Ni erreur ni silence : la vraie API rendrait une liste vide, on
+          // fait pareil, mais on note la requete pour que l'ajout d'une
+          // commune temoin ne se traduise pas par un echec incomprehensible.
+          requetesInconnues.add(nom);
+          features = [];
+        }
+      } else if (codePostal) {
+        features = [...parCode.values()]
+          .filter((f) => (f.properties.codesPostaux || []).includes(codePostal));
+      } else {
+        features = [];
+      }
+    }
+
+    const avecGeometrie = features.map((f) => (contour
+      ? { ...f, geometry: contourAutourDe(f.geometry) }
+      : f));
+
+    // format=json rend un tableau d'objets plats, format=geojson une
+    // FeatureCollection. L'autocompletion utilise le premier, la carte le second.
+    const corps = geojson
+      ? { type: 'FeatureCollection', features: avecGeometrie }
+      : avecGeometrie.map((f) => f.properties);
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(corps),
+    });
+  });
 }
 
 /* ─── 1. Empreinte visuelle ──────────────────────────────────────────── */
@@ -635,10 +746,17 @@ async function main() {
   // Signature de la barre et du pied par page : ces blocs doivent etre
   // identiques partout. Plusieurs signatures pour un meme bloc = divergence.
   const signatures = new Map();
+  // Communes demandees a l'API adresse mais absentes de la capture figee.
+  // Sans ce relevé, ajouter une commune temoin a testerCarte donnerait un
+  // echec de classification sans cause lisible.
+  const requetesGeoInconnues = new Set();
 
   try {
     for (const largeur of LARGEURS) {
       const contexte = await navigateur.newContext({ viewport: { width: largeur, height: 900 } });
+      // Avant toute navigation : la carte interroge l'API des la premiere
+      // seconde, pour poser le marqueur de Domagne.
+      await figerApiAdresse(contexte, requetesGeoInconnues);
       for (const nomPage of PAGES) {
         const page = await contexte.newPage();
         const erreursJs = [];
@@ -758,6 +876,14 @@ async function main() {
   } finally {
     await navigateur.close();
     serveur.close();
+  }
+
+  if (requetesGeoInconnues.size) {
+    console.error(
+      `\nAPI adresse : ${[...requetesGeoInconnues].map((q) => `« ${q} »`).join(', ')} `
+      + `absente(s) de qa/fixtures/geo-api.json — reponse vide servie.`
+      + `\nSi une commune temoin a ete ajoutee, capturer sa reponse dans le fichier.\n`,
+    );
   }
 
   if (echecs.length) {

@@ -1,0 +1,262 @@
+{
+  "_lisez_moi": "Reponses reelles de geo.api.gouv.fr capturees le 17 aout 2026. Voir la fonction figerApiAdresse dans qa/qa.mjs.",
+  "requetes": {
+    "vitre": [
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "35360",
+          "nom": "Vitré",
+          "codeDepartement": "35",
+          "codesPostaux": [
+            "35500"
+          ],
+          "_score": 0.6999574661051662
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -1.2155,
+            48.1247
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "39581",
+          "nom": "Vitreux",
+          "codeDepartement": "39",
+          "codesPostaux": [
+            "39350"
+          ],
+          "_score": 0.5918166746059794
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            5.6876,
+            47.2463
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "54587",
+          "nom": "Vitrey",
+          "codeDepartement": "54",
+          "codesPostaux": [
+            "54330"
+          ],
+          "_score": 0.555715998128472
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            6.0467,
+            48.4872
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "79030",
+          "nom": "Beaussais-Vitré",
+          "codeDepartement": "79",
+          "codesPostaux": [
+            "79370"
+          ],
+          "_score": 0.4103716053579542
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -0.1531,
+            46.2902
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "70572",
+          "nom": "Vitrey-sur-Mance",
+          "codeDepartement": "70",
+          "codesPostaux": [
+            "70500"
+          ],
+          "_score": 0.39294159440239823
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            5.7599,
+            47.814
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "35038",
+          "nom": "Bréal-sous-Vitré",
+          "codeDepartement": "35",
+          "codesPostaux": [
+            "35370"
+          ],
+          "_score": 0.3804446101516792
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -1.0617,
+            48.1042
+          ]
+        }
+      }
+    ],
+    "le pertre": [
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "35217",
+          "nom": "Le Pertre",
+          "codeDepartement": "35",
+          "codesPostaux": [
+            "35370"
+          ],
+          "_score": 0.09202584010255684
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -1.0365,
+            48.0349
+          ]
+        }
+      }
+    ],
+    "rennes": [
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "35238",
+          "nom": "Rennes",
+          "codeDepartement": "35",
+          "codesPostaux": [
+            "35000",
+            "35200",
+            "35700"
+          ],
+          "_score": 3.3089
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -1.6801,
+            48.1114
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "11309",
+          "nom": "Rennes-le-Château",
+          "codeDepartement": "11",
+          "codesPostaux": [
+            "11190"
+          ],
+          "_score": 0.775780549056794
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.2638,
+            42.9275
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "11310",
+          "nom": "Rennes-les-Bains",
+          "codeDepartement": "11",
+          "codesPostaux": [
+            "11190"
+          ],
+          "_score": 0.76025704256788
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.3192,
+            42.9182
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "25488",
+          "nom": "Rennes-sur-Loue",
+          "codeDepartement": "25",
+          "codesPostaux": [
+            "25440"
+          ],
+          "_score": 0.6750487708618494
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            5.8529,
+            47.0122
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "53189",
+          "nom": "Rennes-en-Grenouilles",
+          "codeDepartement": "53",
+          "codesPostaux": [
+            "53110"
+          ],
+          "_score": 0.6249058500237304
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -0.5124,
+            48.4902
+          ]
+        }
+      }
+    ],
+    "domagne": [
+      {
+        "type": "Feature",
+        "properties": {
+          "code": "35096",
+          "nom": "Domagné",
+          "codeDepartement": "35",
+          "codesPostaux": [
+            "35113"
+          ],
+          "_score": 1.02491
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -1.3947,
+            48.0703
+          ]
+        }
+      }
+    ]
+  }
+}
