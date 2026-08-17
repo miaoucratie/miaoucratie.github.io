@@ -875,29 +875,29 @@ body.calculateur-page .container { flex: 1; }
 <p class="section-label">Nombre de chats</p>
 <div class="field">
 <div class="stepper">
-<button onclick="change('chats', -1)">−</button>
+<button type="button" data-ajuster="chats" data-pas="-1" aria-label="Un chat de moins">−</button>
 <div class="val" id="val-chats">1</div>
-<button onclick="change('chats', +1)">+</button>
+<button type="button" data-ajuster="chats" data-pas="1" aria-label="Un chat de plus">+</button>
 </div>
 </div>
 <!-- Visites -->
 <p class="section-label">Nombre de visites</p>
 <div class="field">
 <div class="stepper">
-<button onclick="change('visites', -1)">−</button>
+<button type="button" data-ajuster="visites" data-pas="-1" aria-label="Une visite de moins">−</button>
 <div class="val" id="val-visites">1</div>
-<button onclick="change('visites', +1)">+</button>
+<button type="button" data-ajuster="visites" data-pas="1" aria-label="Une visite de plus">+</button>
 </div>
 </div>
 <!-- Remises -->
 <p class="section-label">Remises applicables</p>
 <div class="field">
 <div class="toggle-group">
-<div class="toggle" id="toggle-solidaire" onclick="toggleOption('solidaire')">
+<div class="toggle" id="toggle-solidaire" data-option="solidaire">
 <span class="dot" id="dot-solidaire"></span>
           Tarif Moustaches &amp; Compagnie
         </div>
-<div class="toggle" id="toggle-periode" onclick="toggleOption('periode')">
+<div class="toggle" id="toggle-periode" data-option="periode">
 <span class="dot" id="dot-periode"></span>
           Période de forte demande (15 juillet au 15 août)
         </div>
@@ -907,7 +907,7 @@ body.calculateur-page .container { flex: 1; }
 <p class="section-label">Distance hors zone <span style="font-size:0.75rem;color:var(--calc-mid);text-transform:none;letter-spacing:0">(au-delà de 20 km de Domagné par la route)</span></p>
 <div class="field">
 <div class="km-input">
-<input id="km-input" min="0" oninput="calculate()" type="number" value="0"/>
+<input id="km-input" min="0" type="number" value="0"/>
 <span class="km-label">km supplémentaires</span>
 </div>
 </div>
@@ -923,12 +923,29 @@ body.calculateur-page .container { flex: 1; }
 <p class="mention">TVA non applicable · Art. 293 B du CGI</p>
 </div>
 </div>
-<script>
+<!--
+  Le calcul n'est plus ecrit ici : il vient de shared/tarifs.js, avec les taux
+  metier du site. C'est ce qui le rend testable — un tarif faux ne deplace
+  aucun pixel et ne casse aucun clic, il passait donc la QA sans un mot.
+
+  Deux consequences a connaitre :
+   - le script est un module, donc ouvrir ce fichier en double-cliquant
+     (file://) ne marche plus, il faut un serveur local ;
+   - les gestionnaires onclick ont disparu du balisage. Un module n'expose
+     aucune fonction globale, ils appelaient donc du vide. Les boutons portent
+     maintenant data-ajuster / data-option, et le module les branche.
+-->
+<script type="module">
+  import {
+    FRAIS_KM_EUR, SEUIL_SEJOUR_LONG, estimerSejour, formatEuros,
+  } from './shared/tarifs.js';
+
   const state = { chats: 1, visites: 1, solidaire: false, periode: false };
 
+  const BORNES = { chats: { min: 1, max: 10 }, visites: { min: 1, max: 60 } };
+
   function change(key, delta) {
-    const min = key === 'chats' ? 1 : 1;
-    const max = key === 'chats' ? 10 : 60;
+    const { min, max } = BORNES[key];
     state[key] = Math.max(min, Math.min(max, state[key] + delta));
     document.getElementById('val-' + key).textContent = state[key];
     calculate();
@@ -940,45 +957,26 @@ body.calculateur-page .container { flex: 1; }
     calculate();
   }
 
-  function fmt(n) {
-    return n.toFixed(2).replace('.', ',') + ' €';
-  }
+  const fmt = formatEuros;
 
   function calculate() {
-    const { chats, visites, solidaire, periode } = state;
+    const { chats, visites } = state;
     const km = Math.max(0, parseFloat(document.getElementById('km-input').value) || 0);
 
-    // Tarif de base
-    let base;
-    if (chats <= 2) base = 18;
-    else if (chats === 3) base = 22;
-    else if (chats === 4) base = 26;
-    else base = 29;
-
-    // Remises
-    const remiseSejour = visites >= 7 ? 1 : 0;
-    const remiseSolidaire = (solidaire && !periode) ? 1 : 0;
-    const remiseTotale = remiseSejour + remiseSolidaire;
-    const tarifNet = base - remiseTotale;
-    const cumulBloque = solidaire && periode;
-
-    // Supplément km (aller-retour × nombre de visites)
-    const supKm = km * 2 * 0.7 * visites;
-
-    // Total
-    const total = tarifNet * visites + supKm;
-    const acompte = Math.round(total * 0.3 * 100) / 100;
-    const solde = Math.round((total - acompte) * 100) / 100;
+    const {
+      base, remiseSejour, remiseSolidaire, cumulBloque,
+      supplementKm: supKm, total, acompte, solde,
+    } = estimerSejour({ ...state, km });
 
     // Render
     let lines = `<div class="result-line">
       <span class="label">Tarif de base (${chats <= 2 ? '1-2' : chats} chat${chats > 1 ? 's' : ''})</span>
-      <span class="amount">${base},00 € × ${visites} visite${visites > 1 ? 's' : ''}</span>
+      <span class="amount">${fmt(base)} × ${visites} visite${visites > 1 ? 's' : ''}</span>
     </div>`;
 
     if (remiseSejour > 0) {
       lines += `<div class="result-line discount">
-        <span class="label">Remise séjour long (≥ 7 visites)</span>
+        <span class="label">Remise séjour long (≥ ${SEUIL_SEJOUR_LONG} visites)</span>
         <span class="amount">− ${fmt(remiseSejour * visites)}</span>
       </div>`;
     }
@@ -999,7 +997,7 @@ body.calculateur-page .container { flex: 1; }
 
     if (supKm > 0) {
       lines += `<div class="result-line extra">
-        <span class="label">Supplément déplacement (${km} km × 2 × ${visites} visite${visites > 1 ? 's' : ''} × 0,70 €)</span>
+        <span class="label">Supplément déplacement (${km} km × 2 × ${visites} visite${visites > 1 ? 's' : ''} × ${fmt(FRAIS_KM_EUR)})</span>
         <span class="amount">+ ${fmt(supKm)}</span>
       </div>`;
     }
@@ -1028,6 +1026,20 @@ body.calculateur-page .container { flex: 1; }
       </div>`;
     document.getElementById('result-area').style.display = 'block';
   }
+
+  // Branchement des commandes. Il remplace les onclick du balisage, qui ne
+  // pouvaient plus fonctionner une fois le script passe en module.
+  for (const bouton of document.querySelectorAll('[data-ajuster]')) {
+    bouton.addEventListener('click', () => {
+      change(bouton.dataset.ajuster, Number(bouton.dataset.pas));
+    });
+  }
+
+  for (const bascule of document.querySelectorAll('[data-option]')) {
+    bascule.addEventListener('click', () => toggleOption(bascule.dataset.option));
+  }
+
+  document.getElementById('km-input').addEventListener('input', calculate);
 </script>
 <script>
 (function(){
