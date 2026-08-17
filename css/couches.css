@@ -250,7 +250,8 @@ body.cgv-page .brand-rule {
   z-index: 1000;
 }
 .tmenu-panel a {
-  display: block; padding: 9px 14px; border-radius: 8px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; border-radius: 8px;
   color: var(--light, #D4BEA8);
   font-family: 'DM Sans', sans-serif;
   font-size: 14px; font-weight: 400;
@@ -258,7 +259,22 @@ body.cgv-page .brand-rule {
   transition: background 0.15s, color 0.15s;
 }
 .tmenu-panel a:hover { background: rgba(255,255,255,0.07); color: var(--cream,#FBF7F0); }
+/* Les pictogrammes sont decoratifs : ils portent aria-hidden, l'intitule reste
+   le seul contenu lu. Legerement en retrait au repos pour que le mot garde la
+   priorite, pleins des que la ligne est survolee ou courante. */
+.tmenu-panel a svg { width: 16px; height: 16px; flex-shrink: 0; opacity: .7; transition: opacity .15s; }
+.tmenu-panel a:hover svg,
+.tmenu-panel a.is-current svg { opacity: 1; }
 .tmenu-panel a.is-current { color: var(--peach,#F2CDB0); background: rgba(242,205,176,0.08); }
+/* Reservation ferme le menu et porte la conversion. Un filet et une graisse
+   plus forte la detachent des pages d'information, sans lui prendre la couleur
+   qui signale la page courante. */
+.tmenu-panel a.is-cta {
+  font-weight: 600;
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
 .topbar-links {
   margin-left: auto; display: flex; align-items: center; gap: 16px;
 }
