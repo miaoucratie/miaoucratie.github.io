@@ -18,7 +18,8 @@
  *     d'une modification CSS.
  *
  *  2. Comportement. Menu, accordeon, filtres, recherche, moteur de communes,
- *     initialisation du calendrier, anonymat des avis. C'est ce qui attrape les
+ *     initialisation du calendrier, anonymat des avis, consentement a la
+ *     mesure d'audience. C'est ce qui attrape les
  *     regressions silencieuses d'une modification HTML ou JS — une page peut
  *     avoir des balises parfaitement equilibrees et n'avoir plus aucun
  *     JavaScript.
@@ -36,7 +37,12 @@
  *    servie depuis qa/fixtures/geo-api.json. Elle faisait echouer la carte en
  *    bloc — Rennes classee « sur devis », reinitialisation incomplete — puis
  *    repassait au vert au tour suivant sans qu'une ligne ait bouge. Voir
- *    figerApiAdresse plus bas.
+ *    figerApiAdresse plus bas ;
+ *  - la mesure d'audience attend un consentement depuis le 17 aout 2026. Les
+ *    vues sont mesurees avec un refus deja enregistre, sans quoi le bandeau
+ *    s'ajouterait a chaque page et masquerait des liens dans les parcours.
+ *    Toute requete vers Google est en outre interceptee et comptee : une page
+ *    qui mesurerait malgre le refus est nommee. Voir refuserLaMesure.
  *
  * Le harnais teste ses propres fonctions : `node --test` couvre memeElement,
  * l'oracle qui decide si deux releves sont identiques. Sans ce filet, une
@@ -226,6 +232,48 @@ async function figerApiAdresse(contexte, requetesInconnues) {
       body: JSON.stringify(corps),
     });
   });
+}
+
+/* ─── Consentement : mesure d'audience neutralisee ───────────────────── */
+
+/**
+ * Depuis le 17 aout 2026, Google Analytics n'est plus ecrit en dur dans les
+ * pages : js/consentement.js ne l'injecte qu'apres un accord du visiteur.
+ * Deux precautions en decoulent pour la QA, pour la meme raison de fond —
+ * l'oracle ne doit dependre ni d'un reseau ni d'un etat de navigateur.
+ *
+ * 1. Un refus est ecrit dans localStorage avant toute navigation. Le bandeau
+ *    ne s'affiche donc pas sur les 20 vues, et l'empreinte reste celle d'un
+ *    visiteur ayant deja repondu. Sans ca, un composant flottant s'ajoutait a
+ *    chaque page et masquait des liens dans les parcours.
+ * 2. Toute requete vers Google est interceptee et comptee. Une page qui
+ *    appellerait la mesure malgre le refus est signalee nommement : c'est la
+ *    regression qui compte ici, celle qui remet le suivi en marche sans
+ *    consentement, et elle ne se voit sur aucun pixel.
+ *
+ * Le bandeau lui-meme est teste a part, dans un contexte neuf ou aucun choix
+ * n'est enregistre. Voir testerConsentement.
+ */
+const CLE_CONSENTEMENT = 'miaoucratie.consentement';
+const HOTES_MESURE = ['https://www.googletagmanager.com/**', 'https://*.google-analytics.com/**'];
+
+async function intercepterMesure(contexte, appels) {
+  for (const motif of HOTES_MESURE) {
+    await contexte.route(motif, async (route) => {
+      appels.push(route.request().url());
+      // Corps vide : gtag.js ne s'execute pas, donc aucune requete de collecte
+      // derriere. L'interception se suffit a elle-meme.
+      await route.fulfill({ status: 200, contentType: 'text/javascript', body: '' });
+    });
+  }
+}
+
+async function refuserLaMesure(contexte) {
+  const choix = JSON.stringify({ valeur: 'refuse', version: 1, date: new Date().toISOString() });
+  await contexte.addInitScript(([cle, valeur]) => {
+    // about:blank a une origine opaque : localStorage y jette. Sans effet.
+    try { window.localStorage.setItem(cle, valeur); } catch (e) { /* stockage indisponible */ }
+  }, [CLE_CONSENTEMENT, choix]);
 }
 
 /* ─── 1. Empreinte visuelle ──────────────────────────────────────────── */
@@ -528,6 +576,94 @@ async function testerAnonymatDesAvis(page, echecs) {
   }
 }
 
+/**
+ * Le bandeau de consentement, dans un contexte neuf : aucun choix enregistre,
+ * donc exactement ce que rencontre un visiteur a sa premiere visite.
+ *
+ * Quatre proprietes, et chacune se casserait en silence :
+ *  - rien ne part chez Google avant un accord. C'est la raison d'etre du
+ *    bandeau, et c'est invisible a l'oeil ;
+ *  - refuser demande le meme geste qu'accepter — memes dimensions, meme
+ *    taille de texte. Un bouton de refus rapetisse serait un dark pattern ;
+ *  - le choix survit au rechargement. Un bandeau qui revient a chaque page
+ *    est une panne, pas un detail d'affichage ;
+ *  - le bandeau ne fait pas deborder la page. Il est en position fixe, donc
+ *    l'empreinte des autres vues ne l'attraperait pas.
+ */
+async function testerConsentement(navigateur, base, largeur, echecs) {
+  const prefixe = `consentement @${largeur}px`;
+
+  for (const scenario of ['refuse', 'accepte']) {
+    const contexte = await navigateur.newContext({ viewport: { width: largeur, height: 900 } });
+    const appels = [];
+    await intercepterMesure(contexte, appels);
+    const page = await contexte.newPage();
+
+    try {
+      await page.goto(`${base}/index.html`, { waitUntil: 'networkidle' });
+      await attendre(300);
+
+      const bandeau = page.locator('.consentement');
+      if (!(await bandeau.count())) {
+        echecs.push(`${prefixe} : aucun bandeau a la premiere visite`);
+        continue;
+      }
+      if (appels.length) {
+        echecs.push(`${prefixe} : ${appels.length} appel(s) a Google avant tout choix — ${appels[0]}`);
+      }
+      if (await page.evaluate((l) => document.documentElement.scrollWidth > l, largeur)) {
+        echecs.push(`${prefixe} : le bandeau fait deborder la page`);
+      }
+
+      const geo = await page.evaluate(() => {
+        const mesurer = (sel) => {
+          const e = document.querySelector(sel);
+          if (!e) return null;
+          const b = e.getBoundingClientRect();
+          return {
+            largeur: Math.round(b.width), hauteur: Math.round(b.height),
+            taille: getComputedStyle(e).fontSize,
+          };
+        };
+        return { refuser: mesurer('.consentement-refuser'), accepter: mesurer('.consentement-accepter') };
+      });
+      if (!geo.refuser || !geo.accepter) {
+        echecs.push(`${prefixe} : bouton ${geo.refuser ? 'accepter' : 'refuser'} absent`);
+        continue;
+      }
+      if (Math.abs(geo.refuser.largeur - geo.accepter.largeur) > 1
+        || geo.refuser.hauteur !== geo.accepter.hauteur
+        || geo.refuser.taille !== geo.accepter.taille) {
+        echecs.push(`${prefixe} : refuser n'a pas le meme poids qu'accepter — `
+          + `refuser ${geo.refuser.largeur}x${geo.refuser.hauteur} en ${geo.refuser.taille}, `
+          + `accepter ${geo.accepter.largeur}x${geo.accepter.hauteur} en ${geo.accepter.taille}`);
+      }
+
+      await page.locator(`.consentement-${scenario === 'refuse' ? 'refuser' : 'accepter'}`).click();
+      await attendre(500);
+
+      if (await bandeau.count()) echecs.push(`${prefixe} : le bandeau subsiste apres « ${scenario} »`);
+      if (scenario === 'refuse' && appels.length) {
+        echecs.push(`${prefixe} : ${appels.length} appel(s) a Google apres un refus — ${appels[0]}`);
+      }
+      if (scenario === 'accepte' && !appels.length) {
+        echecs.push(`${prefixe} : aucun appel a Google apres un accord, la mesure ne demarre pas`);
+      }
+
+      await page.reload({ waitUntil: 'networkidle' });
+      await attendre(300);
+      if (await bandeau.count()) {
+        echecs.push(`${prefixe} : le bandeau revient au rechargement apres « ${scenario} »`);
+      }
+    } catch (e) {
+      echecs.push(`${prefixe} : interrompu — ${e.message.split('\n')[0]}`);
+    } finally {
+      await page.close();
+      await contexte.close();
+    }
+  }
+}
+
 /* ─── 3. Coherence d'affichage ───────────────────────────────────────── */
 
 /**
@@ -757,6 +893,11 @@ async function main() {
       // Avant toute navigation : la carte interroge l'API des la premiere
       // seconde, pour poser le marqueur de Domagne.
       await figerApiAdresse(contexte, requetesGeoInconnues);
+      // Le consentement est refuse d'entree : pas de bandeau dans l'empreinte,
+      // et tout appel a Google devient un echec attribuable a une page.
+      await refuserLaMesure(contexte);
+      const appelsMesure = [];
+      await intercepterMesure(contexte, appelsMesure);
       for (const nomPage of PAGES) {
         const page = await contexte.newPage();
         const erreursJs = [];
@@ -771,8 +912,14 @@ async function main() {
         page.on('pageerror', (e) => { if (!bruitLocal(e.message)) erreursJs.push(e.message); });
         page.on('console', (m) => { if (m.type() === 'error' && !bruitLocal(m.text())) erreursJs.push(m.text()); });
 
+        appelsMesure.length = 0;
         await page.goto(`${base}/${nomPage}`, { waitUntil: 'networkidle' }).catch(() => {});
         await attendre(600);
+
+        if (appelsMesure.length) {
+          echecs.push(`${nomPage} @${largeur}px : ${appelsMesure.length} appel(s) a Google `
+            + `malgre un consentement refuse — ${appelsMesure[0]}`);
+        }
 
         if (!COMPORTEMENT_SEUL && !SANS_EMPREINTE.has(nomPage)) {
           const manquantes = await attendrePolices(page);
@@ -811,6 +958,9 @@ async function main() {
         if (erreursJs.length) echecs.push(`${nomPage} @${largeur}px : erreur JS — ${erreursJs[0]}`);
         await page.close();
       }
+      // Le bandeau se teste aux deux largeurs : il change de forme en mobile,
+      // et c'est la qu'il risquerait de deborder.
+      await testerConsentement(navigateur, base, largeur, echecs);
       // Les parcours se suivent une fois, en desktop : ils testent des liens,
       // pas une mise en page.
       if (largeur === LARGEURS[0]) await testerParcours(contexte, base, echecs);

@@ -18,6 +18,7 @@ sans navigateur.
 `main` est protégée. Rien ne part en ligne sans que ce contrôle soit vert.
 
 Le reste tient à des choix assumés. Les polices sont servies depuis le dépôt et
-non par Google. Les deux bibliothèques externes sont épinglées et vérifiées par
-empreinte. Les textes respectent les seuils de contraste AA. La réservation
-passe par un Worker Cloudflare.
+non par Google. La mesure d'audience ne démarre qu'après un accord explicite du
+visiteur, et refuser demande le même geste qu'accepter. Les deux bibliothèques
+externes sont épinglées et vérifiées par empreinte. Les textes respectent les
+seuils de contraste AA. La réservation passe par un Worker Cloudflare.
