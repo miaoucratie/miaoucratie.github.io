@@ -22,11 +22,31 @@
  * et « 45 km » de la carte, les quatre prix de tarifs.
  *
  * Sans effet sur DM Sans, dont les chiffres sont deja alignes : mesure
- * identique au centieme de pixel en 400, 500 et 700. Aucun !important, rien
- * d'autre ne pose cette propriete.
+ * identique au centieme de pixel en 400, 500 et 700.
+ *
+ * ── PIEGE, a lire avant de redeclarer font-variant-numeric ailleurs ──
+ *
+ * `font-variant-numeric` est UNE propriete, pas plusieurs. Ecrire
+ * `font-variant-numeric: tabular-nums` dans une regle plus specifique ne
+ * s'ajoute pas a l'heritage : ca le REMPLACE, le style de chiffres retombe a
+ * « normal », et Cormorant reprend ses elzeviers. C'est arrive sur l'acompte
+ * et le solde du calculateur, reperes par Irina le 17 aout 2026 — mesure a
+ * l'encre : 71,11 px avec le seul tabular-nums, 73,52 px avec les deux.
+ *
+ * Toute regle qui a besoin de chiffres a chasse fixe doit donc ecrire les
+ * DEUX mots-cles, en reprenant le jeton ci-dessous :
+ *
+ *   font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
+ *
+ * Le jeton evite d'avoir a se souvenir de la politique du site a chaque
+ * usage : la changer se fait ici, une fois.
  */
+:root {
+  --chiffres: lining-nums;
+}
+
 body {
-  font-variant-numeric: lining-nums;
+  font-variant-numeric: var(--chiffres, lining-nums);
 }
 
 /* MIAOUCRATIE-TITLE-V2 */

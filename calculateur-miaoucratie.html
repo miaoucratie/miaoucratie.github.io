@@ -340,7 +340,8 @@
   .result-line .amount {
     font-weight: 400;
     color: #4A3728;
-    font-variant-numeric: tabular-nums;
+    /* Idem : voir MIAOUCRATIE-CHIFFRES dans css/couches.css. */
+    font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
   }
 
   .result-line.discount .amount { color: #3f6b4d; }
@@ -407,7 +408,9 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--dark);
-    font-variant-numeric: tabular-nums;
+    /* Les deux mots-cles ensemble, jamais tabular-nums seul : voir le piege
+       documente dans MIAOUCRATIE-CHIFFRES, css/couches.css. */
+    font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
   }
 
   .breakdown-item.highlight { background: #fff; }
