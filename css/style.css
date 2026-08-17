@@ -548,10 +548,13 @@
     .topbar { gap: 8px; }
     .topbar a span { display: none; }
   }
+/* Pas d'opacite ici : elle se multipliait avec l'alpha de la couleur posee
+   dans couches.css, et les liens legaux tombaient a un alpha effectif de 0,28,
+   soit 2,52:1 sur le fond sombre. L'attenuation est portee par la couleur
+   seule, ou elle reste mesurable. */
 .footer-legal {
   margin-top: 8px;
   font-size: 0.8em;
-  opacity: 0.7;
   display: flex;
   align-items: center;
   gap: 8px;
