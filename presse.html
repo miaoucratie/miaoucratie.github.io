@@ -33,6 +33,7 @@
   <meta property="og:title" content="Miaoucratie dans la presse locale">
   <meta property="og:description" content="Ce que Ouest-France et Le Journal de Vitré ont écrit sur Miaoucratie, cat-sitting à domicile à Domagné.">
   <meta property="og:url" content="https://miaoucratie.fr/presse.html">
+  <meta property="og:image" content="https://miaoucratie.fr/images/logo.webp">
 
   <meta name="twitter:card" content="summary">
 
@@ -55,6 +56,10 @@
 
 html{height:100%}
 body{min-height:100vh;display:flex;flex-direction:column}
+/* 1100, comme toutes les autres pages du site. Aucun texte n'est bride en
+   largeur ici : titres, paragraphes et boutons vont tous au bord du cadre.
+   Les lignes sont longues, l'interlignage est donc ouvert a 1.9 pour que
+   l'oeil retrouve le debut de la ligne suivante. */
 .page-wrap{max-width:1100px;margin:0 auto;padding:52px 40px 80px;flex:1}
 
 /* ── Hero ── */
@@ -62,7 +67,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .pr-hero{margin-bottom:48px}
 .pr-hero h1{font-size:clamp(44px,6vw,76px);margin-bottom:16px}
 .pr-hero h1 em{font-style:italic;font-weight:400;color:#A8472A}
-.pr-hero-sub{font-size:16px;color:#7A6B5E;max-width:660px;line-height:1.8}
+.pr-hero-sub{font-size:16px;color:#7A6B5E;line-height:1.8}
 
 /* ── Liste des articles ── */
 .pr-list{display:grid;gap:20px;margin-bottom:56px}
@@ -91,8 +96,8 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .pr-byline{font-size:13px;color:#7A6B5E;margin-bottom:20px}
 
 /* Paragraphes courts et separes : un pave de six lignes ne se lit pas. */
-.pr-said{margin-bottom:24px;max-width:62ch}
-.pr-said p{font-size:16px;line-height:1.75;color:#1E1812;margin-bottom:14px}
+.pr-said{margin-bottom:24px}
+.pr-said p{font-size:16px;line-height:1.9;color:#1E1812;margin-bottom:16px}
 .pr-said p:last-child{margin-bottom:0}
 
 /* ── Actions ──
@@ -110,7 +115,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
    sable de l'appel a l'action des tarifs. */
 .pr-press{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:36px 40px;margin-bottom:48px}
 .pr-press h2{margin-bottom:12px}
-.pr-press p{font-size:15px;color:#4A3728;max-width:62ch;margin-bottom:16px;line-height:1.75}
+.pr-press p{font-size:15px;color:#4A3728;margin-bottom:16px;line-height:1.9}
 .pr-press ul{list-style:none;margin-bottom:24px}
 .pr-press li{font-size:15px;color:#4A3728;padding-left:18px;position:relative;margin-bottom:8px;line-height:1.7}
 .pr-press li::before{content:"·";position:absolute;left:4px;color:#A8472A;font-weight:700}
@@ -143,8 +148,8 @@ body{min-height:100vh;display:flex;flex-direction:column}
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
+  "@id": "https://miaoucratie.fr/#business",
   "name": "Miaoucratie",
-  "url": "https://miaoucratie.fr",
   "subjectOf": [
     {
       "@type": "NewsArticle",
