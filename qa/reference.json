@@ -1341,9 +1341,9 @@
   "A||144|22|534|2594|rgb(184, 155, 128)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|22.1px|normal",
   "A||60|22|698|2594|rgb(184, 155, 128)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|22.1px|normal",
   "A||63|22|777|2594|rgb(184, 155, 128)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|22.1px|normal",
-  "DIV|footer-legal|147|22|1085|2598|rgba(255, 255, 255, 0.4)|rgba(0, 0, 0, 0)|12px|400|normal|\"DM Sans\"|flex|0px|0px|8px 0px 0px|start|0.7|visible|20.4px|normal",
-  "A||28|22|1085|2598|rgba(255, 255, 255, 0.4)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|22.1px|normal",
-  "A||101|22|1131|2598|rgba(255, 255, 255, 0.4)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|22.1px|normal"
+  "DIV|footer-legal|147|22|1085|2598|rgba(255, 255, 255, 0.55)|rgba(0, 0, 0, 0)|12px|400|normal|\"DM Sans\"|flex|0px|0px|8px 0px 0px|start|1|visible|20.4px|normal",
+  "A||28|22|1085|2598|rgba(255, 255, 255, 0.55)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|22.1px|normal",
+  "A||101|22|1131|2598|rgba(255, 255, 255, 0.55)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|22.1px|normal"
  ],
  "cgv.html@1272": [
   "DIV|topbar|1272|50|0|0|rgb(30, 24, 18)|rgb(30, 24, 18)|15px|400|normal|\"DM Sans\"|flex|0px|0px 40px|0px|start|1|visible|25.5px|normal",
@@ -2998,9 +2998,9 @@
   "A||144|22|130|4340|rgb(184, 155, 128)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|center|1|visible|22.1px|normal",
   "A||60|22|294|4340|rgb(184, 155, 128)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|center|1|visible|22.1px|normal",
   "A||63|22|156|4382|rgb(184, 155, 128)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|center|1|visible|22.1px|normal",
-  "DIV|footer-legal|147|22|114|4428|rgba(255, 255, 255, 0.4)|rgba(0, 0, 0, 0)|12px|400|normal|\"DM Sans\"|flex|0px|0px|8px 0px 0px|center|0.7|visible|20.4px|normal",
-  "A||28|22|114|4428|rgba(255, 255, 255, 0.4)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|center|1|visible|22.1px|normal",
-  "A||101|22|160|4428|rgba(255, 255, 255, 0.4)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|center|1|visible|22.1px|normal"
+  "DIV|footer-legal|147|22|114|4428|rgba(255, 255, 255, 0.55)|rgba(0, 0, 0, 0)|12px|400|normal|\"DM Sans\"|flex|0px|0px|8px 0px 0px|center|1|visible|20.4px|normal",
+  "A||28|22|114|4428|rgba(255, 255, 255, 0.55)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|center|1|visible|22.1px|normal",
+  "A||101|22|160|4428|rgba(255, 255, 255, 0.55)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|center|1|visible|22.1px|normal"
  ],
  "cgv.html@375": [
   "DIV|topbar|375|77|0|0|rgb(30, 24, 18)|rgb(30, 24, 18)|15px|400|normal|\"DM Sans\"|flex|0px|0px 20px|0px|start|1|visible|25.5px|normal",
