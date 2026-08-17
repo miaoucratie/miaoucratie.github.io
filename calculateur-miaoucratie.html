@@ -40,16 +40,16 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --calc-cream: #fdf8f2;
-    --calc-warm: #f5ede0;
-    --calc-terracotta: #c4623a;
+    --calc-cream: #FBF7F0;
+    --calc-warm: #F0E8DA;
+    --calc-terracotta: #a8472a;
     --terracotta-light: #e8845f;
-    --dark: #2a1f1a;
-    --calc-mid: #7a6358;
+    --dark: #1E1812;
+    --calc-mid: #7A6B5E;
     --calc-light: #b8a598;
     --green: #4a7c59;
     --green-light: #e8f2eb;
-    --border: #e2d5c8;
+    --border: #E8DDD0;
   }
 
   body {
@@ -129,7 +129,7 @@
     background: white;
     border-radius: 20px;
     padding: 36px;
-    box-shadow: 0 4px 40px rgba(42, 31, 26, 0.08), 0 1px 4px rgba(42, 31, 26, 0.06);
+    box-shadow: 0 4px 40px rgba(30, 24, 18, 0.08), 0 1px 4px rgba(30, 24, 18, 0.06);
     animation: fadeUp 0.6s ease 0.1s both;
   }
 
@@ -149,7 +149,7 @@
     font-weight: 500;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--calc-light);
+    color: var(--calc-mid);
     margin-bottom: 16px;
     margin-top: 28px;
   }
@@ -171,7 +171,7 @@
 
   label span.hint {
     font-weight: 300;
-    color: var(--calc-light);
+    color: var(--calc-mid);
     font-size: 0.8rem;
   }
 
@@ -288,7 +288,7 @@
 
   .km-label {
     font-size: 0.85rem;
-    color: var(--calc-light);
+    color: var(--calc-mid);
   }
 
   /* Divider */
@@ -298,20 +298,38 @@
     margin: 28px 0;
   }
 
+  .reserver {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 15px 24px;
+    border-radius: 12px;
+    background: var(--calc-terracotta);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .reserver:hover { background: #8b3921; }
+
   /* Result panel */
   .result {
-    background: var(--dark);
+    background: var(--calc-warm);
     border-radius: 16px;
     padding: 28px;
-    color: white;
+    color: var(--dark);
     animation: fadeUp 0.4s ease both;
   }
 
   .result-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 1.1rem;
     letter-spacing: 0;
-    color: #fff;
+    color: #4A3728;
     font-weight: 700;
     margin-bottom: 20px;
   }
@@ -328,22 +346,22 @@
     justify-content: space-between;
     align-items: baseline;
     font-size: 0.88rem;
-    color: #b8a598;
+    color: #4A3728;
   }
 
   .result-line .label { flex: 1; }
 
   .result-line .amount {
     font-weight: 400;
-    color: #d4c5b8;
+    color: #4A3728;
     font-variant-numeric: tabular-nums;
   }
 
-  .result-line.discount .amount { color: #7cc47e; }
-  .result-line.extra .amount { color: #e8a87c; }
+  .result-line.discount .amount { color: #3f6b4d; }
+  .result-line.extra .amount { color: var(--calc-terracotta); }
 
   .result-total {
-    border-top: 1px solid #3d2e27;
+    border-top: 1px solid var(--border);
     padding-top: 16px;
     display: flex;
     justify-content: space-between;
@@ -352,15 +370,15 @@
   }
 
   .result-total .label {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 1.1rem;
-    color: white;
+    color: #4A3728;
   }
 
   .result-total .amount {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.8rem;
-    color: white;
+    color: var(--dark);
     font-weight: 700;
   }
 
@@ -371,32 +389,49 @@
   }
 
   .breakdown-item {
-    background: rgba(255,255,255,0.06);
-    border-radius: 10px;
-    padding: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: 0 2px 10px rgba(30, 24, 18, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    animation: fadeUp 0.45s ease both;
+  }
+
+  .breakdown-item:nth-child(2) { animation-delay: 0.08s; }
+
+  .breakdown-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(30, 24, 18, 0.08);
+    border-color: var(--calc-terracotta);
   }
 
   .breakdown-item .b-label {
-    font-size: 0.75rem;
-    color: var(--calc-light);
-    margin-bottom: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--calc-mid);
+    margin-bottom: 6px;
   }
 
   .breakdown-item .b-amount {
-    font-size: 1.15rem;
-    font-weight: 500;
-    color: white;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--dark);
     font-variant-numeric: tabular-nums;
   }
 
-  .breakdown-item.highlight { background: rgba(196, 98, 58, 0.25); }
-  .breakdown-item.highlight .b-amount { color: var(--terracotta-light); }
+  .breakdown-item.highlight { background: #fff; }
+  .breakdown-item.highlight .b-amount { color: var(--calc-terracotta); }
 
   /* Empty state */
   .empty-state {
     text-align: center;
     padding: 20px 0;
-    color: var(--calc-light);
+    color: var(--calc-mid);
     font-size: 0.9rem;
   }
 
@@ -406,7 +441,7 @@
   .mention {
     text-align: center;
     font-size: 0.75rem;
-    color: var(--calc-light);
+    color: var(--calc-mid);
     margin-top: 20px;
   }
 
@@ -883,7 +918,7 @@ body.calculateur-page .container { flex: 1; }
 </div>
 </div>
 <!-- Distance -->
-<p class="section-label">Distance hors zone <span style="font-size:0.75rem;color:var(--calc-light);text-transform:none;letter-spacing:0">(au-delà de 20 km de Châteaubourg par la route)</span></p>
+<p class="section-label">Distance hors zone <span style="font-size:0.75rem;color:var(--calc-mid);text-transform:none;letter-spacing:0">(au-delà de 20 km de Domagné par la route)</span></p>
 <div class="field">
 <div class="km-input">
 <input id="km-input" min="0" oninput="calculate()" type="number" value="0"/>
@@ -898,6 +933,7 @@ body.calculateur-page .container { flex: 1; }
         Renseignez les informations ci-dessus
       </div>
 </div>
+<a class="reserver" href="reservation.html">Réserver ma garde</a>
 <p class="mention">TVA non applicable · Art. 293 B du CGI</p>
 </div>
 </div>
@@ -970,7 +1006,7 @@ body.calculateur-page .container { flex: 1; }
 
     if (cumulBloque) {
       lines += `<div class="result-line">
-        <span class="label" style="color:#e8a87c">⚠ Cumul remises non applicable en période forte demande</span>
+        <span class="label" style="color:var(--calc-terracotta)">⚠ Cumul remises non applicable en période forte demande</span>
         <span class="amount"></span>
       </div>`;
     }
@@ -989,7 +1025,7 @@ body.calculateur-page .container { flex: 1; }
         <p class="result-title">Estimation du coût</p>
         <div class="result-lines">${lines}</div>
         <div class="result-total">
-          <span class="label" style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;">Total séjour${cumul ? '<span class="badge-cumul">2 remises</span>' : ''}</span>
+          <span class="label" style="font-size:1.15rem;font-weight:700;">Total séjour${cumul ? '<span class="badge-cumul">2 remises</span>' : ''}</span>
           <span class="amount" style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;letter-spacing:-.03em;">${fmt(total)}</span>
         </div>
         <div class="result-breakdown">
@@ -998,11 +1034,11 @@ body.calculateur-page .container { flex: 1; }
             <div class="b-amount">${fmt(acompte)}</div>
           </div>
           <div class="breakdown-item">
-            <div class="b-label">Solde à la remise des clés</div>
+            <div class="b-label">Solde après la dernière visite</div>
             <div class="b-amount">${fmt(solde)}</div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--calc-mid);margin-top:12px;text-align:center;">Estimation indicative · devis personnalisé sur demande</p>
+        <p style="font-size:12px;color:#4A3728;margin-top:12px;text-align:center;">Estimation indicative · Devis personnalisé sur demande</p>
       </div>`;
     document.getElementById('result-area').style.display = 'block';
   }

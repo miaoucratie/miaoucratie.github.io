@@ -9,6 +9,7 @@
     --N: #1E1812;
     --mid: #4A3728;
     --sand: #B89B80;
+    --muted: #7A6B5E;
     --light: #D4BEA8;
     --fun: #E8834A;
   }
@@ -97,7 +98,7 @@
   .logo-tagline-small {
     font-size: 12px;
     font-weight: 500;
-    color: var(--sand);
+    color: var(--muted);
     letter-spacing: 2px;
     text-transform: uppercase;
     margin-top: 4px;
@@ -253,7 +254,7 @@
     position: absolute;
     bottom: -20px; right: -20px;
     width: 100px; height: 100px;
-    background: var(--terracotta);
+    background: var(--rust);
     border-radius: 50%;
     display: flex;
     flex-direction: column;
@@ -326,7 +327,7 @@
   .pcard ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   .pcard li { font-size: 14px; color: var(--mid); padding-left: 18px; position: relative; line-height: 1.6; }
   .pcard li::before { content: '🐾'; font-size: 10px; position: absolute; left: 0; top: 3px; }
-  .pcard .note { font-style: italic; font-size: 13px; color: var(--sand); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--warm); }
+  .pcard .note { font-style: italic; font-size: 13px; color: var(--muted); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--warm); }
 
   /* ── PROCESS ── */
   .process-bg { background: var(--warm); }
@@ -390,7 +391,7 @@
   }
   /* Reste sous les titres de section, qui plafonnent a 30px. */
   .cred-name { font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 2vw, 26px); font-weight: 700; color: var(--deep); line-height: 1.1; }
-  .cred-role { font-size: 13px; color: var(--sand); font-weight: 500; letter-spacing: 1px; }
+  .cred-role { font-size: 13px; color: var(--mid); font-weight: 500; letter-spacing: 1px; }
   /* Meme langage que .cred-item : carte blanche, filet terracotta a gauche.
      Cette mention etait la seule etiquette en aplat sombre de la page — 16,5
      de contraste sur un fond creme, elle sautait au visage et introduisait un

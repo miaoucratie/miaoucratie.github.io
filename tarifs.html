@@ -68,11 +68,7 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 
 /* Grille tarifs : prix + remises côte à côte */
 .t-tarifs-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
-/* Le simulateur vit sous l'encart des prix : la colonne des remises est plus
-   haute, la place y est libre, et c'est le seul acces au calculateur, qui n'est
-   pas dans le menu. Il reprend le langage des encadres de la page (blanc,
-   bordure #E8DDD0, rayon 20) plutot qu'une pilule : a 496 px de large, un rayon
-   de 100 px se voit. */
+/* Simulateur sous l'encart des prix, seul acces au calculateur. */
 .t-price-col{display:flex;flex-direction:column;gap:16px}
 .t-simuler{display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:1px solid #E8DDD0;border-radius:20px;padding:16px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:#A8472A;text-decoration:none;box-shadow:0 2px 10px rgba(30,24,18,.04);transition:border-color .2s,box-shadow .2s}
 .t-simuler:hover{border-color:#A8472A;box-shadow:0 6px 20px rgba(30,24,18,.08)}
@@ -80,13 +76,9 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 /* Price card */
 .t-price-card{background:#fff;border-radius:20px;overflow:hidden;border:1px solid #E8DDD0;box-shadow:0 4px 20px rgba(30,24,18,.06)}
 .t-price-header{background:#1E1812;padding:22px 30px}
-/* Le titre est dans un <span> : la couche TITLES-V5 de couches.css impose
-   « color: #1E1812 !important » a tout h2 du site, et le rendait donc brun
-   fonce sur le rouille de l'en-tete, a 3,01:1. Le span echappe a la couche
-   sans qu'on ait a poser un !important de plus. Blanc sur #A8472A : 5,83:1. */
+/* Titre dans un span : la couche TITLES-V5 force la couleur de tout h2. */
 .t-price-header h2{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
 .t-price-header h2 span{color:#fff}
-/* .9 et non .5 : a demi-opacite la ligne tombait a 2,63:1 sur le rouille. */
 .t-price-header p{font-size:13px;color:rgba(255,255,255,.9)}
 .t-price-row{display:flex;justify-content:space-between;align-items:center;padding:16px 30px;border-bottom:1px solid #F0E8DA;transition:background .15s}
 .t-price-row:last-child{border-bottom:none}
