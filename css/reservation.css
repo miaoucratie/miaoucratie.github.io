@@ -580,7 +580,7 @@ textarea:disabled {
 
 .button--primary {
   min-width: min(100%, 18rem);
-  background: linear-gradient(135deg, var(--color-primary) 0%, #d57a49 100%);
+  background: linear-gradient(135deg, #a8472a 0%, #8b3921 100%);
   color: #fff;
   box-shadow: 0 16px 26px rgba(201, 107, 62, 0.24);
 }
