@@ -631,6 +631,23 @@ textarea:disabled {
   margin: 0;
 }
 
+/* Demande enregistree, mais notification non partie : le visiteur doit voir
+   qu'il lui reste un geste a faire, sans que le panneau devienne une alerte
+   d'erreur — sa demande, elle, est bien passee. */
+.success-panel__relance {
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(168, 71, 42, 0.28);
+  background: rgba(168, 71, 42, 0.07);
+  color: var(--color-text, #1E1812);
+  text-align: left;
+}
+
+.success-panel__relance a {
+  color: #A8472A;
+  font-weight: 600;
+}
+
 .admin-body {
   background:
     radial-gradient(circle at top right, rgba(201, 107, 62, 0.08), transparent 28%),

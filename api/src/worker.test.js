@@ -23,7 +23,9 @@ const MOT_DE_PASSE = 'mot-de-passe-de-test';
  * s'orientant sur le SQL recu. Les insertions sont conservees pour verifier ce
  * qui aurait ete ecrit.
  */
-function fausseBase({ indisponibilites = [], envoisRecents = 0 } = {}) {
+function fausseBase({
+  indisponibilites = [], envoisRecents = 0, echecsConnexionRecents = 0, demandes = [],
+} = {}) {
   const insertions = [];
 
   const base = {
@@ -34,9 +36,17 @@ function fausseBase({ indisponibilites = [], envoisRecents = 0 } = {}) {
         bind(...v) { valeurs = v; return api; },
         async all() {
           if (sql.includes('unavailability_periods')) return { results: indisponibilites };
+          if (sql.includes('FROM reservation_requests')) return { results: demandes };
           return { results: [] };
         },
         async first() {
+          // Deux compteurs desormais, et ils ne comptent pas la meme chose :
+          // les envois du formulaire public d'un cote, les echecs de connexion
+          // admin de l'autre. Les confondre rendrait le quota de connexion
+          // vert des que personne n'a reserve.
+          if (sql.includes('COUNT(*)') && sql.includes('admin_login_attempts')) {
+            return { count: echecsConnexionRecents };
+          }
           if (sql.includes('COUNT(*)')) return { count: envoisRecents };
           if (sql.includes('unavailability_periods')) return indisponibilites[0] ?? null;
           return null;
@@ -323,6 +333,141 @@ describe('garde anti-robot', () => {
     assert.equal(reponse.status, 400);
     assert.ok((await reponse.json()).errors.dateRange);
     assert.equal(environnement.DB.insertions.length, 0);
+  });
+});
+
+describe('quota de connexion administrateur', () => {
+  const environnementAvec = (echecsConnexionRecents) => ({
+    DB: fausseBase({ echecsConnexionRecents }),
+    ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
+  });
+
+  test('un echec de connexion est enregistre', async () => {
+    const environnement = environnementAvec(0);
+    await appeler('/admin/login', { methode: 'POST', corps: { password: 'pas-le-bon' }, environnement });
+    assert.equal(environnement.DB.insertions.length, 1);
+    assert.match(environnement.DB.insertions[0].sql, /admin_login_attempts/);
+  });
+
+  test('une connexion reussie ne consomme pas de quota', async () => {
+    const environnement = environnementAvec(0);
+    await appeler('/admin/login', { methode: 'POST', corps: { password: MOT_DE_PASSE }, environnement });
+    assert.equal(environnement.DB.insertions.length, 0, 'une connexion reussie ne doit rien ecrire');
+  });
+
+  test('neuf echecs recents laissent encore essayer', async () => {
+    const reponse = await appeler('/admin/login', {
+      methode: 'POST', corps: { password: 'pas-le-bon' }, environnement: environnementAvec(9),
+    });
+    assert.equal(reponse.status, 401);
+  });
+
+  test('au dixieme echec recent, la route repond 429', async () => {
+    const environnement = environnementAvec(10);
+    const reponse = await appeler('/admin/login', {
+      methode: 'POST', corps: { password: 'pas-le-bon' }, environnement,
+    });
+    assert.equal(reponse.status, 429);
+    assert.equal(environnement.DB.insertions.length, 0, 'le quota atteint, on n ecrit plus rien');
+  });
+
+  test('quota atteint, le bon mot de passe est refuse lui aussi', async () => {
+    // C'est ce qui donne sa valeur au quota : sinon la reponse continue de
+    // dire si le mot de passe propose etait le bon, et l essai en serie
+    // reprend simplement plus lentement.
+    const reponse = await appeler('/admin/login', {
+      methode: 'POST', corps: { password: MOT_DE_PASSE }, environnement: environnementAvec(12),
+    });
+    assert.equal(reponse.status, 429);
+  });
+
+  test('l adresse IP sert de cle sous forme d empreinte, jamais en clair', async () => {
+    const environnement = environnementAvec(0);
+    await appeler('/admin/login', {
+      methode: 'POST', corps: { password: 'pas-le-bon' }, environnement,
+      entetes: { 'CF-Connecting-IP': '203.0.113.7' },
+    });
+    const valeurs = environnement.DB.insertions[0].valeurs.map(String);
+    assert.ok(!valeurs.includes('203.0.113.7'), 'l adresse IP se retrouve en clair en base');
+    assert.ok(valeurs.some((v) => /^[0-9a-f]{64}$/.test(v)), 'aucune empreinte SHA-256 trouvee');
+  });
+});
+
+describe('demandes de reservation relisibles', () => {
+  const uneDemande = {
+    id: '11111111-2222-3333-4444-555555555555',
+    prenom: 'Marie', nom: 'Dupont', commune: 'Domagné',
+    dateDebut: '2099-06-01', dateFin: '2099-06-10', statut: 'received',
+  };
+
+  test('la liste exige un jeton', async () => {
+    assert.equal((await appeler('/admin/reservations')).status, 401);
+  });
+
+  test('avec un jeton, elle rend les demandes enregistrees', async () => {
+    const environnement = {
+      DB: fausseBase({ demandes: [uneDemande] }),
+      ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
+    };
+    const jeton = await jetonValide(environnement);
+    const reponse = await appeler('/admin/reservations', {
+      entetes: { Authorization: `Bearer ${jeton}` }, environnement,
+    });
+    assert.equal(reponse.status, 200);
+    assert.deepEqual((await reponse.json()).demandes, [uneDemande]);
+  });
+
+  test('les demandes non notifiees remontent en tete', async () => {
+    const environnement = {
+      DB: fausseBase({ demandes: [uneDemande] }),
+      ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
+    };
+    const jeton = await jetonValide(environnement);
+    let sqlLu = '';
+    const prepareOrigine = environnement.DB.prepare.bind(environnement.DB);
+    environnement.DB.prepare = (sql) => { sqlLu = sql; return prepareOrigine(sql); };
+    await appeler('/admin/reservations', {
+      entetes: { Authorization: `Bearer ${jeton}` }, environnement,
+    });
+    assert.match(sqlLu, /ORDER BY \(status = \?\) DESC, submitted_at DESC/);
+  });
+});
+
+describe('signalement d une notification non partie', () => {
+  const ID = '11111111-2222-3333-4444-555555555555';
+
+  test('le signalement marque la demande, sans jeton', async () => {
+    // Route publique par necessite : c'est le navigateur du visiteur qui
+    // constate l'echec, et il n'a aucun jeton.
+    const environnement = env();
+    const reponse = await appeler(`/public/reservations/${ID}/notification-echouee`, {
+      methode: 'POST', environnement,
+    });
+    assert.equal(reponse.status, 200);
+    assert.equal(environnement.DB.insertions.length, 1);
+    assert.match(environnement.DB.insertions[0].sql, /UPDATE reservation_requests/);
+  });
+
+  test('il ne peut que rendre une demande plus visible, jamais l inverse', async () => {
+    // La condition WHERE limite l'effet d'un signalement forge : une demande
+    // qui n'est plus a l'etat « recue » n'est pas touchee, et aucun statut ne
+    // peut etre efface.
+    const environnement = env();
+    await appeler(`/public/reservations/${ID}/notification-echouee`, {
+      methode: 'POST', environnement,
+    });
+    const { sql, valeurs } = environnement.DB.insertions[0];
+    assert.match(sql, /WHERE id = \? AND status = \?/);
+    assert.deepEqual(valeurs, ['notification_echouee', ID, 'received']);
+  });
+
+  test('un identifiant qui n est pas un UUID ne correspond a aucune route', async () => {
+    const reponse = await appeler('/public/reservations/nawak/notification-echouee', { methode: 'POST' });
+    assert.equal(reponse.status, 404);
+  });
+
+  test('la route refuse les autres methodes', async () => {
+    assert.equal((await appeler(`/public/reservations/${ID}/notification-echouee`)).status, 404);
   });
 });
 
