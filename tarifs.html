@@ -31,7 +31,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Miaoucratie">
   <meta property="og:title" content="Tarifs de garde de chats à domicile | Miaoucratie">
-  <meta property="og:description" content="Les tarifs Miaoucratie : 18 € la visite pour 1 ou 2 chats, 45 min en général, remises séjour long et association.">
+  <meta property="og:description" content="Les tarifs Miaoucratie : 18 € la visite pour 1 ou 2 chats, 45 min minimum, remises séjour long et association.">
   <meta property="og:url" content="https://miaoucratie.fr/tarifs.html">
 
   <meta name="twitter:card" content="summary">
@@ -80,16 +80,22 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 /* Price card */
 .t-price-card{background:#fff;border-radius:20px;overflow:hidden;border:1px solid #E8DDD0;box-shadow:0 4px 20px rgba(30,24,18,.06)}
 .t-price-header{background:#1E1812;padding:22px 30px}
-.t-price-header h2{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:3px}
-.t-price-header p{font-size:13px;color:rgba(255,255,255,.5)}
+/* Le titre est dans un <span> : la couche TITLES-V5 de couches.css impose
+   « color: #1E1812 !important » a tout h2 du site, et le rendait donc brun
+   fonce sur le rouille de l'en-tete, a 3,01:1. Le span echappe a la couche
+   sans qu'on ait a poser un !important de plus. Blanc sur #A8472A : 5,83:1. */
+.t-price-header h2{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
+.t-price-header h2 span{color:#fff}
+/* .9 et non .5 : a demi-opacite la ligne tombait a 2,63:1 sur le rouille. */
+.t-price-header p{font-size:13px;color:rgba(255,255,255,.9)}
 .t-price-row{display:flex;justify-content:space-between;align-items:center;padding:16px 30px;border-bottom:1px solid #F0E8DA;transition:background .15s}
 .t-price-row:last-child{border-bottom:none}
 .t-price-row:hover{background:#FDFAF7}
 .t-price-label{font-size:15px;color:#4A3728}
 .t-price-amount{display:flex;align-items:baseline;gap:1px}
 .t-price-amount strong{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,3.5vw,42px);font-weight:700;color:#C8603A;letter-spacing:-.04em;line-height:1}
-.t-price-amount span{font-size:13px;color:#B89B80}
-.t-price-tva{padding:12px 30px;font-size:12px;color:#B89B80;font-style:italic;border-top:1px solid #F0E8DA;background:#FDFAF7}
+.t-price-amount span{font-size:13px;color:#7A6B5E}
+.t-price-tva{padding:12px 30px;font-size:12px;color:#7A6B5E;font-style:italic;border-top:1px solid #F0E8DA;background:#FDFAF7}
 
 /* Remises */
 .t-remises{display:flex;flex-direction:column;gap:14px}
@@ -103,7 +109,7 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 .t-remise-badge{flex-shrink:0;background:rgba(122,158,142,.1);border:1.5px solid rgba(122,158,142,.35);border-radius:14px;padding:16px 20px;text-align:center;min-width:90px;align-self:center}
 .t-remise-badge strong{display:block;font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,44px);font-weight:700;color:#5E9080;line-height:1;letter-spacing:-.04em}
 .t-remise-badge span{font-size:12px;color:#7A6B5E;display:block;margin-top:4px}
-.t-remise-note{font-size:12px;color:#B89B80;font-style:italic;margin-top:7px;line-height:1.55}
+.t-remise-note{font-size:12px;color:#7A6B5E;font-style:italic;margin-top:7px;line-height:1.55}
 
 /* === SECTION 2 : CONDITIONS === */
 .t-cond-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -148,7 +154,7 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 .t-cta{background:#F0E8DA;border:1.5px solid #E8DDD0}
 .t-cta-left h2{color:#1E1812}
 .t-cta-left h2 em{color:#A8472A;font-style:italic}
-.t-cta-left p{color:#7A6B5E}
+.t-cta-left p{color:#4A3728}
 .btn-cta-white{background:#A8472A;color:#fff;box-shadow:0 4px 16px rgba(168,71,42,.28)}
 .btn-cta-white:hover{background:#8B3921!important}
 .btn-cta-ghost{color:#4A3728;border:1.5px solid #C8B8A2;background:transparent}
@@ -181,7 +187,7 @@ html{height:100%}body{min-height:100vh;display:flex;flex-direction:column}
 <div class="t-usp">
 <span class="t-usp-icon">⏰</span>
 <strong>Le temps qu'il faut,<br/>pas le temps minimum</strong>
-<span>45 minutes en général, 30 au minimum.<br/>Davantage s'il y a plusieurs chats.</span>
+<span>45 minutes minimum par visite.<br/>Davantage s'il y a plusieurs chats.</span>
 </div>
 <div class="t-usp">
 <span class="t-usp-icon">📸</span>
@@ -202,8 +208,8 @@ html{height:100%}body{min-height:100vh;display:flex;flex-direction:column}
 <div class="t-price-col">
 <div class="t-price-card">
 <div class="t-price-header">
-<h2>Tarif par visite</h2>
-<p>45 min en général pour 1 chat · Prix nets en euros</p>
+<h2><span>Tarif par visite</span></h2>
+<p>45 minutes minimum pour 1 chat</p>
 </div>
 <div class="t-price-row"><span class="t-price-label">1 ou 2 chats</span><div class="t-price-amount"><strong>18</strong><span> €/visite</span></div></div>
 <div class="t-price-row"><span class="t-price-label">3 chats</span><div class="t-price-amount"><strong>22</strong><span> €/visite</span></div></div>
