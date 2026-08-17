@@ -40,3 +40,17 @@ CREATE INDEX IF NOT EXISTS idx_reservation_requests_dates
 
 CREATE INDEX IF NOT EXISTS idx_reservation_requests_ip_submitted
   ON reservation_requests (ip_hash, submitted_at);
+
+-- Tentatives de connexion echouees a l'administration. Le formulaire public
+-- etait limite a quatre envois par quart d'heure et par IP ; la connexion
+-- admin n'avait aucun quota, rien ne ralentissait un essai de mots de passe en
+-- serie. Seuls les echecs sont enregistres : une connexion reussie ne consomme
+-- rien, donc se tromper puis se corriger ne bloque pas.
+CREATE TABLE IF NOT EXISTS admin_login_attempts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ip_hash TEXT NOT NULL,
+  attempted_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_login_attempts_ip_attempted
+  ON admin_login_attempts (ip_hash, attempted_at);

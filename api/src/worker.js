@@ -10,6 +10,34 @@ const JSON_HEADERS = {
   "Cache-Control": "no-store",
 };
 
+/** Envois du formulaire public tolerés par quart d'heure et par IP. */
+const QUOTA_DEMANDES = 4;
+
+/**
+ * Echecs de connexion admin tolérés par quart d'heure et par IP.
+ *
+ * Plus large que le quota public : se tromper de mot de passe puis se
+ * corriger est normal, essayer dix mots de passe en un quart d'heure ne l'est
+ * pas. Une connexion réussie ne consomme rien.
+ */
+const QUOTA_CONNEXIONS_ADMIN = 10;
+
+/** Demandes remontées à l'administration, de la plus récente à la plus ancienne. */
+const DEMANDES_AFFICHEES = 60;
+
+/**
+ * Etats d'une demande de reservation.
+ *
+ * Le Worker enregistre la demande, mais c'est le navigateur du visiteur qui
+ * envoie l'e-mail de notification, et cet envoi peut echouer sans que
+ * personne ne le sache. `notification_echouee` est pose par le navigateur
+ * quand il constate cet echec : la demande apparait alors en tete de la liste
+ * d'administration. Seul l'echec est signalable — un signalement forge ne peut
+ * donc que rendre une demande plus visible, jamais la faire disparaitre.
+ */
+const STATUT_RECUE = "received";
+const STATUT_NOTIFICATION_ECHOUEE = "notification_echouee";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -33,8 +61,22 @@ export default {
         return await handlePublicReservation(request, env);
       }
 
+      const notificationMatch = url.pathname.match(
+        /^\/public\/reservations\/([0-9a-f-]{36})\/notification-echouee$/i
+      );
+
+      if (notificationMatch && request.method === "POST") {
+        return await handleNotificationEchouee(request, env, notificationMatch[1]);
+      }
+
       if (url.pathname === "/admin/login" && request.method === "POST") {
         return await handleAdminLogin(request, env);
+      }
+
+      if (url.pathname === "/admin/reservations" && request.method === "GET") {
+        await assertAdmin(request, env);
+        const demandes = await listReservations(env);
+        return jsonResponse({ demandes }, 200, request, env);
       }
 
       if (url.pathname === "/admin/unavailabilities" && request.method === "GET") {
@@ -100,10 +142,10 @@ async function handlePublicReservation(request, env) {
     );
   }
 
-  const ipHash = await hashString(request.headers.get("CF-Connecting-IP") || request.headers.get("x-forwarded-for") || "unknown");
+  const ipHash = await hashIp(request);
   const submissionsCount = await countRecentSubmissions(env, ipHash);
 
-  if (submissionsCount >= 4) {
+  if (submissionsCount >= QUOTA_DEMANDES) {
     throw new HttpError(
       429,
       "Trop d’envois en peu de temps. Merci de patienter quelques minutes avant de réessayer."
@@ -137,7 +179,7 @@ async function handlePublicReservation(request, env) {
       validation.sanitized.autreFrequence,
       validation.sanitized.observations,
       ipHash,
-      "received"
+      STATUT_RECUE
     )
     .run();
 
@@ -152,6 +194,24 @@ async function handlePublicReservation(request, env) {
   );
 }
 
+/**
+ * Signale que la notification par e-mail d'une demande n'est pas partie.
+ *
+ * Route publique, volontairement : c'est le navigateur du visiteur qui
+ * constate l'echec, et il n'a aucun jeton. Elle ne peut que faire passer une
+ * demande de « recue » a « notification echouee », donc la rendre plus
+ * visible dans l'administration. Une demande deja traitee n'est pas touchee.
+ */
+async function handleNotificationEchouee(request, env, reservationId) {
+  await env.DB.prepare(
+    "UPDATE reservation_requests SET status = ? WHERE id = ? AND status = ?"
+  )
+    .bind(STATUT_NOTIFICATION_ECHOUEE, reservationId, STATUT_RECUE)
+    .run();
+
+  return jsonResponse({ message: "Signalement enregistré." }, 200, request, env);
+}
+
 async function handleAdminLogin(request, env) {
   const payload = await parseJson(request);
   const password = String(payload?.password || "").trim();
@@ -160,7 +220,19 @@ async function handleAdminLogin(request, env) {
     throw new HttpError(400, "Merci de renseigner le mot de passe d’administration.");
   }
 
-  if (password !== env.ADMIN_PASSWORD) {
+  // Le quota se lit avant de comparer quoi que ce soit : au-dela, la reponse
+  // ne depend plus du mot de passe propose, elle ne renseigne donc plus.
+  const ipHash = await hashIp(request);
+
+  if ((await countRecentLoginFailures(env, ipHash)) >= QUOTA_CONNEXIONS_ADMIN) {
+    throw new HttpError(
+      429,
+      "Trop de tentatives de connexion. Merci de patienter un quart d’heure."
+    );
+  }
+
+  if (!timingSafeEqual(password, String(env.ADMIN_PASSWORD ?? ""))) {
+    await recordLoginFailure(env, ipHash);
     throw new HttpError(401, "Mot de passe invalide.");
   }
 
@@ -285,6 +357,34 @@ async function listUnavailabilities(env, options = {}) {
   return result.results || [];
 }
 
+/**
+ * Demandes remontees a l'administration.
+ *
+ * Jusqu'ici rien ne lisait cette table : une demande enregistree dont l'e-mail
+ * de notification n'etait pas parti n'existait nulle part de consultable. Les
+ * demandes signalees comme non notifiees passent en tete, ce sont celles qui
+ * n'ont peut-etre jamais ete vues.
+ */
+async function listReservations(env) {
+  const result = await env.DB.prepare(
+    `
+      SELECT
+        id, submitted_at AS soumiseLe, status AS statut,
+        nom, prenom, telephone, whatsapp, email,
+        commune, commune_code_postal AS communeCodePostal, nombre_chats AS nombreChats,
+        date_debut AS dateDebut, date_fin AS dateFin,
+        frequence, frequence_autre AS frequenceAutre, observations
+      FROM reservation_requests
+      ORDER BY (status = ?) DESC, submitted_at DESC
+      LIMIT ?
+    `
+  )
+    .bind(STATUT_NOTIFICATION_ECHOUEE, DEMANDES_AFFICHEES)
+    .all();
+
+  return result.results || [];
+}
+
 async function countRecentSubmissions(env, ipHash) {
   const row = await env.DB.prepare(
     "SELECT COUNT(*) AS count FROM reservation_requests WHERE ip_hash = ? AND submitted_at >= datetime('now', '-15 minutes')"
@@ -293,6 +393,31 @@ async function countRecentSubmissions(env, ipHash) {
     .first();
 
   return Number(row?.count || 0);
+}
+
+async function countRecentLoginFailures(env, ipHash) {
+  const row = await env.DB.prepare(
+    "SELECT COUNT(*) AS count FROM admin_login_attempts WHERE ip_hash = ? AND attempted_at >= datetime('now', '-15 minutes')"
+  )
+    .bind(ipHash)
+    .first();
+
+  return Number(row?.count || 0);
+}
+
+async function recordLoginFailure(env, ipHash) {
+  await env.DB.prepare("INSERT INTO admin_login_attempts (ip_hash) VALUES (?)")
+    .bind(ipHash)
+    .run();
+}
+
+/** Empreinte de l'IP appelante : elle sert de cle de quota, jamais d'identite. */
+function hashIp(request) {
+  return hashString(
+    request.headers.get("CF-Connecting-IP")
+      || request.headers.get("x-forwarded-for")
+      || "unknown"
+  );
 }
 
 
