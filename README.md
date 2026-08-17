@@ -19,4 +19,5 @@ sans navigateur.
 
 Le reste tient à des choix assumés. Les polices sont servies depuis le dépôt et
 non par Google. Les deux bibliothèques externes sont épinglées et vérifiées par
-empreinte. La réservation passe par un Worker Cloudflare.
+empreinte. Les textes respectent les seuils de contraste AA. La réservation
+passe par un Worker Cloudflare.
