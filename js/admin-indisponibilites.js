@@ -14,7 +14,11 @@ const API_BASE = document
 const ENDPOINTS = {
   login: `${API_BASE}/admin/login`,
   periods: `${API_BASE}/admin/unavailabilities`,
+  demandes: `${API_BASE}/admin/reservations`,
 };
+
+/** Statut pose par le navigateur du visiteur quand l'e-mail n'est pas parti. */
+const STATUT_NOTIFICATION_ECHOUEE = "notification_echouee";
 
 const SESSION_KEY = "miaoucratie:reservation:admin-token:v1";
 
@@ -31,6 +35,8 @@ const logoutButton = document.getElementById("logout-button");
 const cancelEditButton = document.getElementById("cancel-edit-button");
 const periodList = document.getElementById("period-list");
 const periodCount = document.getElementById("period-count");
+const demandeList = document.getElementById("demande-list");
+const demandeCount = document.getElementById("demande-count");
 const formTitle = document.getElementById("admin-form-title");
 
 const state = {
@@ -46,6 +52,7 @@ function init() {
   if (state.token) {
     showManagement();
     loadPeriods();
+    loadDemandes();
   } else {
     showLogin();
   }
@@ -54,7 +61,10 @@ function init() {
 function bindEvents() {
   loginForm?.addEventListener("submit", handleLogin);
   unavailabilityForm?.addEventListener("submit", handleSavePeriod);
-  refreshButton?.addEventListener("click", () => loadPeriods(true));
+  refreshButton?.addEventListener("click", () => {
+    loadPeriods(true);
+    loadDemandes();
+  });
   logoutButton?.addEventListener("click", logout);
   cancelEditButton?.addEventListener("click", resetPeriodForm);
 
@@ -140,6 +150,7 @@ async function handleLogin(event) {
     showManagement();
     showAdminFeedback("success", "Connexion réussie.");
     loadPeriods();
+    loadDemandes();
   } catch (error) {
     setLoginError("Une erreur réseau est survenue. Merci de réessayer.");
   } finally {
@@ -229,6 +240,135 @@ function renderPeriods(periods = []) {
     card.append(dates, comment, actions);
     periodList.append(card);
   });
+}
+
+/**
+ * Charge les demandes de reservation enregistrees.
+ *
+ * Silencieux par construction : c'est une vue de secours, elle ne doit pas
+ * masquer le retour de la gestion des indisponibilites, qui est la raison
+ * d'etre de la page. Un echec s'affiche dans la liste elle-meme.
+ */
+async function loadDemandes() {
+  if (!state.token || !demandeList) {
+    return;
+  }
+
+  try {
+    const response = await fetch(ENDPOINTS.demandes, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${state.token}`,
+      },
+    });
+
+    const result = await safeJson(response);
+
+    if (response.status === 401) {
+      logout();
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error(result?.message || "Impossible de charger les demandes.");
+    }
+
+    renderDemandes(Array.isArray(result?.demandes) ? result.demandes : []);
+  } catch (error) {
+    demandeList.innerHTML = "";
+    const echec = document.createElement("p");
+    echec.className = "empty-state";
+    echec.textContent = error.message || "Chargement des demandes impossible.";
+    demandeList.append(echec);
+  }
+}
+
+function renderDemandes(demandes = []) {
+  demandeList.innerHTML = "";
+
+  if (!demandes.length) {
+    demandeCount.textContent = "0 demande enregistrée";
+    demandeList.innerHTML = '<p class="empty-state">Aucune demande enregistrée pour le moment.</p>';
+    return;
+  }
+
+  const nonNotifiees = demandes.filter((d) => d.statut === STATUT_NOTIFICATION_ECHOUEE).length;
+  const pluriel = demandes.length > 1 ? "s" : "";
+  demandeCount.textContent = nonNotifiees
+    ? `${demandes.length} demande${pluriel} · ${nonNotifiees} sans e-mail de notification`
+    : `${demandes.length} demande${pluriel} enregistrée${pluriel}`;
+
+  demandes.forEach((demande) => {
+    const card = document.createElement("article");
+    card.className = "period-card";
+
+    if (demande.statut === STATUT_NOTIFICATION_ECHOUEE) {
+      const alerte = document.createElement("p");
+      alerte.className = "period-card__comment";
+      alerte.textContent = "⚠ L’e-mail de notification n’est pas parti : cette demande n’a peut-être jamais été vue.";
+      card.append(alerte);
+    }
+
+    const dates = document.createElement("p");
+    dates.className = "period-card__dates";
+    dates.textContent = `${formatDateFr(demande.dateDebut)} → ${formatDateFr(demande.dateFin)}`;
+    card.append(dates);
+
+    const identite = document.createElement("p");
+    identite.className = "period-card__comment";
+    const chats = Number(demande.nombreChats) || 0;
+    identite.textContent = [
+      `${demande.prenom} ${demande.nom}`.trim(),
+      demande.commune,
+      `${chats} chat${chats > 1 ? "s" : ""}`,
+      demande.frequence === "autre" ? demande.frequenceAutre || "autre besoin" : demande.frequence,
+    ].filter(Boolean).join(" · ");
+    card.append(identite);
+
+    const contact = document.createElement("p");
+    contact.className = "period-card__comment";
+    [
+      demande.telephone && { texte: demande.telephone, href: `tel:${demande.telephone.replace(/\s+/g, "")}` },
+      demande.whatsapp && { texte: `WhatsApp ${demande.whatsapp}`, href: `https://wa.me/${demande.whatsapp.replace(/\D/g, "")}` },
+      demande.email && { texte: demande.email, href: `mailto:${demande.email}` },
+    ].filter(Boolean).forEach((lien, index) => {
+      if (index) contact.append(" · ");
+      const a = document.createElement("a");
+      a.href = lien.href;
+      a.textContent = lien.texte;
+      contact.append(a);
+    });
+    card.append(contact);
+
+    if (demande.observations) {
+      const observations = document.createElement("p");
+      observations.className = "period-card__comment";
+      observations.textContent = demande.observations;
+      card.append(observations);
+    }
+
+    const recue = document.createElement("p");
+    recue.className = "period-card__comment";
+    recue.textContent = `Reçue le ${formatDateHeure(demande.soumiseLe)}`;
+    card.append(recue);
+
+    demandeList.append(card);
+  });
+}
+
+/** « 2026-08-17 21:04:33 » tel que le rend D1, en date lisible. */
+function formatDateHeure(valeur = "") {
+  const date = new Date(String(valeur).replace(" ", "T") + (String(valeur).endsWith("Z") ? "" : "Z"));
+
+  if (!Number.isFinite(date.getTime())) {
+    return valeur || "date inconnue";
+  }
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "Europe/Paris",
+  }).format(date);
 }
 
 function populatePeriodForm(period) {
@@ -357,6 +497,7 @@ function logout() {
   sessionStorage.removeItem(SESSION_KEY);
   resetPeriodForm();
   renderPeriods([]);
+  renderDemandes([]);
   hideAdminFeedback();
   showLogin();
 }

@@ -313,9 +313,21 @@
         </form>
 
         <section id="success-panel" class="success-panel" hidden aria-hidden="true" aria-labelledby="success-title">
-          <p class="success-panel__eyebrow">Demande envoyée</p>
+          <p class="success-panel__eyebrow" id="success-eyebrow">Demande envoyée</p>
           <h2 id="success-title">Votre demande a bien été envoyée.</h2>
-          <p>Je vous réponds sous 24 à 48 h.</p>
+          <p id="success-message">Je vous réponds sous 24 à 48 h.</p>
+          <!--
+            Affiché uniquement si la demande a bien été enregistrée mais que
+            l'e-mail qui me prévient n'est pas parti. Sans ce bloc le visiteur
+            voyait un écran de confirmation identique et attendait une réponse
+            qui ne pouvait pas venir.
+          -->
+          <p id="success-relance" class="success-panel__relance" hidden>
+            En revanche, l’e-mail qui me prévient n’est pas parti. Votre demande est
+            enregistrée, mais pour que je la traite tout de suite, prévenez-moi par
+            <a href="https://wa.me/33644247681" target="_blank" rel="noopener">WhatsApp</a>
+            ou au <a href="tel:+33644247681">06 44 24 76 81</a>.
+          </p>
         </section>
       </div>
     </section>

@@ -275,6 +275,7 @@ const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 const ENDPOINTS = {
   unavailable: `${API_BASE}/public/unavailabilities`,
   reservation: `${API_BASE}/public/reservations`,
+  notificationEchouee: (id) => `${API_BASE}/public/reservations/${id}/notification-echouee`,
 };
 
 const DRAFT_KEY = "miaoucratie:reservation:draft:v1";
@@ -971,6 +972,14 @@ setButtonLoading(submitButton, true);
       return;
     }
 
+    // La demande est enregistree cote serveur, mais c'est cet appel-ci qui
+    // previent Miaoucratie. S'il echoue — service indisponible, requete
+    // bloquee par une extension, onglet ferme trop tot — la demande existe
+    // sans que personne ne le sache. On ne l'avale donc pas : le visiteur est
+    // prevenu qu'il lui reste un geste, et le serveur marque la demande pour
+    // qu'elle remonte en tete de l'administration.
+    let notificationEnvoyee = true;
+
     try {
       await sendWeb3FormsNotification(
         validation.sanitized,
@@ -978,7 +987,9 @@ setButtonLoading(submitButton, true);
         hCaptchaResponse
       );
     } catch (notificationError) {
-        console.warn("Reservation saved but Web3Forms notification failed", notificationError);
+      notificationEnvoyee = false;
+      console.warn("Demande enregistrée mais notification non partie", notificationError);
+      await signalerNotificationEchouee(result?.reservationId || "");
     }
 
     if (typeof gtag === "function") {
@@ -989,9 +1000,7 @@ setButtonLoading(submitButton, true);
 
     sessionStorage.removeItem(DRAFT_KEY);
     form.hidden = true;
-    successPanel.hidden = false;
-    successPanel.setAttribute("aria-hidden", "false");
-    successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    afficherPanneauSucces(notificationEnvoyee);
   } catch (error) {
     showAlert(
       "error",
@@ -1021,6 +1030,59 @@ function resetHCaptcha() {
     }
   } catch (error) {
     console.warn("Unable to reset hCaptcha", error);
+  }
+}
+
+/**
+ * Affiche l'ecran de confirmation.
+ *
+ * Deux issues, et elles ne se disent pas de la meme facon. Si la notification
+ * est partie, la demande suit son cours. Sinon elle est bien enregistree, mais
+ * personne n'en sera prevenu : le visiteur doit le savoir, sinon il attend une
+ * reponse qui ne peut pas venir.
+ */
+function afficherPanneauSucces(notificationEnvoyee) {
+  const relance = document.getElementById("success-relance");
+  const titre = document.getElementById("success-title");
+  const eyebrow = document.getElementById("success-eyebrow");
+  const message = document.getElementById("success-message");
+
+  if (relance) {
+    relance.hidden = notificationEnvoyee;
+  }
+
+  if (!notificationEnvoyee) {
+    if (eyebrow) eyebrow.textContent = "Demande enregistrée";
+    if (titre) titre.textContent = "Votre demande est bien enregistrée.";
+    if (message) message.textContent = "Elle porte vos dates et vos coordonnées.";
+  }
+
+  successPanel.hidden = false;
+  successPanel.setAttribute("aria-hidden", "false");
+  successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/**
+ * Marque la demande comme non notifiee, pour qu'elle remonte en tete de la
+ * page d'administration.
+ *
+ * Best effort : si ce signalement echoue lui aussi, il n'y a plus rien a
+ * tenter cote navigateur, et le visiteur a de toute facon deja le message qui
+ * l'invite a prevenir par WhatsApp.
+ */
+async function signalerNotificationEchouee(reservationId) {
+  if (!reservationId) {
+    return;
+  }
+
+  try {
+    await fetch(ENDPOINTS.notificationEchouee(reservationId), {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      keepalive: true,
+    });
+  } catch (error) {
+    console.warn("Signalement de la notification échouée impossible", error);
   }
 }
 
@@ -1302,6 +1364,10 @@ function restoreDraft() {
 
 function resetForNewRequest() {
   successPanel.hidden = true;
+  // Sinon la relance d'une demande precedente resterait affichee sur la
+  // confirmation de la suivante.
+  const relance = document.getElementById("success-relance");
+  if (relance) relance.hidden = true;
   form.hidden = false;
   form.reset();
   state.startPicker?.clear();
