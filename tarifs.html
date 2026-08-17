@@ -53,8 +53,6 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 .t-hero h1 em{font-style:italic;font-weight:400;color:#C8603A}
 .t-hero-sub{font-size:16px;color:#7A6B5E;max-width:660px;line-height:1.8;margin-bottom:32px}
 .t-hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.btn-ghost-link{font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:none;border-bottom:1px solid #D4BEA8;padding-bottom:2px;transition:color .2s,border-color .2s}
-.btn-ghost-link:hover{color:#1E1812;border-color:#1E1812}
 
 /* USPs */
 .t-usps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E8DDD0;border-radius:16px;overflow:hidden;margin-bottom:56px}
@@ -70,6 +68,14 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 
 /* Grille tarifs : prix + remises côte à côte */
 .t-tarifs-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+/* Le simulateur vit sous l'encart des prix : la colonne des remises est plus
+   haute, la place y est libre, et c'est le seul acces au calculateur, qui n'est
+   pas dans le menu. Il reprend le langage des encadres de la page (blanc,
+   bordure #E8DDD0, rayon 20) plutot qu'une pilule : a 496 px de large, un rayon
+   de 100 px se voit. */
+.t-price-col{display:flex;flex-direction:column;gap:16px}
+.t-simuler{display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:1px solid #E8DDD0;border-radius:20px;padding:16px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:#A8472A;text-decoration:none;box-shadow:0 2px 10px rgba(30,24,18,.04);transition:border-color .2s,box-shadow .2s}
+.t-simuler:hover{border-color:#A8472A;box-shadow:0 6px 20px rgba(30,24,18,.08)}
 
 /* Price card */
 .t-price-card{background:#fff;border-radius:20px;overflow:hidden;border:1px solid #E8DDD0;box-shadow:0 4px 20px rgba(30,24,18,.06)}
@@ -166,7 +172,7 @@ html{height:100%}body{min-height:100vh;display:flex;flex-direction:column}
 <h1>Des prix <em>transparents.</em></h1>
 <p class="t-hero-sub">Une visite, ce n'est pas nourrir et repartir.<br/>Je ne pars pas parce qu'un minuteur a sonné.<br/>La durée se décide avec vous à la pré-visite, selon ce dont votre chat a besoin.<br/>Vous recevez un compte-rendu après chaque passage.</p>
 <div class="t-hero-cta">
-<a class="btn-primary" href="calculateur-miaoucratie.html">Simuler mon devis</a>
+<a class="btn-primary" href="reservation.html">Réserver une garde</a>
 </div>
 </section>
 <div class="t-usps">
@@ -191,6 +197,7 @@ html{height:100%}body{min-height:100vh;display:flex;flex-direction:column}
 <h2 class="t-section-title">Tarifs &amp; <em>remises</em></h2>
 <div class="t-tarifs-grid">
 <!-- Grille des prix -->
+<div class="t-price-col">
 <div class="t-price-card">
 <div class="t-price-header">
 <h2>Tarif par visite</h2>
@@ -201,6 +208,8 @@ html{height:100%}body{min-height:100vh;display:flex;flex-direction:column}
 <div class="t-price-row"><span class="t-price-label">4 chats</span><div class="t-price-amount"><strong>26</strong><span> €/visite</span></div></div>
 <div class="t-price-row"><span class="t-price-label">5 chats</span><div class="t-price-amount"><strong>29</strong><span> €/visite</span></div></div>
 <div class="t-price-tva">TVA non applicable, art. 293 B du CGI</div>
+</div>
+<a class="t-simuler" href="calculateur-miaoucratie.html">Simuler mon devis</a>
 </div>
 <!-- Remises -->
 <div class="t-remises">
@@ -253,8 +262,8 @@ html{height:100%}body{min-height:100vh;display:flex;flex-direction:column}
 <p style="margin-top:8px;"><a href="https://www.google.com/maps?cid=17933427280649337543" target="_blank" rel="noopener" style="color:#4A3728;text-decoration:none;"><span aria-hidden="true" style="color:#E8A33D;letter-spacing:1px;">★★★★★</span> <strong>5,0</strong> sur 5 sur Google · 11 avis</a></p>
 </div>
 <div class="t-cta-btns">
-<a class="btn-cta-white" href="calculateur-miaoucratie.html">Simuler mon devis</a>
-<a class="btn-cta-ghost" href="reservation.html">Réserver une garde</a>
+<a class="btn-cta-white" href="reservation.html">Réserver une garde</a>
+<a class="btn-cta-ghost" href="calculateur-miaoucratie.html">Simuler mon devis</a>
 </div>
 </div>
 </div>

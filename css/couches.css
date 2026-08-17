@@ -293,11 +293,14 @@ body.cgv-page .brand-rule {
   font-family: 'DM Sans', sans-serif; transition: color .2s;
 }
 .footer-bar .footer-links a:hover { color: var(--peach,#F2CDB0); }
+/* .55 et pas .4 : a .4 les liens legaux rendaient 2,52:1 sur le fond sombre,
+   sous le seuil AA de 4,5:1. Mesure a .55 : 5,68:1. Voir aussi la suppression
+   de l'opacite de .footer-legal dans style.css, qui se cumulait a cet alpha. */
 .footer-bar .footer-legal {
-  font-size: 12px; color: rgba(255,255,255,.4); font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.55); font-family: 'DM Sans', sans-serif;
 }
 .footer-bar .footer-legal a {
-  color: rgba(255,255,255,.4); text-decoration: none; transition: color .2s;
+  color: rgba(255,255,255,.55); text-decoration: none; transition: color .2s;
 }
 .footer-bar .footer-legal a:hover { color: rgba(255,255,255,.7); }
 /* Les titres des sections sombres etaient forces en blanc pur ici. Une regle
