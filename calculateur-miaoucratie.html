@@ -2,22 +2,8 @@
 
 <html lang="fr">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-X3H7NL9GEL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-X3H7NL9GEL', {
-    // Pas de recoupement multi-appareils ni de ciblage publicitaire.
-    'allow_google_signals': false,
-    'allow_ad_personalization_signals': false,
-    // Cookie ramene de 2 ans (defaut) a 6 mois.
-    'cookie_expires': 15768000,
-    'cookie_flags': 'SameSite=Lax;Secure'
-  });
-</script>
+  <!-- Mesure d'audience : chargee uniquement apres consentement explicite. -->
+  <script src="js/consentement.js" data-mesure="G-X3H7NL9GEL" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 

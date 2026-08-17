@@ -27,9 +27,26 @@
       color: var(--N);
       margin-top: 14px;
     }
+    /* Rouvre le bandeau de consentement. Meme geometrie que ses boutons. */
+    .ml-consentement {
+      min-height: 44px;
+      padding: 10px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--rust);
+      background: transparent;
+      border: 1px solid var(--rust);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .ml-consentement:hover { background: rgba(168,71,42,.08); }
 </style>
   <link rel="stylesheet" href="css/polices.css">
 <link rel="stylesheet" href="css/couches.css">
+  <!-- Sans data-mesure : la page ne mesure rien, elle porte la commande de reglage. -->
+  <script src="js/consentement.js" defer></script>
 </head>
 <body class="standalone-page cgv-page"><div class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
     <a href="index.html"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.6V21h14V9.6"/></svg>Accueil</a>
@@ -46,7 +63,7 @@
 <h1 class="cgv-title">Mentions <em>légales</em></h1>
 <p>Site édité par Irina TALBOT, entreprise individuelle Miaoucratie.<br/>
       SIRET 100 988 138 00010 &middot; TVA non applicable, article 293 B du CGI<br/>
-      Dernière mise à jour : 11 août 2026</p>
+      Dernière mise à jour : 17 août 2026</p>
 </header>
 <section class="cgv-article">
 <h2>1. Éditeur du site</h2>
@@ -125,11 +142,14 @@
         <li>d'une indisponibilité temporaire du site</li>
         <li>du contenu de sites tiers accessibles via des liens externes</li>
       </ul></section>
-<section class="cgv-article">
-<h2>7. Cookies</h2>
-<p>Le site utilise Google Analytics, fourni par Google Ireland Limited, pour mesurer sa fréquentation. Cet outil dépose des cookies sur votre terminal afin d'établir des statistiques de visite : pages consultées, durée de consultation, provenance.</p>
-<p>Aucun cookie publicitaire n'est déposé et aucune donnée n'est revendue à des tiers.</p>
-<p>Vous pouvez vous opposer à cette mesure d'audience en installant le <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">module de désactivation de Google Analytics</a>, ou en paramétrant votre navigateur pour refuser les cookies. Le site reste entièrement consultable sans eux.</p></section>
+<section class="cgv-article" id="cookies">
+<h2>7. Cookies et mesure d'audience</h2>
+<p>Le site mesure sa fréquentation avec Google Analytics, fourni par Google Ireland Limited&nbsp;: pages consultées, durée de consultation, provenance. Cet outil dépose des cookies sur votre terminal.</p>
+<p>Rien n'est déposé avant votre accord. À votre première visite, un bandeau vous propose d'accepter ou de refuser, et le refus demande le même geste que l'accord. Sans réponse de votre part, aucune mesure n'a lieu, et le site fonctionne à l'identique.</p>
+<p>Les données collectées sont conservées deux mois, le minimum que l'outil autorise, puis supprimées par Google. Le cookie déposé sur votre terminal expire dans le même délai.</p>
+<p>Votre choix, lui, est retenu six mois dans votre navigateur, pour ne pas vous reposer la question à chaque passage. Le signal <em>Global Privacy Control</em>, si votre navigateur l'émet, vaut refus&nbsp;: le bandeau ne s'affiche pas. Refuser efface aussi les cookies de mesure déjà déposés.</p>
+<p>Aucun cookie publicitaire n'est déposé. Vos données ne sont revendues à aucun tiers, et le recoupement entre appareils est désactivé.</p>
+<p><button class="ml-consentement" data-consentement-reglages type="button">Modifier mon choix</button></p></section>
 <section class="cgv-article">
 <h2>8. Conditions générales de vente</h2>
 <p>Les conditions générales de vente applicables aux prestations de cat-sitting sont consultables sur la page <a href="cgv.html">CGV</a>.</p></section>

@@ -7,6 +7,28 @@
  * leur place.
  */
 
+/* MIAOUCRATIE-CHIFFRES
+ *
+ * Cormorant Garamond livre des chiffres elzeviriens : mesure a l'encre, 0 1 2
+ * tiennent la hauteur d'x, 3 4 5 7 9 descendent de 5 a 9 px sous la ligne de
+ * base, 6 et 8 montent a la hauteur des capitales. Dans une serie — les 15
+ * articles des CGV, les 8 titres des mentions legales — les numeros paraissent
+ * sautiller, et sur les prix de la page tarifs, ou « 18 » a un 1 petit et un 8
+ * haut a 42 px, c'est un defaut de finition sur ce qui se lit en premier.
+ *
+ * La propriete est posee sur body parce qu'elle est heritee : elle atteint les
+ * titres, mais aussi les <b> et <strong> en Cormorant qu'aucune liste de
+ * selecteurs n'attraperait — le « 45 » des 45 min sur l'accueil, les « 20 km »
+ * et « 45 km » de la carte, les quatre prix de tarifs.
+ *
+ * Sans effet sur DM Sans, dont les chiffres sont deja alignes : mesure
+ * identique au centieme de pixel en 400, 500 et 700. Aucun !important, rien
+ * d'autre ne pose cette propriete.
+ */
+body {
+  font-variant-numeric: lining-nums;
+}
+
 /* MIAOUCRATIE-TITLE-V2 */
 body .faq-hero .hero-title,
 body .tarifs-hero h1,
