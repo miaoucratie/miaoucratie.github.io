@@ -125,8 +125,27 @@ describe('acompte et solde', () => {
   test('l acompte est la part convenue du total', () => {
     const e = estimerSejour({ visites: 10 });
     assert.equal(e.total, 170);
-    assert.equal(e.acompte, arrondirCentimes(170 * TAUX_ACOMPTE));
     assert.equal(e.acompte, 51);
+    assert.equal(TAUX_ACOMPTE, 0.3);
+  });
+
+  test('l acompte est rendu au centime, pas en flottant brut', () => {
+    // 18 × 0,3 vaut 5.3999999999999995 en virgule flottante. L'affichage le
+    // masque, mais la valeur circule : elle sert au solde, et servira a tout
+    // ce qui lira ce montant. Ce cas est le plus courant du site — un chat,
+    // une visite — et c'est lui qui pince l'arrondi.
+    const e = estimerSejour();
+    assert.equal(e.total, 18);
+    assert.equal(e.acompte, 5.4);
+    assert.equal(arrondirCentimes(18 * TAUX_ACOMPTE), 5.4);
+  });
+
+  test('le solde aussi est rendu au centime', () => {
+    // 19,40 − 5,82 vaut 13.579999999999998 en virgule flottante.
+    const e = estimerSejour({ km: 1 });
+    assert.equal(e.total, 19.4);
+    assert.equal(e.acompte, 5.82);
+    assert.equal(e.solde, 13.58);
   });
 
   test('acompte et solde recomposent exactement le total', () => {
