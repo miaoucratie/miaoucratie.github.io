@@ -81,8 +81,8 @@ const COMPORTEMENT_SEUL = process.argv.includes('--comportement') || !!process.e
 
 const PAGES = [
   'index.html', 'tarifs.html', 'faq.html', 'carte.html', 'reservation.html',
-  'cgv.html', 'mentions-legales.html', 'calculateur-miaoucratie.html',
-  'admin-indisponibilites.html',
+  'presse.html', 'cgv.html', 'mentions-legales.html',
+  'calculateur-miaoucratie.html', 'admin-indisponibilites.html',
 ];
 const LARGEURS = [1272, 375];
 
