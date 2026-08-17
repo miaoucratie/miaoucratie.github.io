@@ -928,17 +928,18 @@ body.calculateur-page .container { flex: 1; }
   metier du site. C'est ce qui le rend testable — un tarif faux ne deplace
   aucun pixel et ne casse aucun clic, il passait donc la QA sans un mot.
 
-  Deux consequences a connaitre :
-   - le script est un module, donc ouvrir ce fichier en double-cliquant
-     (file://) ne marche plus, il faut un serveur local ;
-   - les gestionnaires onclick ont disparu du balisage. Un module n'expose
-     aucune fonction globale, ils appelaient donc du vide. Les boutons portent
-     maintenant data-ajuster / data-option, et le module les branche.
+  Les deux scripts sont CLASSIQUES, volontairement. Une premiere version
+  importait shared/tarifs.js en module ES : ouvrir cette page en
+  double-cliquant dessus ne chargeait alors plus rien du tout et les boutons
+  ne repondaient plus, un module ES ne se chargeant pas depuis file://.
+  Ne pas y remettre type="module".
+
+  Les gestionnaires onclick du balisage ont ete remplaces par data-ajuster /
+  data-option et des ecouteurs, poses en bas de ce script.
 -->
-<script type="module">
-  import {
-    FRAIS_KM_EUR, SEUIL_SEJOUR_LONG, estimerSejour, formatEuros,
-  } from './shared/tarifs.js';
+<script src="shared/tarifs.js"></script>
+<script>
+  const { FRAIS_KM_EUR, SEUIL_SEJOUR_LONG, estimerSejour, formatEuros } = MiaouTarifs;
 
   const state = { chats: 1, visites: 1, solidaire: false, periode: false };
 

@@ -61,9 +61,14 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { extname, join, resolve, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
+// Importe pour son effet : le fichier pose son contenu sur globalThis au lieu
+// de l'exporter, pour rester chargeable en script classique depuis file://.
+// Voir son en-tete.
+import '../shared/tarifs.js';
+
+const {
   FRAIS_KM_EUR, TAUX_ACOMPTE, estimerSejour, formatEuros,
-} from '../shared/tarifs.js';
+} = globalThis.MiaouTarifs;
 
 const RACINE = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const REFERENCE = join(RACINE, 'qa', 'reference.json');

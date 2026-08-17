@@ -12,7 +12,13 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import {
+// Le module pose son contenu sur globalThis plutot que de l'exporter, pour
+// rester chargeable en script classique depuis file://. Voir l'en-tete de
+// tarifs.js : c'est ce qui evite que le calculateur cesse de repondre quand la
+// page est ouverte en double-cliquant dessus.
+import './tarifs.js';
+
+const {
   FRAIS_KM_EUR,
   TAUX_ACOMPTE,
   SEUIL_SEJOUR_LONG,
@@ -20,7 +26,7 @@ import {
   estimerSejour,
   formatEuros,
   tarifVisite,
-} from './tarifs.js';
+} = globalThis.MiaouTarifs;
 
 describe('tarif d une visite', () => {
   test('un et deux chats partagent le meme tarif', () => {
