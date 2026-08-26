@@ -18,11 +18,17 @@
  *     d'une modification CSS.
  *
  *  2. Comportement. Menu, accordeon, filtres, recherche, moteur de communes,
- *     initialisation du calendrier, anonymat des avis, consentement a la
- *     mesure d'audience. C'est ce qui attrape les
+ *     initialisation du calendrier, calculateur de tarif, anonymat des avis,
+ *     consentement a la mesure d'audience. C'est ce qui attrape les
  *     regressions silencieuses d'une modification HTML ou JS — une page peut
  *     avoir des balises parfaitement equilibrees et n'avoir plus aucun
  *     JavaScript.
+ *
+ *  3. Taux metier annonces. Le tarif kilometrique et le taux d'acompte sont
+ *     repetes dans le texte de plusieurs pages : on verifie qu'ils disent tous
+ *     ce que dit shared/tarifs.js. Une hausse appliquee partout sauf a un
+ *     endroit ne casse rien et ne se voit pas — le site annonce simplement
+ *     deux tarifs selon la page ouverte.
  *
  * Pieges connus, traites ici :
  *  - les elements Leaflet sont exclus de l'empreinte : le marqueur de depart
@@ -55,6 +61,14 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { extname, join, resolve, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// Importe pour son effet : le fichier pose son contenu sur globalThis au lieu
+// de l'exporter, pour rester chargeable en script classique depuis file://.
+// Voir son en-tete.
+import '../shared/tarifs.js';
+
+const {
+  FRAIS_KM_EUR, TAUX_ACOMPTE, estimerSejour, formatEuros,
+} = globalThis.MiaouTarifs;
 
 const RACINE = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const REFERENCE = join(RACINE, 'qa', 'reference.json');
@@ -562,6 +576,69 @@ async function testerReservation(page, echecs) {
   if (masque === false) echecs.push('reservation : le champ conditionnel "autre frequence" est visible a tort');
 }
 
+/**
+ * Le calculateur, du clic au montant affiche.
+ *
+ * Deux choses a prouver, et la seconde est la vraie raison de ce test.
+ *
+ * 1. Les commandes repondent. Le script de la page est passe en module pour
+ *    importer shared/tarifs.js, ce qui a fait disparaitre les fonctions
+ *    globales qu'appelaient les onclick du balisage. Une regression ici ne
+ *    leve aucune erreur : les boutons ne font simplement plus rien.
+ * 2. Le montant affiche est celui que calcule shared/tarifs.js. Un tarif faux
+ *    ne deplace aucun pixel — l'empreinte visuelle le verrait passer.
+ */
+async function testerCalculateur(page, echecs) {
+  const cas = { chats: 3, visites: 7, solidaire: true, km: 5 };
+
+  const clic = (selecteur, fois = 1) => page.locator(selecteur).first().click({ clickCount: 1 })
+    .then(() => (fois > 1 ? clic(selecteur, fois - 1) : null));
+
+  await clic('[data-ajuster="chats"][data-pas="1"]', cas.chats - 1);
+  await clic('[data-ajuster="visites"][data-pas="1"]', cas.visites - 1);
+  await page.locator('[data-option="solidaire"]').click();
+  await page.fill('#km-input', String(cas.km));
+  await attendre(200);
+
+  const vu = await page.evaluate(() => ({
+    chats: document.getElementById('val-chats')?.textContent.trim(),
+    visites: document.getElementById('val-visites')?.textContent.trim(),
+    solidaireActif: document.getElementById('toggle-solidaire')?.classList.contains('active'),
+    total: document.querySelector('.result-total .amount')?.textContent.trim(),
+    acompte: document.querySelector('.breakdown-item.highlight .b-amount')?.textContent.trim(),
+    lignes: document.querySelectorAll('.result-line').length,
+  }));
+
+  if (vu.chats !== String(cas.chats) || vu.visites !== String(cas.visites)) {
+    echecs.push(`calculateur : les boutons ne comptent plus — ${vu.chats} chat(s), `
+      + `${vu.visites} visite(s) affiches, attendu ${cas.chats} et ${cas.visites}`);
+    return;
+  }
+
+  if (!vu.solidaireActif) {
+    echecs.push('calculateur : la bascule de remise solidaire ne s\'active plus');
+  }
+
+  const attendu = estimerSejour(cas);
+
+  if (vu.total !== formatEuros(attendu.total)) {
+    echecs.push(`calculateur : total affiche ${vu.total || '(aucun)'}, `
+      + `attendu ${formatEuros(attendu.total)} pour ${cas.chats} chats, ${cas.visites} visites, `
+      + `remise solidaire, ${cas.km} km`);
+  }
+
+  if (vu.acompte !== formatEuros(attendu.acompte)) {
+    echecs.push(`calculateur : acompte affiche ${vu.acompte || '(aucun)'}, `
+      + `attendu ${formatEuros(attendu.acompte)}`);
+  }
+
+  // Tarif de base, remise sejour long, remise solidaire, supplement km.
+  if (vu.lignes !== 4) {
+    echecs.push(`calculateur : ${vu.lignes} ligne(s) de detail, attendu 4 `
+      + '(base, remise sejour long, remise solidaire, supplement kilometrique)');
+  }
+}
+
 /** Regle non negociable : jamais le nom de famille d'un client sur le site. */
 async function testerAnonymatDesAvis(page, echecs) {
   const fautifs = await page.evaluate(() => {
@@ -814,6 +891,72 @@ async function relevesCoherence(page) {
   });
 }
 
+/* ─── 3 bis. Taux metier annonces ────────────────────────────────────── */
+
+/**
+ * Verifie que les taux metier annonces par le texte des pages sont bien ceux
+ * de shared/tarifs.js.
+ *
+ * « 0,70 €/km » etait recopie a sept endroits sur trois pages, « acompte de
+ * 30 % » sur cinq pages, et rien ne verifiait qu'ils disaient la meme chose.
+ * Aucune divergence n'avait eu lieu — c'est justement le moment d'installer
+ * le controle. Le risque n'est pas la faute de frappe : c'est la hausse
+ * appliquee a six endroits sur sept, apres laquelle le site annonce deux
+ * tarifs selon la page ouverte.
+ *
+ * On releve `textContent` et non `innerText` : les reponses repliees de la FAQ
+ * doivent etre lues elles aussi. Cela embarque le source des scripts inline,
+ * et c'est voulu — sur la carte, deux des trois mentions du tarif
+ * kilometrique sont construites en JavaScript, donc invisibles au repos.
+ */
+function relevesTauxMetier(page) {
+  return page.evaluate(() => {
+    const morceaux = [document.body?.textContent || ''];
+    for (const bloc of document.querySelectorAll('script[type="application/ld+json"]')) {
+      morceaux.push(bloc.textContent || '');
+    }
+    // Espaces insecables et fines : « 30&nbsp;% » doit se lire comme « 30 % ».
+    return morceaux.join('\n').replace(/[  ]/g, ' ');
+  });
+}
+
+/** Les deux taux repetes dans le texte du site, et comment les y reconnaitre. */
+const TAUX_ANNONCES = [
+  {
+    nom: 'frais kilometriques',
+    motif: /(\d{1,3}(?:[.,]\d{1,2})?)\s*€\s*\/\s*km/g,
+    attendu: () => FRAIS_KM_EUR,
+    lire: (brut) => Number(brut.replace(',', '.')),
+    ecrire: (valeur) => `${formatEuros(valeur)}/km`,
+  },
+  {
+    nom: 'acompte',
+    motif: /acompte\s+(?:de|à)\s+(\d{1,3}(?:[.,]\d{1,2})?)\s*%/gi,
+    attendu: () => TAUX_ACOMPTE * 100,
+    lire: (brut) => Number(brut.replace(',', '.')),
+    ecrire: (valeur) => `acompte de ${valeur} %`,
+  },
+];
+
+export function controlerTauxMetier(texte) {
+  const defauts = [];
+
+  for (const taux of TAUX_ANNONCES) {
+    const attendu = taux.attendu();
+    for (const trouve of texte.matchAll(taux.motif)) {
+      const valeur = taux.lire(trouve[1]);
+      if (Math.abs(valeur - attendu) < 0.005) continue;
+      defauts.push(
+        `${taux.nom} : la page annonce « ${trouve[0].trim()} » alors que `
+        + `shared/tarifs.js dit ${taux.ecrire(attendu)}. `
+        + `Mettre a jour l'un des deux — le texte de la page, ou le taux.`,
+      );
+    }
+  }
+
+  return defauts;
+}
+
 /* ─── 4. Parcours utilisateurs ───────────────────────────────────────── */
 
 /**
@@ -967,6 +1110,14 @@ async function main() {
 
         const coherence = await relevesCoherence(page);
         for (const d of coherence.defauts) echecs.push(`${nomPage} @${largeur}px : ${d}`);
+
+        // Les taux ne dependent pas de la largeur : une seule lecture suffit.
+        if (largeur === LARGEURS[0]) {
+          for (const d of controlerTauxMetier(await relevesTauxMetier(page))) {
+            echecs.push(`${nomPage} : ${d}`);
+          }
+        }
+
         for (const [bloc, sig] of Object.entries(coherence.signature)) {
           if (!sig) continue;
           for (const [prop, valeur] of Object.entries(sig)) {
@@ -984,6 +1135,7 @@ async function main() {
           if (nomPage === 'carte.html') await testerCarte(page, echecs);
           if (nomPage === 'reservation.html') await testerReservation(page, echecs);
           if (nomPage === 'index.html') await testerAnonymatDesAvis(page, echecs);
+          if (nomPage === 'calculateur-miaoucratie.html') await testerCalculateur(page, echecs);
 
           const compteurs = await relevesCompteurAvis(page);
           for (const r of compteurs) {

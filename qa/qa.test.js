@@ -15,7 +15,7 @@
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { memeElement } from './qa.mjs';
+import { controlerTauxMetier, memeElement } from './qa.mjs';
 
 /**
  * Les relevés sont des chaines de 21 champs separes par des barres. Les ecrire
@@ -192,5 +192,61 @@ describe('garde-fou : l oracle doit rester capable de dire non', () => {
 
     const acceptees = alterations.filter((a) => memeElement(releve(), releve(a)));
     assert.deepEqual(acceptees, [], 'ces alterations auraient du etre signalees');
+  });
+});
+
+/**
+ * Le controle des taux metier lit le texte des pages et le confronte a
+ * shared/tarifs.js. Comme memeElement, c'est un oracle : s'il n'attrape rien,
+ * il rend la QA verte sans rien avoir verifie. Les valeurs attendues ici sont
+ * celles du site — 0,70 €/km et un acompte de 30 %.
+ */
+describe('taux metier annonces', () => {
+  test('le texte en vigueur sur le site ne declenche rien', () => {
+    const texte = [
+      "Au-delà des 20 km, je peux venir sur devis, avec des frais de 0,70 €/km.",
+      "Un acompte de 30 % bloque vos dates, le contrat est finalisé.",
+      "Acompte de 30 % à la réservation",
+      "Supplément déplacement (5 km × 2 × 3 visites × 0,70 €)",
+    ].join('\n');
+    assert.deepEqual(controlerTauxMetier(texte), []);
+  });
+
+  test('un tarif kilometrique divergent est signale, avec sa phrase', () => {
+    const defauts = controlerTauxMetier('des frais kilométriques de 0,80 €/km');
+    assert.equal(defauts.length, 1);
+    assert.match(defauts[0], /0,80 €\/km/);
+    assert.match(defauts[0], /0,70 €\/km/);
+  });
+
+  test('un acompte divergent est signale', () => {
+    const defauts = controlerTauxMetier('Acompte de 40 % à la réservation');
+    assert.equal(defauts.length, 1);
+    assert.match(defauts[0], /acompte/i);
+  });
+
+  test('une hausse appliquee partout sauf a un endroit est nommee une seule fois', () => {
+    // Le cas redoute : cinq mentions a jour, une oubliee.
+    const texte = Array(5).fill('frais de 0,70 €/km').concat('frais de 0,60 €/km').join(' · ');
+    const defauts = controlerTauxMetier(texte);
+    assert.equal(defauts.length, 1);
+    assert.match(defauts[0], /0,60/);
+  });
+
+  test('l espace insecable ne masque pas une divergence', () => {
+    // Les pages ecrivent « 30&nbsp;% » : sans normalisation, le motif ne
+    // reconnaitrait pas le pourcentage et le controle serait aveugle.
+    assert.equal(controlerTauxMetier('acompte de 45 %').length, 1);
+  });
+
+  test('« acompte » sans pourcentage ne declenche rien', () => {
+    // Les CGV parlent d'acompte conservé ou remboursé, sans chiffre. Un
+    // controle qui exigerait un pourcentage a chaque mention serait faux.
+    const texte = "Moins de 72 h : acompte conservé à titre d'indemnité forfaitaire";
+    assert.deepEqual(controlerTauxMetier(texte), []);
+  });
+
+  test('un pourcentage sans rapport avec l acompte est ignore', () => {
+    assert.deepEqual(controlerTauxMetier('une remise de 15 % sur la seconde semaine'), []);
   });
 });

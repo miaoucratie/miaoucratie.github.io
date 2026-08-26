@@ -142,6 +142,7 @@
           <p class="hero__lead">
             Cette page permet de piloter les périodes bloquées du calendrier public de réservation.
             Les modifications faites ici s’appliquent ensuite à la page visible par les clients.
+            Elle récapitule aussi les demandes de réservation reçues, e-mail de notification parti ou non.
           </p>
         </div>
 
@@ -225,6 +226,24 @@
 
               <div id="period-list" class="period-list" aria-live="polite">
                 <p class="empty-state">Aucune indisponibilité enregistrée pour le moment.</p>
+              </div>
+            </div>
+
+            <!--
+              Les demandes de réservation étaient enregistrées sans que rien ne
+              permette de les relire : le seul e-mail qui prévient part du
+              navigateur du visiteur, et son échec passait inaperçu. Cette
+              liste est la vue de secours — elle montre tout ce qui est arrivé,
+              e-mail parti ou non.
+            -->
+            <div class="period-list-card">
+              <div class="period-list-card__header">
+                <h3>Demandes de réservation</h3>
+                <p id="demande-count">0 demande enregistrée</p>
+              </div>
+
+              <div id="demande-list" class="period-list" aria-live="polite">
+                <p class="empty-state">Aucune demande enregistrée pour le moment.</p>
               </div>
             </div>
           </div>
