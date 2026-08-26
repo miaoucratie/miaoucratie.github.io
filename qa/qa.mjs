@@ -654,6 +654,34 @@ async function testerAnonymatDesAvis(page, echecs) {
 }
 
 /**
+ * Le nombre d'avis est ecrit en dur a cinq endroits sur trois pages, plus le
+ * nombre de cartes du carrousel qui doit s'y accorder. En oublier un ne casse
+ * rien de visible : chaque page reste coherente avec elle-meme, et l'empreinte
+ * ne lit pas les chiffres.
+ *
+ * On releve donc les compteurs sous leurs trois formes, et main() exige une
+ * valeur unique sur tout le site.
+ */
+async function relevesCompteurAvis(page) {
+  return page.evaluate(() => {
+    const releves = [];
+    // Le chiffre affiche se lit dans le texte rendu, pas dans le balisage :
+    // les quatre mentions ont quatre formulations et quatre habillages
+    // differents, et une cinquieme page demain en aurait une autre.
+    for (const m of (document.body.innerText || '').matchAll(/(\d+)\s+avis/g)) {
+      releves.push({ type: 'affiche', source: `« ${m[0]} »`, valeur: Number(m[1]) });
+    }
+    const brut = [...document.querySelectorAll('script[type="application/ld+json"]')]
+      .map((s) => s.textContent).find((t) => t.includes('"reviewCount"'));
+    const ld = brut && brut.match(/"reviewCount":\s*"?(\d+)"?/);
+    if (ld) releves.push({ type: 'jsonLd', source: 'reviewCount du JSON-LD', valeur: Number(ld[1]) });
+    const cartes = document.querySelectorAll('.avis-card').length;
+    if (cartes) releves.push({ type: 'cartes', source: 'cartes du carrousel', valeur: cartes });
+    return releves;
+  });
+}
+
+/**
  * Le bandeau de consentement, dans un contexte neuf : aucun choix enregistre,
  * donc exactement ce que rencontre un visiteur a sa premiere visite.
  *
@@ -1025,6 +1053,9 @@ async function main() {
   // Signature de la barre et du pied par page : ces blocs doivent etre
   // identiques partout. Plusieurs signatures pour un meme bloc = divergence.
   const signatures = new Map();
+  // Le nombre d'avis, par valeur relevee : ou on l'a lu, et combien il vaut.
+  // Plusieurs valeurs = un emplacement a ete oublie. Voir relevesCompteurAvis.
+  const compteursAvis = new Map();
   // Communes demandees a l'API adresse mais absentes de la capture figee.
   // Sans ce relevé, ajouter une commune temoin a testerCarte donnerait un
   // echec de classification sans cause lisible.
@@ -1105,6 +1136,26 @@ async function main() {
           if (nomPage === 'reservation.html') await testerReservation(page, echecs);
           if (nomPage === 'index.html') await testerAnonymatDesAvis(page, echecs);
           if (nomPage === 'calculateur-miaoucratie.html') await testerCalculateur(page, echecs);
+
+          const compteurs = await relevesCompteurAvis(page);
+          for (const r of compteurs) {
+            if (!compteursAvis.has(r.valeur)) compteursAvis.set(r.valeur, []);
+            compteursAvis.get(r.valeur).push(`${nomPage} : ${r.source}`);
+          }
+          // Un compteur efface ne fait diverger personne : il disparait, et la
+          // comparaison des valeurs reste verte. L'accueil est la seule page a
+          // porter les trois formes, il sert donc de garde-fou a leur presence.
+          if (nomPage === 'index.html') {
+            for (const [type, quoi] of [
+              ['affiche', 'la mention « N avis »'],
+              ['jsonLd', 'le reviewCount du JSON-LD'],
+              ['cartes', 'les cartes du carrousel'],
+            ]) {
+              if (!compteurs.some((r) => r.type === type)) {
+                echecs.push(`accueil : ${quoi} a disparu — l'avis Google n'est plus affiche`);
+              }
+            }
+          }
         }
 
         if (erreursJs.length) echecs.push(`${nomPage} @${largeur}px : erreur JS — ${erreursJs[0]}`);
@@ -1133,6 +1184,17 @@ async function main() {
         .map(([v, pages]) => `\n        ${v}  —  ${pages.join(', ')}`)
         .join('');
       echecs.push(`${blocProp} @${largeur}px : ${vues.size} valeurs differentes selon la page${detail}`);
+    }
+
+    // Le nombre d'avis : une seule valeur attendue sur tout le site. La liste
+    // nomme l'emplacement de chaque valeur, donc directement ce qu'il reste a
+    // corriger. Voir relevesCompteurAvis.
+    if (compteursAvis.size > 1) {
+      const detail = [...compteursAvis.entries()]
+        .sort((a, b) => b[1].length - a[1].length)
+        .map(([valeur, ou]) => `\n        ${valeur}  —  ${ou.join(', ')}`)
+        .join('');
+      echecs.push(`nombre d'avis : ${compteursAvis.size} valeurs differentes selon l'emplacement${detail}`);
     }
 
     if (COMPORTEMENT_SEUL) {
