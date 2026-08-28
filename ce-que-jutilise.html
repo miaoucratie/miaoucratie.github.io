@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Ce que j'utilise chez vos chats | Miaoucratie, cat-sitting à domicile</title>
+  <title>Ce que j'utilise chez vos chats | Miaoucratie</title>
   <meta name="description" content="Les produits pour chats que j'emporte vraiment en visite : friandises, jouets, hygiène et soins du quotidien. Liens affiliés Amazon, signalés comme tels.">
 
   <link rel="canonical" href="https://miaoucratie.fr/ce-que-jutilise.html">
@@ -80,8 +80,8 @@ body{min-height:100vh;display:flex;flex-direction:column}
    seule : elle reste lisible en niveaux de gris et au lecteur d'ecran. */
 .cq-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap;color:#4A3728;background:rgba(184,155,128,.22)}
 
-/* Le nom du produit est dans un <span> et non directement dans le h2 : la
-   couche TITLES-V5 impose « font-weight: 700 !important » a tout h2, et du
+/* Le nom du produit est dans un <span> et non directement dans le h3 : la
+   couche TITLES-V5 impose « font-weight: 700 !important » a tout h1, h2 et h3, et du
    Cormorant italique en 700 ne ressemble a rien d'autre sur le site. Le span
    echappe a la couche sans qu'on ait a poser un !important de plus. */
 .cq-title{font-style:italic;margin-bottom:6px}
@@ -148,6 +148,27 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .cq-ghost{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#D4BEA8;transition:color .2s,text-decoration-color .2s}
 .cq-ghost:hover{color:#1E1812;text-decoration-color:#1E1812}
 
+/* ── Mots orphelins ──
+   Aucun mot ne doit tomber seul sur sa derniere ligne.
+
+   Deux proprietes, deux usages. « pretty » s'applique a la prose longue : le
+   navigateur retouche les dernieres lignes du paragraphe pour qu'aucun mot ne
+   reste isole, sans toucher au reste. « balance » s'applique aux blocs courts
+   de deux ou trois lignes, ou il repartit les mots a egalite entre les lignes,
+   ce qui est exactement le cas du sous-titre et du bloc final.
+
+   Les navigateurs qui ne connaissent pas ces valeurs les ignorent et coupent
+   comme avant : rien ne casse. C'est pour cela que le texte du bloc final est
+   aussi garde court, la CSS n'est qu'un filet. */
+.cq-said p,
+.cq-aff p,
+.cq-mise p,
+.cq-danger p,
+.cq-brand{text-wrap:pretty}
+.cq-hero-sub,
+.cq-final p,
+.cq-books>p{text-wrap:balance}
+
 /* ── Focus ──
    couches.css n'outille que la barre et le menu deroulant. Les liens du
    contenu de cette page ont donc besoin de leur propre indicateur. */
@@ -167,6 +188,138 @@ body{min-height:100vh;display:flex;flex-direction:column}
 }
 </style>
 <link rel="stylesheet" href="css/couches.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Ce que j'utilise chez vos chats",
+  "description": "Les produits pour chats qu'Irina Talbot emporte en visite de cat-sitting : friandises, jouets, hygiene et soins du quotidien, plus quatre lectures. Liens affilies Amazon signales.",
+  "url": "https://miaoucratie.fr/ce-que-jutilise.html",
+  "inLanguage": "fr-FR",
+  "datePublished": "2026-08-29",
+  "dateModified": "2026-08-29",
+  "author": {
+    "@type": "Person",
+    "name": "Irina Talbot"
+  },
+  "publisher": {
+    "@type": "LocalBusiness",
+    "@id": "https://miaoucratie.fr/#business",
+    "name": "Miaoucratie",
+    "url": "https://miaoucratie.fr/"
+  },
+  "mainEntity": {
+    "@type": "ItemList",
+    "name": "Produits utilises en garde",
+    "numberOfItems": 17,
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Churu, friandises liquides en tube",
+        "url": "https://www.amazon.fr/dp/B0FRSQ1JC3?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Crunchy Pickle Kicker, le cornichon à herbe à chat",
+        "url": "https://www.amazon.fr/dp/B092LJQFM1?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Canne à pêche rétractable, avec ses embouts",
+        "url": "https://www.amazon.fr/dp/B08C9J241G?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Recharges de petits serpents, avec clochette",
+        "url": "https://www.amazon.fr/dp/B09NN6FVRC?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "name": "Bâtonnets de matatabi",
+        "url": "https://www.amazon.fr/dp/B0CYL1XRZL?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 6,
+        "name": "Aniosgel 85 NPC, gel hydroalcoolique",
+        "url": "https://www.amazon.fr/dp/B0837FTPVX?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 7,
+        "name": "Douxo S3 Calm, cotons apaisants",
+        "url": "https://www.amazon.fr/dp/B0D35Z1VN8?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 8,
+        "name": "Otolane, nettoyant pour les oreilles",
+        "url": "https://www.amazon.fr/dp/B004L8T5VC?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 9,
+        "name": "Lance-pilule",
+        "url": "https://www.amazon.fr/dp/B0FCBRHPBY?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 10,
+        "name": "Tapis absorbants jetables",
+        "url": "https://www.amazon.fr/dp/B00MW8G62E?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 11,
+        "name": "Advantage, pipettes antipuces",
+        "url": "https://www.amazon.fr/dp/B004L8P29G?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 12,
+        "name": "Huile de graines de chanvre, saveur bœuf",
+        "url": "https://www.amazon.fr/dp/B0CMWBG2KJ?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 13,
+        "name": "Huile de graines de chanvre, sans arôme",
+        "url": "https://www.amazon.fr/dp/B0FPGB62H8?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 14,
+        "name": "Absolument chat !",
+        "url": "https://www.amazon.fr/dp/2702919898?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 15,
+        "name": "Dans la tête d'un chat",
+        "url": "https://www.amazon.fr/dp/2253078220?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 16,
+        "name": "Ma vie sans la sienne",
+        "url": "https://www.amazon.fr/dp/270293031X?tag=miaoucratie35-21"
+      },
+      {
+        "@type": "ListItem",
+        "position": 17,
+        "name": "Soul Comfort for Cat Lovers",
+        "url": "https://www.amazon.fr/dp/0615739121?tag=miaoucratie35-21"
+      }
+    ]
+  }
+}
+</script>\\n<script\\ type="application/ld\\+json">\\n\\{\\r\\n\\ \\ "@context":\\ "https://schema\\.org",\\r\\n\\ \\ "@type":\\ "BlogPosting",\\r\\n\\ \\ "headline":\\ "Ce\\ que\\ j'utilise\\ chez\\ vos\\ chats",\\r\\n\\ \\ "description":\\ "Les\\ produits\\ pour\\ chats\\ qu'Irina\\ Talbot\\ emporte\\ en\\ visite\\ de\\ cat-sitting\\ :\\ friandises,\\ jouets,\\ hygiene\\ et\\ soins\\ du\\ quotidien,\\ plus\\ quatre\\ lectures\\.\\ Liens\\ affilies\\ Amazon\\ signales\\.",\\r\\n\\ \\ "url":\\ "https://miaoucratie\\.fr/ce-que-jutilise\\.html",\\r\\n\\ \\ "inLanguage":\\ "fr-FR",\\r\\n\\ \\ "datePublished":\\ "2026-08-29",\\r\\n\\ \\ "dateModified":\\ "2026-08-29",\\r\\n\\ \\ "author":\\ \\{\\r\\n\\ \\ \\ \\ "@type":\\ "Person",\\r\\n\\ \\ \\ \\ "name":\\ "Irina\\ Talbot"\\r\\n\\ \\ },\\r\\n\\ \\ "publisher":\\ \\{\\r\\n\\ \\ \\ \\ "@type":\\ "LocalBusiness",\\r\\n\\ \\ \\ \\ "@id":\\ "https://miaoucratie\\.fr/\\#business",\\r\\n\\ \\ \\ \\ "name":\\ "Miaoucratie",\\r\\n\\ \\ \\ \\ "url":\\ "https://miaoucratie\\.fr/"\\r\\n\\ \\ },\\r\\n\\ \\ "mainEntity":\\ \\{\\r\\n\\ \\ \\ \\ "@type":\\ "ItemList",\\r\\n\\ \\ \\ \\ "name":\\ "Produits\\ utilises\\ en\\ garde",\\r\\n\\ \\ \\ \\ "numberOfItems":\\ 17,\\r\\n\\ \\ \\ \\ "itemListElement":\\ \\[\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 1,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Churu,\\ friandises\\ liquides\\ en\\ tube",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B0FRSQ1JC3\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 2,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Crunchy\\ Pickle\\ Kicker,\\ le\\ cornichon\\ à\\ herbe\\ à\\ chat",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B092LJQFM1\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 3,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Canne\\ à\\ pêche\\ rétractable,\\ avec\\ ses\\ embouts",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B08C9J241G\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 4,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Recharges\\ de\\ petits\\ serpents,\\ avec\\ clochette",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B09NN6FVRC\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 5,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Bâtonnets\\ de\\ matatabi",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B0CYL1XRZL\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 6,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Aniosgel\\ 85\\ NPC,\\ gel\\ hydroalcoolique",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B0837FTPVX\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 7,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Douxo\\ S3\\ Calm,\\ cotons\\ apaisants",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B0D35Z1VN8\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 8,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Otolane,\\ nettoyant\\ pour\\ les\\ oreilles",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B004L8T5VC\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 9,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Lance-pilule",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B0FCBRHPBY\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 10,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Tapis\\ absorbants\\ jetables",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B00MW8G62E\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 11,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Advantage,\\ pipettes\\ antipuces",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B004L8P29G\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 12,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Huile\\ de\\ graines\\ de\\ chanvre,\\ saveur\\ bœuf",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B0CMWBG2KJ\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 13,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Huile\\ de\\ graines\\ de\\ chanvre,\\ sans\\ arôme",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/B0FPGB62H8\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 14,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Absolument\\ chat\\ !",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/2702919898\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 15,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Dans\\ la\\ tête\\ d'un\\ chat",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/2253078220\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 16,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Ma\\ vie\\ sans\\ la\\ sienne",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/270293031X\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ },\\r\\n\\ \\ \\ \\ \\ \\ \\{\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "@type":\\ "ListItem",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "position":\\ 17,\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "name":\\ "Soul\\ Comfort\\ for\\ Cat\\ Lovers",\\r\\n\\ \\ \\ \\ \\ \\ \\ \\ "url":\\ "https://www\\.amazon\\.fr/dp/0615739121\\?tag=miaoucratie35-21"\\r\\n\\ \\ \\ \\ \\ \\ }\\r\\n\\ \\ \\ \\ ]\\r\\n\\ \\ }\\r\\n}\\n</script>\\n
 </head>
 <body>
 <div class="topbar"><div class="tmenu-wrap"><button aria-expanded="false" class="tmenu-btn" id="tmenuBtn">☰ Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
@@ -200,7 +353,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Friandises</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Churu, friandises liquides en tube</span></h2>
+<h3 class="cq-title"><span>Churu, friandises liquides en tube</span></h3>
 <p class="cq-brand">Inaba · variétés poulet et thon, 120 tubes de 14 g</p>
 <div class="cq-said">
 <p>Un tube, c'est surtout de l'eau. C'est ce qui en fait un outil et pas seulement une gourmandise : chez un chat qui boit peu, ça passe là où une gamelle ne passe pas.</p>
@@ -219,7 +372,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Jouet à mordre</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Crunchy Pickle Kicker, le cornichon à herbe à chat</span></h2>
+<h3 class="cq-title"><span>Crunchy Pickle Kicker, le cornichon à herbe à chat</span></h3>
 <p class="cq-brand">Petstages · jouet allongé à herbe à chat, garni de papier froissé</p>
 <div class="cq-said">
 <p>Six chats à la maison, plus ceux qui passent en famille d'accueil. Le cornichon fait l'unanimité, ce qui ne m'arrive jamais avec un jouet.</p>
@@ -238,7 +391,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Jeu de chasse</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Canne à pêche rétractable, avec ses embouts</span></h2>
+<h3 class="cq-title"><span>Canne à pêche rétractable, avec ses embouts</span></h3>
 <p class="cq-brand">Goldge · canne télescopique et 13 embouts interchangeables</p>
 <div class="cq-said">
 <p>Mon meilleur achat de l'année, sans hésiter. Je l'avais déjà conseillée sur Instagram, des abonnées l'ont prise et m'en ont dit la même chose.</p>
@@ -260,7 +413,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Recharges</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Recharges de petits serpents, avec clochette</span></h2>
+<h3 class="cq-title"><span>Recharges de petits serpents, avec clochette</span></h3>
 <p class="cq-brand">cobee · 12 embouts en fourrure, compatibles cannes télescopiques</p>
 <div class="cq-said">
 <p>Les serpents fournis avec la canne télescopique ne survivent pas longtemps à six chats. Ceux-là les remplacent, et on en a 12 d'avance.</p>
@@ -279,7 +432,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">À mâcher</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Bâtonnets de matatabi</span></h2>
+<h3 class="cq-title"><span>Bâtonnets de matatabi</span></h3>
 <p class="cq-brand">Lot de 30 bâtonnets de bois naturel, dits « silvervine »</p>
 <div class="cq-said">
 <p>J'en ai toujours dans mon sac de gardes. Ça marche chez la très grande majorité des chats que je garde, bien plus que l'herbe à chat, qui en laisse beaucoup indifférents.</p>
@@ -302,7 +455,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Hygiène des mains</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Aniosgel 85 NPC, gel hydroalcoolique</span></h2>
+<h3 class="cq-title"><span>Aniosgel 85 NPC, gel hydroalcoolique</span></h3>
 <p class="cq-brand">Anios · flacon pompe de 500 ml, sans parfum</p>
 <div class="cq-said">
 <p>Le même gel hydroalcoolique qu'à l'hôpital. C'est ce que j'utilise entre deux foyers, et c'est sans doute le produit le plus basique de cette liste.</p>
@@ -324,7 +477,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Peau sensible</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Douxo S3 Calm, cotons apaisants</span></h2>
+<h3 class="cq-title"><span>Douxo S3 Calm, cotons apaisants</span></h3>
 <p class="cq-brand">Ceva · 30 cotons imprégnés, prêts à l'emploi</p>
 <div class="cq-said">
 <p>Des cotons déjà imprégnés, pour nettoyer une peau qui ne supporte pas grand-chose. Pas de flacon, pas de dosage, on prend et on jette.</p>
@@ -343,7 +496,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Hygiène</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Otolane, nettoyant pour les oreilles</span></h2>
+<h3 class="cq-title"><span>Otolane, nettoyant pour les oreilles</span></h3>
 <p class="cq-brand">TVM · flacon de 135 ml, chats, chiens et NAC</p>
 <div class="cq-said">
 <p>Ce n'est pas un médicament, et c'est la première chose à dire : ça nettoie, ça ne soigne pas. Pour la crasse ordinaire, ou en complément d'un traitement que votre vétérinaire a prescrit. Jamais à la place.</p>
@@ -362,7 +515,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Traitements</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Lance-pilule</span></h2>
+<h3 class="cq-title"><span>Lance-pilule</span></h3>
 <p class="cq-brand">Lot de 2, réutilisables, embout souple</p>
 <div class="cq-said">
 <p>Pour donner un comprimé sans transformer le moment en lutte. J'enrobe parfois l'embout d'un peu de Churu, et ça passe tout seul.</p>
@@ -381,7 +534,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Dépannage</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Tapis absorbants jetables</span></h2>
+<h3 class="cq-title"><span>Tapis absorbants jetables</span></h3>
 <p class="cq-brand">Amazon Basics · lot de 100, cinq couches</p>
 <div class="cq-said">
 <p>Ils sont vendus pour les chiots, mais c'est chez les chats que je m'en sers : un chat âgé qui ne monte plus bien dans son bac, un convalescent, un chat stressé qui a un accident. Pipi comme selles.</p>
@@ -409,7 +562,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Antiparasitaire</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Advantage, pipettes antipuces</span></h2>
+<h3 class="cq-title"><span>Advantage, pipettes antipuces</span></h3>
 <p class="cq-brand">Deux dosages selon le poids du chat, en dessous et au-dessus de 4 kg</p>
 <div class="cq-said">
 <p>Une précision d'emblée, et elle compte : c'est ce que j'utilise sur <strong>mes</strong> chats, avec l'aval de mon vétérinaire traitant. Je ne traite jamais les vôtres de ma propre initiative.</p>
@@ -439,7 +592,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Complément alimentaire</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Huile de graines de chanvre, saveur bœuf</span></h2>
+<h3 class="cq-title"><span>Huile de graines de chanvre, saveur bœuf</span></h3>
 <p class="cq-brand">Artisam · flacon de 30 ml, fabriqué en France, existe en plusieurs parfums</p>
 <div class="cq-said">
 <p>Sur celui-là je suis mitigée, et autant le dire franchement.</p>
@@ -473,7 +626,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Complément alimentaire</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Huile de graines de chanvre, sans arôme</span></h2>
+<h3 class="cq-title"><span>Huile de graines de chanvre, sans arôme</span></h3>
 <p class="cq-brand">Terosmose · flacon à pipette de 10 ml, pressée à froid, conditionnée en France</p>
 <div class="cq-said">
 <p>La seconde huile de chanvre de cette page. Celle-ci est nature, sans arôme ajouté, là où la précédente joue la carte du goût.</p>
@@ -505,7 +658,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Adoption</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Absolument chat !</span></h2>
+<h3 class="cq-title"><span>Absolument chat !</span></h3>
 <p class="cq-brand">Marion Ruffié · guide illustré, préface de Yoann Latouche</p>
 <div class="cq-said">
 <p>Celui qu'on devrait glisser dans le panier de transport le jour de l'adoption. Comprendre le comportement du chat, l'installer chez soi, éviter les erreurs du début : tout y est, et c'est illustré.</p>
@@ -526,7 +679,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Comportement</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Dans la tête d'un chat</span></h2>
+<h3 class="cq-title"><span>Dans la tête d'un chat</span></h3>
 <p class="cq-brand">Jessica Serra · Le Livre de Poche, format poche</p>
 <div class="cq-said">
 <p>Je l'ai lu pour compléter ce que je savais, et j'y reviens.</p>
@@ -545,7 +698,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-cat">Fin de vie</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span>Ma vie sans la sienne</span></h2>
+<h3 class="cq-title"><span>Ma vie sans la sienne</span></h3>
 <p class="cq-brand">Marion Ruffié · Le Courrier du Livre, 2025 · même autrice qu'<em>Absolument chat&nbsp;!</em></p>
 <div class="cq-said">
 <p>Celui-là brise le cœur, et autant le dire avant de le conseiller. Il parle de la fin de vie d'un animal, de la façon de l'accompagner, et de ce qui reste après.</p>
@@ -569,7 +722,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <span class="cq-lang">En anglais</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
-<h2 class="cq-title"><span lang="en">Soul Comfort for Cat Lovers</span></h2>
+<h3 class="cq-title"><span lang="en">Soul Comfort for Cat Lovers</span></h3>
 <p class="cq-brand">Liz Eastwood · uniquement en anglais</p>
 <div class="cq-said">
 <p>Son défaut d'abord : il n'existe qu'en anglais. Si vous ne le lisez pas, arrêtez-vous au précédent, qui traite du même moment en français.</p>
@@ -600,7 +753,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
      quelqu'un qui vient de parcourir des avis produits. -->
 <section class="cq-final">
 <h2>Et sinon, je garde des <em>chats.</em></h2>
-<p>Chez vous, en Ille-et-Vilaine. Le chat garde son territoire, ses habitudes et ses cachettes, et vous avez de ses nouvelles après chaque passage.</p>
+<p>Chez vous, en Ille-et-Vilaine. Le chat garde ses repères, vous avez de ses nouvelles.</p>
 <div class="cq-final-cta">
 <a class="btn-primary" href="faq.html">Comment se passe une garde</a>
 <a class="cq-ghost" href="carte.html">Vérifier si ma commune est dans la zone</a>
