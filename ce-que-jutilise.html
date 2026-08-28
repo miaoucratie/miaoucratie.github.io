@@ -107,6 +107,10 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .cq-books h2{margin-bottom:10px}
 .cq-books>p{font-size:15px;color:#7A6B5E;line-height:1.9;margin-bottom:24px}
 .cq-books .cq-list{margin-bottom:0}
+/* Etiquette de langue. Teinte verte, pour ne pas se confondre avec
+   l'etiquette « lien affilie » qui est sable. L'information est portee par le
+   mot, jamais par la couleur seule. */
+.cq-lang{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap;color:#1E1812;background:rgba(122,158,142,.22)}
 
 /* ── Bloc mise au point ──
    Fond clair et non sombre : la couche TITLES-V5 impose « color: #1E1812 » a
@@ -386,7 +390,8 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <h2 class="cq-title"><span>Advantage, pipettes antipuces</span></h2>
 <p class="cq-brand">Deux dosages selon le poids du chat, en dessous et au-dessus de 4 kg</p>
 <div class="cq-said">
-<p>C'est ce que j'utilise sur mes chats, et ça fait le travail sur les puces, y compris chez les jeunes et les tout petits gabarits.</p>
+<p>Une précision d'emblée, et elle compte : c'est ce que j'utilise sur <strong>mes</strong> chats, avec l'aval de mon vétérinaire. Je ne traite jamais les vôtres de ma propre initiative.</p>
+<p>Cela dit, ça fait le travail sur les puces, y compris chez les jeunes et les tout petits gabarits.</p>
 <p>Une mise en garde qui vaut pour tous les antiparasitaires : ne prenez jamais un produit prévu pour le chien. Certains contiennent de la perméthrine, qui est mortelle pour le chat.</p>
 <p>Le choix du produit, le dosage et le rythme se décident avec votre vétérinaire, pas avec moi.</p>
 </div>
@@ -430,7 +435,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
      fiche est volontairement sobre, sans trait d'esprit ni emoji. -->
 <section class="cq-books">
 <h2>À lire</h2>
-<p>Trois livres qui ne se donnent pas à un chat, mais qui changent la façon de s'en occuper. Dans l'ordre où ils servent : débuter, comprendre, accompagner.</p>
+<p>Quatre livres qui ne se donnent pas à un chat, mais qui changent la façon de s'en occuper. Dans l'ordre où ils servent : débuter, comprendre, accompagner. Le dernier n'existe qu'en anglais, c'est signalé.</p>
 <div class="cq-list">
 
 <!-- ══ 13 : Absolument chat ! ══ -->
@@ -488,6 +493,30 @@ body{min-height:100vh;display:flex;flex-direction:column}
 </div>
 <div class="cq-actions">
 <a class="btn-primary" href="https://www.amazon.fr/dp/270293031X?tag=miaoucratie35-21" rel="sponsored noopener" target="_blank" aria-label="Voir le livre Ma vie sans la sienne sur Amazon, lien affilié, nouvelle fenêtre">Voir sur Amazon</a>
+<span class="cq-note">Prix et disponibilité sur Amazon</span>
+</div>
+</article>
+
+<!-- ══ 16 : Soul Comfort for Cat Lovers ══
+     Seul ouvrage en anglais de la page. L'etiquette .cq-lang le signale, et
+     le lang="en" sur le titre evite qu'un lecteur d'ecran francais le
+     prononce en francais. Le defaut est annonce des la premiere phrase :
+     mieux vaut le dire que laisser quelqu'un le decouvrir en le recevant. -->
+<article class="cq-card">
+<div class="cq-head">
+<span class="cq-cat">Après la perte</span>
+<span class="cq-lang">En anglais</span>
+<span class="cq-tag">Lien affilié</span>
+</div>
+<h2 class="cq-title"><span lang="en">Soul Comfort for Cat Lovers</span></h2>
+<p class="cq-brand">Liz Eastwood · uniquement en anglais</p>
+<div class="cq-said">
+<p>Son défaut d'abord, il est réel : il n'existe qu'en anglais. Si vous ne le lisez pas, arrêtez-vous au précédent, qui traite du même moment en français.</p>
+<p>Là où <em>Ma vie sans la sienne</em> accompagne la fin, celui-ci s'occupe de l'après : les semaines où la maison est trop calme, où l'on se surprend à guetter un bruit qui ne viendra plus.</p>
+<p>Si l'anglais ne vous fait pas peur, il vaut le détour.</p>
+</div>
+<div class="cq-actions">
+<a class="btn-primary" href="https://www.amazon.fr/dp/0615739121?tag=miaoucratie35-21" rel="sponsored noopener" target="_blank" aria-label="Voir le livre Soul Comfort for Cat Lovers, en anglais, sur Amazon, lien affilié, nouvelle fenêtre">Voir sur Amazon</a>
 <span class="cq-note">Prix et disponibilité sur Amazon</span>
 </div>
 </article>
