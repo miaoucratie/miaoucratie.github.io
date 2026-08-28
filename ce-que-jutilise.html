@@ -98,6 +98,16 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .cq-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .cq-note{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:13px;color:#7A6B5E}
 
+/* ── Section « A lire » ──
+   Les livres ne s'adressent pas au chat mais a la personne. Les sortir de la
+   liste des produits evite qu'un livre sur la fin de vie se lise a la suite
+   d'une canne a peche. La section reutilise .cq-list et .cq-card : meme
+   vocabulaire, aucun style de carte en double. */
+.cq-books{margin-bottom:56px}
+.cq-books h2{margin-bottom:10px}
+.cq-books>p{font-size:15px;color:#7A6B5E;line-height:1.9;margin-bottom:24px}
+.cq-books .cq-list{margin-bottom:0}
+
 /* ── Bloc mise au point ──
    Fond clair et non sombre : la couche TITLES-V5 impose « color: #1E1812 » a
    tout h2 du site, un h2 pose sur #1E1812 serait invisible. C'est la panne
@@ -412,19 +422,48 @@ body{min-height:100vh;display:flex;flex-direction:column}
 </div>
 </article>
 
-<!-- ══ 13 : lecture ══
+</div>
+
+<!-- ══ A lire ══
+     Section distincte de la liste des produits : ces deux livres s'adressent
+     a la personne, pas au chat. Le second parle de fin de vie ; le ton de sa
+     fiche est volontairement sobre, sans trait d'esprit ni emoji. -->
+<section class="cq-books">
+<h2>À lire</h2>
+<p>Trois livres qui ne se donnent pas à un chat, mais qui changent la façon de s'en occuper. Dans l'ordre où ils servent : débuter, comprendre, accompagner.</p>
+<div class="cq-list">
+
+<!-- ══ 13 : Absolument chat ! ══ -->
+<article class="cq-card">
+<div class="cq-head">
+<span class="cq-cat">Adoption</span>
+<span class="cq-tag">Lien affilié</span>
+</div>
+<h2 class="cq-title"><span>Absolument chat !</span></h2>
+<p class="cq-brand">Marion Ruffié · guide illustré, préface de Yoann Latouche</p>
+<div class="cq-said">
+<p>Celui qu'on devrait glisser dans le panier de transport le jour de l'adoption. Comprendre le comportement du chat, l'installer chez soi, éviter les erreurs du début : tout y est, et c'est illustré.</p>
+<p>Quand quelqu'un m'annonce qu'il adopte, c'est ce livre que je conseille. Une bonne partie de ce qu'on me raconte ensuite comme un problème se joue dans les premières semaines.</p>
+</div>
+<div class="cq-actions">
+<a class="btn-primary" href="https://www.amazon.fr/dp/2702919898?tag=miaoucratie35-21" rel="sponsored noopener" target="_blank" aria-label="Voir le livre Absolument chat ! sur Amazon, lien affilié, nouvelle fenêtre">Voir sur Amazon</a>
+<span class="cq-note">Prix et disponibilité sur Amazon</span>
+</div>
+</article>
+
+<!-- ══ 14 : Dans la tete d'un chat ══
      La mention « en attendant ma formation » de l'avis d'origine n'est pas
      reprise : sur une page publique, elle se lit comme un aveu de
      competence incomplete, ce qu'elle n'est pas. -->
 <article class="cq-card">
 <div class="cq-head">
-<span class="cq-cat">Lecture</span>
+<span class="cq-cat">Comportement</span>
 <span class="cq-tag">Lien affilié</span>
 </div>
 <h2 class="cq-title"><span>Dans la tête d'un chat</span></h2>
 <p class="cq-brand">Le Livre de Poche · format poche</p>
 <div class="cq-said">
-<p>Le seul de la liste qui ne se donne pas à un chat. Je l'ai lu pour compléter ce que je savais, et j'y reviens.</p>
+<p>Je l'ai lu pour compléter ce que je savais, et j'y reviens.</p>
 <p>Il se lit facilement, sans jargon, et il remet en place quelques idées reçues sur le comportement du chat.</p>
 <p>Ce n'est pas un manuel de soin, c'est un livre qui explique comment un chat pense. C'est souvent là que se règlent les histoires qu'on prend pour du caprice.</p>
 </div>
@@ -434,7 +473,27 @@ body{min-height:100vh;display:flex;flex-direction:column}
 </div>
 </article>
 
+<!-- ══ 15 : Ma vie sans la sienne ══ -->
+<article class="cq-card">
+<div class="cq-head">
+<span class="cq-cat">Fin de vie</span>
+<span class="cq-tag">Lien affilié</span>
 </div>
+<h2 class="cq-title"><span>Ma vie sans la sienne</span></h2>
+<p class="cq-brand">Marion Ruffié · Le Courrier du Livre, 2025 — même autrice qu'<em>Absolument chat&nbsp;!</em></p>
+<div class="cq-said">
+<p>Celui-là brise le cœur, et autant le dire avant de le conseiller. Il parle de la fin de vie d'un animal, de la façon de l'accompagner, et de ce qui reste après.</p>
+<p>Je garde des chats âgés, des chats malades, des chats sous traitement. Le deuil félin fait partie de ce métier, qu'on le veuille ou non. Ce livre m'a donné des mots pour ces moments-là, pour moi comme pour les personnes qui les traversent.</p>
+<p>Si votre chat est vieux ou fragile, ce n'est pas une lecture facile. C'est une lecture utile.</p>
+</div>
+<div class="cq-actions">
+<a class="btn-primary" href="https://www.amazon.fr/dp/270293031X?tag=miaoucratie35-21" rel="sponsored noopener" target="_blank" aria-label="Voir le livre Ma vie sans la sienne sur Amazon, lien affilié, nouvelle fenêtre">Voir sur Amazon</a>
+<span class="cq-note">Prix et disponibilité sur Amazon</span>
+</div>
+</article>
+
+</div>
+</section>
 
 <section class="cq-mise">
 <h2>Une mise au point</h2>
