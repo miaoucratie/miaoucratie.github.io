@@ -98,6 +98,24 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .cq-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .cq-note{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:13px;color:#7A6B5E}
 
+/* ── Encart de danger ──
+   Reserve a ce qui peut tuer un chat. Un seul sur la page : un second lui
+   ferait perdre sa force.
+
+   Trois choses le rendent visible sans clignoter. Le fond rougi et le liseré
+   epais le sortent de la carte blanche. Le texte est plus gros que le corps
+   de la fiche, pas seulement plus gras, parce qu'un gras dans un paragraphe
+   se lit comme une insistance et non comme un avertissement. Et le mot
+   « danger mortel » porte l'information : en niveaux de gris, au lecteur
+   d'ecran, ou pour un daltonien, l'encart dit encore ce qu'il est.
+   Le pictogramme est decoratif, d'ou aria-hidden : il double le mot, il ne
+   le remplace pas. */
+.cq-danger{background:#FBEDE7;border:1.5px solid #E4BCAB;border-left:6px solid #A8472A;border-radius:12px;padding:20px 24px;margin:22px 0}
+.cq-danger-label{display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#A8472A;margin-bottom:12px}
+.cq-danger p{font-size:18px;line-height:1.7;color:#1E1812;margin:0}
+.cq-danger p+p{margin-top:12px;font-size:15.5px;color:#4A3728}
+.cq-danger strong{font-weight:700}
+
 /* ── Section « A lire » ──
    Les livres ne s'adressent pas au chat mais a la personne. Les sortir de la
    liste des produits evite qu'un livre sur la fin de vie se lise a la suite
@@ -139,6 +157,8 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .page-wrap{padding:36px 20px 60px}
   .cq-card{padding:24px 22px}
   .cq-aff{padding:20px 20px}
+  .cq-danger{padding:18px 18px}
+  .cq-danger p{font-size:17px}
   .cq-mise{padding:28px 24px}
   .cq-actions{flex-direction:column;align-items:stretch}
   .cq-actions .btn-primary{justify-content:center}
@@ -393,7 +413,11 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <div class="cq-said">
 <p>Une précision d'emblée, et elle compte : c'est ce que j'utilise sur <strong>mes</strong> chats, avec l'aval de mon vétérinaire traitant. Je ne traite jamais les vôtres de ma propre initiative.</p>
 <p>Cela dit, ça fait le travail sur les puces, y compris chez les jeunes et les tout petits gabarits.</p>
-<p>Une mise en garde qui vaut pour tous les antiparasitaires : ne prenez jamais un produit prévu pour le chien. Certains contiennent de la perméthrine, qui est mortelle pour le chat.</p>
+<div class="cq-danger">
+<span class="cq-danger-label"><span aria-hidden="true">⚠</span> Danger mortel</span>
+<p><strong>Ne donnez jamais à un chat un antiparasitaire prévu pour le chien.</strong></p>
+<p>Plusieurs d'entre eux contiennent de la perméthrine, qui tue le chat. Cela vaut pour tous les antiparasitaires, pas seulement pour celui-ci, et une pipette pour chien appliquée à un chat est une urgence vétérinaire.</p>
+</div>
 <p>Le choix du produit, le dosage et le rythme se décident avec votre vétérinaire, pas avec moi.</p>
 </div>
 <div class="cq-actions">
