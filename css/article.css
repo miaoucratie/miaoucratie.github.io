@@ -36,10 +36,6 @@ body{min-height:100vh;display:flex;flex-direction:column}
    tombe pas sur la verticale du texte qui le suit, et ca se voit. */
 
 /* ── Fil d'Ariane ── */
-.art-fil{font-family:'DM Sans',sans-serif;font-size:13px;color:#7A6B5E;margin-bottom:26px;padding-left:32px}
-.art-fil a{color:#7A6B5E;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#D4BEA8}
-.art-fil a:hover{color:#A8472A;text-decoration-color:#A8472A}
-.art-fil span{color:#B89B80}
 
 /* ── Hero ── */
 .art-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A8472A;background:rgba(168,71,42,.1);border-radius:999px;padding:7px 14px;margin-bottom:20px}
@@ -59,51 +55,29 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-methode p:last-child{margin-bottom:0}
 .art-methode strong{font-weight:600;color:#1E1812}
 
-/* ── L'essentiel ──
-   Le bloc que lit celui qui ne lira pas l'article. Cinq gestes, chacun
-   cliquable vers la section qui le detaille. Il est place avant le sommaire :
-   un sommaire annonce des titres, celui-ci donne deja la reponse.
+/* ── Bloc de navigation de l'article ──
+   Un seul point d'entree, et il est cliquable. Chaque geste mene a la section
+   qui l'explique : le numero, le texte et toute la ligne forment une seule
+   cible, ce qui donne 44 px de haut sans rien ajouter au dessin.
 
-   Chiffres en chasse fixe et en rouille : ils sont le point d'ancrage de
-   l'oeil, et c'est ce qu'on retient d'un aliment. */
-.art-essentiel{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:30px 32px;margin-bottom:24px}
-.art-essentiel h2{margin-bottom:8px}
-.art-essentiel>p{font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;margin-bottom:20px;line-height:1.7}
-.art-essentiel ol{list-style:none;counter-reset:ess;margin:0;padding:0;display:grid;gap:14px}
-.art-essentiel li{counter-increment:ess;position:relative;padding-left:38px;font-size:16px;line-height:1.8;color:#1E1812;text-wrap:balance}
-.art-essentiel li::before{content:counter(ess);position:absolute;left:0;top:.1em;width:26px;height:26px;border-radius:50%;background:#A8472A;color:#FDFAF5;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
-.art-essentiel li a{font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#D4BEA8;white-space:nowrap}
-.art-essentiel li a:hover{color:#1E1812;text-decoration-color:#1E1812}
-.art-essentiel strong{font-weight:600}
+   Il remplace l'ancien couple « essentiel » plus « sommaire », qui disait deux
+   fois la meme chose et allongeait la page avant meme le premier paragraphe.
 
-/* ── Encart d'affiliation ──
-   La loi du 9 juin 2023 demande une mention claire et visible AVANT les liens,
-   pas seulement en pied de page. Le contrat Amazon Partenaires impose en plus
-   sa formule. Les deux sont ici. Meme vocabulaire visuel que la page
-   « Ce que j'utilise » : fond sable, lisere rouille, c'est une information et
-   non une alerte. */
-.art-aff{background:#F0E8DA;border:1.5px solid #E8DDD0;border-left:4px solid #A8472A;border-radius:14px;padding:22px 26px 22px 23.5px;margin:26px 0}
-.art-aff p{font-size:14.5px;line-height:1.8;color:#4A3728;margin-bottom:10px;text-wrap:pretty}
-.art-aff p:last-child{margin-bottom:0}
-.art-aff strong{font-weight:600;color:#1E1812}
+   Le numero reprend la pastille rouille du site. Le fond sable et le rayon de
+   16 px sont ceux des encarts de « ce que j'utilise ». */
+.art-essentiel{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:30px 32px;margin-bottom:48px}
+.art-essentiel h2{margin-bottom:18px}
+.art-essentiel ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.art-essentiel li a{display:flex;align-items:center;gap:16px;min-height:44px;padding:8px 10px 8px 0;border-radius:12px;text-decoration:none;color:#1E1812;font-size:16.5px;line-height:1.5;transition:background .15s}
+.art-essentiel li a:hover{background:rgba(168,71,42,.07);color:#A8472A}
+.art-num{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:#A8472A;color:#FDFAF5;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
+.art-essentiel li a:hover .art-num{background:#1E1812}
 
-/* L'etiquette est portee par le mot, jamais par la couleur seule : elle reste
-   lisible en niveaux de gris et au lecteur d'ecran. */
-.art-tag{display:inline-block;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap;color:#4A3728;background:rgba(184,155,128,.22);margin-left:10px;vertical-align:2px}
-
-
-/* ── Sommaire ──
-   L'article est long. Un lecteur qui cherche « cendres » doit pouvoir y aller
-   sans faire defiler six ecrans. Liste ordonnee : la numerotation est portee
-   par le balisage, pas par une puce decorative. */
-.art-somm{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:28px 32px;margin-bottom:56px}
-.art-somm h2{font-size:20px !important;margin-bottom:16px}
-.art-somm ol{list-style:none;counter-reset:somm;margin:0;padding:0;display:grid;gap:2px}
-.art-somm li{counter-increment:somm}
-.art-somm a{display:flex;gap:12px;align-items:baseline;min-height:44px;padding:6px 0;font-size:16px;line-height:1.6;color:#1E1812;text-decoration:none}
-.art-somm a::before{content:counter(somm) ".";font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:#A8472A;min-width:22px}
-.art-somm a:hover{color:#A8472A}
-
+/* Les autres sections tiennent sur une ligne : elles n'ont pas besoin d'une
+   liste a puces pour etre atteintes. */
+.art-ess-plus{margin:20px 0 0;padding-top:18px;border-top:1px solid #E0D4C2;font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:2;color:#7A6B5E}
+.art-ess-plus a{color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
+.art-ess-plus a:hover{text-decoration-color:#A8472A}
 /* ── Corps de l'article ──
    Interlignage 1,9 : le cadre est large, donc les lignes sont longues, donc
    l'interligne compense. La regle posee sur la page presse tient ici aussi,
@@ -247,16 +221,6 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-carte h2 a:hover span{color:#A8472A}
 .art-carte-res{font-size:16px;line-height:1.9;color:#1E1812;margin-bottom:20px;text-wrap:pretty}
 .art-carte-pied{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.art-carte-date{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:13px;color:#7A6B5E}
-
-/* La suite de la serie. Fond sable et bordure discontinue : le bloc dit
-   « pas encore la » sans imiter une carte d'article publie. */
-.art-suite{background:#F0E8DA;border:1.5px dashed #D4BEA8;border-radius:16px;padding:30px 32px;margin-bottom:56px}
-.art-suite h2{margin-bottom:12px}
-.art-suite p{font-size:15.5px;line-height:1.9;color:#4A3728;margin-bottom:16px;text-wrap:pretty}
-.art-suite ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
-.art-suite li{position:relative;padding-left:22px;font-size:15.5px;line-height:1.8;color:#4A3728}
-.art-suite li::before{content:"";position:absolute;left:2px;top:.7em;width:7px;height:7px;border-radius:50%;background:#D4BEA8}
 
 /* ── Focus ──
    couches.css n'outille que la barre et le menu deroulant. Les liens du
@@ -265,14 +229,12 @@ body{min-height:100vh;display:flex;flex-direction:column}
 
 @media (max-width:720px){
   .page-wrap{padding:36px 20px 60px}
-  .art-fil{padding-left:22px}
   .art-hero{padding-left:22px;padding-right:22px}
   .art-corps{padding-left:22px;padding-right:22px}
   .art-methode{padding:20px 22px 20px 19.5px}
   .art-corps h2{scroll-margin-top:96px}
   .art-aff{padding:20px 20px 20px 17.5px}
   .art-essentiel{padding:24px 22px}
-  .art-somm{padding:24px 22px}
   .art-retenir{padding:20px 20px}
   .art-danger{padding:18px 18px}
   .art-danger p{font-size:17px}
@@ -298,7 +260,6 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .art-mise{padding:28px 22px}
   .art-final{padding:36px 22px}
   .art-carte{padding:26px 22px}
-  .art-suite{padding:26px 22px}
   .art-final-cta{flex-direction:column;align-items:stretch}
   .art-final-cta .btn-primary{justify-content:center}
   .art-carte-pied{flex-direction:column;align-items:stretch}
