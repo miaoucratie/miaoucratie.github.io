@@ -103,6 +103,7 @@ const PAGES = [
   'index.html', 'tarifs.html', 'faq.html', 'carte.html', 'reservation.html',
   'presse.html', 'ce-que-jutilise.html', 'cgv.html', 'mentions-legales.html',
   'calculateur-miaoucratie.html', 'admin-indisponibilites.html',
+  'blog.html', 'alimentation-du-chat.html',
 ];
 const LARGEURS = [1272, 375];
 
