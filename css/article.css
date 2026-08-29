@@ -80,6 +80,26 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-essentiel li br{display:block;content:"";margin-top:2px}
 .art-essentiel strong{font-weight:600}
 
+/* ── Encart d'affiliation ──
+   La loi du 9 juin 2023 demande une mention claire et visible AVANT les liens,
+   pas seulement en pied de page. Le contrat Amazon Partenaires impose en plus
+   sa formule. Les deux sont ici. Meme vocabulaire visuel que la page
+   « Ce que j'utilise » : fond sable, lisere rouille, c'est une information et
+   non une alerte. */
+.art-aff{background:#F0E8DA;border:1.5px solid #E8DDD0;border-left:4px solid #A8472A;border-radius:14px;padding:22px 26px 22px 23.5px;margin:26px 0}
+.art-aff p{font-size:14.5px;line-height:1.8;color:#4A3728;margin-bottom:10px;text-wrap:pretty}
+.art-aff p:last-child{margin-bottom:0}
+.art-aff strong{font-weight:600;color:#1E1812}
+
+/* L'etiquette est portee par le mot, jamais par la couleur seule : elle reste
+   lisible en niveaux de gris et au lecteur d'ecran. */
+.art-tag{display:inline-block;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap;color:#4A3728;background:rgba(184,155,128,.22);margin-left:10px;vertical-align:2px}
+
+/* Le lien produit tient 44 px de haut, cible tactile minimale. */
+.art-achat{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
+.art-achat::before{content:"92";margin-right:7px}
+.art-achat:hover{text-decoration-color:#A8472A}
+
 /* ── Sommaire ──
    L'article est long. Un lecteur qui cherche « cendres » doit pouvoir y aller
    sans faire defiler six ecrans. Liste ordonnee : la numerotation est portee
@@ -240,6 +260,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .art-hero{padding-left:22px;padding-right:22px}
   .art-corps{padding-left:22px;padding-right:22px}
   .art-methode{padding:20px 22px 20px 19.5px}
+  .art-aff{padding:20px 20px 20px 17.5px}
   .art-essentiel{padding:24px 22px}
   .art-somm{padding:24px 22px}
   .art-retenir{padding:20px 20px}
