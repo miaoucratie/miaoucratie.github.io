@@ -44,9 +44,9 @@ body{min-height:100vh;display:flex;flex-direction:column}
 /* ── Hero ── */
 .art-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A8472A;background:rgba(168,71,42,.1);border-radius:999px;padding:7px 14px;margin-bottom:20px}
 .art-hero{margin-bottom:32px;padding-left:32px;padding-right:32px}
-.art-hero h1{font-size:clamp(40px,5.4vw,68px);margin-bottom:18px}
+.art-hero h1{font-size:clamp(44px,6vw,76px);margin-bottom:16px}
 .art-hero h1 em{font-style:italic;font-weight:400;color:#A8472A}
-.art-hero-sub{font-size:17px;color:#4A3728;line-height:1.85;text-wrap:pretty}
+.art-hero-sub{font-size:16px;color:#7A6B5E;line-height:1.8;text-wrap:pretty}
 .art-meta{font-family:'DM Sans',sans-serif;font-size:13px;color:#7A6B5E;margin-top:18px}
 .art-meta span{color:#B89B80;margin:0 8px}
 
@@ -67,17 +67,13 @@ body{min-height:100vh;display:flex;flex-direction:column}
    Chiffres en chasse fixe et en rouille : ils sont le point d'ancrage de
    l'oeil, et c'est ce qu'on retient d'un aliment. */
 .art-essentiel{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:30px 32px;margin-bottom:24px}
-.art-essentiel h2{font-size:15px !important;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.art-essentiel h2{margin-bottom:8px}
 .art-essentiel>p{font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;margin-bottom:20px;line-height:1.7}
 .art-essentiel ol{list-style:none;counter-reset:ess;margin:0;padding:0;display:grid;gap:14px}
-.art-essentiel li{counter-increment:ess;position:relative;padding-left:38px;font-size:16.5px;line-height:1.75;color:#1E1812;text-wrap:pretty}
+.art-essentiel li{counter-increment:ess;position:relative;padding-left:38px;font-size:16px;line-height:1.8;color:#1E1812;text-wrap:balance}
 .art-essentiel li::before{content:counter(ess);position:absolute;left:0;top:.1em;width:26px;height:26px;border-radius:50%;background:#A8472A;color:#FDFAF5;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
-.art-essentiel li a{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
-.art-essentiel li a::before{content:"→";font-size:14px}
-.art-essentiel li a:hover{text-decoration-color:#A8472A}
-/* Le renvoi passe sur sa propre ligne : dans le fil du texte il ne pourrait pas
-   tenir 44 px de haut sans casser l'interligne du paragraphe. */
-.art-essentiel li br{display:block;content:"";margin-top:2px}
+.art-essentiel li a{font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#D4BEA8;white-space:nowrap}
+.art-essentiel li a:hover{color:#1E1812;text-decoration-color:#1E1812}
 .art-essentiel strong{font-weight:600}
 
 /* ── Encart d'affiliation ──
@@ -95,17 +91,13 @@ body{min-height:100vh;display:flex;flex-direction:column}
    lisible en niveaux de gris et au lecteur d'ecran. */
 .art-tag{display:inline-block;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap;color:#4A3728;background:rgba(184,155,128,.22);margin-left:10px;vertical-align:2px}
 
-/* Le lien produit tient 44 px de haut, cible tactile minimale. */
-.art-achat{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
-.art-achat::before{content:"→";margin-right:7px}
-.art-achat:hover{text-decoration-color:#A8472A}
 
 /* ── Sommaire ──
    L'article est long. Un lecteur qui cherche « cendres » doit pouvoir y aller
    sans faire defiler six ecrans. Liste ordonnee : la numerotation est portee
    par le balisage, pas par une puce decorative. */
 .art-somm{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:28px 32px;margin-bottom:56px}
-.art-somm h2{font-size:15px !important;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
+.art-somm h2{font-size:20px !important;margin-bottom:16px}
 .art-somm ol{list-style:none;counter-reset:somm;margin:0;padding:0;display:grid;gap:2px}
 .art-somm li{counter-increment:somm}
 .art-somm a{display:flex;gap:12px;align-items:baseline;min-height:44px;padding:6px 0;font-size:16px;line-height:1.6;color:#1E1812;text-decoration:none}
@@ -120,14 +112,15 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-corps h2{margin:56px 0 18px;scroll-margin-top:70px}
 .art-corps h2:first-child{margin-top:0}
 .art-corps h3{font-size:22px !important;margin:34px 0 12px}
-.art-corps p{font-size:16.5px;line-height:1.9;color:#1E1812;margin-bottom:18px;text-wrap:pretty}
+.art-corps .btn-primary{line-height:1.7}
+.art-corps p{font-size:16px;line-height:1.9;color:#1E1812;margin-bottom:18px;text-wrap:pretty}
 .art-corps ul{margin:0 0 20px;padding:0;list-style:none;display:grid;gap:12px}
-.art-corps li{position:relative;padding-left:22px;font-size:16.5px;line-height:1.85;color:#1E1812;text-wrap:pretty}
+.art-corps li{position:relative;padding-left:22px;font-size:16px;line-height:1.9;color:#1E1812;text-wrap:pretty}
 .art-corps li::before{content:"";position:absolute;left:2px;top:.72em;width:7px;height:7px;border-radius:50%;background:#D4BEA8}
 .art-corps strong{font-weight:600;color:#1E1812}
 .art-corps em{font-style:italic}
-.art-corps a{color:#A8472A;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(168,71,42,.4)}
-.art-corps a:hover{text-decoration-color:#A8472A}
+.art-corps a:not(.btn-primary){color:#A8472A;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(168,71,42,.4)}
+.art-corps a:not(.btn-primary):hover{text-decoration-color:#A8472A}
 
 /* Le chapeau de section : une phrase en retrait qui annonce ce que la section
    demontre. En DM Sans et en rouille, il ne concurrence pas le h2. */
@@ -153,31 +146,47 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-danger p+p{margin-top:12px;font-size:15.5px;color:#4A3728}
 
 /* ── Tableaux ──
-   Un tableau large ne doit jamais faire deborder la page : il defile dans son
-   propre conteneur. Le conteneur est focusable au clavier, sinon un lecteur
-   au clavier ne peut pas atteindre la partie masquee. */
-.art-tab-wrap{overflow-x:auto;margin:24px 0 28px;border:1px solid #E8DDD0;border-radius:14px;background:#fff}
+   Un tableau doit se lire en quelques secondes. Trois choses le permettent :
+   un entete plein qui nomme chaque colonne sans ambiguite, une separation
+   visible entre les lignes, et le chiffre sorti de la phrase pour devenir le
+   point d'ancrage de l'oeil. Le reste du texte reste en corps normal.
+
+   L'entete est rouille pleine : c'est la couleur d'action du site, et un th
+   n'est pas un titre au sens de la couche TITLES, donc rien ne l'ecrase.
+
+   Un tableau large ne fait jamais deborder la page : il defile dans son propre
+   conteneur, focusable au clavier pour que la partie masquee reste atteignable.
+   Sous 720 px il s'empile, voir le media en bas de feuille. */
+.art-tab-wrap{overflow-x:auto;margin:26px 0 30px;border:1.5px solid #E8DDD0;border-radius:16px;background:#fff}
 .art-tab-wrap:focus-visible{outline:2px solid #A8472A;outline-offset:2px}
-.art-tab{width:100%;border-collapse:collapse;font-size:15.5px;min-width:520px}
-.art-tab caption{caption-side:top;text-align:left;font-family:'DM Sans',sans-serif;font-size:13px;color:#7A6B5E;padding:18px 22px 0;line-height:1.7}
-.art-tab th,.art-tab td{padding:14px 22px;text-align:left;vertical-align:top;line-height:1.65;border-bottom:1px solid #F0E8DA}
-.art-tab thead th{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#A8472A;background:#FAF6F0}
-.art-tab tbody th{font-weight:500;color:#1E1812;width:46%}
-.art-tab td{color:#4A3728}
-.art-tab tbody tr:last-child th,.art-tab tbody tr:last-child td{border-bottom:0}
-/* Chasse fixe pour les pourcentages, sans ecraser le style de chiffres pose
-   par couches.css : font-variant-numeric est UNE propriete, redeclarer le
-   seul mot-cle tabular-nums effacerait le lining-nums herite. */
-.art-chiffre{font-variant-numeric:var(--chiffres,lining-nums) tabular-nums;font-weight:600;color:#1E1812}
+.art-tab{width:100%;border-collapse:collapse;font-size:16px;min-width:560px}
+.art-tab caption{caption-side:top;text-align:left;font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;padding:20px 24px 16px;line-height:1.7}
+.art-tab thead th{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#FDFAF5;background:#A8472A;padding:14px 24px;text-align:left;vertical-align:middle}
+.art-tab thead th:nth-child(2){text-align:center}
+.art-tab tbody th,.art-tab tbody td{padding:18px 24px;text-align:left;vertical-align:middle;line-height:1.6;border-top:1px solid #E8DDD0}
+.art-tab tbody th{width:34%;font-weight:500;color:#1E1812}
+.art-tab tbody td{color:#4A3728}
+.art-tab tbody td:first-of-type{width:16%;text-align:center}
+/* Une ligne sur deux en sable : l'oeil suit la ligne sans regle a poser. */
+.art-tab tbody tr:nth-child(even){background:#FAF6F0}
 
+/* Le chiffre, sorti de la phrase. Chasse fixe pour que les pourcentages
+   s'alignent verticalement d'une ligne a l'autre. */
+.art-pct{display:inline-block;font-family:'DM Sans',sans-serif;font-size:17px;font-weight:600;color:#A8472A;background:rgba(168,71,42,.1);border-radius:999px;padding:6px 14px;white-space:nowrap;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
+/* Zero ou presque : gris, pour que l'oeil ne le confonde pas avec une garantie. */
+.art-pct-nul{color:#7A6B5E;background:rgba(122,107,94,.12)}
+/* Le maximum : plein, c'est le seul cas ou tout est garanti. */
+.art-pct-plein{color:#FDFAF5;background:#A8472A}
 /* ── Encart de calcul ──
-   Une formule se lit mal dans un paragraphe. Fond blanc casse, lisere
-   discret, et la formule en DM Sans pour la separer de la prose. */
-.art-calcul{background:#FAF6F0;border:1px solid #E8DDD0;border-radius:12px;padding:20px 24px;margin:22px 0}
-.art-calcul-f{font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.75;color:#1E1812;font-weight:500;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
-.art-calcul-f+.art-calcul-f{margin-top:10px}
-.art-calcul p{font-size:14.5px;line-height:1.8;color:#7A6B5E;margin:12px 0 0}
-
+   Une formule noyee dans un paragraphe ne se lit pas. Elle sort du texte :
+   fond blanc, lisere rouille a gauche comme les encarts d'information, corps
+   plus gros que la prose et chasse fixe pour que les chiffres s'alignent.
+   La ligne d'explication est en brun lisible et non en gris clair : c'est du
+   texte utile, pas une note de bas de page. */
+.art-calcul{background:#fff;border:1.5px solid #E8DDD0;border-left:4px solid #A8472A;border-radius:16px;padding:26px 28px 26px 25.5px;margin:26px 0}
+.art-calcul .art-calcul-f{font-family:'DM Sans',sans-serif;font-size:19px;line-height:1.6;color:#1E1812;font-weight:600;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
+.art-calcul .art-calcul-f+.art-calcul-f{margin-top:12px;padding-top:12px;border-top:1px solid #F0E8DA}
+.art-calcul p:not(.art-calcul-f){font-size:15px;line-height:1.75;color:#4A3728;margin:16px 0 0}
 /* ── Bloc « ce que je fais » ──
    Le retour de terrain, distingue de la synthese scientifique. Teinte verte,
    celle deja utilisee ailleurs pour ce qui ne rapporte rien. */
@@ -269,22 +278,22 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .art-danger p{font-size:17px}
   .art-terrain{padding:20px 20px}
   .art-calcul{padding:18px 18px}
-  /* ── Le tableau s'empile, il ne defile pas ──
-     La largeur minimale de 520 px poussait la page entiere a 606 px : elle
-     debordait au lieu de defiler. La ramener a 0 reglait le debordement mais
-     ecrasait les deux colonnes a 137 px chacune, illisible pour de la prose.
-     Sous 720 px chaque ligne devient donc un bloc : l'intitule en petites
-     capitales rouille, la valeur dessous, pleine largeur. Meme hierarchie que
-     partout ailleurs sur le site, et aucune barre de defilement a decouvrir.
-     L'entete est masque a l'oeil mais reste lu par les lecteurs d'ecran. */
-  .art-tab{min-width:0;font-size:15px}
+  /* ── Le tableau s'empile sous 720 px ──
+     Trois colonnes a 274 px donneraient 90 px chacune : illisible. Chaque
+     ligne devient donc un bloc — la formulation en tete, le chiffre juste
+     dessous, puis l'explication. L'entete est retire de l'oeil mais reste lu
+     par les lecteurs d'ecran. */
+  .art-tab{min-width:0;font-size:16px}
   .art-tab,.art-tab tbody,.art-tab tr,.art-tab th,.art-tab td{display:block;width:auto}
-  .art-tab thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-  .art-tab tbody tr{border-bottom:1px solid #F0E8DA}
-  .art-tab tbody tr:last-child{border-bottom:0}
-  .art-tab tbody th{width:auto;padding:18px 18px 6px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:.02em;color:#A8472A;line-height:1.55;border-bottom:0}
-  .art-tab tbody td{padding:0 18px 18px;border-bottom:0}
-  .art-tab caption{padding:16px 18px 2px}
+  .art-tab thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .art-tab tbody tr{border-top:1px solid #E8DDD0;padding:6px 0 14px}
+  .art-tab tbody tr:first-child{border-top:0}
+  .art-tab tbody th{width:auto;padding:16px 20px 10px;font-weight:600;color:#1E1812;line-height:1.5;border-top:0}
+  .art-tab tbody td{padding:0 20px 6px;border-top:0}
+  .art-tab tbody td:first-of-type{width:auto;text-align:left;padding-bottom:12px}
+  .art-tab caption{padding:18px 20px 4px;font-size:13.5px}
+  .art-calcul{padding:22px 20px 22px 17.5px}
+  .art-calcul .art-calcul-f{font-size:17px}
   .art-sources{padding:28px 22px}
   .art-mise{padding:28px 22px}
   .art-final{padding:36px 22px}

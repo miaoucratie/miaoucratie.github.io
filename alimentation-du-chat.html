@@ -59,6 +59,17 @@
   }
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://miaoucratie.fr/" },
+    { "@type": "ListItem", "position": 2, "name": "Le blog", "item": "https://miaoucratie.fr/blog.html" },
+    { "@type": "ListItem", "position": 3, "name": "Bien lire une étiquette de nourriture pour chat" }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="topbar"><div class="tmenu-wrap"><button aria-expanded="false" class="tmenu-btn" id="tmenuBtn">☰ Menu</button><div class="tmenu-panel" id="tmenuPanel" style="display:none">
@@ -73,17 +84,13 @@
 
 <div class="page-wrap">
 
-<nav class="art-fil" aria-label="Fil d'Ariane">
-<a href="index.html">Accueil</a> <span>›</span> <a href="blog.html">Le blog</a> <span>›</span> Alimentation
-</nav>
-
 <article>
 
 <header class="art-hero">
-<span class="art-eyebrow">Alimentation</span>
+<span class="art-eyebrow">🍽️ Alimentation</span>
 <h1>Bien lire une <em>étiquette</em> de nourriture pour chat</h1>
-<p class="art-hero-sub">Le tout, c'est de regarder la compo. La plupart des gens ne le font pas, et les fabricants le savent. Voici comment je lis une étiquette&nbsp;: ce qui doit y figurer, ce qui doit alerter, et ce sur quoi on peut transiger quand le budget est serré.</p>
-<p class="art-meta">Publié le 29&nbsp;août&nbsp;2026 <span>·</span> 15&nbsp;minutes de lecture <span>·</span> 21&nbsp;sources</p>
+<p class="art-hero-sub">Tout se joue au dos du paquet, dans deux ou trois lignes que personne n'a appris à lire. Voici comment je m'y prends&nbsp;: ce qui doit y figurer, ce qui doit alerter, et ce sur quoi on peut transiger quand le budget est serré.</p>
+<p class="art-meta">Mis à jour le 29&nbsp;août 2026 <span>·</span> 15&nbsp;min de lecture</p>
 </header>
 
 <!-- ══ Encart de methode ══
@@ -100,11 +107,11 @@
 <h2 id="ess-titre">L'essentiel, en trente secondes</h2>
 <p>Cinq gestes, dans l'ordre où je les fais devant un rayon. Chacun mène à sa section.</p>
 <ol>
-<li>Cherchez les mots <strong>«&nbsp;aliment complet&nbsp;»</strong>. Sans eux, la boîte est un accompagnement et non un repas.<br><a href="#nutriments">Pourquoi</a></li>
-<li><strong>«&nbsp;Au bœuf&nbsp;» veut dire 4&nbsp;% de bœuf</strong>, et le pourcentage doit être écrit dans la composition.<br><a href="#denominations">Le tableau</a></li>
-<li><strong>Calculez les glucides</strong>, que personne n'affiche&nbsp;: 100 moins protéines, matières grasses, cellulose, cendres et humidité.<br><a href="#grille">Le calcul</a></li>
-<li><strong>Comparez sur la matière sèche.</strong> Sinon vous comparez de l'eau, et la pâtée perd toujours à tort.<br><a href="#grille">Comment faire</a></li>
-<li><strong>Montez la part d'humide.</strong> C'est le geste dont l'effet est le mieux mesuré, sur les reins comme sur le poids.<br><a href="#eau">Les chiffres</a></li>
+<li>Cherchez les mots <strong>«&nbsp;aliment complet&nbsp;»</strong>. Sans eux, la boîte est un accompagnement et non un repas. <a href="#nutriments">Pourquoi</a></li>
+<li><strong>«&nbsp;Au bœuf&nbsp;» veut dire 4&nbsp;% de bœuf</strong>, et ce pourcentage doit figurer noir sur blanc dans la liste des composants. <a href="#denominations">Le tableau</a></li>
+<li><strong>Calculez les glucides</strong>, que personne n'affiche&nbsp;: 100 moins les protéines, les matières grasses, la cellulose, les cendres et l'humidité déclarée. <a href="#grille">Le calcul</a></li>
+<li><strong>Comparez sur la matière sèche.</strong> Sinon vous comparez de l'eau, et la pâtée perd toujours à tort. <a href="#grille">Comment faire</a></li>
+<li><strong>Montez la part d'humide.</strong> C'est le geste dont l'effet est le mieux mesuré, sur les reins comme sur le poids. <a href="#eau">Les chiffres</a></li>
 </ol>
 </section>
 
@@ -129,7 +136,7 @@
 <h2 id="nutriments">Ce que le chat doit trouver dans sa gamelle</h2>
 <p class="art-chapo">Carnivore strict, ça n'est pas une façon de parler. C'est une liste de molécules qu'il ne sait pas fabriquer.</p>
 
-<p>Un chien mal nourri maigrit. Un chat mal nourri développe des maladies précises, parce que son métabolisme a perdu, au fil de l'évolution, des voies de synthèse que les omnivores ont gardées. Il ne les récupérera pas. Voici celles qui comptent, une étiquette à la main.⁠<a class="art-ref" href="#s5">[5]</a></p>
+<p>Un chien mal nourri maigrit. Un chat mal nourri développe des maladies précises, parce que son métabolisme a perdu, au fil de l'évolution, des voies de synthèse que les omnivores ont gardées. Il ne les récupérera pas. Voici celles qui comptent, quand on a une étiquette sous les yeux.⁠<a class="art-ref" href="#s5">[5]</a></p>
 
 <ul>
 <li><strong>La taurine.</strong> Le chat n'en fabrique pratiquement pas. Elle ne se trouve que dans les tissus animaux. Sa carence donne une dégénérescence de la rétine et une cardiomyopathie dilatée, deux maladies dont on sait aujourd'hui qu'elles étaient causées par les premiers aliments industriels mal formulés.</li>
@@ -158,17 +165,17 @@
 
 <div class="art-tab-wrap" tabindex="0" role="region" aria-labelledby="tab-denom">
 <table class="art-tab">
-<caption id="tab-denom">Ce que garantit chaque formulation, pour l'ingrédient mis en avant. Exemple pris avec le bœuf.</caption>
+<caption id="tab-denom">Exemple pris avec le bœuf. La règle vaut pour n'importe quel ingrédient mis en avant.</caption>
 <thead>
-<tr><th scope="col">Ce qui est écrit sur la boîte</th><th scope="col">Ce que ça garantit</th></tr>
+<tr><th scope="col">Ce qui est écrit sur la boîte</th><th scope="col">Bœuf garanti</th><th scope="col">Ce que ça veut dire</th></tr>
 </thead>
 <tbody>
-<tr><th scope="row">«&nbsp;saveur bœuf&nbsp;», «&nbsp;goût bœuf&nbsp;»</th><td><span class="art-chiffre">0&nbsp;%</span> de bœuf. Le goût vient d'un arôme, qui doit apparaître dans les additifs.</td></tr>
-<tr><th scope="row">«&nbsp;aromatisé au bœuf&nbsp;»</th><td>Plus de 0&nbsp;%, mais <span class="art-chiffre">moins de 4&nbsp;%</span>.</td></tr>
-<tr><th scope="row">«&nbsp;au bœuf&nbsp;», «&nbsp;avec du bœuf&nbsp;», «&nbsp;contient du bœuf&nbsp;»</th><td>Au moins <span class="art-chiffre">4&nbsp;%</span>.</td></tr>
-<tr><th scope="row">«&nbsp;riche en bœuf&nbsp;», «&nbsp;extra bœuf&nbsp;»</th><td>Au moins <span class="art-chiffre">14&nbsp;%</span>.</td></tr>
-<tr><th scope="row">«&nbsp;Bœuf&nbsp;», «&nbsp;Menu au bœuf&nbsp;», ou le bœuf comme nom du produit</th><td>Au moins <span class="art-chiffre">26&nbsp;%</span>.</td></tr>
-<tr><th scope="row">«&nbsp;tout au bœuf&nbsp;», «&nbsp;100&nbsp;% bœuf&nbsp;»</th><td>Aucun autre ingrédient, hors additifs et minéraux nécessaires à l'équilibre, et l'eau de fabrication.</td></tr>
+<tr><th scope="row">«&nbsp;saveur bœuf&nbsp;»<br>«&nbsp;goût bœuf&nbsp;»</th><td><span class="art-pct art-pct-nul">0&nbsp;%</span></td><td>Aucun bœuf. Le goût vient d'un arôme, qui doit apparaître dans les additifs.</td></tr>
+<tr><th scope="row">«&nbsp;aromatisé au bœuf&nbsp;»</th><td><span class="art-pct art-pct-nul">&lt;&nbsp;4&nbsp;%</span></td><td>Il y en a, mais moins de quatre pour cent.</td></tr>
+<tr><th scope="row">«&nbsp;au bœuf&nbsp;»<br>«&nbsp;avec du bœuf&nbsp;»<br>«&nbsp;contient du bœuf&nbsp;»</th><td><span class="art-pct">4&nbsp;%</span></td><td>Quatre pour cent au minimum. Rien n'oblige à en mettre plus.</td></tr>
+<tr><th scope="row">«&nbsp;riche en bœuf&nbsp;»<br>«&nbsp;extra bœuf&nbsp;»</th><td><span class="art-pct">14&nbsp;%</span></td><td>Quatorze pour cent au minimum.</td></tr>
+<tr><th scope="row">«&nbsp;bœuf&nbsp;»<br>«&nbsp;menu au bœuf&nbsp;»<br>le bœuf comme nom du produit</th><td><span class="art-pct">26&nbsp;%</span></td><td>Vingt-six pour cent au minimum.</td></tr>
+<tr><th scope="row">«&nbsp;tout au bœuf&nbsp;»<br>«&nbsp;100&nbsp;% bœuf&nbsp;»</th><td><span class="art-pct art-pct-plein">100&nbsp;%</span></td><td>Aucun autre ingrédient, hors additifs, minéraux d'équilibre et eau de fabrication.</td></tr>
 </tbody>
 </table>
 </div>
@@ -268,7 +275,7 @@
 
 <p>S'y ajoutent la stérilisation, l'âge, la fréquence des friandises et la gamelle laissée pleine toute la journée.</p>
 
-<p>Le mécanisme n'est pas l'amidon en lui-même. Une croquette est sèche&nbsp;: à 8&nbsp;% d'humidité, elle contient 92&nbsp;% de matière sèche contre 20&nbsp;% pour une pâtée à 80&nbsp;%. À poids égal dans la gamelle, elle apporte donc environ quatre fois plus de matière nourrissante, et autant de calories. </p>
+<p>Ce n'est pas seulement une affaire d'amidon. Une croquette est sèche&nbsp;: à 8&nbsp;% d'humidité, elle contient 92&nbsp;% de matière sèche contre 20&nbsp;% pour une pâtée à 80&nbsp;%. À poids égal dans la gamelle, elle apporte donc environ quatre fois plus de matière nourrissante, et autant de calories. </p>
 
 <p>Et elle se laisse en libre-service, ce qu'une pâtée ne permet pas. C'est le format autant que la recette.</p>
 
@@ -283,7 +290,7 @@
 
 <p>Ce qui abîme les dents d'un chat, c'est la <strong>plaque</strong>, un film bactérien qui se forme au collet de la dent et déclenche la maladie parodontale. C'est elle qu'il faut retirer, et elle revient tous les jours.</p>
 
-<p><strong>Le geste de référence est le brossage quotidien</strong>, avec une brosse et un dentifrice destinés au chat, jamais un dentifrice humain. C'est la seule mesure dont l'efficacité soit solidement établie, et elle est plus efficace sur les dents de devant que sur le fond de la bouche.⁠<a class="art-ref" href="#s11">[11]</a></p>
+<p><strong>Le geste de référence est le brossage quotidien</strong>, avec une brosse et un dentifrice destinés au chat, jamais un dentifrice humain. C'est la seule mesure dont l'efficacité soit solidement établie, et elle agit surtout sur les dents de devant.⁠<a class="art-ref" href="#s11">[11]</a></p>
 
 <p>Côté alimentation, ce qui a un effet mesuré porte un label&nbsp;: le <strong>VOHC</strong>, décerné après des essais indépendants qui quantifient la réduction de plaque ou de tartre. Ces croquettes-là sont conçues pour cisailler la dent au lieu d'éclater à sa pointe. </p>
 
@@ -304,7 +311,7 @@
 
 <p>Une étude a comparé 77&nbsp;croquettes pour chats du commerce&nbsp;: 42 avec céréales, 35 sans. En moyenne, les sans-céréales sont effectivement un peu moins riches en glucides&nbsp;: 64 grammes contre 86 pour 1&nbsp;000&nbsp;kcal. Mais les fourchettes se recouvrent largement&nbsp;: il existe des sans-céréales aussi chargées, et parfois plus, que des croquettes à céréales.⁠<a class="art-ref" href="#s8">[8]</a></p>
 
-<p>C'était prévisible. Puisque l'extrusion réclame de l'amidon, retirer le blé et le maïs oblige à les remplacer&nbsp;: par des pois, des lentilles, des pois chiches, de la pomme de terre, de la patate douce, du tapioca. On change de source d'amidon, on ne supprime pas l'amidon.</p>
+<p>C'était prévisible. Puisque l'extrusion réclame de l'amidon, retirer le blé et le maïs oblige à les remplacer&nbsp;: par des pois, des lentilles, des pois chiches, de la pomme de terre, de la patate douce, du tapioca. On change de source d'amidon, on n'en supprime pas un gramme.</p>
 
 <p>Sur le volet santé, l'inquiétude qui a circulé mérite une réponse claire. L'agence américaine du médicament a enquêté quatre ans et demi sur un lien possible entre régimes sans céréales et cardiomyopathie dilatée. Fin 2022, elle a clos ses mises à jour, en indiquant que les signalements accumulés ne suffisaient pas à établir un lien de cause à effet et qu'aucune information définitive n'indiquait un danger propre à ces aliments.⁠<a class="art-ref" href="#s9">[9]</a> </p>
 
@@ -416,7 +423,7 @@
 <h2 id="lait">Le lait de vache, chaton ou pas</h2>
 <p class="art-chapo">Non. Et ce n'est pas discutable.</p>
 
-<p>La lactase est l'enzyme qui coupe le lactose. Chez le chat, son activité s'effondre au sevrage&nbsp;: c'est mesuré le long du tube digestif, et c'est lié à l'âge.⁠<a class="art-ref" href="#s15">[15]</a> Passé les premières semaines, l'essentiel de la capacité à digérer le lactose est perdu, et cette perte est définitive.</p>
+<p>La lactase est l'enzyme qui coupe le lactose. Chez le chat, son activité s'effondre au sevrage&nbsp;: c'est mesuré le long du tube digestif, et c'est lié à l'âge.⁠<a class="art-ref" href="#s15">[15]</a> Passé les premières semaines, la capacité à digérer le lactose est perdue pour de bon.</p>
 
 <p>Le lactose non digéré reste dans l'intestin, appelle l'eau par osmose, et donne une diarrhée. Chez un chat adulte, c'est une mauvaise soirée. Chez un chaton, une diarrhée n'est pas un désagrément&nbsp;: c'est un risque de déshydratation, et ça va vite.</p>
 
@@ -428,7 +435,7 @@
 
 <p>La soucoupe de lait sur le pas de la porte est une image d'Épinal. Elle date d'une époque où l'on donnait aux chats du lait cru entier, plus gras et moins riche en lactose que le demi-écrémé UHT d'aujourd'hui, et où personne ne comptait les diarrhées. </p>
 
-<p>Si vous tenez au geste, il existe des laits sans lactose pour chats. Ils ne servent à rien sur le plan nutritionnel, mais ils ne font pas de mal.</p>
+<p>Si vous tenez au geste, il existe des laits sans lactose pour chats. Sur le plan nutritionnel ils n'apportent rien, mais ils ne présentent aucun risque.</p>
 
 <h2 id="objets">Deux objets qui changent un repas</h2>
 <p class="art-chapo">Ils reviennent dans presque toutes mes pré-visites. Voici ce que j'en pense, en tant que personne qui les trouve déjà installés chez vous.</p>
@@ -446,7 +453,7 @@
 
 <p>Les avis négatifs que vous lirez portent presque tous sur l'installation. J'utilise le mien depuis un moment&nbsp;: l'application est simple, et je l'ai pilotée sans y penser depuis un pays lointain. Celui-ci est en inox, ce qui compte pour un objet qui contient de la nourriture tous les jours et qui se nettoie souvent.</p>
 
-<p><a class="art-achat" href="https://amzlink.to/az0IkhbMYlbWs" rel="sponsored noopener" target="_blank">Le distributeur automatique en inox, programmable</a></p>
+<p><a class="btn-primary" href="https://amzlink.to/az0IkhbMYlbWs" rel="sponsored noopener" target="_blank">Le distributeur automatique en inox, programmable</a></p>
 
 <p>Ce qu'il fait moins bien, et il faut le savoir&nbsp;: il ne distribue que du sec, donc il travaille contre l'hydratation, précisément le point le plus important de cet article. Il peut se bloquer sur une croquette de travers.</p>
 
@@ -467,11 +474,11 @@
 
 <p>Le premier est en inox, double, et coûte cher. C'est un investissement sur le coup, mais il est increvable et se nettoie pendant des années. C'est celui que je sors pour les chats qui mangent trop vite, et il fait très bien ce travail.</p>
 
-<p><a class="art-achat" href="https://amzlink.to/az0FLx5Omypby" rel="sponsored noopener" target="_blank">Le tapis à lécher double, en inox</a></p>
+<p><a class="btn-primary" href="https://amzlink.to/az0FLx5Omypby" rel="sponsored noopener" target="_blank">Le tapis à lécher double, en inox</a></p>
 
 <p>Le second est en silicone et beaucoup moins cher. Je l'aime moins, mais il fait le travail, et c'est la bonne porte d'entrée si vous voulez essayer sans y mettre le prix du premier.</p>
 
-<p><a class="art-achat" href="https://amzlink.to/az07dto3aro93" rel="sponsored noopener" target="_blank">Le tapis à lécher Bugalugs, en silicone</a></p>
+<p><a class="btn-primary" href="https://amzlink.to/az07dto3aro93" rel="sponsored noopener" target="_blank">Le tapis à lécher Bugalugs, en silicone</a></p>
 
 <p>Dans les deux cas, ce n'est pas un objet miracle et ça ne remplace pas du jeu. C'est une façon de faire durer un repas plus longtemps que dix secondes, et de transformer une gamelle en occupation.</p>
 
@@ -513,9 +520,8 @@
 
 <section class="art-mise">
 <h2>Une mise au point</h2>
-<p>Je suis cat-sitter, titulaire de l'ACACED, et j'ai été famille d'accueil pendant une dizaine d'années. Ce que je vous donne ici, c'est une méthode de lecture d'étiquette et une synthèse de ce que dit la littérature. Ce n'est pas un avis vétérinaire, et ça ne remplace pas une visite chez le vôtre.</p>
+<p>Je vous donne une grille de lecture.</p>
 <p>Un chat malade, en surpoids, diabétique, insuffisant rénal ou sujet aux calculs a besoin d'une ration décidée avec son vétérinaire. Les règles générales ne s'y appliquent pas toujours, et certaines s'y appliquent à l'envers.</p>
-<p>Un chat qui mange moins, qui boit beaucoup plus que d'habitude, qui maigrit ou qui se cache, ça relève du vétérinaire et pas d'un changement de croquettes. Si je vois ça pendant une garde, je vous appelle.</p>
 </section>
 
 <!-- ══ Bloc final ══
