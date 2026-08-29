@@ -7,6 +7,8 @@
   "scripts": {
     "test": "node --test",
     "qa": "node qa/qa.mjs",
+    "seo": "node qa/seo.mjs",
+    "seo:strict": "node qa/seo.mjs --strict",
     "qa:update": "node qa/qa.mjs --update",
     "postinstall": "playwright install chromium"
   },
