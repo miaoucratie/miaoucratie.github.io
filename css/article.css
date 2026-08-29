@@ -55,6 +55,15 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-methode p:last-child{margin-bottom:0}
 .art-methode strong{font-weight:600;color:#1E1812}
 
+/* ── Etiquette de section ──
+   Reprise telle quelle de « ce que j'utilise » : l'etiquette vit dans sa
+   propre ligne AU-DESSUS du titre, jamais dedans. Dans un h3 elle polluerait
+   le titre pour les moteurs comme pour les lecteurs d'ecran, qui liraient
+   « Le tapis a lecher Lien affilie ».
+   L'information est portee par le mot, jamais par la couleur seule. */
+.art-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:34px 0 10px}
+.art-tag{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap;color:#4A3728;background:rgba(184,155,128,.22)}
+.art-head+h3{margin-top:0}
 /* ── Bloc de navigation de l'article ──
    Un seul point d'entree, et il est cliquable. Chaque geste mene a la section
    qui l'explique : le numero, le texte et toute la ligne forment une seule
