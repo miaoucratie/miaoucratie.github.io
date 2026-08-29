@@ -73,7 +73,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-essentiel li{counter-increment:ess;position:relative;padding-left:38px;font-size:16.5px;line-height:1.75;color:#1E1812;text-wrap:pretty}
 .art-essentiel li::before{content:counter(ess);position:absolute;left:0;top:.1em;width:26px;height:26px;border-radius:50%;background:#A8472A;color:#FDFAF5;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
 .art-essentiel li a{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
-.art-essentiel li a::before{content:"92";font-size:14px}
+.art-essentiel li a::before{content:"→";font-size:14px}
 .art-essentiel li a:hover{text-decoration-color:#A8472A}
 /* Le renvoi passe sur sa propre ligne : dans le fil du texte il ne pourrait pas
    tenir 44 px de haut sans casser l'interligne du paragraphe. */
@@ -97,7 +97,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 
 /* Le lien produit tient 44 px de haut, cible tactile minimale. */
 .art-achat{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
-.art-achat::before{content:"92";margin-right:7px}
+.art-achat::before{content:"→";margin-right:7px}
 .art-achat:hover{text-decoration-color:#A8472A}
 
 /* ── Sommaire ──
@@ -117,7 +117,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
    l'interligne compense. La regle posee sur la page presse tient ici aussi,
    on ne rebride pas la colonne. */
 .art-corps{padding-left:32px;padding-right:32px}
-.art-corps h2{margin:56px 0 18px;scroll-margin-top:24px}
+.art-corps h2{margin:56px 0 18px;scroll-margin-top:70px}
 .art-corps h2:first-child{margin-top:0}
 .art-corps h3{font-size:22px !important;margin:34px 0 12px}
 .art-corps p{font-size:16.5px;line-height:1.9;color:#1E1812;margin-bottom:18px;text-wrap:pretty}
@@ -260,6 +260,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .art-hero{padding-left:22px;padding-right:22px}
   .art-corps{padding-left:22px;padding-right:22px}
   .art-methode{padding:20px 22px 20px 19.5px}
+  .art-corps h2{scroll-margin-top:96px}
   .art-aff{padding:20px 20px 20px 17.5px}
   .art-essentiel{padding:24px 22px}
   .art-somm{padding:24px 22px}
