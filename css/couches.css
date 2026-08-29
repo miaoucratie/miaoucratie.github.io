@@ -133,9 +133,14 @@ body .tarifs-hero h1 {
 body .hero-title,
 body .tarifs-hero h1,
 body .cgv-title,
-body.carte-page .zone-header h2,
-body.calculateur-page h1 {
+body.carte-page .zone-header h2 {
   font-size: clamp(52px, 7vw, 88px) !important;
+}
+/* Le calculateur est une page-outil : sa carte fait 560 px de large, un titre
+   de heros a 88px l'ecraserait. Il garde la fonte et la couleur des autres
+   titres, mais une taille dimensionnee pour l'usage. */
+body.calculateur-page h1 {
+  font-size: clamp(30px, 4vw, 42px) !important;
 }
 body h2,
 body .section-title,
@@ -425,6 +430,44 @@ body.cgv-page .brand-rule {
   .avis-rating { font-size: 15px; color: var(--mid); margin: 14px 0 28px; }
   .avis-rating .avis-stars { color: var(--rust); letter-spacing: 2px; }
   .avis-rating a { color: var(--rust); text-underline-offset: 2px; }
+
+  /* ── Mention presse du hero ──
+     Elle suit la note Google sur la meme ligne, separee par un point median.
+     Quand la largeur ne suffit plus, elle passe a la ligne SANS le separateur :
+     un point median en debut de ligne se lit comme une coquille. */
+  .hero-presse { white-space: nowrap; }
+  .hero-presse::before { content: "· "; }
+  @media (max-width: 560px) {
+    .hero-presse { display: block; margin-top: 2px; }
+    .hero-presse::before { content: none; }
+  }
+
+  /* ── Liens poses dans un paragraphe ──
+     La convention du site est le rouille souligne, deja portee par
+     « .step p a » et « .avis-rating a ». Sans cette regle, un lien ecrit
+     dans un paragraphe de contenu ressort en bleu par defaut du navigateur. */
+  .cred-item p a,
+  .acc-content p a,
+  .acc-content li a,
+  .pcard p a,
+  .pcard li a,
+  .note a,
+  .t-cta p a {
+    color: var(--rust, #A8472A);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    transition: color .2s;
+  }
+  .cred-item p a:hover,
+  .acc-content p a:hover,
+  .acc-content li a:hover,
+  .pcard p a:hover,
+  .pcard li a:hover,
+  .note a:hover,
+  .t-cta p a:hover {
+    color: var(--deep, #1E1812);
+  }
   .avis-carousel { display: flex; align-items: center; gap: 10px; }
   .avis-grid { flex: 1 1 auto; min-width: 0; display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 6px 2px 12px; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; }
   .avis-grid::-webkit-scrollbar { width: 0; height: 0; display: none; }
@@ -444,3 +487,31 @@ body.cgv-page .brand-rule {
   @media (max-width: 860px) { .avis-card { flex-basis: calc((100% - 20px) / 2); } }
   @media (max-width: 768px) { .avis-nav { display: none; } }
   @media (max-width: 560px) { .avis-card { flex-basis: 100%; padding: 24px; } }
+
+/* ── BARRE DU HAUT EN MOBILE ──────────────────────────────────────────
+   Hors mobile, « .topbar-links » porte « margin-left: auto » et
+   « justify-content: flex-end » : les liens se posent a droite, sur une
+   seule ligne, et c'est le bon rendu.
+
+   Des que la barre manque de place elle passe a deux lignes — et ces deux
+   memes regles poussent alors la seconde ligne vers la droite, avec un
+   retrait de 34 px qui ne correspond a aucune marge de la page. « Menu »
+   se retrouve seul a gauche, les liens colles au bord oppose, sans rien
+   qui les aligne. Mesure sur iPhone, a 390 px de large.
+
+   En colonne, les deux lignes reprennent le meme bord que le reste du
+   site, et la barre ne depend plus d'un retour a la ligne subi. */
+@media (max-width: 560px) {
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .topbar-links {
+    margin-left: 0;
+    justify-content: flex-start;
+    gap: 6px 16px;
+  }
+}
