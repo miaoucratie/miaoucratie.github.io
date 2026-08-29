@@ -59,6 +59,27 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-methode p:last-child{margin-bottom:0}
 .art-methode strong{font-weight:600;color:#1E1812}
 
+/* ── L'essentiel ──
+   Le bloc que lit celui qui ne lira pas l'article. Cinq gestes, chacun
+   cliquable vers la section qui le detaille. Il est place avant le sommaire :
+   un sommaire annonce des titres, celui-ci donne deja la reponse.
+
+   Chiffres en chasse fixe et en rouille : ils sont le point d'ancrage de
+   l'oeil, et c'est ce qu'on retient d'un aliment. */
+.art-essentiel{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:30px 32px;margin-bottom:24px}
+.art-essentiel h2{font-size:15px !important;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.art-essentiel>p{font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;margin-bottom:20px;line-height:1.7}
+.art-essentiel ol{list-style:none;counter-reset:ess;margin:0;padding:0;display:grid;gap:14px}
+.art-essentiel li{counter-increment:ess;position:relative;padding-left:38px;font-size:16.5px;line-height:1.75;color:#1E1812;text-wrap:pretty}
+.art-essentiel li::before{content:counter(ess);position:absolute;left:0;top:.1em;width:26px;height:26px;border-radius:50%;background:#A8472A;color:#FDFAF5;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
+.art-essentiel li a{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
+.art-essentiel li a::before{content:"92";font-size:14px}
+.art-essentiel li a:hover{text-decoration-color:#A8472A}
+/* Le renvoi passe sur sa propre ligne : dans le fil du texte il ne pourrait pas
+   tenir 44 px de haut sans casser l'interligne du paragraphe. */
+.art-essentiel li br{display:block;content:"";margin-top:2px}
+.art-essentiel strong{font-weight:600}
+
 /* ── Sommaire ──
    L'article est long. Un lecteur qui cherche « cendres » doit pouvoir y aller
    sans faire defiler six ecrans. Liste ordonnee : la numerotation est portee
@@ -219,6 +240,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .art-hero{padding-left:22px;padding-right:22px}
   .art-corps{padding-left:22px;padding-right:22px}
   .art-methode{padding:20px 22px 20px 19.5px}
+  .art-essentiel{padding:24px 22px}
   .art-somm{padding:24px 22px}
   .art-retenir{padding:20px 20px}
   .art-danger{padding:18px 18px}
