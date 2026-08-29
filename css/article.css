@@ -225,10 +225,22 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .art-danger p{font-size:17px}
   .art-terrain{padding:20px 20px}
   .art-calcul{padding:18px 18px}
-  /* La largeur minimale de 520 px poussait la page a 606 px : elle deborde au lieu de defiler. */
-  .art-tab{min-width:0;font-size:14px}
-  .art-tab th,.art-tab td{padding:10px 12px}
-  .art-tab caption{padding:16px 16px 0}
+  /* ── Le tableau s'empile, il ne defile pas ──
+     La largeur minimale de 520 px poussait la page entiere a 606 px : elle
+     debordait au lieu de defiler. La ramener a 0 reglait le debordement mais
+     ecrasait les deux colonnes a 137 px chacune, illisible pour de la prose.
+     Sous 720 px chaque ligne devient donc un bloc : l'intitule en petites
+     capitales rouille, la valeur dessous, pleine largeur. Meme hierarchie que
+     partout ailleurs sur le site, et aucune barre de defilement a decouvrir.
+     L'entete est masque a l'oeil mais reste lu par les lecteurs d'ecran. */
+  .art-tab{min-width:0;font-size:15px}
+  .art-tab,.art-tab tbody,.art-tab tr,.art-tab th,.art-tab td{display:block;width:auto}
+  .art-tab thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .art-tab tbody tr{border-bottom:1px solid #F0E8DA}
+  .art-tab tbody tr:last-child{border-bottom:0}
+  .art-tab tbody th{width:auto;padding:18px 18px 6px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:.02em;color:#A8472A;line-height:1.55;border-bottom:0}
+  .art-tab tbody td{padding:0 18px 18px;border-bottom:0}
+  .art-tab caption{padding:16px 18px 2px}
   .art-sources{padding:28px 22px}
   .art-mise{padding:28px 22px}
   .art-final{padding:36px 22px}
