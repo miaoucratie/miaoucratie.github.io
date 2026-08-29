@@ -62,10 +62,22 @@ body{min-height:100vh;display:flex;flex-direction:column}
    sa formule. Les deux sont ici, en haut, avant la premiere carte.
    Le fond sable et le liseré rouille le detachent du texte courant sans en
    faire une alerte : c'est une information, pas un avertissement. */
-.cq-aff{background:#F0E8DA;border:1.5px solid #E8DDD0;border-left:4px solid #A8472A;border-radius:14px;padding:22px 26px;margin-bottom:48px}
+.cq-aff{background:#F0E8DA;border:1.5px solid #E8DDD0;border-left:4px solid #A8472A;border-radius:14px;padding:24px 32px 24px 29.5px;margin-bottom:48px}
 .cq-aff p{font-size:14.5px;line-height:1.8;color:#4A3728;margin-bottom:10px}
 .cq-aff p:last-child{margin-bottom:0}
 .cq-aff strong{font-weight:600;color:#1E1812}
+
+/* ── Retrait horizontal, regle unique ──
+   Tous les blocs de premier niveau partagent le meme retrait : 32 px sur
+   bureau, 22 px sous 720 px. Cartes, encart d'affiliation, blocs sable, bloc
+   final, et le titre de la section « A lire » qui n'est pas une carte mais
+   doit s'aligner sur le contenu des cartes qui la suivent.
+
+   La page en comptait cinq valeurs differentes, de 26 a 40 px : les titres de
+   section ne tombaient pas sur la meme verticale que le texte des fiches, et
+   ca se voyait. Toute nouvelle boite reprend 32 px et 22 px, sans exception.
+   Le seul retrait different est celui de l'encart de danger, qui est imbrique
+   dans une carte et se mesure donc par rapport a elle. */
 
 /* ── Liste des produits ── */
 .cq-list{display:grid;gap:20px;margin-bottom:56px}
@@ -128,7 +140,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
    commercant, le premier ne coute rien et le second finance une association.
    Fond blanc, contrairement au bloc de mise au point : ce n'est pas un
    avertissement, c'est du conseil. */
-.cq-hors{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:36px 40px;margin-bottom:56px}
+.cq-hors{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:36px 32px;margin-bottom:56px}
 .cq-hors h2{margin-bottom:12px}
 .cq-hors p{font-size:16px;color:#1E1812;margin-bottom:16px;line-height:1.9;text-wrap:pretty}
 .cq-hors p:last-child{margin-bottom:0}
@@ -139,6 +151,15 @@ body{min-height:100vh;display:flex;flex-direction:column}
    d'une canne a peche. La section reutilise .cq-list et .cq-card : meme
    vocabulaire, aucun style de carte en double. */
 .cq-books{margin-bottom:56px}
+.cq-books h2,.cq-books>p{padding-left:32px;padding-right:32px}
+/* ── Encart association ──
+   Le seul lien de la page qui finance des chats plutot qu'une commission :
+   il a droit au meme bouton que les liens Amazon, sinon il se lit comme une
+   note de bas de page. Teinte verte, celle deja utilisee par l'etiquette
+   « sans affiliation », pour que l'oeil fasse le rapprochement. */
+.cq-asso{background:rgba(122,158,142,.12);border:1px solid rgba(122,158,142,.4);border-radius:14px;padding:22px 24px;margin-top:22px}
+.cq-asso p{font-size:16px;line-height:1.8;color:#1E1812;margin-bottom:16px;text-wrap:pretty}
+.cq-asso .cq-note{margin-left:14px}
 .cq-books h2{margin-bottom:10px}
 .cq-books>p{font-size:15px;color:#7A6B5E;line-height:1.9;margin-bottom:24px}
 .cq-books .cq-list{margin-bottom:0}
@@ -151,7 +172,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
    Fond clair et non sombre : la couche TITLES-V5 impose « color: #1E1812 » a
    tout h2 du site, un h2 pose sur #1E1812 serait invisible. C'est la panne
    qu'avait le pied de page de reservation.html. */
-.cq-mise{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:36px 40px;margin-bottom:48px}
+.cq-mise{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:36px 32px;margin-bottom:48px}
 .cq-mise h2{margin-bottom:12px}
 .cq-mise p{font-size:15px;color:#4A3728;margin-bottom:16px;line-height:1.9}
 .cq-mise p:last-child{margin-bottom:0}
@@ -194,10 +215,13 @@ body{min-height:100vh;display:flex;flex-direction:column}
 @media (max-width:720px){
   .page-wrap{padding:36px 20px 60px}
   .cq-card{padding:24px 22px}
-  .cq-aff{padding:20px 20px}
+  .cq-aff{padding:20px 22px 20px 19.5px}
   .cq-danger{padding:18px 18px}
   .cq-danger p{font-size:17px}
-  .cq-mise{padding:28px 24px}
+  .cq-mise{padding:28px 22px}
+  .cq-hors{padding:28px 22px}
+  .cq-final{padding:36px 22px}
+  .cq-books h2,.cq-books>p{padding-left:22px;padding-right:22px}
   .cq-actions{flex-direction:column;align-items:stretch}
   .cq-actions .btn-primary{justify-content:center}
   .cq-final-cta{flex-direction:column;align-items:stretch}
@@ -755,7 +779,13 @@ body{min-height:100vh;display:flex;flex-direction:column}
 <p>Le jeu de réflexion le plus simple se monte en deux minutes : des rouleaux de papier toilette debout, serrés dans un carton, et quelques friandises au fond. Le chat doit trouver comment les récupérer, et ça l'occupe bien plus longtemps qu'un jouet acheté.</p>
 <p>Mes chats préfèrent tout ça aux jouets sophistiqués, et je n'y peux rien.</p>
 <p>Pour les coussins à câliner, si vous ne cousez pas plus que moi, passez par une association de protection féline. Des bénévoles les fabriquent à la main, ils sont jolis, ils tiennent, et les ventes financent les soins des animaux recueillis.</p>
-<p>La mienne, c'est <a href="https://www.moustashop.moustaches-et-cie.org/jouets-a-la-valeriane-ou-herbe-aux-chats/2103-3004-coussin-a-la-valeriane.html" rel="noopener" target="_blank" aria-label="Voir le coussin à la valériane sur la boutique de Moustaches et Compagnie, lien sans affiliation, nouvelle fenêtre">Moustaches et Compagnie</a>. Ses coussins à la valériane sont cousus main et coûtent 4 €, et ce lien ne me rapporte rien.</p>
+<div class="cq-asso">
+<p>La mienne, c'est <strong>Moustaches et Compagnie</strong>. Ses coussins à la valériane sont cousus main et coûtent 4 €. Les ventes partent aux soins des chats recueillis, et ce lien ne me rapporte rien.</p>
+<div class="cq-actions">
+<a class="btn-primary" href="https://www.moustashop.moustaches-et-cie.org/jouets-a-la-valeriane-ou-herbe-aux-chats/2103-3004-coussin-a-la-valeriane.html" rel="noopener" target="_blank" aria-label="Voir le coussin à la valériane sur la boutique de Moustaches et Compagnie, lien sans affiliation, nouvelle fenêtre">Voir le coussin à la valériane</a>
+<span class="cq-note">Boutique de l'association</span>
+</div>
+</div>
 </section>
 
 <!-- ══ A lire ══
@@ -764,7 +794,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
      fiche est volontairement sobre, sans trait d'esprit ni emoji. -->
 <section class="cq-books">
 <h2>À lire</h2>
-<p>Quatre livres qui ne se donnent pas à un chat, mais qui changent la façon de s'en occuper. Dans l'ordre où ils servent : débuter, comprendre, accompagner. Le dernier n'existe qu'en anglais, c'est signalé.</p>
+<p>Quatre livres qui ne se donnent pas à un chat mais changent la façon de s'en occuper, dans l'ordre où ils servent : débuter, comprendre, accompagner.</p>
 <div class="cq-list">
 
 <!-- ══ 17 : Absolument chat ! ══ -->
