@@ -354,6 +354,10 @@ body.cgv-page .brand-rule {
 .footer-bar .footer-links a {
   color: var(--sand,#B89B80); text-decoration: none; font-size: 13px;
   font-family: 'DM Sans', sans-serif; transition: color .2s;
+  /* Cible tactile de 44 px : ces liens n'en faisaient que 22, sur les treize
+     pages. Le inline-flex ne touche ni a la police ni a l'alignement du texte,
+     il donne seulement de la hauteur a la zone cliquable. */
+  display: inline-flex; align-items: center; min-height: 44px;
 }
 .footer-bar .footer-links a:hover { color: var(--peach,#F2CDB0); }
 /* .55 et pas .4 : a .4 les liens legaux rendaient 2,52:1 sur le fond sombre,

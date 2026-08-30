@@ -154,6 +154,25 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-pct-nul{color:#7A6B5E;background:rgba(122,107,94,.12)}
 /* Le maximum : plein, c'est le seul cas ou tout est garanti. */
 .art-pct-plein{color:#FDFAF5;background:#A8472A}
+/* ── Figures ──
+   Un visuel n'est pas une decoration : il remplace un paragraphe que le
+   lecteur aurait relu deux fois. Il est en SVG inline, donc sans requete
+   supplementaire, il suit la largeur du cadre et reste net a tout zoom.
+   role="img" plus <title> et <desc> : un lecteur d'ecran entend la meme
+   information que ce que l'oeil voit. */
+.art-figure{margin:26px 0 30px;background:#fff;border:1.5px solid #E8DDD0;border-radius:16px;padding:26px 28px}
+.art-figure figcaption{margin-top:20px;padding-top:18px;border-top:1px solid #F0E8DA;font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:1.75;color:#4A3728}
+.art-fig-bloc+.art-fig-bloc{margin-top:26px}
+.art-fig-titre{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#7A6B5E;margin:0 0 14px}
+.art-fig-apres .art-fig-titre{color:#A8472A}
+.art-fig-ligne{display:grid;grid-template-columns:82px 1fr 52px;align-items:center;gap:12px;margin-bottom:10px}
+.art-fig-ligne:last-child{margin-bottom:0}
+.art-fig-nom{font-family:'DM Sans',sans-serif;font-size:15px;color:#1E1812}
+.art-fig-piste{height:20px;border-radius:999px;background:#F0E8DA;overflow:hidden}
+.art-fig-barre{height:100%;border-radius:999px;background:#B89B80}
+.art-fig-apres .art-fig-barre{background:#A8472A}
+.art-fig-val{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:#7A6B5E;text-align:right;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
+.art-fig-apres .art-fig-val{color:#A8472A}
 /* ── Encart de calcul ──
    Une formule noyee dans un paragraphe ne se lit pas. Elle sort du texte :
    fond blanc, lisere rouille a gauche comme les encarts d'information, corps
@@ -175,10 +194,23 @@ body{min-height:100vh;display:flex;flex-direction:column}
 /* ── Sources ──
    Numerotees, avec le renvoi depuis le corps du texte. Une liste ordonnee
    suffit : le numero est le lien, il n'a pas besoin d'etre dessine. */
-.art-sources{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:32px;margin:56px 0 0}
-.art-sources h2{margin-bottom:8px}
-.art-sources>p{font-size:14.5px;color:#7A6B5E;line-height:1.8;margin-bottom:20px}
-.art-sources ol{margin:0;padding-left:24px;display:grid;gap:12px}
+/* ── Sources ──
+   Repliees par defaut. Le lecteur qui veut verifier les ouvre ; celui qui n'en
+   a pas besoin voit qu'elles existent sans se prendre une bibliographie en fin
+   de lecture. <details> et <summary> font ca nativement : ni script, ni ARIA,
+   et le contenu reste dans le DOM, donc indexable et cherchable au Ctrl+F. */
+.art-sources{background:#fff;border:1px solid #E8DDD0;border-radius:16px;margin:48px 0 0}
+.art-sources summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;min-height:44px;padding:20px 28px;cursor:pointer;list-style:none}
+.art-sources summary::-webkit-details-marker{display:none}
+.art-sources-titre{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#1E1812}
+.art-sources-nb{font-family:'DM Sans',sans-serif;font-size:13.5px;color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
+
+.art-sources details[open] .art-sources-nb{text-decoration:none}
+.art-sources summary:hover .art-sources-nb{text-decoration-color:#A8472A}
+.art-sources summary:focus-visible{outline:2px solid #A8472A;outline-offset:-2px;border-radius:16px}
+.art-sources details[open] summary{border-bottom:1px solid #F0E8DA}
+.art-sources>details>p{font-size:14.5px;color:#7A6B5E;line-height:1.8;margin:20px 28px 16px}
+.art-sources ol{margin:0 28px 26px;padding-left:20px;display:grid;gap:12px}
 .art-sources li{font-size:14.5px;line-height:1.75;color:#4A3728;padding-left:4px}
 .art-sources li a{color:#A8472A;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(168,71,42,.4)}
 .art-sources li a:hover{text-decoration-color:#A8472A}
@@ -257,9 +289,14 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .art-tab tbody td{padding:0 20px 6px;border-top:0}
   .art-tab tbody td:first-of-type{width:auto;text-align:left;padding-bottom:12px}
   .art-tab caption{padding:18px 20px 4px;font-size:13.5px}
+  .art-figure{padding:22px 18px}
+  .art-fig-ligne{grid-template-columns:64px 1fr 46px;gap:9px}
+  .art-fig-nom,.art-fig-val{font-size:14px}
   .art-calcul{padding:22px 20px 22px 17.5px}
   .art-calcul .art-calcul-f{font-size:17px}
-  .art-sources{padding:28px 22px}
+  .art-sources summary{padding:18px 20px}
+  .art-sources>details>p{margin:18px 20px 14px}
+  .art-sources ol{margin:0 20px 22px;padding-left:18px}
   .art-mise{padding:28px 22px}
   .art-final{padding:36px 22px}
   .art-carte{padding:26px 22px}
