@@ -173,6 +173,18 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-fig-apres .art-fig-barre{background:#A8472A}
 .art-fig-val{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:#7A6B5E;text-align:right;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
 .art-fig-apres .art-fig-val{color:#A8472A}
+/* Barre empilee : chaque poste de l'etiquette a sa part, et le poste non
+   declare ressort en rouille. C'est la soustraction rendue evidente. */
+.art-fig-pile{display:flex;height:34px;border-radius:999px;overflow:hidden;background:#F0E8DA}
+.art-fig-pile span{display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#4A3728;white-space:nowrap;overflow:hidden}
+.art-fig-pile .art-fig-cache{background:#A8472A;color:#FDFAF5}
+.art-fig-pile .t1{background:#D9C6B0}
+.art-fig-pile .t2{background:#E2D3C1}
+.art-fig-pile .t3{background:#EADDCE}
+.art-fig-pile .t4{background:#F0E8DA}
+.art-fig-legende{display:flex;flex-wrap:wrap;gap:8px 20px;margin:16px 0 0;padding:0;list-style:none}
+.art-fig-legende li{display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:#4A3728}
+.art-fig-legende i{width:13px;height:13px;border-radius:4px;flex:0 0 auto}
 /* ── Encart de calcul ──
    Une formule noyee dans un paragraphe ne se lit pas. Elle sort du texte :
    fond blanc, lisere rouille a gauche comme les encarts d'information, corps
@@ -251,7 +263,9 @@ body{min-height:100vh;display:flex;flex-direction:column}
    Cormorant italique en 700 n'existe nulle part ailleurs sur le site. Le span
    echappe a la couche sans qu'on ait a poser un !important de plus. */
 .art-carte h2{font-style:italic;margin-bottom:10px}
-.art-carte h2 a{text-decoration:none;color:inherit}
+/* Le titre de carte est la premiere cible de clic : il tient 44 px de haut
+   meme sur une seule ligne. */
+.art-carte h2 a{display:inline-block;min-height:44px;text-decoration:none;color:inherit}
 .art-carte h2 span{display:block;font-weight:400;font-size:clamp(24px,2.6vw,32px);line-height:1.25;letter-spacing:-.01em}
 .art-carte h2 a:hover span{color:#A8472A}
 .art-carte-res{font-size:16px;line-height:1.9;color:#1E1812;margin-bottom:20px;text-wrap:pretty}
@@ -289,6 +303,11 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .art-tab tbody td{padding:0 20px 6px;border-top:0}
   .art-tab tbody td:first-of-type{width:auto;text-align:left;padding-bottom:12px}
   .art-tab caption{padding:18px 20px 4px;font-size:13.5px}
+  /* Sous 720 px, trois segments tombent sous 26 px : leur chiffre serait
+     tronque. On les laisse muets, la legende porte l'information. Seul le
+     poste non declare garde son libelle, c'est lui qu'on doit voir. */
+  .art-fig-pile span{font-size:0}
+  .art-fig-pile .art-fig-cache{font-size:13px}
   .art-figure{padding:22px 18px}
   .art-fig-ligne{grid-template-columns:64px 1fr 46px;gap:9px}
   .art-fig-nom,.art-fig-val{font-size:14px}
