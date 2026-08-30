@@ -81,12 +81,6 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .art-essentiel li a:hover{background:rgba(168,71,42,.07);color:#A8472A}
 .art-num{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:#A8472A;color:#FDFAF5;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;font-variant-numeric:var(--chiffres,lining-nums) tabular-nums}
 .art-essentiel li a:hover .art-num{background:#1E1812}
-
-/* Les autres sections tiennent sur une ligne : elles n'ont pas besoin d'une
-   liste a puces pour etre atteintes. */
-.art-ess-plus{margin:20px 0 0;padding-top:18px;border-top:1px solid #E0D4C2;font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:2;color:#7A6B5E}
-.art-ess-plus a{color:#A8472A;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(168,71,42,.35)}
-.art-ess-plus a:hover{text-decoration-color:#A8472A}
 /* ── Corps de l'article ──
    Interlignage 1,9 : le cadre est large, donc les lignes sont longues, donc
    l'interligne compense. La regle posee sur la page presse tient ici aussi,
