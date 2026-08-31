@@ -103,7 +103,10 @@ const PAGES = [
   'index.html', 'tarifs.html', 'faq.html', 'carte.html', 'reservation.html',
   'presse.html', 'ce-que-jutilise.html', 'cgv.html', 'mentions-legales.html',
   'calculateur-miaoucratie.html', 'admin-indisponibilites.html',
-  'blog.html', 'alimentation-du-chat.html',
+  /* alimentation-du-chat.html a ete scindee en deux articles : l'un sur la
+     lecture d'une etiquette, l'autre sur la repartition entre croquettes et
+     patee. La page n'existe plus. */
+  'blog.html', 'etiquette-nourriture-chat.html', 'croquettes-et-patee.html',
 ];
 const LARGEURS = [1272, 375];
 
@@ -489,11 +492,17 @@ async function testerFaq(page, echecs) {
   // Les donnees structurees doivent refleter le texte affiche,
   // sinon Google ignore le resultat enrichi.
   const sync = await page.evaluate(() => {
-    const vues = [...document.querySelectorAll('.acc-question')].map((e) => e.textContent.trim());
+    /* La comparaison porte sur le texte, pas sur la nature des espaces :
+           le texte affiche pose une espace insecable avant « ? », le JSON-LD
+           une espace ordinaire. C'est la meme question pour un lecteur comme
+           pour Google, et les comparer octet a octet faisait tomber les
+           trente-sept d'un coup. */
+        const memeTexte = (s) => s.replace(/\u00A0/g, ' ').replace(/\s+/g, ' ').trim();
+        const vues = [...document.querySelectorAll('.acc-question')].map((e) => memeTexte(e.textContent));
     const brut = [...document.querySelectorAll('script[type="application/ld+json"]')]
       .map((s) => s.textContent).find((t) => t.includes('FAQPage'));
     if (!brut) return { erreur: 'aucun bloc FAQPage' };
-    const ld = (JSON.parse(brut).mainEntity ?? []).map((e) => e.name);
+    const ld = (JSON.parse(brut).mainEntity ?? []).map((e) => memeTexte(e.name));
     return {
       absentes: vues.filter((q) => !ld.includes(q)),
       orphelines: ld.filter((q) => !vues.includes(q)),

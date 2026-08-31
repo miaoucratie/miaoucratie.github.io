@@ -13,3 +13,11 @@ api/.wrangler/
 .old/
 
 node_modules/
+
+# Regles de travail, non publiees
+CLAUDE.md
+CLAUDE.local.md
+
+# Maquette de travail : validation avant integration, jamais publiee
+maquette-blog.html
+maquette-arbitrages.html

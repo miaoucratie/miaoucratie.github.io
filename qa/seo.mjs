@@ -25,6 +25,8 @@ const SITE = 'https://miaoucratie.fr/';
 
 /* Pages exclues du controle : l'ecran d'administration n'est pas une page
    publique, il porte deja noindex,nofollow et n'a pas a etre reference. */
+/* « maquette-*.html » : pages de travail, ignorees par Git, jamais publiees.
+   Elles n'ont pas a etre auditees comme des pages du site. */
 const EXCLUES = new Set(['admin-indisponibilites.html']);
 
 /* Longueurs retenues : au-dela, les moteurs tronquent l'affichage. Ce sont des
@@ -48,7 +50,7 @@ const attr = (balise, nom) => {
 };
 
 const pages = readdirSync(RACINE)
-  .filter((f) => f.endsWith('.html') && !EXCLUES.has(f))
+  .filter((f) => f.endsWith('.html') && !f.startsWith('maquette-') && !EXCLUES.has(f))
   .sort();
 
 const sitemap = readFileSync(join(RACINE, 'sitemap.xml'), 'utf8');
