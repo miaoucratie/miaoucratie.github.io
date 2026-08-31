@@ -1,0 +1,126 @@
+{
+  "$schema": "Registre canonique des articles du blog. Source de verite unique des metadonnees repetitives. Voir scripts/generate-blog.js.",
+  "site": {
+    "origin": "https://miaoucratie.fr",
+    "blogUrl": "/blog.html",
+    "blogName": "Le blog de Miaoucratie",
+    "author": "Irina Talbot",
+    "inLanguage": "fr-FR",
+    "rubriques": [
+      {
+        "nom": "Matériel",
+        "emoji": "🧰"
+      },
+      {
+        "nom": "Alimentation",
+        "emoji": "🍽️"
+      },
+      {
+        "nom": "Hydratation",
+        "emoji": "💧"
+      },
+      {
+        "nom": "Enrichissement",
+        "emoji": "🧶"
+      }
+    ]
+  },
+  "articles": [
+    {
+      "slug": "ce-que-jutilise",
+      "url": "/ce-que-jutilise.html",
+      "status": "published",
+      "category": "Matériel",
+      "affiliate": true,
+      "h1": "Ce que j'utilise.",
+      "seoTitle": "Friandises, jouets, soins : ce que j'utilise | Miaoucratie",
+      "description": "Le matériel que j'utilise au quotidien avec mes chats et ceux que j'accueille : friandises, fontaine, jouets, soins. Liens affiliés Amazon signalés.",
+      "ldHeadline": "Le matériel que j'utilise au quotidien",
+      "cardTitle": "Le matériel que j'utilise au quotidien",
+      "cardText": [
+        "Chaque objet avec ce que j'en pense après m'en être servie&nbsp;: la canne dont la proie se détache, pour que le chat l'attrape pour de bon, et la fontaine en inox qui se démonte et se lave sans y passer la matinée.",
+        "Mes réserves y sont aussi&nbsp;: quand un produit ne m'a pas convaincue, c'est écrit."
+      ],
+      "cardCta": "Ma sélection",
+      "datePublished": "2026-08-29",
+      "dateModified": "2026-08-29",
+      "keywords": [
+        "matériel",
+        "jouets",
+        "friandises",
+        "soins",
+        "fontaine"
+      ],
+      "related": [
+        "croquettes-et-patee",
+        "etiquette-nourriture-chat"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 1
+    },
+    {
+      "slug": "etiquette-nourriture-chat",
+      "url": "/etiquette-nourriture-chat.html",
+      "status": "published",
+      "category": "Alimentation",
+      "affiliate": false,
+      "h1": "Décoder une étiquette de nourriture pour chat",
+      "seoTitle": "Décoder une étiquette de nourriture pour chat | Miaoucratie",
+      "description": "« Au bœuf » vaut 4 % de bœuf, « riche en bœuf » 14 %. 5 réflexes pour lire une étiquette de croquettes ou de pâtée et savoir ce qu'il y a dans le paquet.",
+      "ldHeadline": "Décoder une étiquette de nourriture pour chat",
+      "cardTitle": "Décoder une étiquette de nourriture",
+      "cardText": [
+        "«&nbsp;Au bœuf&nbsp;» vaut au moins 4&nbsp;% de bœuf, «&nbsp;riche en bœuf&nbsp;» au moins 14&nbsp;%, et l'écart n'est écrit nulle part sur l'emballage.",
+        "5 réflexes pour lire n'importe quel paquet en une minute. À faire avant de choisir entre croquettes et pâtée."
+      ],
+      "cardCta": "Les 5 réflexes",
+      "datePublished": "2026-08-31",
+      "dateModified": "2026-08-31",
+      "keywords": [
+        "étiquette",
+        "composition",
+        "glucides",
+        "cendres",
+        "sucre"
+      ],
+      "related": [
+        "croquettes-et-patee",
+        "ce-que-jutilise"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 1
+    },
+    {
+      "slug": "croquettes-et-patee",
+      "url": "/croquettes-et-patee.html",
+      "status": "published",
+      "category": "Alimentation",
+      "affiliate": true,
+      "h1": "Croquettes et pâtée : trouver le bon équilibre",
+      "seoTitle": "Croquettes et pâtée : trouver le bon équilibre | Miaoucratie",
+      "description": "Ce que chaque forme apporte, ce qu'elle coûte, et comment répartir les deux selon votre chat : son âge, ce qu'il boit, ce qu'il accepte de manger.",
+      "ldHeadline": "Croquettes et pâtée : trouver le bon équilibre",
+      "cardTitle": "Croquettes et pâtée, le bon équilibre",
+      "cardText": [
+        "Pas un camp à choisir&nbsp;: les deux se complètent, et la répartition dépend du chat, de ce qu'il boit et de vos horaires.",
+        "Ce que chacune apporte, ce qu'elle coûte, et comment doser sans transformer les repas en négociation."
+      ],
+      "cardCta": "Le bon équilibre",
+      "datePublished": "2026-08-31",
+      "dateModified": "2026-08-31",
+      "keywords": [
+        "croquettes",
+        "pâtée",
+        "eau",
+        "taurine",
+        "transition"
+      ],
+      "related": [
+        "etiquette-nourriture-chat",
+        "ce-que-jutilise"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 2
+    }
+  ]
+}

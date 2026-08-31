@@ -1,0 +1,799 @@
+/*
+ * Module editorial : page d'entree du blog et articles.
+ *
+ * ── Pourquoi un fichier et pas des regles dans style.css ──
+ * Le site range deja un fichier par ensemble fonctionnel, charge apres
+ * style.css : reservation.css, calculateur.css, page-legale.css. Les regles
+ * ci-dessous ne servent qu'aux pages editoriales. Les poser dans style.css les
+ * enverrait aux quatorze pages du site, dont la reservation et la carte, qui
+ * n'en ont aucun usage. Un fichier par PAGE serait l'erreur inverse : il n'y
+ * en a qu'un pour les quatre pages du blog.
+ *
+ * ══ LA GRILLE ══════════════════════════════════════════════════════════════
+ *
+ * Deux largeurs sur tout le blog, deux fonctions, et rien d'autre. Un
+ * composant qui prend une troisieme largeur est un defaut, pas une variante.
+ *
+ *   --blog-lecture  760px   colonne d'article. TOUT y tient : paragraphes,
+ *                           titres, figures, tableaux, encadres, listes. Un
+ *                           visuel plus large que sa colonne de texte casse
+ *                           l'harmonie et la lisibilite.
+ *   --blog-grille  1120px   page d'entree, ou l'on balaie des cartes plutot
+ *                           que de lire. Les textes d'accompagnement y sont
+ *                           brides a la mesure de lecture.
+ *
+ * ══ L'ECHELLE VERTICALE ════════════════════════════════════════════════════
+ *
+ * Cinq valeurs, une par relation. Aucune marge ne se decide au cas par cas.
+ *
+ *   --e-titre    12px   entre un titre et ce qu'il annonce
+ *   --e-para     20px   entre deux paragraphes
+ *   --e-bloc     36px   autour d'un bloc : figure, tableau, encadre
+ *   --e-sous     48px   avant un sous-titre
+ *   --e-section  68px   avant un titre de section
+ *
+ * ── Ce que ce fichier ne redeclare pas ──
+ * De style.css : .section .section-label .eyebrow .cards-grid .pcard
+ * .steps-row .step .step-bubble .cred-item .btn-primary .btn-secondary
+ * .cta-section .cta-btns .topbar .footer-bar.
+ * De couches.css : la coque body.standalone-page, et la typographie des titres
+ * — la couche TITLES-V5 impose famille, graisse, interlettrage, interligne et
+ * couleur en !important, on ne fournit ici que les tailles manquantes.
+ */
+
+:root {
+  --blog-lecture: 760px;
+  --blog-grille: 1120px;
+  /* Une seule echelle verticale pour tout l'article : aucune marge ne se decide
+     au cas par cas. Elle a ete resserree d'un cran apres relecture d'Irina, les
+     ecarts de section ouvrant un vide trop large avant les titres. Les rapports
+     entre crans sont conserves, entre 1,3 et 1,8, ce qui garde les niveaux
+     distinguables d'un coup d'oeil sans avoir a mesurer. */
+  --e-titre: 12px;
+  --e-para: 20px;
+  --e-bloc: 36px;
+  --e-sous: 48px;
+  --e-section: 68px;
+}
+
+/* ══ LA COMPOSITION D'UN ARTICLE ════════════════════════════════════════
+   Une colonne de 760 px posee au milieu d'un ecran 16:9 laisse deux bandes
+   vides de 580 px et donne l'impression d'une petite page coincee au centre.
+   Etirer la prose sur 1900 px n'est pas la reponse : une ligne de 200 signes
+   ne se lit pas.
+   La reponse est de donner un role a l'espace, et de laisser la mesure
+   grandir avec l'ecran :
+
+     · le corps de texte suit le viewport, de 17 a 21 px ;
+     · la colonne se mesure en signes, pas en pixels : 74 signes, donc elle
+       s'elargit exactement autant que le texte grossit ;
+     · la bande de gauche porte le sommaire, colle au defilement — l'espace
+       sert a quelque chose au lieu d'etre vide ;
+     · sous 1080 px il n'y a plus de bande : le sommaire passe en rangee
+       horizontale sous l'en-tete, et la colonne prend toute la largeur.
+
+   TOUT ce que contient la colonne partage sa largeur : paragraphes, titres,
+   figures, tableaux, encadres. Un composant qui en sort est un defaut. */
+.art-page {
+  /* 1200 moins les deux fois 40 de remplissage : 1120 de contenu, soit la
+     largeur que « .section » donne aux blocs de « blog.html ». Le sommaire,
+     la colonne de lecture et les blocs de bas de page partagent des lors les
+     memes bords sur toutes les pages du blog. */
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 0 40px;
+}
+/* 16 px fixe sur tous les articles, decision d'Irina : agrandir le texte ne
+   rend pas la lecture longue plus confortable, ca gonfle la page et ca reduit
+   ce qu'on embrasse d'un coup d'oeil. C'est aussi la valeur de
+   « ce-que-jutilise.html », ou 66 paragraphes sont deja rendus en 16 px.
+   La mesure reste en signes : la colonne suit le corps sans reglage a part. */
+.art-flux { font-size: 16px; max-width: 74ch; }
+.art-flux > .section {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (min-width: 1080px) {
+  /* La grille est portee par une enveloppe et non par le conteneur de page :
+     la zone du sommaire collant s'arrete ainsi ou l'article s'arrete, au lieu
+     de courir sous « A lire ensuite » et le bloc de fin. */
+  .art-colonnes {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    column-gap: 64px;
+    align-items: start;
+  }
+}
+
+/* La page d'entree n'est pas un article : ses blocs prennent la grille, comme
+   ceux de « Ce que j'utilise » et de la page presse, ou le titre et le chapo
+   courent sur toute la largeur du conteneur. Les avoir bordes a la mesure de
+   lecture laissait, sur un ecran large, une bande vide de 280 px a droite du
+   chapo pendant que les cartes dessous allaient jusqu'au bord. */
+
+/* ══ SOMMAIRE ═══════════════════════════════════════════════════════════ */
+.art-sommaire { font-size: 14px; }
+.art-sommaire-titre {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.art-sommaire ol { list-style: none; margin: 0; padding: 0; }
+.art-sommaire a {
+  display: block;
+  padding: 9px 0;
+  color: var(--mid);
+  text-decoration: none;
+  border-left: 2px solid var(--warm);
+  padding-left: 14px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.art-sommaire a:hover { color: var(--rust); border-left-color: var(--rust); }
+
+@media (min-width: 1080px) {
+  .art-sommaire {
+    position: sticky;
+    top: 74px;
+    padding-top: 80px;
+  }
+}
+
+/* Sous 1080 px, plus de bande laterale : le sommaire devient une rangee de
+   reperes qui defile horizontalement, juste sous l'en-tete. Il occupe alors
+   une ligne au lieu d'une colonne, et ne repousse pas le contenu. */
+@media (max-width: 1079px) {
+  .art-page { padding: 0 24px; }
+  .art-sommaire { padding: 24px 0 0; }
+  .art-sommaire ol {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .art-sommaire ol::-webkit-scrollbar { display: none; }
+  .art-sommaire a {
+    white-space: nowrap;
+    border: 1.5px solid var(--warm);
+    border-radius: 999px;
+    padding: 9px 16px;
+    background: #fff;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .art-sommaire a:hover { border-color: var(--rust); }
+}
+
+/* Deux sections voisines sur le meme fond cumulent leurs retraits : 80 en bas
+   plus 80 en haut, soit 160 px de vide la ou 80 suffisent. Sur l'accueil le
+   defaut ne se voit pas, les sections y alternent les fonds. Une seule des
+   deux voisines renonce a son retrait, jamais les deux. */
+.section--hero { padding-bottom: 0; }
+.section--suite { padding-top: 0; }
+
+/* ══ EN-TETE ════════════════════════════════════════════════════════════ */
+
+/* TITLES-V5 ne dimensionne que .hero-title et quelques titres nommes : un h1
+   nu retombe sur le 2em du navigateur. On lui donne une taille, rien d'autre. */
+.art-titre { font-size: clamp(34px, 5vw, 52px); margin-bottom: var(--e-para); }
+.art-titre em { font-style: italic; font-weight: 400; color: var(--terracotta); }
+
+.art-chapo {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--mid);
+  margin-bottom: 0;
+}
+.art-chapo + .art-chapo { margin-top: 14px; }
+.art-hero + .cred-item { margin-top: var(--e-bloc); }
+/* Deux encadres qui se suivent se touchaient : le premier n'a pas de marge
+   basse, le second pas de marge haute, et les deux cadres se collaient bord
+   a bord. */
+.cred-item + .cred-item { margin-top: var(--e-bloc); }
+
+/* ══ CORPS D'ARTICLE ════════════════════════════════════════════════════ */
+
+.art-corps > p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--deep);
+  margin-bottom: var(--e-para);
+}
+.art-corps > h2 {
+  margin-top: var(--e-section);
+  /* style.css pose 40 px sous les h2 de section ; dans un article, le titre
+     doit rester colle au paragraphe qu'il annonce. */
+  margin-bottom: var(--e-titre);
+}
+.art-corps > h3 { margin-top: var(--e-sous); margin-bottom: var(--e-titre); }
+/* Un titre en tete de section ne reprend pas l'ecart de section : le retrait
+   de la section le porte deja, et cumuler les deux ouvrirait un vide double. */
+.art-corps > :is(h2, h3):first-child { margin-top: 0; }
+/* Sauf dans une section « --suite », qui n'a justement pas de retrait haut.
+   Sans cette reprise, les deux regles se cumulaient a zero et le premier
+   titre du corps venait se coller a l'encart qui le precede. Mesure avant
+   correction : 0 px entre la note d'affiliation et « Deux procedes, deux
+   contraintes », la ou toutes les autres sections en ont 88. */
+.section--suite > :is(h2, h3):first-child { margin-top: var(--e-section); }
+.art-corps > :is(figure, table, .cred-item, .art-tab-cadre, .art-fig, .art-etapes, details) {
+  margin: var(--e-bloc) 0;
+}
+
+.art-corps ul,
+.art-corps ol { margin: 0 0 var(--e-para); padding-left: 22px; }
+.art-corps li {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--deep);
+  margin-bottom: 8px;
+}
+.art-corps li::marker { color: var(--terracotta); }
+
+/* La barre du haut est collante sur 50 px : une cible d'ancre arrivait
+   dessous. */
+.art-corps [id] { scroll-margin-top: 74px; }
+
+/* ══ FICHE PRODUIT ══════════════════════════════════════════════════════
+   Une colonne, fiches pleine largeur. C'est la disposition de la production.
+   Passees a deux colonnes elles tombent a 510 px : six lignes sur vingt se
+   coupent en deux et les hauteurs ne se repondent plus d'une rangee a
+   l'autre. */
+.art-fiches { display: grid; gap: var(--e-para); }
+
+/* Les trois articles du blog, cote a cote. Ils doivent tenir dans le premier
+   ecran : arriver sur « Le blog » puis devoir faire defiler pour decouvrir ce
+   qu'on peut y lire est une friction inutile. Trois colonnes sur bureau, deux
+   sur tablette, une sur telephone. */
+/* « auto-fill » et non un nombre fixe de colonnes : la rangee pose autant de
+   colonnes que la largeur permet, et le jour ou le blog aura dix ou cinquante
+   articles, rien n'est a changer dans cette feuille. « min(300px, 100%) »
+   plutot que « 300px » : sur un ecran de 320, une colonne de 300 px plus les
+   retraits sortirait de la fenetre. */
+.art-trio {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: var(--e-para);
+}
+
+/* ══ COULEUR DE L'EAU DANS LES FIGURES ═════════════════════════════════════
+   La palette du site n'a aucun bleu, et pour cause : elle n'avait jusqu'ici
+   aucune donnee a representer. Mais dans un graphique, la couleur porte du
+   sens : peindre l'eau en terracotta oblige a lire la legende pour comprendre
+   ce qu'on regarde.
+
+   Bleu ardoise, choisi sourd pour rester dans la famille chaude du site
+   plutot qu'un bleu vif. Contraste mesure sur la piste creme : 4,54:1, au-
+   dessus du seuil de 3:1 des elements non textuels.
+
+   Le jeton est declare dans le module du blog, pas dans style.css : aucune
+   autre page n'a de graphique. */
+:root { --art-eau: #3C6E8F; }
+
+/* ══ FICHES ET BOUTONS SUR PETIT ECRAN ═════════════════════════════════════
+   A 320 px, une fiche a 36 px de retrait de chaque cote laisse 198 px utiles,
+   dont 56 pris par le retrait interne du bouton : il ne reste que 142 px de
+   texte, et tout libelle de plus de 24 signes passe sur deux lignes.
+
+   Mesure : « Le tapis en inox sur Amazon » y tient sur deux lignes, « Le
+   tapis inox » sur une. Raccourcir les libelles traiterait le symptome et
+   ferait perdre la destination du lien ; c'est la place qui manque.
+
+   On rend donc la place : 20 px de retrait de fiche et 18 px de retrait de
+   bouton en dessous de 400 px. Les deux regles sont bornees aux composants du
+   blog, aucun bouton d'une autre page ne bouge. */
+/* ══ BLOC DE FIN ═══════════════════════════════════════════════════════════
+   Le bandeau « .cta-section » du site est un aplat terracotta plein cadre.
+   Sur le blog il pose trois problemes mesures :
+
+     · la regle globale « h2 em » peint le mot mis en valeur en terracotta,
+       donc terracotta sur terracotta, contraste 1,00:1 : le mot disparait ;
+     · le bouton blanc a texte terracotta plafonne a 4,05:1, sous le seuil ;
+     · le paragraphe a 85 % d'opacite tombe a 3,37:1.
+
+   La variante du blog remplace l'aplat par le fond teinte a 6 % de la bande
+   d'avis, « .avis-bg », et son filet haut a 18 %. Meme famille de couleur,
+   l'orange redevient un accent. Titre en --deep : 14,80:1. Bouton
+   « .btn-primary », qui est deja le bouton du site.
+
+   Aucune page hors blog n'est touchee : « .cta-section » reste tel quel. */
+.art-fin {
+  background: rgba(200, 96, 58, 0.06);
+  border-top: 1.5px solid rgba(200, 96, 58, 0.18);
+  border-radius: 18px;
+  padding: 44px 32px;
+  text-align: center;
+}
+.art-fin h2 { color: var(--deep); margin-bottom: var(--e-titre); }
+.art-fin h2 em { font-style: italic; font-weight: 400; color: var(--rust); }
+.art-fin p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--mid);
+  max-width: 46ch;
+  margin: 0 auto var(--e-para);
+}
+.art-fin-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+@media (max-width: 520px) {
+  .art-fin { padding: 34px 20px; }
+  .art-fin-btns { flex-direction: column; align-items: stretch; }
+  .art-fin-btns .btn-primary, .art-fin-btns .btn-secondary { justify-content: center; }
+}
+
+/* ══ LIENS DANS LE TEXTE ═══════════════════════════════════════════════════
+   Le site ne declare aucune couleur de lien generique : chaque contexte a la
+   sienne, « .topbar a », « .footer-links a », « .step p a ». Un <a> pose dans
+   un contexte non prevu retombe donc sur le bleu du navigateur, et c'est
+   exactement ce qui arrivait aux articles.
+
+   Les valeurs sont celles de « .step p a » dans style.css, qui est la
+   convention du site pour un lien au fil du texte. Elles sont redeclarees ici
+   plutot qu'ajoutees a la regle globale : la portee reste le blog, et aucune
+   autre page ne peut bouger.
+
+   Le selecteur couvre tout ce qui porte du texte dans un article : corps,
+   listes, legendes de figure, cellules de tableau, sources et sommaire. Les
+   boutons en sont exclus, sinon un « .btn-primary » pose dans un paragraphe
+   se retrouverait en rouille sur rouille. */
+.art-flux :is(p, li, figcaption, dd, dt, td, th, summary) a:not([class]),
+.art-sources a:not([class]),
+.art-fig a:not([class]),
+.art-tab a:not([class]) {
+  color: var(--rust);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s;
+}
+.art-flux :is(p, li, figcaption, dd, dt, td, th, summary) a:not([class]):hover,
+.art-sources a:not([class]):hover,
+.art-fig a:not([class]):hover,
+.art-tab a:not([class]):hover { color: var(--deep); }
+
+/* Les appels de note sont des liens, mais minuscules : le soulignement les
+   rendrait illisibles. La couleur et l'exposant suffisent a les identifier,
+   et leur cible est un renvoi interne, pas une destination. */
+.art-flux sup a { text-decoration: none; }
+.art-flux sup a:hover { text-decoration: underline; }
+
+/* Bloc « articles lies », pose en bas d'article par le generateur.
+   Il ne cree aucun composant : la rangee est « .art-trio », la carte est
+   « .pcard.art-produit ». Seuls le titre du bloc et sa respiration sont a
+   declarer. */
+.art-lies { margin-top: var(--e-section); }
+.art-mention-legale {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: var(--e-titre) 0 0;
+}
+
+.art-lies-titre {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--e-para);
+}
+
+/* Trois cartes posees cote a cote se lisent en parallele : leurs pastilles,
+   leurs titres et leurs boutons doivent se trouver a la meme hauteur. Sans
+   cela, une pastille qui passe sur deux lignes decale le titre d'une seule
+   carte et casse la rangee. La grille de la rangee traverse les cartes, ce
+   qui aligne leurs lignes internes quel que soit leur contenu. */
+/* L'alignement ligne a ligne n'a de sens que si les cartes sont cote a cote.
+   Empilees, la sous-grille leur imposait encore la hauteur de ligne de la
+   plus grande, ce qui ouvrait des espaces sous les pastilles. */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 641px) {
+  /* Les quatre lignes sont en « auto » : chacune prend la hauteur du plus
+     grand des trois contenus, et les boutons se retrouvent donc a la meme
+     hauteur. Avec « 1fr » sur la ligne de texte, la carte la plus bavarde
+     debordait et son bouton descendait de 86 px sous les autres. */
+  .art-trio { grid-template-rows: auto auto auto auto; }
+  /* .art-produit pose « display: flex » plus loin dans ce fichier, avec la
+     meme specificite : sans la classe supplementaire ici, c'est le flex qui
+     l'emportait et la sous-grille ne s'appliquait jamais. */
+  .art-trio > .pcard.art-produit {
+    display: grid;
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+    align-content: start;
+  }
+  .art-trio > .pcard.art-produit > .art-actions { margin-top: 0; align-self: start; }
+  }
+}
+
+.pcard.art-produit { display: flex; flex-direction: column; padding: 32px 36px; }
+/* Titre de fiche : exactement le composant de la production.
+   `.cq-title` porte l'italique et un <span> interieur porte la graisse 400 —
+   c'est ce detour qui donne l'italique clair du site, parce que la couche
+   TITLES-V5 impose « font-weight: 700 !important » sur h1, h2 et h3 et qu'un
+   element interieur y echappe. Sans le <span>, on obtient un italique 700 qui
+   n'existe nulle part ailleurs sur le site. Meme mecanique que « h2 em » et
+   « .art-titre em », qui repassent tous en 400 de cette facon. */
+.art-produit :is(h2, h3) { font-style: italic; margin-bottom: var(--e-titre); }
+.art-produit :is(h2, h3) > span {
+  display: block;
+  font-weight: 400;
+  font-size: clamp(24px, 2.6vw, 32px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+/* Les paragraphes d'une fiche, qu'ils soient poses directement dans la carte
+   ou regroupes dans le conteneur que la grille alignee demande. */
+.art-produit > p,
+.art-carte-texte > p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--mid);
+  margin-bottom: 18px;
+}
+.art-produit > p:last-of-type { margin-bottom: var(--e-bloc); }
+.art-carte-texte > p:last-child { margin-bottom: var(--e-bloc); }
+/* Dans une fiche, l'encadre reprend la largeur du texte et s'en detache par
+   sa marge, pas par un second cadre. */
+.art-produit .cred-item { margin: 6px 0 18px; }
+
+/* Etiquettes en tete de fiche : la categorie, et la mention du lien.
+   .eyebrow n'est pas repris : sa marge basse de 24 px et sa taille sont
+   calibrees pour un haut de page, pas pour deux pastilles cote a cote. */
+.art-etiquettes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.art-cat,
+.art-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 5px 11px;
+  line-height: 1.4;
+}
+.art-cat { color: var(--rust); background: rgba(168, 71, 42, 0.1); }
+/* --mid et non --muted : sur le sable, le gris chaud donnait 4,22:1, sous le
+   seuil de 4,5:1. Mesure avec --mid : 9,24:1. La mention du lien informe,
+   elle n'alerte pas : elle reste en retrait de la categorie. */
+.art-tag { color: var(--mid); background: var(--warm); font-weight: 600; }
+
+/* Rangee de boutons, poussee en bas de la fiche pour que les boutons de deux
+   fiches voisines s'alignent. */
+.art-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ══ ENCADRES ═══════════════════════════════════════════════════════════
+   .cred-item fournit la carte blanche a filet terracotta. Deux variantes :
+   une note s'en contente, une alerte doit se distinguer au premier coup
+   d'oeil sans sortir de la palette. */
+.cred-item--large { padding: 28px 30px; }
+.cred-item--large p { font-size: 16px; line-height: 1.8; }
+.cred-item--large p + p { margin-top: 16px; }
+
+.cred-item--alerte {
+  background: var(--warm);
+  border-left-width: 4px;
+  border-left-color: var(--rust);
+}
+.art-alerte-titre {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: var(--e-titre);
+}
+
+/* ══ ETAPES EN COLONNE ══════════════════════════════════════════════════
+   .steps-row de style.css tient cinq etapes sur une rangee, ce qui demande
+   1120 px. Dans une colonne de lecture de 760, chaque etape tomberait a
+   136 px. Les memes pastilles, empilees : le sommaire se lit d'un coup et
+   reste dans la colonne. */
+.art-etapes { display: grid; gap: 14px; }
+.art-etape {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 16px;
+  align-items: start;
+  background: #fff;
+  border: 1.5px solid var(--warm);
+  border-radius: 16px;
+  padding: 16px 20px;
+}
+.art-etape .step-bubble {
+  width: 52px; height: 52px;
+  font-size: 26px;
+  margin-bottom: 0;
+}
+.art-etape p { font-size: 15px; line-height: 1.7; color: var(--mid); }
+
+/* ══ FIGURES DE DONNEES ═════════════════════════════════════════════════
+   Chaque barre porte son intitule et sa valeur en texte : la largeur n'est
+   jamais le seul porteur de l'information. */
+.art-fig {
+  background: #fff;
+  border: 1.5px solid var(--warm);
+  border-radius: 20px;
+  padding: 26px 28px;
+}
+.art-fig figcaption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--warm);
+}
+/* Titre de composant : un seul traitement pour l'encart, la figure et
+   l'etape. DM Sans et non Cormorant, qui reste la police des niveaux de
+   titre : un titre de composant qui l'emprunte entre en concurrence avec eux. */
+.art-fig-titre,
+.art-etape h3,
+.cred-item h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.4;
+  color: var(--deep);
+  margin: 0 0 var(--e-titre);
+}
+/* Unite annoncee une fois, au-dessus des barres : la repeter sur chaque
+   valeur alourdit sans rien apprendre. */
+.art-fig-unite {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.art-barres { display: flex; flex-direction: column; gap: 14px; }
+.art-barre { display: grid; grid-template-columns: minmax(96px, 24%) 1fr auto; align-items: center; gap: 12px; }
+.art-barre-nom { font-size: 14px; color: var(--mid); }
+.art-piste { background: var(--warm); border-radius: 999px; height: 20px; overflow: hidden; }
+/* Rouille et non sable : le sable donnait 2,15:1 sur la piste, sous le seuil
+   de 3:1 des elements non textuels. */
+.art-part { display: block; height: 100%; background: var(--rust); border-radius: 999px; }
+.art-part--clair { background: var(--sand); }
+.art-barre-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--deep);
+  font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
+  min-width: 3.5em;
+  text-align: right;
+}
+
+/* Barre empilee : une piste, plusieurs parts. Chaque part est separee de la
+   suivante par un filet, faute de quoi deux teintes voisines se confondent en
+   vision basse. */
+.art-pile { display: flex; height: 26px; border-radius: 999px; overflow: hidden; background: var(--warm); }
+.art-pile > span { display: block; box-shadow: inset -1px 0 0 var(--cream); }
+.art-pile > span:last-child { box-shadow: none; }
+.art-legende { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; }
+.art-legende-item { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--mid); }
+.art-legende-item i {
+  width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+  border: 1px solid rgba(30, 24, 18, 0.28);
+}
+
+/* Une pile posee dans une piste en occupe toute la hauteur : la piste garde
+   son arrondi et sa fonction de cadre, la pile porte la repartition. */
+.art-piste > .art-pile { height: 100%; border-radius: 0; background: none; }
+
+/* Reperes sous les pistes : sans eux, une barre ne dit pas sur quoi elle se
+   compte. « 80 » ne veut rien dire, « 80 sur 100 g » se comprend. La
+   graduation reprend exactement les colonnes de .art-barre, sinon elle se
+   decale par rapport aux pistes qu'elle est censee mesurer. */
+.art-graduation {
+  display: grid;
+  grid-template-columns: minmax(96px, 24%) 1fr auto;
+  gap: 12px;
+  margin-top: 8px;
+}
+.art-graduation-reperes {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
+}
+
+/* ══ TABLEAU ════════════════════════════════════════════════════════════
+   Le cadre defile horizontalement plutot que de pousser la page : un tableau
+   a chasse fixe avait deja elargi le document de 84 px en mobile. */
+.art-tab-cadre {
+  overflow-x: auto;
+  border: 1.5px solid var(--warm);
+  border-radius: 20px;
+  background: #fff;
+}
+.art-tab { width: 100%; border-collapse: collapse; font-size: 15px; }
+.art-tab caption {
+  caption-side: top;
+  text-align: left;
+  padding: 20px 24px 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--deep);
+}
+.art-tab th,
+.art-tab td { padding: 13px 24px; text-align: left; vertical-align: top; line-height: 1.6; }
+.art-tab thead th {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  border-bottom: 1.5px solid var(--warm);
+  white-space: nowrap;
+}
+.art-tab tbody tr + tr th,
+.art-tab tbody tr + tr td { border-top: 1px solid var(--warm); }
+.art-tab tbody th { font-weight: 600; color: var(--deep); }
+.art-tab td { color: var(--mid); }
+/* La meme piste que dans les figures, a la taille d'une cellule. La piste
+   vaut 100 %, la part remplie ce que la formule garantit : « au boeuf » se
+   lit alors pour ce qu'il est. */
+.art-tab .art-piste--tab { display: block; width: 104px; height: 8px; margin-top: 7px; }
+/* Un plafond n'est pas un minimum : « moins de 4 % » se dessine en contour,
+   pour qu'on ne le lise pas comme les 4 % garantis de la ligne suivante. */
+.art-part--plafond { background: none; border: 1.5px solid var(--rust); }
+.art-tab-chiffre { display: block; }
+.art-tab-echelle {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+  color: var(--muted);
+}
+.art-tab-val {
+  font-weight: 700;
+  color: var(--rust);
+  white-space: nowrap;
+  font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
+}
+
+/* ══ COMPARAISON DEUX A DEUX ════════════════════════════════════════════
+   Deux fiches qui se comparent doivent se lire en parallele : memes reperes,
+   memes hauteurs, separateurs alignes. Sans la mise en colonne, la liste de
+   gauche etant plus longue que celle de droite, les deux filets se
+   retrouvaient a des hauteurs differentes et la comparaison se cassait. */
+.art-duo { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--e-para); }
+.art-duo > .pcard { display: flex; flex-direction: column; }
+.art-duo > .pcard ul { flex: 1; }
+.art-duo > .pcard .note { margin-top: auto; }
+
+/* Pousser la note en bas de carte aligne les BAS, pas les filets : la note la
+   plus longue commence 22 px plus haut que l'autre, et le trait de separation
+   se retrouve a deux hauteurs differentes au milieu d'une comparaison. La
+   grille de la rangee traverse les deux fiches : pictogramme, titre, liste et
+   note occupent chacun une ligne commune, donc les filets se repondent. */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 769px) {
+    .art-duo { grid-template-rows: auto auto auto auto; }
+    .art-duo > .pcard {
+      display: grid;
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+      align-content: start;
+    }
+    .art-duo > .pcard ul { flex: none; }
+    .art-duo > .pcard .note { margin-top: 12px; align-self: start; }
+  }
+}
+
+/* ══ SOURCES ════════════════════════════════════════════════════════════
+   Repliees par defaut : qui veut verifier ouvre, qui ne veut pas voit
+   seulement qu'elles existent. */
+.art-sources {
+  background: var(--warm);
+  border-radius: 20px;
+  padding: 4px 26px;
+  margin-top: var(--e-section);
+}
+.art-sources > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 18px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--deep);
+  min-height: 44px;
+}
+.art-sources > summary::-webkit-details-marker { display: none; }
+.art-sources > summary::after {
+  content: '';
+  width: 9px; height: 9px;
+  border-right: 2px solid var(--rust);
+  border-bottom: 2px solid var(--rust);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 0.2s;
+  margin-left: auto;
+}
+.art-sources[open] > summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+.art-sources ol { margin: 0 0 22px; padding-left: 20px; }
+.art-sources li { font-size: 14px; line-height: 1.75; color: var(--mid); margin-bottom: var(--e-titre); }
+.art-sources li::marker { color: var(--muted); }
+
+/* La convention du lien rouille souligne est declaree dans couches.css, pour
+   .cred-item p a, .pcard p a, .note a et le corps d'article. Elle n'est pas
+   redeclaree ici. */
+
+/* ══ RESPONSIVE ═════════════════════════════════════════════════════════
+   .section passe deja a 56px/24px sous 768. Restent les elements du module. */
+@media (max-width: 768px) {
+  .art-titre { font-size: clamp(30px, 8vw, 38px); }
+  .art-corps > p,
+  .art-corps li { font-size: 16px; }
+  .art-fig { padding: 20px 18px; }
+  .art-barre { grid-template-columns: 1fr auto; row-gap: 6px; }
+  /* L'intitule passe au-dessus de sa barre : a 375 px, une colonne de 96 px
+     pour le nom ne laissait que 150 px de piste, illisible. */
+  .art-barre-nom { grid-column: 1 / -1; }
+  .art-piste { grid-column: 1; }
+  /* La piste passe en premiere colonne : la graduation la suit. */
+  .art-graduation { grid-template-columns: 1fr auto; }
+  .art-graduation-reperes { grid-column: 1; }
+  .art-tab th,
+  .art-tab td { padding: 11px 16px; }
+  .art-tab caption { padding: 16px 16px 0; }
+  .art-sources { padding: 4px 18px; }
+  .art-duo { grid-template-columns: 1fr; }
+  .art-etape { grid-template-columns: 44px 1fr; gap: 14px; padding: 14px 16px; }
+  .art-etape .step-bubble { width: 44px; height: 44px; font-size: 22px; }
+}
+
+@media (max-width: 520px) {
+  /* Deux boutons cote a cote dans une fiche n'ont plus la place : ils passent
+     l'un sous l'autre, pleine largeur, ce qui les rend aussi plus faciles a
+     atteindre au pouce. Le retrait horizontal est reduit par style.css pour
+     tous les boutons du site a cette largeur. */
+  .art-actions { flex-direction: column; align-items: stretch; }
+  .art-actions .btn-primary,
+  .art-actions .btn-secondary { justify-content: center; }
+}
+
+/* ══ SOUS 400 PX ════════════════════════════════════════════════════════════
+   Une seule gouttiere pour tout le blog : conteneur de page, fiche, bouton.
+   Trois valeurs empilees mangeaient 120 px des 320 disponibles, et un libelle
+   de la forme « groupe nominal + destination » n'y tenait plus.
+
+   Ce bloc vient EN FIN DE FICHIER, apres les regles qu'il reprend. A specificite
+   egale c'est l'ordre qui tranche : place plus haut, « .pcard.art-produit
+   { padding-left: 16px } » perdait contre « .pcard.art-produit
+   { padding: 32px 36px } » declare plus bas, et ne servait a rien.
+
+   Le retrait se declare sur le bouton lui-meme, pas sur ses parents : enumerer
+   les parents laissait de cote celui du bloc association. */
+@media (max-width: 400px) {
+  .art-page,
+  .page-wrap { padding-left: 16px; padding-right: 16px; }
+  .pcard.art-produit,
+  .cq-card { padding-left: 16px; padding-right: 16px; }
+  .pcard.art-produit { padding-top: 16px; padding-bottom: 16px; }
+  .btn-primary,
+  .btn-secondary { padding-left: 16px; padding-right: 16px; }
+}

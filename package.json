@@ -8,6 +8,18 @@
     "test": "node --test",
     "qa": "node qa/qa.mjs",
     "qa:update": "node qa/qa.mjs --update",
+    "seo": "node qa/seo.mjs",
+    "seo:strict": "node qa/seo.mjs --strict",
+    "redaction": "node qa/redaction.mjs",
+    "redaction:strict": "node qa/redaction.mjs --strict",
+    "mise-en-page": "node qa/mise-en-page.mjs",
+    "mise-en-page:strict": "node qa/mise-en-page.mjs --strict",
+    "css": "node qa/css.mjs",
+    "espacements": "node qa/espacements.mjs",
+    "espacements:strict": "node qa/espacements.mjs --strict",
+    "blog": "node scripts/generate-blog.js",
+    "blog:check": "node scripts/generate-blog.js --check",
+    "controles": "npm run blog:check && npm run seo:strict && npm run redaction:strict && npm run mise-en-page:strict && npm run espacements:strict && npm run css",
     "postinstall": "playwright install chromium"
   },
   "devDependencies": {

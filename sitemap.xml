@@ -36,10 +36,6 @@
     <lastmod>2026-08-17</lastmod>
   </url>
 
-  <url>
-    <loc>https://miaoucratie.fr/ce-que-jutilise.html</loc>
-    <lastmod>2026-08-29</lastmod>
-  </url>
 
   <url>
     <loc>https://miaoucratie.fr/cgv.html</loc>
@@ -51,4 +47,22 @@
     <lastmod>2026-08-29</lastmod>
   </url>
 
+<!-- GENERATED:BLOG_URLS:START -->
+  <url>
+    <loc>https://miaoucratie.fr/blog.html</loc>
+    <lastmod>2026-08-31</lastmod>
+  </url>
+  <url>
+    <loc>https://miaoucratie.fr/ce-que-jutilise.html</loc>
+    <lastmod>2026-08-29</lastmod>
+  </url>
+  <url>
+    <loc>https://miaoucratie.fr/etiquette-nourriture-chat.html</loc>
+    <lastmod>2026-08-31</lastmod>
+  </url>
+  <url>
+    <loc>https://miaoucratie.fr/croquettes-et-patee.html</loc>
+    <lastmod>2026-08-31</lastmod>
+  </url>
+<!-- GENERATED:BLOG_URLS:END -->
 </urlset>
