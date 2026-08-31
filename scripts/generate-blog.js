@@ -217,7 +217,14 @@ function remplacerZone(texte, nom, contenu, ou) {
   if (j < i) { faute(ou, `marqueur ${nom} : END apparait avant START`); return null; }
   const avant = texte.slice(0, i + debut.length);
   const apres = texte.slice(j);
-  const nouveau = avant + '\n' + contenu.trimEnd() + '\n' + apres;
+  /* Le bloc adopte la fin de ligne du fichier qui l'accueille. Les pages du
+     depot sont en fin de ligne Windows ; un bloc pose en fin de ligne Unix est
+     un texte identique au caractere pres, mais des octets differents. Sans
+     cela, « --check » signalait les six zones a chaque passage, et « npm run
+     blog » reecrivait six fichiers sans rien changer au rendu. */
+  const saut = texte.includes('\r\n') ? '\r\n' : '\n';
+  const bloc = (contenu.trimEnd() + '\n').replace(/\r?\n/g, saut);
+  const nouveau = avant + saut + bloc + apres;
   return { texte: nouveau, change: nouveau !== texte };
 }
 
