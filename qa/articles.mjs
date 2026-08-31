@@ -25,7 +25,7 @@
 
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join, extname, normalize, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
@@ -35,8 +35,21 @@ const STRICT = process.argv.includes('--strict');
 const LARGEURS = [1280, 768, 375];
 
 /* Les articles du blog. La page d'entree n'en est pas un : elle a sa propre
-   composition en grille, et on ne lui demande pas la colonne de lecture. */
-const ARTICLES = ['etiquette-nourriture-chat.html', 'croquettes-et-patee.html'];
+   composition en grille, et on ne lui demande pas la colonne de lecture.
+
+   La liste vient du registre, pas d'une recopie : un troisieme article publie
+   serait entre en ligne sans jamais passer par ce controle, et personne ne
+   l'aurait su. Les pages qui ne portent pas le module editorial se declarent
+   ici, une par une, avec leur raison — une exception nommee se relit, une
+   omission silencieuse non. */
+const HORS_GABARIT = new Map([
+  ['ce-que-jutilise.html', 'composition « cq- » qui lui est propre, sans colonne de lecture'],
+]);
+const registre = JSON.parse(readFileSync(join(RACINE, 'blog', 'articles.json'), 'utf8'));
+const ARTICLES = registre.articles
+  .filter((a) => a.status === 'published')
+  .map((a) => a.url.replace(/^\//, ''))
+  .filter((f) => !HORS_GABARIT.has(f));
 
 /* Composants dont deux articles doivent rendre exactement la meme chose.
    La cle est le nom lisible, la valeur le selecteur. */
