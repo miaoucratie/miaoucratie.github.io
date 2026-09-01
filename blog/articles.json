@@ -53,7 +53,8 @@
       ],
       "related": [
         "hydratation-du-chat",
-        "croquettes-et-patee"
+        "croquettes-et-patee",
+        "etiquette-nourriture-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
@@ -63,7 +64,7 @@
       "url": "/etiquette-nourriture-chat.html",
       "status": "published",
       "category": "Alimentation",
-      "affiliate": false,
+      "affiliate": true,
       "h1": "Décoder une étiquette de nourriture pour chat",
       "seoTitle": "Décoder une étiquette de nourriture pour chat | Miaoucratie",
       "description": "« Au bœuf » vaut 4 % de bœuf, « riche en bœuf » 14 %. 5 réflexes pour lire une étiquette de croquettes ou de pâtée et savoir ce qu'il y a dans le paquet.",
@@ -85,7 +86,8 @@
       ],
       "related": [
         "croquettes-et-patee",
-        "ce-que-jutilise"
+        "ce-que-jutilise",
+        "hydratation-du-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
@@ -116,6 +118,7 @@
         "transition"
       ],
       "related": [
+        "etiquette-nourriture-chat",
         "hydratation-du-chat",
         "ce-que-jutilise"
       ],
@@ -149,7 +152,8 @@
       ],
       "related": [
         "croquettes-et-patee",
-        "ce-que-jutilise"
+        "ce-que-jutilise",
+        "etiquette-nourriture-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 4
