@@ -31,7 +31,13 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      # L'historique complet, et non le seul dernier commit : l'etape qui
+      # compare l'apparence a besoin de reconstruire l'arbre de la base de la
+      # pull request. Le depot pese quelques mega-octets, la difference de
+      # duree ne se mesure pas.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -64,6 +70,29 @@ jobs:
 
       - name: Vérifier le site
         run: npm run qa
+
+      # L'empreinte visuelle ne traverse pas la frontiere entre systemes : le
+      # fichier « qa/reference.json » est produit sous Windows, la CI tourne
+      # sous Ubuntu, et la meme page y rend des largeurs de texte differentes
+      # de 2 a 3 %. L'etape ci-dessus renonce donc a comparer l'apparence.
+      #
+      # Consequence, constatee le 31 aout : le texte d'affiliation de deux
+      # pages a change, la reference est restee sur l'ancien, et la CI est
+      # restee verte. Rien n'aurait signale une page qui se decompose.
+      #
+      # On mesure donc la BASE de la pull request et la pull request dans la
+      # meme execution, sur la meme machine : les deux relevés redeviennent
+      # comparables, et l'ecart est exactement ce que la pull request change.
+      # Rien n'entre dans le depot, l'empreinte de la base vit le temps du job.
+      #
+      # Une page ajoutee ou renommee produit une vue sans equivalent en face :
+      # elle est nommee, elle n'echoue pas.
+      - name: Comparer l'apparence avec la base
+        if: github.event_name == 'pull_request'
+        run: |
+          git worktree add ../base ${{ github.event.pull_request.base.sha }}
+          QA_RACINE="$PWD/../base" node qa/qa.mjs --update --reference "$RUNNER_TEMP/base.json"
+          node qa/qa.mjs --reference "$RUNNER_TEMP/base.json" --detail
 
       # Les controles arrives avec le blog ne tournaient que sur le poste
       # d'Irina : la CI ne lancait que « npm test » et « npm run qa ». Une page
@@ -107,6 +136,11 @@ jobs:
           echo "page a perdu une balise, une formulation interdite est revenue, un bloc" >> $GITHUB_STEP_SUMMARY
           echo "s'est décollé, ou le registre du blog ne correspond plus aux pages." >> $GITHUB_STEP_SUMMARY
           echo "Le journal du job nomme le fichier et la règle." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Comparer l'apparence avec la base.** Une page ne rend plus la même" >> $GITHUB_STEP_SUMMARY
+          echo "chose qu'avant cette branche. Le journal donne la vue, l'élément et les" >> $GITHUB_STEP_SUMMARY
+          echo "deux valeurs. Si l'écart est voulu, regardez la page rendue puis lancez" >> $GITHUB_STEP_SUMMARY
+          echo "\`npm run qa:update\` en local pour aligner la référence." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "Rien n'est en ligne : cette vérification précède la fusion." >> $GITHUB_STEP_SUMMARY
