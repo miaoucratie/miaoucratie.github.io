@@ -70,7 +70,12 @@ const RELEVE = () => {
   /* Les <section> sont exclues : elles portent leur respiration dans leur
      propre retrait, et deux sections voisines se touchent donc toujours par
      leurs bords sans que rien ne soit colle a l'ecran. */
-  const PORTEURS = '.cred-item, .art-fig, .art-tab-cadre, .pcard, .art-etapes, details, figure';
+  /* « .art-lies » et « .art-fin » ont ete ajoutes apres coup : le bandeau final
+     touchait le bloc qui le precede, sur les quatre pages du blog et aux trois
+     largeurs, et ce controle ne le voyait pas parce qu'il ne le regardait pas.
+     Deux aplats colles bord a bord, c'est exactement le defaut que la liste
+     ci-dessous est censee attraper. */
+  const PORTEURS = '.cred-item, .art-fig, .art-tab-cadre, .pcard, .art-etapes, .art-lies, .art-fin, details, figure';
   for (const e of d.querySelectorAll(PORTEURS)) {
     const suivant = e.nextElementSibling;
     if (!suivant || !suivant.matches(PORTEURS)) continue;
