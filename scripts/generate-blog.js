@@ -11,8 +11,8 @@
  * source livree, sans JavaScript.
  *
  * Ce qu'il possede, et rien d'autre :
- *   · la grille de blog.html                    GENERATED:BLOG_GRID
- *   · la liste blogPost du JSON-LD de blog.html GENERATED:BLOG_JSONLD
+ *   · la grille de coulisses-miaoucratie.html                    GENERATED:BLOG_GRID
+ *   · la liste blogPost du JSON-LD de coulisses-miaoucratie.html GENERATED:BLOG_JSONLD
  *   · le bloc « articles lies » de chaque article  GENERATED:RELATED
  *   · les entrees d'article du sitemap          GENERATED:BLOG_URLS
  *
@@ -267,11 +267,11 @@ ${textes}
 const grille = ordre.map((a) => carte(a, 'h2')).join('\n\n');
 
 const jsonld = () => {
-  const t = fs.readFileSync(path.join(RACINE, 'blog.html'), 'utf8');
+  const t = fs.readFileSync(path.join(RACINE, 'coulisses-miaoucratie.html'), 'utf8');
   const blocs = [...t.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
-  if (blocs.length !== 1) { faute('blog.html', `${blocs.length} bloc(s) JSON-LD, il en faut un`); return null; }
+  if (blocs.length !== 1) { faute('coulisses-miaoucratie.html', `${blocs.length} bloc(s) JSON-LD, il en faut un`); return null; }
   let o;
-  try { o = JSON.parse(blocs[0][1]); } catch (e) { faute('blog.html', `JSON-LD illisible : ${e.message}`); return null; }
+  try { o = JSON.parse(blocs[0][1]); } catch (e) { faute('coulisses-miaoucratie.html', `JSON-LD illisible : ${e.message}`); return null; }
   /* On ne remplace QUE la liste blogPost : le reste du bloc (auteur,
      editeur, langue) reste tel qu'il est ecrit a la main (§16). */
   o.blogPost = ordre.map((a) => ({
@@ -324,22 +324,22 @@ function poser(fichier, nom, contenu) {
   if (r.change) changements.push(`${fichier} — zone ${nom}`);
 }
 
-poser('blog.html', 'BLOG_GRID', grille);
+poser('coulisses-miaoucratie.html', 'BLOG_GRID', grille);
 const ld = jsonld();
-if (ld !== null) poser('blog.html', 'BLOG_JSONLD', `<script type="application/ld+json">\n${ld}\n</script>`);
+if (ld !== null) poser('coulisses-miaoucratie.html', 'BLOG_JSONLD', `<script type="application/ld+json">\n${ld}\n</script>`);
 for (const a of publies) poser(a.url.replace(/^\//, ''), 'RELATED', lies(a));
 poser('sitemap.xml', 'BLOG_URLS', urlsSitemap());
 if (erreurs.length) terminer();
 
 /* ── Controles sur le resultat calcule, avant toute ecriture (§6.6) ─────── */
 {
-  const bg = aEcrire.get('blog.html') || '';
+  const bg = aEcrire.get('coulisses-miaoucratie.html') || '';
   for (const a of publies) {
     const href = `href="${a.url.replace(/^\//, '')}"`;
-    if (!bg.includes(href)) faute('blog.html', `l'article publie « ${a.slug} » n'apparait pas dans la grille`);
+    if (!bg.includes(href)) faute('coulisses-miaoucratie.html', `l'article publie « ${a.slug} » n'apparait pas dans la grille`);
   }
   for (const a of tous.filter((x) => x.status !== 'published')) {
-    if (bg.includes(`href="${a.url.replace(/^\//, '')}"`)) faute('blog.html', `le brouillon « ${a.slug} » apparait dans la grille`);
+    if (bg.includes(`href="${a.url.replace(/^\//, '')}"`)) faute('coulisses-miaoucratie.html', `le brouillon « ${a.slug} » apparait dans la grille`);
   }
   const sm = aEcrire.get('sitemap.xml') || '';
   const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
@@ -376,8 +376,8 @@ if (erreurs.length) terminer();
     }
   }
   /* Le JSON-LD calcule doit rester valide (§16) */
-  const b = (aEcrire.get('blog.html') || '').match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
-  if (b) { try { JSON.parse(b[1]); } catch (e) { faute('blog.html', `JSON-LD genere invalide : ${e.message}`); } }
+  const b = (aEcrire.get('coulisses-miaoucratie.html') || '').match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  if (b) { try { JSON.parse(b[1]); } catch (e) { faute('coulisses-miaoucratie.html', `JSON-LD genere invalide : ${e.message}`); } }
 }
 if (erreurs.length) terminer();
 
