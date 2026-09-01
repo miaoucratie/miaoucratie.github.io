@@ -579,4 +579,11 @@
   color: var(--deep, #1E1812);
 }
 
-
+/* Cible tactile. WCAG 2.2 demande 24 px de haut pour un lien qui n'est pas
+   pris dans une phrase. Le remplissage agrandit la zone cliquable, la marge
+   negative le reprend : la zone grandit, la mise en page ne bouge pas. */
+.lien-cible {
+  display: inline-block;
+  padding-block: 4px;
+  margin-block: -4px;
+}
