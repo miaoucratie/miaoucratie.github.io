@@ -526,16 +526,19 @@ body.cgv-page .brand-rule {
   .avis-nav.avis-next:hover { transform: translateX(3px); }
   .avis-nav:focus-visible { outline: none; color: var(--deep); }
   .avis-nav.is-off { opacity: 0; pointer-events: none; }
-  .avis-card { flex: 0 0 calc((100% - 40px) / 3); min-width: 0; scroll-snap-align: start; background: #fff; border-radius: 20px; padding: 30px; border: 1.5px solid var(--warm); display: flex; flex-direction: column; transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s; }
+  /* La mecanique de defilement appartient a la grille, pas aux cartes :
+     le blog y met les siennes, qui ne sont pas des avis. */
+  .avis-grid > * { flex: 0 0 calc((100% - 40px) / 3); min-width: 0; scroll-snap-align: start; }
+  .avis-card { background: #fff; border-radius: 20px; padding: 30px; border: 1.5px solid var(--warm); display: flex; flex-direction: column; transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s; }
   .avis-card:hover { box-shadow: 0 16px 48px rgba(30,24,18,0.1); transform: translateY(-4px); border-color: var(--peach); }
   .avis-card .avis-stars { color: var(--rust); letter-spacing: 2px; font-size: 15px; margin-bottom: 14px; display: block; }
   .avis-card blockquote { font-size: 14px; color: var(--mid); line-height: 1.7; margin: 0 0 18px; quotes: none; }
   .avis-card figcaption { margin-top: auto; }
   .avis-name { display: block; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--deep); }
   .avis-meta { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
-  @media (max-width: 860px) { .avis-card { flex-basis: calc((100% - 20px) / 2); } }
+  @media (max-width: 860px) { .avis-grid > * { flex-basis: calc((100% - 20px) / 2); } }
   @media (max-width: 768px) { .avis-nav { display: none; } }
-  @media (max-width: 560px) { .avis-card { flex-basis: 100%; padding: 24px; } }
+  @media (max-width: 560px) { .avis-grid > * { flex-basis: 100%; } .avis-card { padding: 24px; } }
 
 /* ── BARRE DU HAUT EN MOBILE ──────────────────────────────────────────
    Hors mobile, « .topbar-links » porte « margin-left: auto » et

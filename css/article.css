@@ -454,6 +454,14 @@
    .eyebrow n'est pas repris : sa marge basse de 24 px et sa taille sont
    calibrees pour un haut de page, pas pour deux pastilles cote a cote. */
 .art-etiquettes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+/* Les cartes qui menent a un article se lisent en rangee, et elles sont
+   etroites : avec « flex-wrap », la voisine dont le nom de rubrique etait plus
+   court gardait ses deux etiquettes sur une ligne quand l'autre passait a deux.
+   La mise en page dependait du texte. Elles sont donc toutes empilees.
+   Les fiches produit sont larges : leurs deux etiquettes tiennent cote a cote
+   et n'ont aucune raison de descendre. */
+.art-trio .art-etiquettes,
+.avis-grid .art-etiquettes { flex-direction: column; align-items: flex-start; }
 .art-cat,
 .art-tag {
   display: inline-flex;
@@ -802,4 +810,322 @@
   .pcard.art-produit { padding-top: 16px; padding-bottom: 16px; }
   .btn-primary,
   .btn-secondary { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ══ ARTICLE HYDRATATION ═══════════════════════════════════════════════════
+   Le terracotta du site raconte la terre seche, et cet article parle d'eau.
+   Le bleu y prend donc les reperes de lecture et les donnees ; le terracotta
+   garde les alertes et les cibles, pour qu'une couleur ne dise qu'une chose.
+
+   Famille petrole, voisine du sauge deja present, et non un bleu ardoise qui
+   jurerait avec les terres du site. Deux tons seulement.
+
+   Mesures : l'encre donne 7,72:1 en texte sur creme ; le ton moyen donne
+   3,85:1 sur le fond sable, au-dessus du seuil de 3:1 des elements non
+   textuels. Les deux segments d'une meme barre sont separes par le filet
+   creme de .art-pile, la couleur ne porte pas seule la distinction. */
+:root {
+  --art-eau-encre: #1E5566;
+  --art-eau: #3E7C8F;
+}
+
+/* Tout est porte par la classe de page : aucun autre article ne bouge. */
+.art-page--eau .eyebrow { color: var(--art-eau-encre); background: rgba(30, 85, 102, 0.10); }
+.art-page--eau .art-sommaire a { border-left-color: rgba(30, 85, 102, 0.22); }
+.art-page--eau .art-sommaire a:hover { color: var(--art-eau-encre); border-left-color: var(--art-eau-encre); }
+.art-page--eau .art-fig-titre { color: var(--art-eau-encre); }
+.art-page--eau .art-tab thead th { color: var(--art-eau-encre); }
+.art-page--eau .art-tab .art-part { background: var(--art-eau); }
+
+/* La largeur du composant partage est figee a 104 px, taille juste pour le
+   tableau des denominations. Ici la colonne fait quatre fois ca : une barre
+   de 104 px ne se compare plus a rien, elle prend donc la place offerte. */
+.art-page--eau .art-tab .art-piste--tab { width: 100%; }
+
+/* ══ SUITE D'ETAPES ════════════════════════════════════════════════════════
+   Une suite d'etapes n'est pas une pile de cartes : pas de cadre, pas de fond.
+   Le lien se fait par quatre elements dessines, tous derives des deux mesures
+   posees ci-dessous — changer le diametre du cercle deplace tout le reste.
+
+     · le cercle filaire qui porte le chiffre
+     · le point et le trait court qui vont du cercle au texte
+     · le filet vertical qui longe le texte
+     · le chevron qui descend d'une etape a la suivante
+
+   Le sable porte les liaisons, l'encre porte les chiffres : le regard suit les
+   chiffres, les liaisons se voient sans se faire remarquer. */
+.art-etapes--suite {
+  --e-cercle: 92px;
+  --e-gouttiere: 30px;
+  display: grid;
+  gap: 46px;
+  margin: 30px 0 34px;
+}
+
+.art-etapes--suite .art-etape {
+  position: relative;
+  grid-template-columns: var(--e-cercle) 1fr;
+  column-gap: var(--e-gouttiere);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  align-items: center;
+}
+
+/* Le cercle : un filet, rien dedans. Le chiffre y respire, en Cormorant. */
+.art-etapes--suite .step-bubble {
+  width: var(--e-cercle);
+  height: var(--e-cercle);
+  background: none;
+  border: 2px solid var(--art-eau-encre);
+  color: var(--art-eau-encre);
+  font-size: calc(var(--e-cercle) * 0.58);
+}
+
+/* Le point se pose sur le bord droit du cercle, le trait le relie au filet.
+   Les deux vivent dans la gouttiere, donc leur largeur en decoule. */
+.art-etapes--suite .step-bubble::before,
+.art-etapes--suite .step-bubble::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.art-etapes--suite .step-bubble::before {
+  left: var(--e-cercle);
+  width: var(--e-gouttiere);
+  height: 1px;
+  background: var(--light);
+}
+.art-etapes--suite .step-bubble::after {
+  left: calc(var(--e-cercle) - 5px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--light);
+}
+
+/* Le filet vertical longe le texte, sans le toucher. */
+.art-etapes--suite .art-etape > div:last-child {
+  border-left: 1px solid var(--light);
+  padding-left: 26px;
+}
+
+/* Le chevron descend d'une etape a la suivante, dans l'axe des cercles. Deux
+   bords d'un carre pivote : aucune image a charger, aucune police a attendre. */
+.art-etapes--suite .art-etape + .art-etape::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--e-cercle) / 2);
+  top: calc(-23px - 5px);
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-right: 2px solid var(--light);
+  border-bottom: 2px solid var(--light);
+  transform: rotate(45deg);
+}
+
+/* Le filet horizontal separe deux etapes, a partir du texte. */
+.art-etapes--suite .art-etape + .art-etape::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--e-cercle) + var(--e-gouttiere));
+  right: 0;
+  top: -23px;
+  height: 1px;
+  background: var(--warm);
+}
+
+@media (max-width: 720px) {
+  .art-etapes--suite { --e-cercle: 64px; --e-gouttiere: 20px; gap: 38px; }
+  .art-etapes--suite .art-etape > div:last-child { padding-left: 18px; }
+  .art-etapes--suite .art-etape + .art-etape::before { top: calc(-19px - 5px); }
+  .art-etapes--suite .art-etape + .art-etape::after { top: -19px; }
+}
+
+/* ══ ECHELLE GRADUEE ═══════════════════════════════════════════════════════
+   Variante de la suite d'etapes pour un bloc qui n'enchaine pas des causes
+   mais gradue une mesure. La couleur y porte l'information : le degrade va de
+   l'eau a la terre seche, et chaque palier reprend son ton. Ce n'est pas un
+   habillage, c'est l'echelle elle-meme.
+
+   Les trois tons existent deja sur le site. Mesures sur creme : chiffre creme
+   a 7,72 / 5,56 / 5,46 sur les ronds, titre a 6,82 / 5,01 / 4,88 sur sa
+   teinte, tous au-dessus de 4,5:1. Les valeurs claires du sauge et du
+   terracotta ne tenaient pas ce seuil en texte, d'ou ces trois-la. */
+.art-etapes--echelle {
+  --e-rail: 10px;
+  --e-retrait: 46px;
+  position: relative;
+  display: grid;
+  gap: 14px;
+  padding-left: var(--e-retrait);
+  margin: 30px 0 34px;
+}
+.art-etapes--echelle::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: var(--e-rail);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--art-eau-encre), #4A6B58, var(--rust));
+}
+
+.art-etapes--echelle .art-etape {
+  position: relative;
+  display: block;
+  align-items: center;
+  border: 0;
+  border-radius: 14px;
+  padding: 18px 24px;
+}
+/* Le tiret relie le rail au palier, a hauteur de son rond. */
+.art-etapes--echelle .art-etape::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(var(--e-retrait) * -1 + var(--e-rail));
+  width: calc(var(--e-retrait) - var(--e-rail));
+  height: 1px;
+  background: var(--light);
+}
+/* Le titre porte le palier, la description l'explique : la graisse et la
+   taille disent lequel se lit en premier. Le <span> tient la couleur, la
+   couche TITLES-V5 imposant la sienne en !important sur le h3 lui-meme. */
+.art-etapes--echelle .art-etape h3 { font-size: 26px !important; margin: 0; }
+.art-etapes--echelle .art-etape h3 span { font-weight: 600; }
+.art-etapes--echelle .art-etape p { margin: 3px 0 0; font-size: 15px; color: var(--mid); }
+/* Le rond se cale sur la ligne de titre, pas sur le milieu du palier : centre,
+   il descendait des que la description prenait une ligne de plus. */
+.art-etapes--echelle .art-etape { align-items: start; }
+
+
+.art-etapes--echelle .art-etape:nth-child(1) { background: rgba(30, 85, 102, 0.08); }
+.art-etapes--echelle .art-etape:nth-child(1) h3 span { color: var(--art-eau-encre); }
+
+.art-etapes--echelle .art-etape:nth-child(2) { background: rgba(74, 107, 88, 0.08); }
+.art-etapes--echelle .art-etape:nth-child(2) h3 span { color: #4A6B58; }
+
+.art-etapes--echelle .art-etape:nth-child(3) { background: rgba(168, 71, 42, 0.08); }
+.art-etapes--echelle .art-etape:nth-child(3) h3 span { color: var(--rust); }
+
+@media (max-width: 720px) {
+  .art-etapes--echelle { --e-retrait: 30px; }
+  .art-etapes--echelle .art-etape { padding: 16px 18px; }
+
+}
+
+/* ══ TROIS PISTES ══════════════════════════════════════════════════════════
+   Trois options qui partent d'un meme but. Les numeroter dirait qu'on les
+   suit dans l'ordre, ce qui est faux : le lecteur en choisit une. D'ou le
+   noyau a gauche et les trois branches a droite.
+
+   Les liaisons sont des equerres a angles arrondis, ancrees sur chaque carte :
+   une courbe libre demanderait des coordonnees fixes, qui se decrochent des
+   qu'une carte change de hauteur. Ici rien a realigner, jamais.
+
+   Trois tons deja au travail dans la page : l'eau, le pivot, la terre. */
+.art-voies {
+  --v-noyau: 210px;
+  --v-liaison: 72px;
+  --v-ecart: 14px;
+  display: grid;
+  grid-template-columns: var(--v-noyau) 1fr;
+  column-gap: var(--v-liaison);
+  align-items: center;
+  margin: 30px 0 34px;
+}
+
+.art-voies-noyau {
+  position: relative;
+  text-align: center;
+  padding: 30px 18px;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(30, 85, 102, 0.06);
+  color: var(--art-eau-encre);
+}
+.art-voies-icone { display: block; margin-bottom: 10px; }
+.art-voies-titre {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  margin: 0;
+}
+.art-voies-note { font-size: 13px; color: var(--mid); margin: 8px 0 0; line-height: 1.5; }
+
+/* Les trois cartes prennent la meme hauteur : c'est ce qui rend les courbes
+   calculables. Sans ca, la distance d'une carte a l'axe du noyau depend de la
+   hauteur de sa voisine, qu'une carte ne peut pas connaitre. */
+.art-voies-liste { display: grid; grid-auto-rows: 1fr; gap: var(--v-ecart); }
+
+/* L'icone est centree verticalement : c'est la hauteur a laquelle la courbe
+   arrive, et c'est ce qui fait qu'elles se rejoignent au lieu de se croiser. */
+.art-voie {
+  position: relative;
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  column-gap: 18px;
+  align-items: center;
+  padding: 18px 24px;
+  border-radius: 14px;
+}
+.art-voie h3 { font-size: 15px !important; margin: 2px 0 0; }
+.art-voie h3 span {
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.art-voie p { margin: 6px 0 0; font-size: 15px; color: var(--mid); }
+.art-voie-icone { display: grid; place-items: center; width: 46px; height: 46px; }
+
+/* La courbe part du noyau et rejoint la carte. Chaque branche porte la sienne
+   et la dessine dans sa propre boite : rien a recalculer quand une carte gagne
+   une ligne. Le trace est en pourcentages et s'etire avec la boite ; le
+   « non-scaling-stroke » garde une epaisseur constante malgre l'etirement. */
+.art-voie-lien {
+  position: absolute;
+  left: calc(var(--v-liaison) * -1);
+  width: var(--v-liaison);
+  color: currentColor;
+  pointer-events: none;
+}
+.art-voie:nth-child(1) { background: rgba(30, 85, 102, 0.06); color: var(--art-eau-encre); }
+.art-voie:nth-child(2) { background: rgba(168, 71, 42, 0.06); color: var(--rust); }
+.art-voie:nth-child(3) { background: rgba(74, 107, 88, 0.07); color: #4A6B58; }
+
+/* La branche du haut sort a sa propre hauteur puis descend vers l'axe du
+   noyau : horizontale en haut, verticale a gauche. Celle du bas fait
+   l'inverse. Celle du milieu est deja dans l'axe, un trait suffit. */
+/* Du milieu de sa carte a l'axe du noyau : une demi-carte, l'ecart, une
+   demi-carte. La hauteur est posee et non deduite de « top » et « bottom » :
+   un SVG a un ratio intrinseque, qui reprend la main des que la hauteur est
+   laissee libre. */
+.art-voie:nth-child(1) .art-voie-lien { top: 50%; height: calc(100% + var(--v-ecart)); }
+.art-voie:nth-child(2) .art-voie-lien { top: calc(50% - 1px); height: 2px; }
+.art-voie:nth-child(3) .art-voie-lien { bottom: 50%; height: calc(100% + var(--v-ecart)); }
+
+/* Le point qui pose la branche sur la carte. */
+.art-voie::after {
+  content: "";
+  position: absolute;
+  left: -4px; top: 50%;
+  width: 8px; height: 8px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+@media (max-width: 720px) {
+  /* Le noyau passe au-dessus : les branches n'auraient plus de sens en
+     colonne, elles disparaissent avec leur point. */
+  .art-voies { grid-template-columns: 1fr; row-gap: 20px; }
+  .art-voies-noyau { aspect-ratio: auto; border-radius: 18px; padding: 22px 20px; }
+  .art-voie-lien { display: none; }
+  .art-voie::after { content: none; }
+  .art-voie { grid-template-columns: 40px 1fr; column-gap: 14px; padding: 16px 18px; }
 }

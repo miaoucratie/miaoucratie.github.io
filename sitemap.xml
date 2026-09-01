@@ -50,7 +50,7 @@
 <!-- GENERATED:BLOG_URLS:START -->
   <url>
     <loc>https://miaoucratie.fr/coulisses-miaoucratie.html</loc>
-    <lastmod>2026-08-31</lastmod>
+    <lastmod>2026-09-01</lastmod>
   </url>
   <url>
     <loc>https://miaoucratie.fr/ce-que-jutilise.html</loc>
@@ -63,6 +63,10 @@
   <url>
     <loc>https://miaoucratie.fr/croquettes-et-patee.html</loc>
     <lastmod>2026-08-31</lastmod>
+  </url>
+  <url>
+    <loc>https://miaoucratie.fr/hydratation-du-chat.html</loc>
+    <lastmod>2026-09-01</lastmod>
   </url>
 <!-- GENERATED:BLOG_URLS:END -->
 </urlset>
