@@ -52,8 +52,8 @@
         "fontaine"
       ],
       "related": [
-        "croquettes-et-patee",
-        "etiquette-nourriture-chat"
+        "hydratation-du-chat",
+        "croquettes-et-patee"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
@@ -116,11 +116,43 @@
         "transition"
       ],
       "related": [
-        "etiquette-nourriture-chat",
+        "hydratation-du-chat",
         "ce-que-jutilise"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 2
+    },
+    {
+      "slug": "hydratation-du-chat",
+      "url": "/hydratation-du-chat.html",
+      "status": "published",
+      "category": "Hydratation",
+      "affiliate": true,
+      "h1": "Faire boire un chat, ce qui marche vraiment",
+      "seoTitle": "Faire boire un chat : ce qui marche vraiment | Miaoucratie",
+      "description": "Un chat nourri aux croquettes boit plus, et reste quand même en dessous. Ce que valent les fontaines, où poser la gamelle, et les repères qui comptent.",
+      "ldHeadline": "Faire boire un chat : ce qui marche vraiment",
+      "cardTitle": "Faire boire un chat, ce qui marche",
+      "cardText": [
+        "Un chat nourri aux croquettes boit presque 3&nbsp;fois plus qu'un chat nourri à la pâtée, et il finit quand même le plus bas des deux.",
+        "Ce que la fontaine change vraiment, où poser la gamelle, et le seul geste qui déplace les chiffres."
+      ],
+      "cardCta": "Combien d'eau",
+      "datePublished": "2026-09-01",
+      "dateModified": "2026-09-01",
+      "keywords": [
+        "hydratation",
+        "eau",
+        "fontaine",
+        "cystite",
+        "pâtée"
+      ],
+      "related": [
+        "croquettes-et-patee",
+        "ce-que-jutilise"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 4
     }
   ]
 }
