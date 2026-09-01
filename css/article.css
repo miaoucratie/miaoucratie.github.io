@@ -454,6 +454,14 @@
    .eyebrow n'est pas repris : sa marge basse de 24 px et sa taille sont
    calibrees pour un haut de page, pas pour deux pastilles cote a cote. */
 .art-etiquettes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+/* Les cartes qui menent a un article se lisent en rangee, et elles sont
+   etroites : avec « flex-wrap », la voisine dont le nom de rubrique etait plus
+   court gardait ses deux etiquettes sur une ligne quand l'autre passait a deux.
+   La mise en page dependait du texte. Elles sont donc toutes empilees.
+   Les fiches produit sont larges : leurs deux etiquettes tiennent cote a cote
+   et n'ont aucune raison de descendre. */
+.art-trio .art-etiquettes,
+.avis-grid .art-etiquettes { flex-direction: column; align-items: flex-start; }
 .art-cat,
 .art-tag {
   display: inline-flex;
