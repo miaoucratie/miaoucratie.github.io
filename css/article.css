@@ -821,7 +821,7 @@
 .art-crit { display: flex; align-items: center; gap: 11px; }
 .art-num {
   flex: 0 0 auto;
-  display: grid;
+  display: inline-grid;
   place-items: center;
   width: 30px; height: 30px;
   border-radius: 50%;
@@ -830,6 +830,10 @@
   font-size: 15px;
   font-weight: 700;
 }
+/* La meme pastille devant un titre : « 3 questions qui reviennent » annonce un
+   compte que rien ne materialisait ensuite. Le decalage vertical la cale sur la
+   ligne de base du titre, plus grand qu'elle. */
+h3 > .art-num { margin-right: 13px; vertical-align: -6px; }
 .art-tab-chiffre { display: block; }
 .art-tab-echelle {
   display: block;
