@@ -157,6 +157,18 @@ body .acc-question {
 body h3 {
   font-size: clamp(18px, 1.8vw, 24px) !important;
 }
+/* Trois composants de l'accueil portaient un titre d'un niveau trop bas, ce qui
+   creait deux sauts dans le document : h1 puis h3 pour la bande des trois
+   promesses, h2 puis h4 pour les encarts de credibilite et pour les cinq
+   etapes. Les niveaux ont ete remontes d'un cran ; leur taille, elle, ne
+   change pas. Ce sont des titres de composant, pas des titres de section, et
+   la regle ci-dessus les ferait passer de 23 a 29px, de 17 a 23px et de 18 a
+   23px — soit une refonte de l'accueil pour une correction de structure.
+   Le « !important » ne fait que repondre a celui des deux regles au-dessus :
+   il ne s'empile sur aucune autre surcharge. */
+body .stripe-item h2 { font-size: clamp(18px, 1.8vw, 24px) !important; }
+body .cred-item h3 { font-size: 17px !important; }
+body .step h3 { font-size: 18px !important; }
 body .hero-title em,
 body .tarifs-hero h1 em,
 body .cgv-title em,
