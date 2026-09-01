@@ -76,7 +76,7 @@
    figures, tableaux, encadres. Un composant qui en sort est un defaut. */
 .art-page {
   /* 1200 moins les deux fois 40 de remplissage : 1120 de contenu, soit la
-     largeur que « .section » donne aux blocs de « blog.html ». Le sommaire,
+     largeur que « .section » donne aux blocs de la page d'entree. Le sommaire,
      la colonne de lecture et les blocs de bas de page partagent des lors les
      memes bords sur toutes les pages du blog. */
   width: min(1200px, 100%);
@@ -246,10 +246,10 @@
    l'autre. */
 .art-fiches { display: grid; gap: var(--e-para); }
 
-/* Les trois articles du blog, cote a cote. Ils doivent tenir dans le premier
-   ecran : arriver sur « Le blog » puis devoir faire defiler pour decouvrir ce
-   qu'on peut y lire est une friction inutile. Trois colonnes sur bureau, deux
-   sur tablette, une sur telephone. */
+/* Les trois articles, cote a cote. Ils doivent tenir dans le premier ecran :
+   arriver sur « Les coulisses de Miaoucratie » puis devoir faire defiler pour
+   decouvrir ce qu'on peut y lire est une friction inutile. Trois colonnes sur
+   bureau, deux sur tablette, une sur telephone. */
 /* « auto-fill » et non un nombre fixe de colonnes : la rangee pose autant de
    colonnes que la largeur permet, et le jour ou le blog aura dix ou cinquante
    articles, rien n'est a changer dans cette feuille. « min(300px, 100%) »
