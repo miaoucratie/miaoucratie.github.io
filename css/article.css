@@ -525,11 +525,18 @@
   border-radius: 16px;
   padding: 16px 20px;
 }
+/* Pastille pleine et non un chiffre rouille sur un rond creme : sur une carte
+   blanche, le rond se confondait avec elle et la suite d'etapes n'avait plus
+   d'accroche pour l'oeil. Le filet reprend la meme couleur et separe le numero
+   de son texte, sans ajouter de trait au dessin. */
 .art-etape .step-bubble {
   width: 52px; height: 52px;
   font-size: 26px;
   margin-bottom: 0;
+  background: var(--rust);
+  color: var(--cream);
 }
+.art-etape > div:last-child { border-left: 2px solid var(--warm); padding-left: 16px; }
 .art-etape p { font-size: 15px; line-height: 1.7; color: var(--mid); }
 
 /* ══ FIGURES DE DONNEES ═════════════════════════════════════════════════
@@ -554,6 +561,7 @@
    l'etape. DM Sans et non Cormorant, qui reste la police des niveaux de
    titre : un titre de composant qui l'emprunte entre en concurrence avec eux. */
 .art-fig-titre,
+.art-tab caption,
 .art-etape h3,
 .cred-item h4 {
   font-family: 'DM Sans', sans-serif;
@@ -583,6 +591,27 @@
    de 3:1 des elements non textuels. */
 .art-part { display: block; height: 100%; background: var(--rust); border-radius: 999px; }
 .art-part--clair { background: var(--sand); }
+/* Sauge foncee et non la sauge du site, qui donne 2,43:1 sur la piste, sous le
+   meme seuil de 3:1 que le sable. Mesure : 4,88:1. */
+.art-part--sauge { background: #4A6B58; }
+
+/* Deux produits compares sur plusieurs mesures. Chaque mesure fait un groupe,
+   et chaque produit garde sa couleur d'un groupe a l'autre : quatre barres a la
+   suite obligeaient a relire les intitules pour savoir laquelle repond a
+   laquelle. */
+.art-barres--duel { gap: 0; }
+.art-barres--duel .art-groupe { display: grid; gap: 10px; padding: 18px 0; }
+.art-barres--duel .art-groupe:first-child { padding-top: 0; }
+.art-barres--duel .art-groupe:last-child { padding-bottom: 0; }
+.art-barres--duel .art-groupe + .art-groupe { border-top: 1px solid var(--warm); }
+.art-groupe-nom {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 2px;
+}
 .art-barre-val {
   font-size: 14px;
   font-weight: 600;
@@ -638,14 +667,15 @@
   background: #fff;
 }
 .art-tab { width: 100%; border-collapse: collapse; font-size: 15px; }
+/* La legende ne porte que sa position et son retrait : son ecriture est celle
+   des autres titres de composant, plus haut. En Cormorant 19 px, sa hauteur
+   d'x valait 8 px, exactement celle du texte courant : elle avait beau etre
+   annoncee plus grande et en gras, elle se lisait plus petite que le
+   paragraphe d'en dessous. */
 .art-tab caption {
   caption-side: top;
   text-align: left;
   padding: 20px 24px 0;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 19px;
-  font-weight: 700;
-  color: var(--deep);
 }
 .art-tab th,
 .art-tab td { padding: 13px 24px; text-align: left; vertical-align: top; line-height: 1.6; }
