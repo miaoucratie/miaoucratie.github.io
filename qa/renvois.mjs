@@ -11,6 +11,8 @@
  *
  *   · un appel de note qui ne tombe sur aucune source, ou une source listee
  *     que plus aucun paragraphe ne cite, apres une reecriture ;
+ *   · une source numerotee autrement que par son ordre d'apparition dans le
+ *     texte, donc un renvoi « 9 » sur la premiere note de l'article ;
  *   · un lien vers une page renommee, ou vers une ancre supprimee ;
  *   · un lien affilie qui a perdu son « sponsored », ou un lien sortant sans
  *     « noopener » ;
@@ -59,6 +61,22 @@ for (const page of PAGES) {
   if (sources.length) {
     for (const a of appels) if (!sources.includes(a)) noter(page, `appel de note vers une source absente : #${a}`);
     for (const s of sources) if (!appels.includes(s)) noter(page, `source listee que rien ne cite : #${s}`);
+
+    /* Une source porte le numero de sa premiere apparition dans le texte, et
+       le garde quand elle revient plus loin. C'est ce que le lecteur suppose
+       en croisant « 1 » avant « 2 ». Le numero affiche en bas de page vient
+       du compteur de la liste ordonnee, donc de la place de l'entree : trois
+       maillons a verifier, un par endroit ou la chaine peut se rompre. */
+    const suite = (l) => l.map((_, i) => `s${i + 1}`).join(' ');
+    if (sources.join(' ') !== suite(sources)) {
+      noter(page, `liste des sources dans le desordre : ${sources.join(' ')} au lieu de ${suite(sources)}`);
+    }
+    if (appels.length === sources.length && appels.join(' ') !== suite(appels)) {
+      noter(page, `sources numerotees hors ordre d'apparition : ${appels.join(' ')} au lieu de ${suite(appels)}`);
+    }
+    for (const [, id, libelle] of t.matchAll(/<sup><a href="#s(\d+)">([^<]*)<\/a>/g)) {
+      if (libelle !== id) noter(page, `appel affiche « ${libelle} » pour la source #s${id}`);
+    }
   } else if (appels.length) {
     noter(page, `${appels.length} appel(s) de note sans bloc de sources`);
   }
