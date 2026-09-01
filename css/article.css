@@ -302,7 +302,13 @@
    « .btn-primary », qui est deja le bouton du site.
 
    Aucune page hors blog n'est touchee : « .cta-section » reste tel quel. */
+/* Le bandeau final n'avait aucune marge haute : sur les quatre pages du blog
+   et aux trois largeurs, son bord touchait le bloc precedent — l'encart des
+   sources sur la page d'entree, « A lire ensuite » sur les articles. Deux
+   aplats differents colles bord a bord, sans respiration.
+   Meme cran que « .art-lies », qui est l'autre bloc terminal de la colonne. */
 .art-fin {
+  margin-top: var(--e-section);
   background: rgba(200, 96, 58, 0.06);
   border-top: 1.5px solid rgba(200, 96, 58, 0.18);
   border-radius: 18px;
