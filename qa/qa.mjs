@@ -91,13 +91,24 @@ const DETAIL = process.argv.includes('--detail');
  * ne règle ça : celle qui absorberait 29 px masquerait aussi la barre passée
  * de 50 à 67 px, régression réelle rencontrée le 11 août.
  *
- * L'empreinte reste donc un outil local, comparée à une référence produite
- * sur la même machine. En intégration continue, on ne garde que ce qui est
- * portable : comportement, erreurs JavaScript, débordement. C'est d'ailleurs
- * ce qui aurait attrapé la panne de la FAQ — menu mort, accordéon figé,
- * filtres inopérants — sans jamais mesurer un pixel.
+ * La mesure reste donc un outil local, comparée à une référence produite
+ * sur la même machine.
+ *
+ * Ce qui est portable, en revanche, c'est la STRUCTURE : le nom de balise et
+ * la classe de chaque élément relevé. La rastérisation ne change ni le nombre
+ * de div d'une page ni leur classe. La CI compare donc cette projection-là,
+ * et rien d'autre.
+ *
+ * Sans elle, la référence pouvait pourrir sans que rien ne l'arrête : le bloc
+ * « articles liés » est passé de trois cartes en art-trio à quatre en
+ * carrousel le 1er septembre 2026, la référence est restée sur l'ancien
+ * état, et les huit écarts qui en résultaient se lisaient comme du bruit de
+ * machine. Un oracle qui crie pour rien finit ignoré.
  */
 const COMPORTEMENT_SEUL = process.argv.includes('--comportement') || !!process.env.CI;
+
+/** La part de l'empreinte qui ne dépend pas du moteur de rendu. */
+const structure = (releve) => releve.map((e) => e.split('|').slice(0, 2).join('|'));
 
 const PAGES = [
   'index.html', 'tarifs.html', 'faq.html', 'carte.html', 'reservation.html',
@@ -1105,7 +1116,7 @@ async function main() {
             + `malgre un consentement refuse — ${appelsMesure[0]}`);
         }
 
-        if (!COMPORTEMENT_SEUL && !SANS_EMPREINTE.has(nomPage)) {
+        if (!SANS_EMPREINTE.has(nomPage)) {
           const manquantes = await attendrePolices(page);
           if (manquantes.length) {
             echecs.push(`${nomPage} @${largeur}px : police non chargee — ${manquantes.join(', ')}. `
@@ -1207,9 +1218,29 @@ async function main() {
       echecs.push(`nombre d'avis : ${compteursAvis.size} valeurs differentes selon l'emplacement${detail}`);
     }
 
-    if (COMPORTEMENT_SEUL) {
-      console.log("Mode comportement : l'empreinte visuelle n'est pas comparée,\n"
-        + 'elle ne serait pas fiable sur un autre système que celui qui l\'a produite.');
+    if (COMPORTEMENT_SEUL && existsSync(REFERENCE)) {
+      // Les mesures ne franchissent pas la frontière entre systèmes, la
+      // structure si. Comparer les deux relevés balise par balise dit une
+      // seule chose, mais elle est décisive : la référence décrit-elle encore
+      // les pages telles qu'elles sont ?
+      const ref = JSON.parse(await readFile(REFERENCE, 'utf8'));
+      for (const [cle, actuel] of Object.entries(empreintes)) {
+        const attendu = ref[cle];
+        if (!attendu) { echecs.push(`${cle} : absent de la reference`); continue; }
+        const a = structure(attendu);
+        const b = structure(actuel);
+        const i = a.findIndex((v, k) => v !== b[k]);
+        if (i === -1 && a.length === b.length) continue;
+        echecs.push(`${cle} : la reference ne decrit plus cette page — `
+          + `${attendu.length} element(s) attendu(s), ${actuel.length} releve(s)`
+          + `\n        attendu : ${a[i] ?? '(rien)'}`
+          + `\n        trouve  : ${b[i] ?? '(rien)'}`
+          + '\n        La page a change sans que « npm run qa:update » soit relance.');
+      }
+      console.log("Mode comportement : seule la structure est comparée,\n"
+        + 'les mesures ne seraient pas fiables sur un autre système que celui qui les a produites.');
+    } else if (COMPORTEMENT_SEUL) {
+      console.log("Mode comportement : aucune reference, la structure n'est pas comparée.");
     } else if (MAJ) {
       // Une vue dont la police a manqué n'a pas été relevée. L'écrire quand
       // même amputerait la référence des vues concernées, et le manque se
@@ -1263,14 +1294,13 @@ async function main() {
   if (echecs.length) {
     console.error(`\n${echecs.length} probleme(s) :\n`);
     for (const e of echecs) console.error('  - ' + e);
-    if (!COMPORTEMENT_SEUL) {
-      console.error('\nSi le changement est voulu : npm run qa:update');
-    }
+    console.error('\nSi le changement est voulu : npm run qa:update');
     console.error('');
     process.exitCode = 1;
   } else if (!MAJ) {
     console.log(COMPORTEMENT_SEUL
-      ? `Aucune regression de comportement. ${PAGES.length} pages, ${LARGEURS.length} largeurs.`
+      ? `Aucune regression de comportement ni de structure. ${PAGES.length} pages, `
+        + `${LARGEURS.length} largeurs, ${Object.keys(empreintes).length} vues.`
       : `Aucune regression. ${Object.keys(empreintes).length} vues verifiees.`);
   }
 }
