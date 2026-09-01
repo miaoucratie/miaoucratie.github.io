@@ -72,12 +72,13 @@ jobs:
       # l'ensemble du site deviennent bloquants ici. Ils lisent le dossier ou
       # le registre des articles, jamais une liste recopiee : une page ajoutee
       # demain y entre d'elle-meme.
-      - name: Contrôler le SEO, la rédaction, les espacements et les feuilles
+      - name: Contrôler le SEO, la rédaction, les espacements, les renvois et les feuilles
         run: |
           npm run blog:check
           npm run seo:strict
           npm run redaction:strict
           npm run espacements:strict
+          npm run renvois:strict
           npm run css
 
       # Ces deux-la relevent des defauts reels, mais anterieurs au blog :
