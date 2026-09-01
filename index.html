@@ -1041,19 +1041,6 @@ body.carte-page .zone-header {
   });
 })();
 </script>
-<script>
-(function(){
-  var car=document.querySelector('.avis-carousel'); if(!car) return;
-  var grid=car.querySelector('.avis-grid');
-  var prev=car.querySelector('.avis-prev'), next=car.querySelector('.avis-next');
-  function step(){ var c=grid.querySelector('.avis-card'); return c ? c.getBoundingClientRect().width+20 : 360; }
-  function update(){ var max=grid.scrollWidth-grid.clientWidth-2; prev.classList.toggle('is-off', grid.scrollLeft<=0); next.classList.toggle('is-off', grid.scrollLeft>=max); }
-  prev.addEventListener('click',function(){ grid.scrollBy({left:-step(),behavior:'smooth'}); });
-  next.addEventListener('click',function(){ grid.scrollBy({left:step(),behavior:'smooth'}); });
-  grid.addEventListener('scroll',update,{passive:true});
-  window.addEventListener('resize',update);
-  update();
-})();
-</script>
+<script src="js/carrousel.js" defer></script>
 </body>
 </html>
