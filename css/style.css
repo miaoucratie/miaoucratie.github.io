@@ -301,7 +301,7 @@
   .stripe-item:last-child { border-right: none; }
   .stripe-item:hover { background: rgba(255,255,255,0.03); }
   .stripe-emoji { font-size: 36px; margin-bottom: 16px; display: block; }
-  .stripe-item h3 {
+  .stripe-item h2 {
     font-family: 'Cormorant Garamond', serif; font-size: 20px;
     font-weight: 600; color: var(--cream); margin-bottom: 10px;
   }
@@ -372,7 +372,7 @@
     margin-bottom: 16px; flex-shrink: 0;
   }
   /* Taille et graisse reprises des cinq styles en ligne qu'elles remplacent. */
-  .step h4 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--deep); margin-bottom: 6px; }
+  .step h3 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--deep); margin-bottom: 6px; }
   .step p { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
   .step p a { color: var(--rust); text-decoration: underline; text-underline-offset: 2px; }
 .tarifs-bg .section-label { color: var(--peach); }
@@ -455,7 +455,7 @@
     background: #fff; border-radius: 14px; padding: 22px;
     border-left: 3px solid var(--terracotta);
   }
-  .cred-item h4 { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: var(--deep); margin-bottom: 6px; }
+  .cred-item h3 { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: var(--deep); margin-bottom: 6px; }
   .cred-item p { font-size: 13px; color: var(--mid); line-height: 1.6; }
   .cred-item.full { grid-column: span 2; }
 

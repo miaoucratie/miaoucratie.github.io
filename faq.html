@@ -392,6 +392,13 @@
     }
 
     /* ─── CTA SECTION ────────────────────────────────── */
+    /* Ce conteneur portait un style en ligne, donc hors d'atteinte des media
+       queries. Ses 48px de retrait s'ajoutaient a la marge et au retrait de
+       « .faq-cta » : a 320px, 208px des 320 partaient en chrome et il restait
+       112px pour les boutons, ou « Envoyer un message » tombait sur trois
+       lignes. Sous 768px « .faq-cta » pose deja sa propre marge, ce retrait
+       n'a plus d'objet et il est repris a zero. */
+    .faq-cta-wrap { max-width: 1040px; margin: 0 auto; padding: 0 48px 80px; }
     .faq-cta {
       background: #1E1812;
       margin: 0 48px 80px;
@@ -533,6 +540,7 @@
       .filters-wrap { padding: 0 24px 40px; }
       .search-wrap { padding: 0 24px; }
       .faq-body { padding: 0 24px 60px; }
+      .faq-cta-wrap { padding: 0 0 60px; }
       .faq-cta {
         flex-direction: column;
         padding: 40px 32px;
@@ -1957,7 +1965,7 @@ body.carte-page .zone-header {
 </div>
 </main>
 <!-- ─── CTA ─────────────────────────────────────────── -->
-<div style="max-width:1040px; margin:0 auto; padding:0 48px 80px;">
+<div class="faq-cta-wrap">
 <div class="faq-cta">
 <div class="cta-left">
 <p class="cta-eyebrow">Vous avez d'autres questions&nbsp;?</p>
