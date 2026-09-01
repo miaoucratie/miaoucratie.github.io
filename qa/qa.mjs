@@ -10,6 +10,14 @@
  *   npm run qa:update             regenere la reference, APRES avoir valide a l'oeil
  *                                 que le changement visuel est bien celui qu'on voulait
  *
+ * Deux options servent a la CI, jamais a la main :
+ *
+ *   --reference <chemin>          compare contre CE fichier au lieu de
+ *                                 qa/reference.json, et reactive la comparaison
+ *                                 visuelle meme sous CI
+ *   QA_RACINE=<dossier>           mesure le site de CET arbre de travail, avec
+ *                                 le code de mesure d'ici
+ *
  * Deux familles de controles :
  *
  *  1. Empreinte visuelle. Pour chaque element de chaque page, on releve ses
@@ -59,7 +67,7 @@ import { chromium } from 'playwright';
 import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { extname, join, resolve, normalize } from 'node:path';
+import { extname, join, resolve, normalize, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 // Importe pour son effet : le fichier pose son contenu sur globalThis au lieu
 // de l'exporter, pour rester chargeable en script classique depuis file://.
@@ -70,8 +78,22 @@ const {
   FRAIS_KM_EUR, TAUX_ACOMPTE, estimerSejour, formatEuros,
 } = globalThis.MiaouTarifs;
 
-const RACINE = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const REFERENCE = join(RACINE, 'qa', 'reference.json');
+/* « QA_RACINE » sert l'arborescence d'un AUTRE arbre de travail que celui ou
+   vit ce fichier. C'est ce qui permet a la CI de mesurer la base de la pull
+   request avec le code de mesure de la pull request : une seule version du
+   releve, deux versions du site. Sans cette separation, on comparerait deux
+   mesures faites par deux scripts differents, ce qui ne veut rien dire. */
+const RACINE = process.env.QA_RACINE
+  ? resolve(process.env.QA_RACINE)
+  : resolve(fileURLToPath(new URL('..', import.meta.url)));
+
+/* « --reference <chemin> » remplace le fichier de reference. La CI y ecrit
+   l'empreinte de la base, puis compare la pull request contre elle. */
+const iReference = process.argv.indexOf('--reference');
+const REFERENCE_EXPLICITE = iReference >= 0 && !!process.argv[iReference + 1];
+const REFERENCE = REFERENCE_EXPLICITE
+  ? resolve(process.argv[iReference + 1])
+  : join(resolve(fileURLToPath(new URL('..', import.meta.url))), 'qa', 'reference.json');
 const MAJ = process.argv.includes('--update');
 
 /**
@@ -96,8 +118,27 @@ const DETAIL = process.argv.includes('--detail');
  * portable : comportement, erreurs JavaScript, débordement. C'est d'ailleurs
  * ce qui aurait attrapé la panne de la FAQ — menu mort, accordéon figé,
  * filtres inopérants — sans jamais mesurer un pixel.
+ *
+ * ── Sauf si la référence est produite dans la même exécution ──
+ *
+ * Le fichier « qa/reference.json » est né sous Windows : la CI, sous Ubuntu,
+ * ne peut pas le comparer. Elle ne comparait donc RIEN de l'apparence, et une
+ * page pouvait changer de mise en page sans qu'aucun contrôle automatique ne
+ * s'en aperçoive. C'est passé le 31 août : le texte d'affiliation de deux
+ * pages avait changé, la référence était restée sur l'ancien, la CI était
+ * verte.
+ *
+ * La CI mesure donc elle-même la base de la pull request, puis la pull
+ * request, dans la même exécution et sur la même machine. Les deux relevés
+ * sont alors comparables, et l'écart mesuré est exactement ce que la pull
+ * request change. Rien n'est ajouté au dépôt : l'empreinte de la base est un
+ * fichier temporaire du job.
+ *
+ * Passer « --reference » suffit donc à réactiver la comparaison visuelle,
+ * même sous CI.
  */
-const COMPORTEMENT_SEUL = process.argv.includes('--comportement') || !!process.env.CI;
+const COMPORTEMENT_SEUL = process.argv.includes('--comportement')
+  || (!!process.env.CI && !REFERENCE_EXPLICITE);
 
 const PAGES = [
   'index.html', 'tarifs.html', 'faq.html', 'carte.html', 'reservation.html',
@@ -1221,7 +1262,7 @@ async function main() {
         process.exitCode = 1;
         return;
       }
-      await mkdir(join(RACINE, 'qa'), { recursive: true });
+      await mkdir(dirname(REFERENCE), { recursive: true });
       await writeFile(REFERENCE, JSON.stringify(empreintes, null, 1), 'utf8');
       const total = Object.values(empreintes).reduce((n, v) => n + v.length, 0);
       console.log(`Reference regeneree : ${Object.keys(empreintes).length} vues, ${total} elements.`);
@@ -1231,9 +1272,22 @@ async function main() {
       return;
     } else {
       const ref = JSON.parse(await readFile(REFERENCE, 'utf8'));
+      /* Une vue qui n'existe pas des deux cotes n'est pas une regression :
+         quand la comparaison se fait contre la base d'une pull request, une
+         page ajoutee ou renommee en produit forcement. On les nomme, sans
+         faire echouer. Hors de ce mode, une vue absente de la reference reste
+         une erreur : c'est le signe d'une reference a regenerer. */
+      const nouvelles = [], disparues = [];
+      if (REFERENCE_EXPLICITE) {
+        for (const cle of Object.keys(ref)) if (!empreintes[cle]) disparues.push(cle);
+      }
       for (const [cle, actuel] of Object.entries(empreintes)) {
         const attendu = ref[cle];
-        if (!attendu) { echecs.push(`${cle} : absent de la reference`); continue; }
+        if (!attendu) {
+          if (REFERENCE_EXPLICITE) { nouvelles.push(cle); continue; }
+          echecs.push(`${cle} : absent de la reference`);
+          continue;
+        }
         let n = 0, premier = null;
         const tous = [];
         for (let i = 0; i < Math.max(attendu.length, actuel.length); i++) {
@@ -1246,6 +1300,8 @@ async function main() {
         }
         if (n) echecs.push(`${cle} : ${n} ecart(s) visuel(s)${DETAIL ? tous.join('') : premier}`);
       }
+      if (nouvelles.length) console.log(`  Vue(s) apparue(s) : ${nouvelles.join(', ')}`);
+      if (disparues.length) console.log(`  Vue(s) disparue(s) : ${disparues.join(', ')}`);
     }
   } finally {
     await navigateur.close();
@@ -1263,7 +1319,11 @@ async function main() {
   if (echecs.length) {
     console.error(`\n${echecs.length} probleme(s) :\n`);
     for (const e of echecs) console.error('  - ' + e);
-    if (!COMPORTEMENT_SEUL) {
+    if (REFERENCE_EXPLICITE) {
+      console.error('\nCes ecarts sont ce que la pull request change a l\'ecran.');
+      console.error('S\'ils sont voulus, regardez la page rendue, puis regenerez la');
+      console.error('reference locale : npm run qa:update');
+    } else if (!COMPORTEMENT_SEUL) {
       console.error('\nSi le changement est voulu : npm run qa:update');
     }
     console.error('');
