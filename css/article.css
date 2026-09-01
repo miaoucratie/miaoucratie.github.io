@@ -536,10 +536,9 @@
   background: var(--rust);
   color: var(--cream);
 }
-/* Carte teintee, filet et titre dans la couleur de la pastille : en blanc sur
-   creme, avec un titre noir, la suite d'etapes n'accrochait pas l'oeil. */
-.art-etape { background: rgba(168, 71, 42, 0.045); border-color: rgba(168, 71, 42, 0.14); }
-.art-etape > div:last-child { border-left: 2px solid rgba(168, 71, 42, 0.28); padding-left: 16px; }
+/* Un filet separe le numero de son texte, sans ajouter de trait au dessin. Sa
+   couleur est reprise par les variantes qui en ont une. */
+.art-etape > div:last-child { border-left: 2px solid var(--warm); padding-left: 16px; }
 .art-etape h3 span { color: var(--rust); }
 
 /* UNE COULEUR PAR ETAPE. Les cinq existent deja : sauge foncee et petrole
@@ -782,7 +781,10 @@
 /* La meme piste que dans les figures, a la taille d'une cellule. La piste
    vaut 100 %, la part remplie ce que la formule garantit : « au boeuf » se
    lit alors pour ce qu'il est. */
-.art-tab .art-piste--tab { display: block; width: 104px; height: 8px; margin-top: 7px; }
+/* Pleine largeur de sa cellule, sans valeur en dur : les 104 px d'origine
+   etaient tailles pour un tableau precis, et la seule page qui utilise encore
+   cette piste les annulait deja par une surcharge. */
+.art-tab .art-piste--tab { display: block; height: 8px; margin-top: 7px; }
 
 /* Un plafond n'est pas un minimum : « moins de 4 % » se dessine en contour,
    pour qu'on ne le lise pas comme les 4 % garantis de la ligne suivante. */
@@ -821,7 +823,7 @@
 .art-crit { display: flex; align-items: center; gap: 11px; }
 .art-num {
   flex: 0 0 auto;
-  display: inline-grid;
+  display: grid;
   place-items: center;
   width: 30px; height: 30px;
   border-radius: 50%;
@@ -830,10 +832,6 @@
   font-size: 15px;
   font-weight: 700;
 }
-/* La meme pastille devant un titre : « 3 questions qui reviennent » annonce un
-   compte que rien ne materialisait ensuite. Le decalage vertical la cale sur la
-   ligne de base du titre, plus grand qu'elle. */
-h3 > .art-num { margin-right: 13px; vertical-align: -6px; }
 .art-tab-chiffre { display: block; }
 .art-tab-echelle {
   display: block;
@@ -1001,11 +999,6 @@ h3 > .art-num { margin-right: 13px; vertical-align: -6px; }
 .art-page--eau .art-fig-titre { color: var(--art-eau-encre); }
 .art-page--eau .art-tab thead th { color: var(--art-eau-encre); }
 .art-page--eau .art-tab .art-part { background: var(--art-eau); }
-
-/* La largeur du composant partage est figee a 104 px, taille juste pour le
-   tableau des denominations. Ici la colonne fait quatre fois ca : une barre
-   de 104 px ne se compare plus a rien, elle prend donc la place offerte. */
-.art-page--eau .art-tab .art-piste--tab { width: 100%; }
 
 /* ══ SUITE D'ETAPES ════════════════════════════════════════════════════════
    Une suite d'etapes n'est pas une pile de cartes : pas de cadre, pas de fond.
