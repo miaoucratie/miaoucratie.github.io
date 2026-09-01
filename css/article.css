@@ -539,6 +539,66 @@
 .art-etape > div:last-child { border-left: 2px solid var(--warm); padding-left: 16px; }
 .art-etape p { font-size: 15px; line-height: 1.7; color: var(--mid); }
 
+/* ══ UN PROCEDE, DE GAUCHE A DROITE ═════════════════════════════════════════
+   Un enchainement se raconte dans le sens de la lecture. Le chiffre devient le
+   repere, souligne de sa couleur, et la fleche marque le passage d'une etape a
+   la suivante. Sous 720 px les trois colonnes n'ont plus la place : elles
+   s'empilent et la fleche bascule vers le bas, sans changer de dessin. */
+.art-etapes--parcours {
+  --p-fleche: 34px;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: calc(var(--p-fleche) * 2);
+  margin: 6px 0 4px;
+}
+.art-etapes--parcours .art-etape {
+  position: relative;
+  display: block;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+.art-etapes--parcours .art-etape > div:last-child { border-left: 0; padding-left: 0; }
+/* Trois classes et non deux : la regle generale des etapes redefinit la
+   pastille dans la requete des 768 px, plus bas dans la feuille, et reprendrait
+   la main sur celle-ci. */
+.art-etapes--parcours .art-etape .step-bubble {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-radius: 0;
+  border-bottom: 2px solid var(--rust);
+  background: none;
+  color: var(--rust);
+  font-size: 46px;
+  line-height: 1;
+}
+/* Deux bords d'un carre pivote, comme le chevron de « --suite » : aucune image
+   a charger, aucune police a attendre. */
+.art-etapes--parcours .art-etape + .art-etape::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--p-fleche) * -1 - 7px);
+  top: 30px;
+  width: 14px;
+  height: 14px;
+  border-top: 2px solid var(--light);
+  border-right: 2px solid var(--light);
+  transform: rotate(45deg);
+}
+@media (max-width: 720px) {
+  .art-etapes--parcours { grid-auto-flow: row; gap: calc(var(--p-fleche) * 1.6); }
+  .art-etapes--parcours .art-etape + .art-etape::before {
+    left: 22px;
+    top: calc(var(--p-fleche) * -1.1);
+    transform: rotate(135deg);
+  }
+  .art-etapes--parcours .art-etape .step-bubble { width: auto; height: auto; font-size: 38px; }
+}
+
 /* ══ FIGURES DE DONNEES ═════════════════════════════════════════════════
    Chaque barre porte son intitule et sa valeur en texte : la largeur n'est
    jamais le seul porteur de l'information. */
@@ -560,12 +620,15 @@
 /* Titre de composant : un seul traitement pour l'encart, la figure et
    l'etape. DM Sans et non Cormorant, qui reste la police des niveaux de
    titre : un titre de composant qui l'emprunte entre en concurrence avec eux. */
+/* 17 et non 14 px : a 14, la hauteur d'x du titre valait 7 px contre 8 pour le
+   texte courant et pour les valeurs qu'il annonce. Un titre de bloc ne peut pas
+   se lire plus petit que ce qu'il coiffe. */
 .art-fig-titre,
 .art-tab caption,
 .art-etape h3,
 .cred-item h4 {
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
@@ -699,6 +762,43 @@
 /* Un plafond n'est pas un minimum : « moins de 4 % » se dessine en contour,
    pour qu'on ne le lise pas comme les 4 % garantis de la ligne suivante. */
 .art-part--plafond { background: none; border: 1.5px solid var(--rust); }
+/* Comparer deux produits critere par critere. La colonne de chaque produit
+   porte sa teinte, celle-la meme que ses barres dans les figures : la couleur
+   dit de quel produit on parle, du tableau au graphique, sans legende a
+   apprendre. Le numero du critere reprend la pastille des etapes. */
+.art-tab--duel .art-duel-a { background: rgba(200, 96, 58, 0.07); }
+.art-tab--duel .art-duel-b { background: rgba(74, 107, 88, 0.07); }
+.art-tab--duel td.art-duel-a { color: var(--rust); }
+.art-tab--duel td.art-duel-b { color: #4A6B58; }
+/* La valeur reste sous le titre du bloc et au-dessus de ce qui la precise :
+   17 px comme le titre, avec la couleur du produit en plus, et la ligne qui
+   la qualifie un cran en dessous. */
+.art-tab--duel td.art-duel-a strong,
+.art-tab--duel td.art-duel-b strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
+}
+.art-tab--duel td.art-duel-a,
+.art-tab--duel td.art-duel-b { font-size: 14px; }
+.art-tab--duel thead th span { display: block; font-weight: 400; text-transform: none; letter-spacing: 0; }
+/* Le numero et son intitule forment une ligne a part entiere : en flux, un
+   intitule de deux mots repassait sous la pastille au lieu de s'aligner sur
+   lui-meme. */
+.art-crit { display: flex; align-items: center; gap: 11px; }
+.art-num {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(168, 71, 42, 0.12);
+  color: var(--rust);
+  font-size: 15px;
+  font-weight: 700;
+}
 .art-tab-chiffre { display: block; }
 .art-tab-echelle {
   display: block;
