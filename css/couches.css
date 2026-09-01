@@ -54,13 +54,20 @@ body .faq-hero .hero-title,
 body .tarifs-hero h1,
 body.carte-page .zone-header h2,
 body .cgv-title,
-body .container > header h1,
 body .hero-title {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 700;
-  /* Ces deux-la portent encore, et seulement sur le titre de la FAQ : le
-     selecteur « body .faq-hero .hero-title » est plus specifique que celui de
-     la couche TITLES-V5, qui imposerait sinon 1.08 et -0.02em. */
+  /* Ce -3px ne porte plus que sur le titre de la FAQ : « body .faq-hero
+     .hero-title » est plus specifique que la couche TITLES-V5, qui imposerait
+     sinon 1.08 et -0.02em.
+
+     « body .container > header h1 » etait dans cette liste, et le commentaire
+     affirmait deja qu'elle ne servait qu'a la FAQ. C'etait faux : ce selecteur
+     ne designe qu'une page, le calculateur, dont le titre fait 42px. Un -3px
+     fixe y vaut -0,071em, quand tout le reste du site tient -0,02em — soit
+     -1,04px a 52px, -1,52px a 76px, -1,76px a 88px. Le titre du calculateur
+     etait donc resserre trois fois et demie plus que partout ailleurs. Le
+     selecteur retire, il retombe sur la regle commune. */
   letter-spacing: -3px !important;
   line-height: 1 !important;
   color: var(--deep, #1E1812);
@@ -341,6 +348,17 @@ body.cgv-page .brand-rule {
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 16px; width: 100%;
 }
+/* Le groupe du milieu doit tomber sur l'axe de la barre. « space-between »
+   pose les trois blocs bout a bout : le milieu se decale des que le logo et
+   les liens legaux n'ont pas la meme largeur. Mesure avant correction, sur les
+   quatorze pages : 80,33 px vers la gauche a 1024, 1280 et 1440 px, et jusqu'a
+   196,22 px a 900 px, ou le bloc legal passait a la ligne. Les deux blocs de
+   bord prennent la meme base souple, le milieu garde sa largeur propre, et il
+   tombe au centre quelles que soient leurs largeurs respectives. */
+.footer-bar > .footer-logo,
+.footer-bar > .footer-legal { flex: 1 1 0; min-width: 0; }
+.footer-bar > .footer-legal { justify-content: flex-end; }
+.footer-bar > .footer-links { justify-content: center; }
 .footer-bar .footer-logo { display: flex; align-items: center; gap: 12px; }
 .footer-bar .footer-logo img {
   width: 40px; height: 40px; border-radius: 50%; object-fit: cover; opacity: .9;
@@ -351,10 +369,17 @@ body.cgv-page .brand-rule {
 }
 .footer-bar .footer-logo em { color: var(--terracotta,#C8603A); font-style: italic; }
 .footer-bar .footer-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+/* Meme geometrie que « .topbar-links a » : meme corps, meme gouttiere de 6px,
+   memes pictogrammes de 14px. Les deux rangees portent les memes destinations,
+   elles ne peuvent pas se composer differemment. Les pictogrammes sont
+   decoratifs, ils portent aria-hidden ; ils suivent la couleur du lien par
+   « currentColor », donc le survol les emporte avec le mot. */
 .footer-bar .footer-links a {
   color: var(--sand,#B89B80); text-decoration: none; font-size: 13px;
+  display: inline-flex; align-items: center; gap: 6px;
   font-family: 'DM Sans', sans-serif; transition: color .2s;
 }
+.footer-bar .footer-links a svg { flex-shrink: 0; }
 .footer-bar .footer-links a:hover { color: var(--peach,#F2CDB0); }
 /* .55 et pas .4 : a .4 les liens legaux rendaient 2,52:1 sur le fond sombre,
    sous le seuil AA de 4,5:1. Mesure a .55 : 5,68:1. Voir aussi la suppression
@@ -391,8 +416,20 @@ body.cgv-page .brand-rule {
      se degarnissait donc a deux largeurs differentes. */
   .tsep { display: none; }
   .topbar-links a[href^="mailto"] { display: none; }
+}
+/* Le pied de page bascule en colonne avant la barre du haut, et a une largeur
+   mesuree, pas choisie : la rangee tient jusqu'a 920px et se casse a 916px.
+   Elle etait posee a 768px, si bien qu'entre 769 et 916px le bloc legal
+   passait a la ligne en laissant le « · » pendre en fin de premiere ligne.
+   Ce seuil se remesure avec qa/mise-en-page.mjs des que le contenu du pied
+   de page change de largeur. */
+@media (max-width: 920px) {
   .footer-bar { flex-direction: column; text-align: center; padding: 24px 20px; }
   .footer-bar .footer-links { justify-content: center; }
+  /* En colonne, la base souple des blocs de bord n'a plus d'objet : elle les
+     etirerait sur la hauteur. Le passage en colonne les centre deja. */
+  .footer-bar > .footer-logo,
+  .footer-bar > .footer-legal { flex: 0 1 auto; justify-content: center; }
 }
 @media (max-width: 600px) {
   .topbar-links { gap: 8px; }

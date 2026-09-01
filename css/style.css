@@ -553,8 +553,10 @@
    dans couches.css, et les liens legaux tombaient a un alpha effectif de 0,28,
    soit 2,52:1 sur le fond sombre. L'attenuation est portee par la couleur
    seule, ou elle reste mesurable. */
+/* Pas de marge haute : « .footer-legal » n'existe que dans la barre de pied de
+   page, qui centre ses trois blocs. Les 8px qui etaient poses ici descendaient
+   donc le bloc legal de 4px sous la ligne du logo et des liens. */
 .footer-legal {
-  margin-top: 8px;
   font-size: 0.8em;
   display: flex;
   align-items: center;
