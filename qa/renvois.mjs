@@ -51,6 +51,32 @@ const noter = (page, texte) => {
   parPage.get(page).push(texte);
 };
 
+/* Second canal, volontairement NON BLOQUANT : il signale sans faire echouer
+   « --strict ». La forme d'un lien affilie est une convention Amazon, pas une
+   panne de navigation ; la faire echouer arreterait la fusion sur une page
+   ancienne que personne n'a encore migree. Le relever suffit a ce qu'il soit
+   corrige, et le compteur rend le report visible. */
+const aSignaler = new Map();
+const signaler = (page, texte) => {
+  if (!aSignaler.has(page)) aSignaler.set(page, []);
+  aSignaler.get(page).push(texte);
+};
+
+/* Les deux formes d'URL Amazon qui ne doivent plus apparaitre.
+   · « www.amazon.fr/dp/ASIN?tag= » est une URL reconstruite a la main : elle
+     porte bien l'identifiant de suivi, mais elle perd le « linkId » de
+     campagne que le SiteStripe ajoute a ses deeplinks.
+   · « /portal/customer-reviews/ » exige un login Amazon : le lien est casse
+     pour un visiteur ordinaire. Le SiteStripe la produit depuis son bloc
+     « Avis », qu'il est facile de confondre avec le bloc « Texte ».
+   Les deux se cherchent dans TOUT le fichier et pas seulement dans les ancres :
+   « ce-que-jutilise.html » en portait vingt dans son bloc JSON-LD, invisibles
+   pour un controle qui ne lirait que les « href ». */
+const FORMES_BANNIES = [
+  [/https:\/\/www\.amazon\.fr\/(?:dp|gp\/product)\/[A-Z0-9]{10}/g, 'lien Amazon reconstruit a la main, le deeplink du SiteStripe est attendu'],
+  [/portal\/customer-reviews\//g, 'lien vers les avis Amazon : exige un login, casse pour un visiteur'],
+];
+
 for (const page of PAGES) {
   const t = lire(page);
   const ancres = ancresDe(t);
@@ -107,6 +133,12 @@ for (const page of PAGES) {
     }
   }
 
+  /* 4 bis. La forme des liens affilies. Signale, jamais bloquant. */
+  for (const [rx, quoi] of FORMES_BANNIES) {
+    const n = (t.match(rx) || []).length;
+    if (n) signaler(page, `${n} × ${quoi}`);
+  }
+
   /* 5. « A lire ensuite » : la rangee tient trois colonnes, une page ne se
         cite pas elle-meme, et chaque carte mene quelque part. */
   const bloc = t.match(/<!-- GENERATED:RELATED:START -->([\s\S]*?)<!-- GENERATED:RELATED:END -->/);
@@ -134,5 +166,16 @@ else {
   }
 }
 const total = [...parPage.values()].reduce((n, l) => n + l.length, 0);
-console.log(`  ${total} faute(s)\n`);
+
+if (aSignaler.size) {
+  console.log('  Signale, sans faire echouer le controle :\n');
+  for (const [page, lignes] of [...aSignaler].sort()) {
+    console.log(`  ${page}`);
+    for (const l of lignes) console.log(`    ! ${l}`);
+    console.log('');
+  }
+}
+const signales = [...aSignaler.values()].reduce((n, l) => n + l.length, 0);
+
+console.log(`  ${total} faute(s), ${signales} signalement(s)\n`);
 if (STRICT && total) { console.error(`Controle des renvois en echec : ${total} faute(s).`); process.exit(1); }
