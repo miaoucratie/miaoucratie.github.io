@@ -62,10 +62,11 @@ body .faq-hero .hero-title,
 body .tarifs-hero h1,
 body.carte-page .zone-header h2,
 body .cgv-title,
-body .container > header h1,
 body .hero-title {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 700;
+  /* « body .container > header h1 » retire ici comme dans couches.css : voir
+     l'explication a cet endroit. Il ne visait que le calculateur. */
   letter-spacing: -3px;
   line-height: 1;
   color: var(--deep, #1E1812);

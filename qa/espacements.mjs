@@ -19,8 +19,8 @@
  */
 
 import { createServer } from 'node:http';
-import { readFile, readdir } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { existsSync, readFileSync } from 'node:fs';
 import { join, extname, normalize, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
@@ -31,8 +31,16 @@ const DEMANDEES = process.argv.slice(2).filter((a) => a.endsWith('.html'));
 const LARGEURS = [1280, 768, 375];
 
 /* Pages du chantier : ce sont celles dont l'echelle d'espacement est tenue
-   par le module editorial. Les autres suivent leurs propres feuilles. */
-const PAGES = ['blog.html', 'etiquette-nourriture-chat.html', 'croquettes-et-patee.html', 'ce-que-jutilise.html'];
+   par le module editorial. Les autres suivent leurs propres feuilles.
+   La liste se deduit du registre plutot que d'etre recopiee : un article
+   publie qu'on aurait oublie d'ajouter ici sortirait du controle sans que
+   rien ne le signale. La page d'entree du blog s'y ajoute, elle porte la
+   meme grille sans etre un article. */
+const registre = JSON.parse(readFileSync(join(RACINE, 'blog', 'articles.json'), 'utf8'));
+const PAGES = [
+  registre.site.blogUrl.replace(/^\//, ''),
+  ...registre.articles.filter((a) => a.status === 'published').map((a) => a.url.replace(/^\//, '')),
+];
 
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json', '.xml': 'application/xml', '.woff2': 'font/woff2', '.ico': 'image/x-icon' };
 

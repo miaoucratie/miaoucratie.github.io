@@ -65,14 +65,48 @@ jobs:
       - name: Vérifier le site
         run: npm run qa
 
+      # Les controles arrives avec le blog ne tournaient que sur le poste
+      # d'Irina : la CI ne lancait que « npm test » et « npm run qa ». Une page
+      # pouvait donc partir en ligne sans title, sans canonical, ou absente du
+      # sitemap, sans que rien ne l'arrete. Ceux qui passent aujourd'hui sur
+      # l'ensemble du site deviennent bloquants ici. Ils lisent le dossier ou
+      # le registre des articles, jamais une liste recopiee : une page ajoutee
+      # demain y entre d'elle-meme.
+      - name: Contrôler le SEO, la rédaction, les espacements et les feuilles
+        run: |
+          npm run blog:check
+          npm run seo:strict
+          npm run redaction:strict
+          npm run espacements:strict
+          npm run css
+
+      # Ces deux-la relevent des defauts reels, mais anterieurs au blog :
+      # 43 constats de mise en page — contraste, boutons casses, reperes
+      # <main>, <nav> et <header> absents — et une divergence entre les deux
+      # articles. Les rendre bloquants arreterait toute pull request tant que
+      # ces defauts ne sont pas traites. Ils tournent donc pour le releve, et
+      # le journal du job garde la trace de ce qui reste.
+      - name: Relever la mise en page et comparer les articles
+        run: |
+          npm run mise-en-page
+          npm run articles
+
       - name: Que faire en cas d'échec
         if: failure()
         run: |
-          echo "### Une fonctionnalité du site est cassée" >> $GITHUB_STEP_SUMMARY
+          echo "### Une vérification n'est pas passée" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Ici la QA ne compare pas l'apparence, seulement le **comportement** :" >> $GITHUB_STEP_SUMMARY
-          echo "menu, accordéon, filtres, recherche, carte, calendrier, anonymat des avis." >> $GITHUB_STEP_SUMMARY
-          echo "Un échec signifie donc qu'une fonction ne répond plus, pas qu'un pixel a bougé." >> $GITHUB_STEP_SUMMARY
+          echo "Deux familles de contrôles peuvent arrêter ce job." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Vérifier le site.** La QA ne compare pas l'apparence, seulement le" >> $GITHUB_STEP_SUMMARY
+          echo "**comportement** : menu, accordéon, filtres, recherche, carte, calendrier," >> $GITHUB_STEP_SUMMARY
+          echo "anonymat des avis. Un échec signifie qu'une fonction ne répond plus," >> $GITHUB_STEP_SUMMARY
+          echo "pas qu'un pixel a bougé." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Contrôler le SEO, la rédaction, les espacements et les feuilles.** Une" >> $GITHUB_STEP_SUMMARY
+          echo "page a perdu une balise, une formulation interdite est revenue, un bloc" >> $GITHUB_STEP_SUMMARY
+          echo "s'est décollé, ou le registre du blog ne correspond plus aux pages." >> $GITHUB_STEP_SUMMARY
+          echo "Le journal du job nomme le fichier et la règle." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "Rien n'est en ligne : cette vérification précède la fusion." >> $GITHUB_STEP_SUMMARY
@@ -85,4 +119,5 @@ jobs:
           echo "Pour reproduire en local :" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
           echo 'npm run qa' >> $GITHUB_STEP_SUMMARY
+          echo 'npm run blog:check && npm run seo:strict && npm run redaction:strict && npm run espacements:strict && npm run css' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
