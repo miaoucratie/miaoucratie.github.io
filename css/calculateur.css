@@ -72,7 +72,7 @@
     flex: 1;
   }
 
-  header {
+  body.calculateur-page .container > header {
     text-align: center;
     margin-bottom: 48px;
     animation: fadeDown 0.6s ease both;
@@ -815,7 +815,7 @@ body.calculateur-page .container {
   position: relative;
   z-index: 1;
 }
-body.calculateur-page header {
+body.calculateur-page .container > header {
   text-align: center;
   margin-bottom: 48px;
 }
