@@ -547,17 +547,17 @@
    seuil de 3:1 des grands textes et des elements non textuels.
    Elles ne disent rien du contenu, elles distinguent : la ou une couleur porte
    une information, comme le produit dans les tableaux et les figures, elle
-   reste reservee a cette information. */
+   reste reservee a cette information.
+
+   La carte reste blanche : un fond teinte demandait « color-mix », qui rend du
+   « color(srgb ... ) » que le controle de contraste du projet ne sait pas lire.
+   Il mesurait alors des rapports faux et ne voyait plus rien. */
 .art-etapes--couleurs .art-etape:nth-child(1) { --et: #4A6B58; }
-.art-etapes--couleurs .art-etape:nth-child(2) { --et: #C8603A; }
+.art-etapes--couleurs .art-etape:nth-child(2) { --et: #7A6B5E; }
 .art-etapes--couleurs .art-etape:nth-child(3) { --et: #1E5566; }
-.art-etapes--couleurs .art-etape:nth-child(4) { --et: #7A6B5E; }
-.art-etapes--couleurs .art-etape:nth-child(5) { --et: #A8472A; }
-.art-etapes--couleurs .art-etape {
-  background: color-mix(in srgb, var(--et) 6%, #fff);
-  border-color: color-mix(in srgb, var(--et) 20%, #fff);
-}
-.art-etapes--couleurs .art-etape > div:last-child { border-left-color: color-mix(in srgb, var(--et) 32%, #fff); }
+.art-etapes--couleurs .art-etape:nth-child(4) { --et: var(--mid); }
+.art-etapes--couleurs .art-etape:nth-child(5) { --et: var(--rust); }
+.art-etapes--couleurs .art-etape > div:last-child { border-left-color: var(--et); }
 .art-etapes--couleurs .art-etape .step-bubble { background: var(--et); }
 .art-etapes--couleurs .art-etape h3 span { color: var(--et); }
 .art-etape p { font-size: 15px; line-height: 1.7; color: var(--mid); }
