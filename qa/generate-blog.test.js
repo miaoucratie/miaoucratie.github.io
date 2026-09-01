@@ -43,7 +43,7 @@ function article(a) {
 }
 
 const BASE = () => ({
-  site: { origin: ORIGINE, blogUrl: '/blog.html', blogName: 'Blog test', author: 'Autrice', inLanguage: 'fr-FR', rubriques: [{ nom: 'Rubrique A', emoji: '🅰️' }, { nom: 'Rubrique B', emoji: '🅱️' }] },
+  site: { origin: ORIGINE, blogUrl: '/coulisses-miaoucratie.html', blogName: 'Blog test', author: 'Autrice', inLanguage: 'fr-FR', rubriques: [{ nom: 'Rubrique A', emoji: '🅰️' }, { nom: 'Rubrique B', emoji: '🅱️' }] },
   articles: [
     {
       slug: 'un', url: '/un.html', status: 'published', category: 'Rubrique A', affiliate: true,
@@ -80,7 +80,7 @@ function monter(registre = BASE(), options = {}) {
       : article(a);
     fs.writeFileSync(path.join(racine, a.url.replace(/^\//, '')), contenu);
   }
-  fs.writeFileSync(path.join(racine, 'blog.html'), `<!DOCTYPE html><html lang="fr"><head>
+  fs.writeFileSync(path.join(racine, 'coulisses-miaoucratie.html'), `<!DOCTYPE html><html lang="fr"><head>
 <title>Blog test</title>
 <!-- GENERATED:BLOG_JSONLD:START -->
 <script type="application/ld+json">
@@ -121,7 +121,7 @@ test('un registre correct genere la grille, les articles lies et le sitemap', ()
   const g = lancer(r);
   assert.strictEqual(g.code, 0, g.sortie);
 
-  const blog = fs.readFileSync(path.join(r, 'blog.html'), 'utf8');
+  const blog = fs.readFileSync(path.join(r, 'coulisses-miaoucratie.html'), 'utf8');
   assert.match(blog, /href="deux\.html"/, 'la carte de « deux » manque');
   assert.match(blog, /href="un\.html"/, 'la carte de « un » manque');
   assert.doesNotMatch(blog, /brouillon\.html/, 'un brouillon est apparu dans la grille');
@@ -163,12 +163,12 @@ test('le corps editorial de la page n est pas touche', () => {
 test('une deuxieme generation ne change plus rien', () => {
   const r = monter();
   assert.strictEqual(lancer(r).code, 0);
-  const empreinte = ['blog.html', 'un.html', 'deux.html', 'sitemap.xml']
+  const empreinte = ['coulisses-miaoucratie.html', 'un.html', 'deux.html', 'sitemap.xml']
     .map((f) => fs.readFileSync(path.join(r, f), 'utf8')).join(' ');
   const deux = lancer(r);
   assert.strictEqual(deux.code, 0, deux.sortie);
   assert.match(deux.sortie, /Rien a changer/);
-  const empreinte2 = ['blog.html', 'un.html', 'deux.html', 'sitemap.xml']
+  const empreinte2 = ['coulisses-miaoucratie.html', 'un.html', 'deux.html', 'sitemap.xml']
     .map((f) => fs.readFileSync(path.join(r, f), 'utf8')).join(' ');
   assert.strictEqual(empreinte, empreinte2, 'la deuxieme generation a modifie des fichiers');
   fs.rmSync(r, { recursive: true, force: true });
@@ -177,10 +177,10 @@ test('une deuxieme generation ne change plus rien', () => {
 test('--check reussit sur un depot a jour et n ecrit rien', () => {
   const r = monter();
   assert.strictEqual(lancer(r).code, 0);
-  const avant = fs.readFileSync(path.join(r, 'blog.html'), 'utf8');
+  const avant = fs.readFileSync(path.join(r, 'coulisses-miaoucratie.html'), 'utf8');
   const c = lancer(r, ['--check']);
   assert.strictEqual(c.code, 0, c.sortie);
-  assert.strictEqual(fs.readFileSync(path.join(r, 'blog.html'), 'utf8'), avant);
+  assert.strictEqual(fs.readFileSync(path.join(r, 'coulisses-miaoucratie.html'), 'utf8'), avant);
   fs.rmSync(r, { recursive: true, force: true });
 });
 
@@ -190,11 +190,11 @@ test('--check echoue sur un bloc obsolete, sans reparer le fichier', () => {
   const reg = JSON.parse(fs.readFileSync(path.join(r, 'blog', 'articles.json'), 'utf8'));
   reg.articles[0].cardTitle = 'Carte un, titre corrige';
   fs.writeFileSync(path.join(r, 'blog', 'articles.json'), JSON.stringify(reg, null, 1));
-  const avant = fs.readFileSync(path.join(r, 'blog.html'), 'utf8');
+  const avant = fs.readFileSync(path.join(r, 'coulisses-miaoucratie.html'), 'utf8');
   const c = lancer(r, ['--check']);
   assert.strictEqual(c.code, 1, 'le mode --check aurait du echouer');
   assert.match(c.sortie, /ne correspond plus au registre/);
-  assert.strictEqual(fs.readFileSync(path.join(r, 'blog.html'), 'utf8'), avant, '--check a modifie un fichier');
+  assert.strictEqual(fs.readFileSync(path.join(r, 'coulisses-miaoucratie.html'), 'utf8'), avant, '--check a modifie un fichier');
   fs.rmSync(r, { recursive: true, force: true });
 });
 
@@ -301,7 +301,7 @@ test('echec attendu : JSON du registre invalide', () => {
 test('un brouillon n apparait ni dans la grille, ni dans les lies, ni dans le sitemap', () => {
   const r = monter();
   assert.strictEqual(lancer(r).code, 0);
-  for (const f of ['blog.html', 'un.html', 'deux.html', 'sitemap.xml']) {
+  for (const f of ['coulisses-miaoucratie.html', 'un.html', 'deux.html', 'sitemap.xml']) {
     assert.doesNotMatch(fs.readFileSync(path.join(r, f), 'utf8'), /brouillon\.html/, `brouillon visible dans ${f}`);
   }
   fs.rmSync(r, { recursive: true, force: true });

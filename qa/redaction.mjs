@@ -84,7 +84,7 @@ const CTA_INJONCTION = /^(command|achet|acquer|profit)/i;
    precede. « 10 » en fin de ligne et « % » au debut de la suivante est un
    defaut, pas une fatalite : il se corrige a la source avec une espace
    insecable. Le controle cherche les espaces ORDINAIRES dans ces positions. */
-const PAGES_BLOG = new Set(['blog.html', 'etiquette-nourriture-chat.html', 'croquettes-et-patee.html', 'ce-que-jutilise.html']);
+const PAGES_BLOG = new Set(['coulisses-miaoucratie.html', 'etiquette-nourriture-chat.html', 'croquettes-et-patee.html', 'ce-que-jutilise.html']);
 const INSECABLES = [
   [/(\d) (%)/g, 'une valeur et son pourcentage peuvent se retrouver sur deux lignes'],
   /* « 3 L'eau » n'est pas trois litres : c'est le numero d'une etape suivi

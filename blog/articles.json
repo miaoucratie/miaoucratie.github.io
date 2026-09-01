@@ -2,7 +2,7 @@
   "$schema": "Registre canonique des articles du blog. Source de verite unique des metadonnees repetitives. Voir scripts/generate-blog.js.",
   "site": {
     "origin": "https://miaoucratie.fr",
-    "blogUrl": "/blog.html",
+    "blogUrl": "/coulisses-miaoucratie.html",
     "blogName": "Les coulisses de Miaoucratie",
     "author": "Irina Talbot",
     "inLanguage": "fr-FR",

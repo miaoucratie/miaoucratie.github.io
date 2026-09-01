@@ -2,7 +2,7 @@
  * Controle de mise en page rendue.
  *
  *   node qa/mise-en-page.mjs             toutes les pages, toutes les largeurs
- *   node qa/mise-en-page.mjs blog.html   une page
+ *   node qa/mise-en-page.mjs coulisses-miaoucratie.html   une page
  *   node qa/mise-en-page.mjs --strict    sort en erreur s'il reste un echec
  *
  * Pourquoi ce fichier : qa.mjs compare des empreintes a une reference, ce qui

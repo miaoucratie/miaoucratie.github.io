@@ -160,7 +160,7 @@ const RELEVE = ({ composants, props }) => {
     'encart affiliation': '.art-affiliation',
     'sources': '.art-sources',
     'bandeau final': '.cta-section',
-    'retour au blog': 'a[href="blog.html"]',
+    'retour au blog': 'a[href="coulisses-miaoucratie.html"]',
   })) out.structure[nom] = [...document.querySelectorAll(sel)].some(visible);
 
   return out;
