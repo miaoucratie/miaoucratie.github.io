@@ -536,7 +536,31 @@
   background: var(--rust);
   color: var(--cream);
 }
-.art-etape > div:last-child { border-left: 2px solid var(--warm); padding-left: 16px; }
+/* Carte teintee, filet et titre dans la couleur de la pastille : en blanc sur
+   creme, avec un titre noir, la suite d'etapes n'accrochait pas l'oeil. */
+.art-etape { background: rgba(168, 71, 42, 0.045); border-color: rgba(168, 71, 42, 0.14); }
+.art-etape > div:last-child { border-left: 2px solid rgba(168, 71, 42, 0.28); padding-left: 16px; }
+.art-etape h3 span { color: var(--rust); }
+
+/* UNE COULEUR PAR ETAPE. Les cinq existent deja : sauge foncee et petrole
+   viennent des figures de l'article hydratation, terracotta, rouille et brun
+   sont des variables du site. Aucune n'est inventee, et toutes tiennent le
+   seuil de 3:1 des grands textes et des elements non textuels.
+   Elles ne disent rien du contenu, elles distinguent : la ou une couleur porte
+   une information, comme le produit dans les tableaux et les figures, elle
+   reste reservee a cette information. */
+.art-etapes--couleurs .art-etape:nth-child(1) { --et: #4A6B58; }
+.art-etapes--couleurs .art-etape:nth-child(2) { --et: #C8603A; }
+.art-etapes--couleurs .art-etape:nth-child(3) { --et: #1E5566; }
+.art-etapes--couleurs .art-etape:nth-child(4) { --et: #7A6B5E; }
+.art-etapes--couleurs .art-etape:nth-child(5) { --et: #A8472A; }
+.art-etapes--couleurs .art-etape {
+  background: color-mix(in srgb, var(--et) 6%, #fff);
+  border-color: color-mix(in srgb, var(--et) 20%, #fff);
+}
+.art-etapes--couleurs .art-etape > div:last-child { border-left-color: color-mix(in srgb, var(--et) 32%, #fff); }
+.art-etapes--couleurs .art-etape .step-bubble { background: var(--et); }
+.art-etapes--couleurs .art-etape h3 span { color: var(--et); }
 .art-etape p { font-size: 15px; line-height: 1.7; color: var(--mid); }
 
 /* ══ UN PROCEDE, DE GAUCHE A DROITE ═════════════════════════════════════════
@@ -759,6 +783,7 @@
    vaut 100 %, la part remplie ce que la formule garantit : « au boeuf » se
    lit alors pour ce qu'il est. */
 .art-tab .art-piste--tab { display: block; width: 104px; height: 8px; margin-top: 7px; }
+
 /* Un plafond n'est pas un minimum : « moins de 4 % » se dessine en contour,
    pour qu'on ne le lise pas comme les 4 % garantis de la ligne suivante. */
 .art-part--plafond { background: none; border: 1.5px solid var(--rust); }
@@ -766,6 +791,12 @@
    porte sa teinte, celle-la meme que ses barres dans les figures : la couleur
    dit de quel produit on parle, du tableau au graphique, sans legende a
    apprendre. Le numero du critere reprend la pastille des etapes. */
+/* Les colonnes de valeurs sont reservees : laissees libres, la colonne
+   d'explication prenait toute la place et « 9,5 % de proteines » se coupait sur
+   trois lignes. */
+.art-tab--duel thead th:first-child { width: 20%; }
+.art-tab--duel thead th.art-duel-a,
+.art-tab--duel thead th.art-duel-b { width: 23%; }
 .art-tab--duel .art-duel-a { background: rgba(200, 96, 58, 0.07); }
 .art-tab--duel .art-duel-b { background: rgba(74, 107, 88, 0.07); }
 .art-tab--duel td.art-duel-a { color: var(--rust); }
