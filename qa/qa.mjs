@@ -106,7 +106,7 @@ const PAGES = [
   /* alimentation-du-chat.html a ete scindee en deux articles : l'un sur la
      lecture d'une etiquette, l'autre sur la repartition entre croquettes et
      patee. La page n'existe plus. */
-  'blog.html', 'etiquette-nourriture-chat.html', 'croquettes-et-patee.html',
+  'coulisses-miaoucratie.html', 'etiquette-nourriture-chat.html', 'croquettes-et-patee.html',
 ];
 const LARGEURS = [1272, 375];
 
