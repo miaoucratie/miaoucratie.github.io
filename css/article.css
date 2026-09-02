@@ -199,6 +199,28 @@
 
 /* ══ CORPS D'ARTICLE ════════════════════════════════════════════════════ */
 
+/* Lignes orphelines : un paragraphe dont la derniere ligne ne porte qu'un mot,
+   seul a gauche. Mesure du 2 septembre 2026 sur les quatre articles en ligne,
+   en iframe de largeur fixe apres « document.fonts.ready » :
+
+     paragraphes finissant sur un mot isole     1280 px   375 px   320 px
+     hydratation-du-chat                              0        6        9
+     etiquette-nourriture-chat                        3        5        7
+     croquettes-et-patee                              2        3        3
+
+   Aucune reecriture ne les corrige aux trois largeurs a la fois : allonger une
+   phrase pour reparer 375 px en cree une autre a 1280. « text-wrap: pretty »
+   demande au navigateur de reequilibrer les lignes precedentes pour eviter la
+   derniere ligne trop courte. Mesure apres : zero partout.
+
+   Le repli est sans risque : un navigateur qui ne connait pas la valeur
+   l'ignore et coupe comme avant. */
+.art-corps > p,
+.art-corps > h2,
+.art-corps > h3,
+.art-chapo,
+.art-fig figcaption { text-wrap: pretty; }
+
 .art-corps > p {
   font-size: 16px;
   line-height: 1.8;
