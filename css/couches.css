@@ -341,8 +341,13 @@ body.cgv-page .brand-rule {
   padding-top: 12px;
   border-top: 1px solid rgba(255,255,255,0.12);
 }
+/* « flex-wrap » etait pose dans overrides.css seulement. Les quatre pages qui
+   ne chargent pas cette feuille — carte, mentions-legales, reservation,
+   tarifs — gardaient donc une rangee insecable : 352 px de contenu dans une
+   fenetre de 320, et toute la page qui defile en travers. */
 .topbar-links {
   margin-left: auto; display: flex; align-items: center; gap: 16px;
+  flex-wrap: wrap;
 }
 .topbar-links a {
   color: var(--light,#D4BEA8); text-decoration: none; font-size: 13px;
@@ -411,6 +416,11 @@ body.cgv-page .brand-rule {
 /* Porte : sans priorite, le titre du bloc d appel de la FAQ repasse en sombre
    sur son fond fonce. */
 .faq-cta .cta-title { color: #fff !important; }
+/* Sur ce fond sombre, l'accent doit aller dans l'autre sens : le terracotta
+   n'y donnait que 4,34:1, et le rouille du reste du site serait plus sombre
+   encore. Le peche est l'accent que la barre du haut et le pied de page
+   posent deja sur « --deep ». 11,83:1. */
+.faq-cta .cta-title em { color: var(--peach); }
 /* Responsive topbar */
 @media (max-width: 900px) {
   /* 20px comme topbar.css et comme le bloc inline de chaque page. La valeur

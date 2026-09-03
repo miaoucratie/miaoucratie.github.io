@@ -194,6 +194,10 @@ const RELEVE = () => {
      titre de « presse.html » et de « ce-que-jutilise.html ».
 
      L'italique gras : aucun, sauf le <em> du logo, qui est la marque.
+     « .cgv-brand » porte la meme marque « Miaoucratie. » en tete des pages
+     legales, dans le meme traitement que le pied de page — italique sur la
+     seconde moitie du mot. Elle manquait a la liste, et les deux pages
+     legales tombaient sur une regle qui ne les visait pas.
      Le lien bleu : aucun. Un <a> sans regle de couleur retombe sur le bleu du
      navigateur, et c'est ainsi qu'il revient a chaque fois. */
   {
@@ -206,7 +210,7 @@ const RELEVE = () => {
       portes.add(e);
       const s = getComputedStyle(e);
       if (s.fontStyle === 'italic' && parseInt(s.fontWeight, 10) >= 600
-          && !e.closest('.footer-logo, .logo-name, .logo, .brand')) {
+          && !e.closest('.footer-logo, .logo-name, .logo, .brand, .cgv-brand')) {
         ajouter('italique gras', `${nom(e)} « ${e.textContent.trim().slice(0, 34)} » poids ${s.fontWeight}`);
       }
       if (e.closest('a') && !e.closest('.leaflet-container')) {

@@ -369,7 +369,11 @@
 <script>
   const FALLBACK_ORIGIN = [48.0572, -1.3365];
   let originLatLng = FALLBACK_ORIGIN;
-  const map = L.map('map', { scrollWheelZoom: false }).setView(FALLBACK_ORIGIN, 10.2);
+  const map = L.map('map', { scrollWheelZoom: false, zoomControl: false }).setView(FALLBACK_ORIGIN, 10.2);
+  /* Les commandes de Leaflet arrivent nommees « Zoom in » et « Zoom out ».
+     Deux defauts : l'anglais sur un site francais, et un nom accessible qui
+     ne reprend pas le glyphe affiche, ce que demande le critere 2.5.3. */
+  L.control.zoom({ zoomInTitle: '+ Zoom avant', zoomOutTitle: '− Zoom arrière' }).addTo(map);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
   function pinSvg(color){
