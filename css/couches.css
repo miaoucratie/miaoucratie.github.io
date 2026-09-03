@@ -277,7 +277,11 @@ body.cgv-page .brand-rule {
   display: flex; align-items: center;
   width: 100%; justify-content: space-between; flex-wrap: wrap;
   gap: 16px 20px;
-  padding: 0 40px; min-height: 50px;
+  /* Le retrait est declare une fois et sert deux choses : le padding de la
+     barre, et le calage horizontal du panneau du menu, qui doit tomber sous
+     le bouton. Une seule valeur par largeur, consommee par les deux. */
+  --topbar-pad: 40px;
+  padding: 0 var(--topbar-pad); min-height: 50px;
   animation: none !important;
 }
 .topbar a {
@@ -294,7 +298,7 @@ body.cgv-page .brand-rule {
   outline: 2px solid rgba(242,205,176,0.8);
   outline-offset: 2px;
 }
-.tmenu-wrap { position: relative; flex-shrink: 0; align-self: stretch; display: flex; align-items: center; }
+.tmenu-wrap { flex-shrink: 0; }
 .tmenu-btn {
   background: none; border: none; cursor: pointer;
   color: var(--light, #D4BEA8);
@@ -307,7 +311,7 @@ body.cgv-page .brand-rule {
 .tmenu-panel {
   /* display géré via style inline JS */
   flex-direction: column; gap: 2px;
-  position: absolute; top: calc(100% + 6px); left: 0;
+  position: absolute; top: calc(100% + 6px); left: var(--topbar-pad);
   min-width: 200px; padding: 8px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.12);
@@ -426,7 +430,7 @@ body.cgv-page .brand-rule {
   /* 20px comme topbar.css et comme le bloc inline de chaque page. La valeur
      de 24px ne subsistait que sur les pages ou cette couche gagnait, d'ou une
      barre plus large sur carte, reservation et mentions legales. */
-  .topbar { padding: 0 20px; }
+  .topbar { --topbar-pad: 20px; }
 }
 @media (max-width: 768px) {
   /* La barre passe a la ligne a cette largeur : sans cet interstice, elle
