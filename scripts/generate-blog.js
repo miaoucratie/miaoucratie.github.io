@@ -247,6 +247,10 @@ const ordre = publies.slice().sort((a, b) =>
   || a.slug.localeCompare(b.slug));
 
 /* ── Fabrication des blocs ──────────────────────────────────────────────── */
+/* Le titre de la carte est un lien vers l'article, en plus du bouton. Le bouton
+   nomme l'action et ne dit rien du sujet : « Ma selection », « Combien d'eau ».
+   Tant qu'il etait le seul lien, chaque article n'etait atteint que par une
+   ancre sans aucun mot de son contenu. Le titre, lui, decrit l'article. */
 const carte = (a, niveau) => {
   const badge = a.affiliate ? '\n<span class="art-tag">Liens affiliés</span>' : '';
   const textes = a.cardText.map((p) => `<p>${p}</p>`).join('\n');
@@ -254,7 +258,7 @@ const carte = (a, niveau) => {
 <div class="art-etiquettes">
 <span class="art-cat">${emojiDe(a.category)} ${a.category}</span>${badge}
 </div>
-<${niveau}><span>${a.cardTitle}</span></${niveau}>
+<${niveau}><span><a href="${a.url.replace(/^\//, '')}">${a.cardTitle}</a></span></${niveau}>
 <div class="art-carte-texte">
 ${textes}
 </div>
@@ -274,13 +278,28 @@ const jsonld = () => {
   try { o = JSON.parse(blocs[0][1]); } catch (e) { faute('coulisses-miaoucratie.html', `JSON-LD illisible : ${e.message}`); return null; }
   /* On ne remplace QUE la liste blogPost : le reste du bloc (auteur,
      editeur, langue) reste tel qu'il est ecrit a la main (§16). */
-  o.blogPost = ordre.map((a) => ({
-    '@type': 'BlogPosting',
-    headline: a.ldHeadline,
-    url: site.origin + a.url,
-    datePublished: a.datePublished,
-    dateModified: a.dateModified,
-  }));
+  /* Chaque BlogPosting se suffit a lui-meme : titre, resume, image, auteur,
+     langue. Les quatre champs d'origine ne disaient que « ce titre existe a
+     cette date ». Le resume et l'image sont ceux du registre, deja servis en
+     meta description et en og:image de l'article : une seule source. */
+  /* L'auteur et la langue sont ceux du blog, ecrits a la main dans le bloc.
+     On les recopie sur chaque article plutot que d'en declarer une seconde
+     version : deux sources finissent toujours par diverger. */
+  const auteur = o.author && o.author.name ? { '@type': 'Person', name: o.author.name } : null;
+  o.blogPost = ordre.map((a) => {
+    const p = {
+      '@type': 'BlogPosting',
+      headline: a.ldHeadline,
+      description: a.description,
+      url: site.origin + a.url,
+      image: a.image,
+    };
+    if (auteur) p.author = auteur;
+    if (o.inLanguage) p.inLanguage = o.inLanguage;
+    p.datePublished = a.datePublished;
+    p.dateModified = a.dateModified;
+    return p;
+  });
   return JSON.stringify(o, null, 2);
 };
 
