@@ -23,7 +23,7 @@
     "articles:strict": "node qa/articles.mjs --strict",
     "blog": "node scripts/generate-blog.js",
     "blog:check": "node scripts/generate-blog.js --check",
-    "controles": "npm run blog:check && npm run seo:strict && npm run redaction:strict && npm run mise-en-page:strict && npm run espacements:strict && npm run renvois:strict && npm run css",
+    "controles": "npm run blog:check && npm run seo:strict && npm run redaction:strict && npm run mise-en-page:strict && npm run espacements:strict && npm run renvois:strict && npm run css && npm run qa",
     "postinstall": "playwright install chromium"
   },
   "devDependencies": {
