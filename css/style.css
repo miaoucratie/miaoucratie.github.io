@@ -284,7 +284,12 @@
     font-weight: 700; color: var(--deep);
     line-height: 1.15; margin-bottom: 40px; letter-spacing: -0.5px;
   }
-  h2 em { font-style: italic; font-weight: 400; color: var(--terracotta); }
+  /* Le terracotta ne passe pas sur les fonds clairs du site : 3,33:1 sur
+     « --warm », 3,54 sur le beige des sections, 3,79 sur « --cream », pour un
+     seuil de 4,5 a cette taille. Le rouille, deja au jeu de couleurs et deja
+     employe par « page-legale.css » pour le meme role, donne 4,79 / 5,10 /
+     5,46. Aucune couleur nouvelle. */
+  h2 em { font-style: italic; font-weight: 400; color: var(--rust); }
 
   /* ── STRIPE ── */
   .stripe { background: var(--deep); }
