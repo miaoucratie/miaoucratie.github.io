@@ -768,24 +768,68 @@
    son arrondi et sa fonction de cadre, la pile porte la repartition. */
 .art-piste > .art-pile { height: 100%; border-radius: 0; background: none; }
 
-/* Reperes sous les pistes : sans eux, une barre ne dit pas sur quoi elle se
-   compte. « 80 » ne veut rien dire, « 80 sur 100 g » se comprend. La
-   graduation reprend exactement les colonnes de .art-barre, sinon elle se
-   decale par rapport aux pistes qu'elle est censee mesurer. */
-.art-graduation {
-  display: grid;
-  grid-template-columns: minmax(96px, 24%) 1fr auto;
-  gap: 12px;
-  margin-top: 8px;
+
+/* ══ DEUX GROUPES QUI SE CROISENT ══════════════════════════════════════════
+   Deux barres l'une sous l'autre obligent l'oeil a comparer deux longueurs
+   pour deviner ou les groupes se melangent. Ici la zone commune est dessinee :
+   une seule piste, deux bandes flottantes, et le recouvrement en teinte.
+
+   Les bandes ne partent pas de zero. Elles couvrent la moyenne du groupe plus
+   ou moins l'ecart releve par l'etude, ce qui est la seule facon sourcee de
+   montrer que les deux groupes se recouvrent. */
+.art-croise-piste {
+  position: relative;
+  height: 76px;
+  background: var(--warm);
+  border-radius: 16px;
+  overflow: hidden;
 }
-.art-graduation-reperes {
-  grid-column: 2;
+/* Bordures en pointilles : la teinte seule ne suffit pas a borner la zone, et
+   elle ne se voit plus sous la bande qui la recouvre. */
+.art-croise-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(122, 107, 94, 0.16);
+  border-left: 1px dashed var(--mid);
+  border-right: 1px dashed var(--mid);
+}
+/* Le nom vit dans la bande : une colonne d'intitules a gauche rendrait la
+   position des bandes illisible, puisque c'est elle qui porte l'information. */
+.art-croise-bande {
+  position: absolute;
+  height: 28px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cream);
+  white-space: nowrap;
+}
+.art-croise-bande--haut { top: 10px; background: var(--rust); }
+.art-croise-bande--bas { bottom: 10px; background: #8C6A4F; }
+.art-croise-bornes {
   display: flex;
   justify-content: space-between;
+  font-family: 'DM Sans', sans-serif;
   font-size: 12px;
   color: var(--muted);
-  font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
+  margin: 8px 0 0;
 }
+.art-croise-cle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--mid);
+  margin: 14px 0 0;
+}
+.art-croise-cle span { display: inline-flex; align-items: center; gap: 8px; }
+.art-croise-cle i { width: 14px; height: 14px; border-radius: 4px; flex: none; }
 
 /* ══ TABLEAU ════════════════════════════════════════════════════════════
    Le cadre defile horizontalement plutot que de pousser la page : un tableau
@@ -975,9 +1019,6 @@
      pour le nom ne laissait que 150 px de piste, illisible. */
   .art-barre-nom { grid-column: 1 / -1; }
   .art-piste { grid-column: 1; }
-  /* La piste passe en premiere colonne : la graduation la suit. */
-  .art-graduation { grid-template-columns: 1fr auto; }
-  .art-graduation-reperes { grid-column: 1; }
   .art-tab th,
   .art-tab td { padding: 11px 16px; }
   .art-tab caption { padding: 16px 16px 0; }
