@@ -479,6 +479,17 @@
   line-height: 1.25;
   letter-spacing: -0.01em;
 }
+/* Le titre mene a l'article. Il garde exactement l'aspect d'un titre : la
+   convention du lien rouille souligne vaut pour un lien AU MILIEU d'un texte,
+   ou il faut le distinguer de ce qui l'entoure. Un titre entier est deja
+   distinct, le souligner en permanence l'alourdit. Il n'apparait qu'au survol
+   et au clavier. */
+.art-produit :is(h2, h3) > span > a {
+  color: inherit;
+  text-decoration: none;
+}
+.art-produit :is(h2, h3) > span > a:hover,
+.art-produit :is(h2, h3) > span > a:focus-visible { text-decoration: underline; }
 /* Les paragraphes d'une fiche, qu'ils soient poses directement dans la carte
    ou regroupes dans le conteneur que la grille alignee demande. */
 .art-produit > p,
