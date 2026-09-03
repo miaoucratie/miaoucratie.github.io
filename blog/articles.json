@@ -12,16 +12,16 @@
         "emoji": "🧰"
       },
       {
+        "nom": "Enrichissement",
+        "emoji": "🧶"
+      },
+      {
         "nom": "Alimentation",
         "emoji": "🍽️"
       },
       {
         "nom": "Hydratation",
         "emoji": "💧"
-      },
-      {
-        "nom": "Enrichissement",
-        "emoji": "🧶"
       }
     ]
   },
@@ -52,9 +52,9 @@
         "fontaine"
       ],
       "related": [
-        "hydratation-du-chat",
-        "croquettes-et-patee",
-        "etiquette-nourriture-chat"
+        "jeu-chat",
+        "etiquette-nourriture-chat",
+        "hydratation-du-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
@@ -87,7 +87,7 @@
       "related": [
         "croquettes-et-patee",
         "ce-que-jutilise",
-        "hydratation-du-chat"
+        "jeu-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
@@ -152,11 +152,44 @@
       ],
       "related": [
         "croquettes-et-patee",
-        "ce-que-jutilise",
-        "etiquette-nourriture-chat"
+        "etiquette-nourriture-chat",
+        "jeu-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 4
+    },
+    {
+      "slug": "jeu-chat",
+      "url": "/jeu-chat.html",
+      "status": "published",
+      "category": "Enrichissement",
+      "affiliate": true,
+      "h1": "Jouer avec son chat, et pourquoi il se lasse",
+      "seoTitle": "Jouer avec son chat, et pourquoi il se lasse | Miaoucratie",
+      "description": "« Mon chat n'est pas joueur » : 3 séances avec le même jouet suffisent à éteindre le jeu. Les 3 gestes d'une séance qui va au bout, et ce qui le relance.",
+      "ldHeadline": "Jouer avec son chat, et pourquoi il se lasse",
+      "cardTitle": "Jouer avec son chat, et pourquoi il se lasse",
+      "cardText": [
+        "Il a touché la canne 2&nbsp;soirs, puis plus rien. Ce n'est pas son caractère&nbsp;: 3&nbsp;séances avec le même jouet suffisent à éteindre le jeu.",
+        "Les 6&nbsp;temps d'une chasse, les 3&nbsp;gestes d'une séance qui va au bout, et ce qui relance un chat qui décroche."
+      ],
+      "cardCta": "Les 3 gestes",
+      "datePublished": "2026-09-03",
+      "dateModified": "2026-09-03",
+      "keywords": [
+        "jeu",
+        "enrichissement",
+        "canne à pêche",
+        "prédation",
+        "matatabi"
+      ],
+      "related": [
+        "ce-que-jutilise",
+        "croquettes-et-patee",
+        "hydratation-du-chat"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 1
     }
   ]
 }

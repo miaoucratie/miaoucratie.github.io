@@ -1022,6 +1022,24 @@
 .art-page--eau .art-tab thead th { color: var(--art-eau-encre); }
 .art-page--eau .art-tab .art-part { background: var(--art-eau); }
 
+/* ══ ARTICLE JEU ════════════════════════════════════════════════════════════
+   Meme mecanique que « --eau » ci-dessus : une encre et un ton par article,
+   poses sur la classe de page. Le vert vient de la rubrique Enrichissement. */
+:root { --art-jeu-encre: #3B5540; --art-jeu: #5E8266; }
+.art-page--jeu .eyebrow { color: var(--art-jeu-encre); background: rgba(59, 85, 64, 0.10); }
+.art-page--jeu .art-sommaire a { border-left-color: rgba(59, 85, 64, 0.22); }
+.art-page--jeu .art-sommaire a:hover { color: var(--art-jeu-encre); border-left-color: var(--art-jeu-encre); }
+.art-page--jeu .art-fig-titre { color: var(--art-jeu-encre); }
+.art-page--jeu .art-tab thead th { color: var(--art-jeu-encre); }
+.art-page--jeu .art-fig .art-part { background: var(--art-jeu); }
+/* Le cercle de « --suite » va chercher l'encre de l'article hydratation :
+   sur cette page, c'est celle du jeu. */
+.art-page--jeu .art-etapes--suite .step-bubble {
+  border-color: var(--art-jeu-encre);
+  color: var(--art-jeu-encre);
+}
+
+
 /* ══ SUITE D'ETAPES ════════════════════════════════════════════════════════
    Une suite d'etapes n'est pas une pile de cartes : pas de cadre, pas de fond.
    Le lien se fait par quatre elements dessines, tous derives des deux mesures
@@ -1309,3 +1327,223 @@
   .art-voie::after { content: none; }
   .art-voie { grid-template-columns: 40px 1fr; column-gap: 14px; padding: 16px 18px; }
 }
+
+/* Les 3 illustrations, une par geste. Elles se posent sur la ligne du chiffre,
+   juste a cote : le filet de « --parcours » leur sert de tablette et le bloc ne
+   gagne pas un etage. Trois classes, parce que la regle generale des etapes
+   redefinit la pastille plus bas dans article.css.
+   Sources en 176 px, affichees en 76 : elles restent nettes sur un ecran a
+   double densite. Carrees et calees de la meme facon, sans quoi les trois
+   n'auraient pas le meme poids optique dans la rangee. */
+.art-etapes--parcours .art-etape .step-bubble {
+  display: flex;
+  align-items: center;
+  /* « .step-bubble » de style.css centre son contenu : ici le chiffre et
+     l'illustration doivent partir du meme bord que le filet et le titre. */
+  justify-content: flex-start;
+  gap: 16px;
+}
+.art-etapes--parcours .art-etape-icone { width: 76px; height: 76px; flex-shrink: 0; }
+
+/* ── Le cycle du jouet ─────────────────────────────────────────────────────
+   Une suite d'etapes qui revient a son point de depart. Le dessin garde la
+   pastille pleine et la carte de « .art-etapes » ; s'y ajoutent deux choses,
+   et deux seulement.
+
+   1. Un rail sombre relie les pastilles, avec un point au milieu de chaque
+      intervalle. Il dit « ca descend », comme une frise.
+   2. Un trajet de retour part sous la derniere etape, file en pointille vers
+      la droite, remonte, et revient pointer sur la premiere. C'est lui qui
+      transforme la liste en cycle : le pointille dit que le temps passe, la
+      fleche dit ou on retombe.
+
+   La reserve de 200 px a droite lui appartient. Sous 720 px elle disparait :
+   le trajet se replie en une simple fleche sous la derniere etape. */
+.art-etapes--cycle {
+  position: relative;
+  gap: 22px;
+  padding-right: 200px;
+  padding-bottom: 40px;
+}
+
+/* La carte quitte le conteneur pour le texte : la pastille se retrouve sur le
+   rail, a l'exterieur, comme dans la variante « --suite ». */
+.art-etapes--cycle .art-etape {
+  position: relative;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+.art-etapes--cycle .art-etape > div:last-child {
+  background: var(--warm);
+  border-left: 0;
+  border-radius: 16px;
+  padding: 15px 22px;
+}
+.art-etapes--cycle .step-bubble { position: relative; z-index: 2; }
+
+/* Le rail : du centre d'une pastille au centre de la suivante. La derniere le
+   prolonge jusqu'au trajet de retour. */
+.art-etapes--cycle .art-etape::before {
+  content: "";
+  position: absolute;
+  left: 25px;
+  top: 26px;
+  bottom: -22px;
+  width: 2px;
+  background: var(--mid);
+  z-index: 1;
+}
+.art-etapes--cycle .art-etape:last-of-type::before { bottom: -40px; }
+
+/* Le trajet de retour, en 2 morceaux : le crochet a droite, et le pointille
+   qui court sous les etapes jusqu'a lui. */
+.art-etapes--cycle::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 165px;
+  top: 26px;
+  bottom: 0;
+  border: 2px solid var(--terracotta);
+  border-left: 0;
+  border-bottom-style: dashed;
+  border-radius: 0 22px 22px 0;
+  z-index: 0;
+}
+.art-etapes--cycle::after {
+  content: "";
+  position: absolute;
+  left: 26px;
+  right: 165px;
+  bottom: 0;
+  border-bottom: 2px dashed var(--terracotta);
+  border-bottom-left-radius: 22px;
+  border-left: 2px solid transparent;
+  z-index: 0;
+}
+
+/* La pointe, au bout du segment horizontal du haut. Deux bords d'un carre
+   pivote, comme les chevrons du reste de la feuille. */
+.art-cycle-fleche {
+  position: absolute;
+  top: 26px;
+  right: 163px;
+  width: 12px;
+  height: 12px;
+  border-left: 2px solid var(--terracotta);
+  border-bottom: 2px solid var(--terracotta);
+  transform: translateY(-50%) rotate(45deg);
+  z-index: 1;
+}
+
+/* La legende se pose sur la verticale et la coupe : c'est ce qui evite un
+   trait qui traverse le texte. */
+.art-cycle-legende {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 180px;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 12px 0;
+  background: var(--cream);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--rust);
+  z-index: 2;
+}
+
+@media (max-width: 720px) {
+  /* Plus la place pour un trajet a droite : il se replie sous la derniere
+     etape, en une fleche et sa legende. */
+  .art-etapes--cycle { padding-right: 0; padding-bottom: 0; }
+  .art-etapes--cycle::before,
+  .art-etapes--cycle::after,
+  .art-cycle-fleche { display: none; }
+  .art-etapes--cycle .art-etape:last-of-type::before { bottom: -22px; }
+  .art-cycle-legende {
+    position: static;
+    transform: none;
+    width: auto;
+    padding: 0 0 0 68px;
+    text-align: left;
+    background: none;
+  }
+  .art-cycle-legende::before { content: "\2191\00a0\00a0"; font-size: 17px; }
+}
+
+/* ── Les 6 temps d'une chasse ──────────────────────────────────────────────
+   « .art-etapes--suite » avec 2 reglages : le cercle descend de 92 a 64 px,
+   parce que 6 temps empiles font une hauteur qu'aucun lecteur ne parcourt ;
+   et l'encre passe au vert de la page, la regle de base allant chercher
+   celle de l'article hydratation. */
+.art-etapes--temps { --e-cercle: 64px; gap: 30px; }
+.art-page--jeu .art-etapes--suite .step-bubble {
+  border-color: var(--art-jeu-encre);
+  color: var(--art-jeu-encre);
+}
+
+/* Les valeurs n'ont pas la meme largeur de texte : « reference » est plus long
+   que « -25 % ». Avec une 3e colonne en « auto », chaque ligne calculait sa
+   propre largeur, et les 2 pistes ne faisaient pas la meme longueur : la
+   comparaison etait fausse a l'oeil. Deux barres qu'on compare partagent
+   exactement la meme piste. */
+.art-barres--aligne .art-barre { grid-template-columns: minmax(132px, 22%) 1fr 78px; }
+
+/* ── Une photo dans le cadre de figure ─────────────────────────────────────
+   Meme cadre que les figures de donnees : le lecteur reconnait un bloc qui lui
+   montre quelque chose. Le rembourrage tombe pour que l'image aille d'un bord
+   a l'autre, et le filet de la legende avec : l'image fait deja separation. */
+.art-fig--photo { padding: 0; overflow: hidden; }
+.art-fig--photo img { display: block; width: 100%; height: auto; }
+.art-fig--photo figcaption { margin: 0; padding: 16px 28px 20px; border-top: 0; }
+
+/* ── Les 6 temps d'une chasse ──────────────────────────────────────────────
+   « .art-etapes--suite » avec 2 reglages : le cercle descend de 92 a 64 px,
+   parce que 6 temps empiles font une hauteur qu'aucun lecteur ne parcourt ;
+   et l'encre passe au vert de la page, la regle de base allant chercher
+   celle de l'article hydratation. */
+.art-etapes--temps { --e-cercle: 64px; gap: 30px; }
+.art-page--jeu .art-etapes--suite .step-bubble {
+  border-color: var(--art-jeu-encre);
+  color: var(--art-jeu-encre);
+}
+
+/* Les valeurs n'ont pas la meme largeur de texte : « reference » est plus long
+   que « -25 % ». Avec une 3e colonne en « auto », chaque ligne calculait sa
+   propre largeur, et les 2 pistes ne faisaient pas la meme longueur : la
+   comparaison etait fausse a l'oeil. Deux barres qu'on compare partagent
+   exactement la meme piste. */
+.art-barres--aligne .art-barre { grid-template-columns: minmax(132px, 22%) 1fr 78px; }
+
+/* ── Une photo dans le cadre de figure ─────────────────────────────────────
+   Meme cadre que les figures de donnees : le lecteur reconnait un bloc qui lui
+   montre quelque chose. Le rembourrage tombe pour que l'image aille d'un bord
+   a l'autre, et le filet de la legende avec : l'image fait deja separation. */
+.art-fig--photo { padding: 0; overflow: hidden; }
+.art-fig--photo img { display: block; width: 100%; height: auto; }
+.art-fig--photo figcaption { margin: 0; padding: 16px 28px 20px; border-top: 0; }
+
+/* ── Lignes orphelines dans les blocs ──────────────────────────────────────
+   La regle posee plus haut ne vise que les enfants DIRECTS de « .art-corps ».
+   Or un paragraphe vit aussi dans une etape, une fiche produit ou un encart,
+   ou la colonne est plus etroite : il s'y termine sur un mot seul plus vite
+   qu'en pleine largeur. Mesure du 3 septembre 2026 sur l'article jeu, en
+   iframe de largeur fixe apres « document.fonts.ready » : 3 mots isoles a
+   1280 px avant cette regle, 0 apres.
+   Le repli reste sans risque : un navigateur qui ne connait pas la valeur
+   l'ignore et coupe comme avant. */
+.art-etape p,
+.art-carte-texte p,
+.cred-item p,
+.pcard p,
+.art-fig-unite { text-wrap: pretty; }
+
+/* Un titre de bloc ne se corrige pas en fin de ligne, il s'equilibre :
+   « balance » repartit ses lignes a peu pres egales, ce que « pretty » ne
+   fait pas. C'est deja le traitement des titres dans style.css. */
+.art-fig-titre,
+.pcard h3 { text-wrap: balance; }
