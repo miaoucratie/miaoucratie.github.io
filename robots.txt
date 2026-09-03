@@ -1,9 +1,5 @@
 User-agent: *
 Allow: /
-
-# Les PDF de presse sont des pages de journal rendues en image : aucun texte
-# extractible, donc rien a indexer. Ils sont la pour le lecteur, pas pour les
-# moteurs, et ce sont des articles dont les journaux gardent les droits.
 Disallow: /presse/
 
 Sitemap: https://miaoucratie.fr/sitemap.xml
