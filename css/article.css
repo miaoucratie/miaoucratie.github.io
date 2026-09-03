@@ -81,7 +81,9 @@
      memes bords sur toutes les pages du blog. */
   width: min(1200px, 100%);
   margin: 0 auto;
-  padding: 0 40px;
+  /* Le bas reprend l'ecart de section : le bloc de fin respire autant sous
+     lui qu'au-dessus, au lieu de buter contre le pied de page. */
+  padding: 0 40px var(--e-section);
 }
 /* 16 px fixe sur tous les articles, decision d'Irina : agrandir le texte ne
    rend pas la lecture longue plus confortable, ca gonfle la page et ca reduit
@@ -147,7 +149,7 @@
    reperes qui defile horizontalement, juste sous l'en-tete. Il occupe alors
    une ligne au lieu d'une colonne, et ne repousse pas le contenu. */
 @media (max-width: 1079px) {
-  .art-page { padding: 0 24px; }
+  .art-page { padding: 0 24px var(--e-section); }
   .art-sommaire { padding: 24px 0 0; }
   .art-sommaire ol {
     display: flex;
@@ -1058,6 +1060,129 @@
   border-color: var(--art-jeu-encre);
   color: var(--art-jeu-encre);
 }
+
+
+/* ══ ARTICLE MYTHES ═════════════════════════════════════════════════════════
+   Meme mecanique que « --eau » et « --jeu » : un ton par article, pose sur la
+   classe de page. Le vert sauge vient de la rubrique Comportement. */
+:root { --art-mythe: #4A6B58; }
+
+.art-page--mythes .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
+.art-page--mythes .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
+.art-page--mythes .art-sommaire a:hover { color: var(--art-mythe); border-left-color: var(--art-mythe); }
+.art-page--mythes .art-fig-titre { color: var(--art-mythe); }
+.art-page--mythes .art-tab thead th { color: var(--art-mythe); }
+.art-page--mythes .art-tab caption { color: var(--art-mythe); }
+
+/* Le lien contextuel suit le rythme des paragraphes, et rien d'autre.
+   Il portait un `margin-top` de 36 px que j'avais ajouté : c'était le seul
+   écart de la page avec `jeu-chat.html`, validé par Irina, où un paragraphe
+   vaut 0 en haut et 20 en bas. Mesuré à 810 px de colonne, sur trois
+   occurrences. Ne pas le réintroduire. */
+
+/* ── Les deux branches du ronronnement ────────────────────────────────────
+   Deux cartes empilées plutôt que le composant `.art-voies` : celui-ci ancre
+   ses connecteurs sur la 2e branche (`nth-child(2)`), sa géométrie est donc
+   juste à trois branches et fausse à deux. */
+.art-page--mythes .art-branche { border-left: 4px solid var(--art-mythe); }
+.art-page--mythes .art-branche--b { border-left-color: var(--rust); }
+.art-page--mythes .art-branche-ou {
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  font-size: 15px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--art-mythe); margin: 0 0 12px;
+}
+.art-page--mythes .art-branche--b .art-branche-ou { color: var(--rust); }
+/* En bloc : « où » et « ce qui a été mesuré » ne se lisent pas en enfilade. */
+.art-page--mythes .art-branche-quoi {
+  display: block; font-size: 12px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+}
+
+/* ── Le schéma de l'œil ───────────────────────────────────────────────────
+   Aucun texte dans le SVG : il ne suivrait pas la mise à l'échelle. Les
+   libellés passent par la légende HTML déjà utilisée par les figures. */
+.art-page--mythes .art-schema-boite {
+  background: rgba(74, 107, 88, 0.05);
+  border-radius: 14px; padding: 12px 10px; margin-bottom: 16px;
+}
+.art-page--mythes .art-schema-svg { display: block; width: 100%; height: auto; }
+.art-page--mythes .sc-globe { fill: var(--cream); stroke: var(--sand); stroke-width: 2.5; }
+.art-page--mythes .sc-iris { fill: none; stroke: var(--deep); stroke-width: 7; stroke-linecap: round; }
+.art-page--mythes .sc-tapetum { fill: none; stroke: var(--art-mythe); stroke-width: 9; stroke-linecap: round; }
+.art-page--mythes .sc-retine { fill: none; stroke: var(--mid); stroke-width: 4; stroke-linecap: round; }
+.art-page--mythes .sc-cristallin { fill: rgba(184, 155, 128, 0.18); stroke: var(--sand); stroke-width: 2; }
+.art-page--mythes .sc-rayon {
+  fill: none; stroke: var(--terracotta); stroke-width: 3.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.art-page--mythes .sc-rayon--retour { stroke-dasharray: 9 7; }
+.art-page--mythes .sc-fleche { fill: var(--terracotta); }
+.art-page--mythes .sc-point { fill: var(--mid); }
+
+/* ── La citation détachée ─────────────────────────────────────────────────
+   `.cred-quote-text` existe déjà, mais c'est le style des avis clients :
+   Cormorant italique, centré, très grand. Il porte une identité de témoignage
+   qui n'a rien à faire sur une recommandation vétérinaire. */
+.art-page--mythes .art-citation {
+  margin: var(--e-bloc) 0;
+  padding: 2px 0 2px 26px;
+  border-left: 4px solid var(--art-mythe);
+}
+.art-page--mythes .art-citation p {
+  margin: 0;
+  font-size: 20px; line-height: 1.65; color: var(--deep);
+}
+
+/* ── Les quatre gestes, sortis du paragraphe ──────────────────────────── */
+.art-page--mythes .art-gestes { gap: 10px; margin: 0 0 var(--e-para); }
+.art-page--mythes .art-gestes .art-cat { font-size: 15px; padding: 9px 17px; border-radius: 999px; }
+
+/* ── Le verdict de chaque mythe ───────────────────────────────────────────
+   Arbitrage d'Irina, variante D : bordure à gauche, petite étiquette dans
+   l'accent, phrase en texte courant agrandi. La pastille sauge pleine avec du
+   DM Sans gras a été écartée.
+   L'étiquette passe par ::before : elle ne change pas le balisage, et un
+   lecteur d'écran ne réénonce pas dix fois le même mot avant la phrase. */
+.art-page--mythes .art-verdict {
+  margin: var(--e-bloc) 0;
+  padding: 0 0 0 22px;
+  border-left: 3px solid var(--art-mythe);
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--deep);
+}
+.art-page--mythes .art-verdict::before {
+  content: "Le verdict";
+  display: block;
+  margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--art-mythe);
+}
+
+/* ── La photo de Méli, partie 3 ───────────────────────────────────────────
+   Composant `.art-fig--photo`, déjà utilisé par l'article jeu : aucune règle
+   nouvelle. Tant que le fichier n'est pas fourni, le script de montage pose
+   un aplat à la place, pour que le cadre et la légende soient jugeables. */
+/* ── Le duo de livres, suivi d'un paragraphe ──────────────────────────────
+   `.art-duo` n'a aucune marge propre, et `.art-corps > p` n'a pas de marge
+   haute. En production le cas ne se pose jamais : un bloc de cartes y est
+   toujours suivi d'un h2 ou d'un h3, qui apportent leurs 68 ou 48 px. Ici la
+   conclusion pratique vient après les cartes, et les deux se touchaient.
+   On reprend le jeton de la règle qui régit déjà figure, tableau et encadré
+   dans `.art-corps`. Aucune valeur nouvelle. */
+.art-page--mythes .art-corps > .art-duo { margin: var(--e-bloc) 0; }
+/* ── La photo de Méli ─────────────────────────────────────────────────────
+   Elle est carrée : à pleine colonne elle ferait 810 px de haut, contre
+   608 px pour la photo paysage de `jeu-chat.html`, qui est la hauteur de
+   référence du site. Elle écrasait la section et donnait envie de dézoomer.
+   On la borne à 480 px et on la centre. En dessous de cette largeur — donc
+   sur tout téléphone — la règle ne mord pas et la photo occupe la colonne,
+   ce qui est le comportement normal sur mobile. */
+.art-page--mythes .art-fig--photo { max-width: 480px; margin-inline: auto; }
 
 
 /* ══ SUITE D'ETAPES ════════════════════════════════════════════════════════
