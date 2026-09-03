@@ -214,10 +214,30 @@
    derniere ligne trop courte. Mesure apres : zero partout.
 
    Le repli est sans risque : un navigateur qui ne connait pas la valeur
-   l'ignore et coupe comme avant. */
+   l'ignore et coupe comme avant.
+
+   Les elements de liste manquaient a cette liste de selecteurs, et ce sont
+   les seuls qui restaient. Mesure du 3 septembre 2026 sur les cinq articles
+   en ligne, meme methode, paragraphes deja a zero :
+
+     elements de liste finissant     1280 px      375 px      320 px
+     sur un mot isole              avant apres  avant apres  avant apres
+     croquettes-et-patee               3     0      5     3      6     2
+     etiquette-nourriture-chat         1     0      2     0      0     0
+     hydratation-du-chat               1     0      3     0      8     0
+     jeu-chat                          0     0      2     0      6     0
+     ce-que-jutilise                   0     0      0     0      0     0
+     total                             5     0     12     3     20     2
+
+   Il reste cinq cas, tous sur « croquettes-et-patee » : des elements de deux
+   lignes ou le moteur n'a rien a remonter sans laisser la premiere ligne trop
+   courte. Ils sont connus — « Facile a doser », « Utilisable dans un
+   distributeur », la note sur les graisses — et aucune reecriture ne les
+   corrige aux trois largeurs a la fois. */
 .art-corps > p,
 .art-corps > h2,
 .art-corps > h3,
+.art-corps li,
 .art-chapo,
 .art-fig figcaption { text-wrap: pretty; }
 
