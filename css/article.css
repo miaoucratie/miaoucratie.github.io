@@ -770,13 +770,9 @@
 
 
 /* ══ DEUX GROUPES QUI SE CROISENT ══════════════════════════════════════════
-   Deux barres l'une sous l'autre obligent l'oeil a comparer deux longueurs
-   pour deviner ou les groupes se melangent. Ici la zone commune est dessinee :
-   une seule piste, deux bandes flottantes, et le recouvrement en teinte.
-
-   Les bandes ne partent pas de zero. Elles couvrent la moyenne du groupe plus
-   ou moins l'ecart releve par l'etude, ce qui est la seule facon sourcee de
-   montrer que les deux groupes se recouvrent. */
+/* Les bandes ne partent pas de zero : elles couvrent la moyenne du groupe
+   plus ou moins son ecart, seule facon de montrer que deux groupes se
+   recouvrent. */
 .art-croise-piste {
   position: relative;
   height: 76px;
@@ -1115,16 +1111,10 @@
 .art-page--mythes .art-tab thead th { color: var(--art-mythe); }
 .art-page--mythes .art-tab caption { color: var(--art-mythe); }
 
-/* Le lien contextuel suit le rythme des paragraphes, et rien d'autre.
-   Il portait un `margin-top` de 36 px que j'avais ajouté : c'était le seul
-   écart de la page avec `jeu-chat.html`, validé par Irina, où un paragraphe
-   vaut 0 en haut et 20 en bas. Mesuré à 810 px de colonne, sur trois
-   occurrences. Ne pas le réintroduire. */
 
 /* ── Les deux branches du ronronnement ────────────────────────────────────
-   Deux cartes empilées plutôt que le composant `.art-voies` : celui-ci ancre
-   ses connecteurs sur la 2e branche (`nth-child(2)`), sa géométrie est donc
-   juste à trois branches et fausse à deux. */
+/* Pas .art-voies : ses connecteurs sont ancres sur la 2e branche, sa
+   geometrie est fausse a deux. */
 .art-page--mythes .art-branche { border-left: 4px solid var(--art-mythe); }
 .art-page--mythes .art-branche--b { border-left-color: var(--rust); }
 .art-page--mythes .art-branche-ou {
@@ -1161,9 +1151,7 @@
 .art-page--mythes .sc-point { fill: var(--mid); }
 
 /* ── La citation détachée ─────────────────────────────────────────────────
-   `.cred-quote-text` existe déjà, mais c'est le style des avis clients :
-   Cormorant italique, centré, très grand. Il porte une identité de témoignage
-   qui n'a rien à faire sur une recommandation vétérinaire. */
+/* Pas .cred-quote-text : c'est le style des avis clients. */
 .art-page--mythes .art-citation {
   margin: var(--e-bloc) 0;
   padding: 2px 0 2px 26px;
@@ -1178,12 +1166,8 @@
 .art-page--mythes .art-gestes { gap: 10px; margin: 0 0 var(--e-para); }
 .art-page--mythes .art-gestes .art-cat { font-size: 15px; padding: 9px 17px; border-radius: 999px; }
 
-/* ── Le verdict de chaque mythe ───────────────────────────────────────────
-   Arbitrage d'Irina, variante D : bordure à gauche, petite étiquette dans
-   l'accent, phrase en texte courant agrandi. La pastille sauge pleine avec du
-   DM Sans gras a été écartée.
-   L'étiquette passe par ::before : elle ne change pas le balisage, et un
-   lecteur d'écran ne réénonce pas dix fois le même mot avant la phrase. */
+/* Le libelle passe par ::before : un lecteur d'ecran ne le reenonce pas
+   dix fois avant la phrase. */
 .art-page--mythes .art-verdict {
   margin: var(--e-bloc) 0;
   padding: 0 0 0 22px;
@@ -1204,25 +1188,9 @@
   color: var(--art-mythe);
 }
 
-/* ── La photo de Méli, partie 3 ───────────────────────────────────────────
-   Composant `.art-fig--photo`, déjà utilisé par l'article jeu : aucune règle
-   nouvelle. Tant que le fichier n'est pas fourni, le script de montage pose
-   un aplat à la place, pour que le cadre et la légende soient jugeables. */
-/* ── Le duo de livres, suivi d'un paragraphe ──────────────────────────────
-   `.art-duo` n'a aucune marge propre, et `.art-corps > p` n'a pas de marge
-   haute. En production le cas ne se pose jamais : un bloc de cartes y est
-   toujours suivi d'un h2 ou d'un h3, qui apportent leurs 68 ou 48 px. Ici la
-   conclusion pratique vient après les cartes, et les deux se touchaient.
-   On reprend le jeton de la règle qui régit déjà figure, tableau et encadré
-   dans `.art-corps`. Aucune valeur nouvelle. */
+/* Un bloc de cartes suivi d'un paragraphe : les deux se touchaient. */
 .art-page--mythes .art-corps > .art-duo { margin: var(--e-bloc) 0; }
-/* ── La photo de Méli ─────────────────────────────────────────────────────
-   Elle est carrée : à pleine colonne elle ferait 810 px de haut, contre
-   608 px pour la photo paysage de `jeu-chat.html`, qui est la hauteur de
-   référence du site. Elle écrasait la section et donnait envie de dézoomer.
-   On la borne à 480 px et on la centre. En dessous de cette largeur — donc
-   sur tout téléphone — la règle ne mord pas et la photo occupe la colonne,
-   ce qui est le comportement normal sur mobile. */
+/* Photo carree : a pleine colonne elle ferait 810 px de haut. */
 .art-page--mythes .art-fig--photo { max-width: 480px; margin-inline: auto; }
 
 
