@@ -311,10 +311,16 @@ body.cgv-page .brand-rule {
 .tmenu-panel {
   /* display géré via style inline JS */
   flex-direction: column; gap: 2px;
-  position: absolute; top: calc(100% + 6px); left: var(--topbar-pad);
+  /* Le panneau sort de la barre, sans interstice. Le decalage de 6px qu'il
+     portait etait invisible tant que la barre avait 12px de padding vertical
+     pour l'absorber ; depuis qu'elle est passee en min-height, il laissait
+     passer le fond de page. Les deux coins hauts restent droits, pour que la
+     jonction avec la barre ne se voie pas. */
+  position: absolute; top: 100%; left: var(--topbar-pad);
   min-width: 200px; padding: 8px;
-  border-radius: 12px;
+  border-radius: 0 0 12px 12px;
   border: 1px solid rgba(255,255,255,0.12);
+  border-top: none;
   background: var(--deep, #1E1812);
   box-shadow: 0 20px 48px rgba(0,0,0,0.4);
   z-index: 1000;
