@@ -18,7 +18,7 @@ node_modules/
 CLAUDE.md
 CLAUDE.local.md
 
-# Maquette de travail : validation avant integration, jamais publiee
-maquette-blog.html
-maquette-arbitrages.html
-maquette-jeu.html
+# Maquette de travail : validation avant integration, jamais publiee.
+# Motif et non liste nominative : une maquette oubliee ici serait servie et
+# indexee, et le controle redactionnel ignore deja « maquette-*.html ».
+maquette-*.html

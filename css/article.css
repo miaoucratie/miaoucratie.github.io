@@ -81,7 +81,9 @@
      memes bords sur toutes les pages du blog. */
   width: min(1200px, 100%);
   margin: 0 auto;
-  padding: 0 40px;
+  /* Le bas reprend l'ecart de section : le bloc de fin respire autant sous
+     lui qu'au-dessus, au lieu de buter contre le pied de page. */
+  padding: 0 40px var(--e-section);
 }
 /* 16 px fixe sur tous les articles, decision d'Irina : agrandir le texte ne
    rend pas la lecture longue plus confortable, ca gonfle la page et ca reduit
@@ -147,7 +149,7 @@
    reperes qui defile horizontalement, juste sous l'en-tete. Il occupe alors
    une ligne au lieu d'une colonne, et ne repousse pas le contenu. */
 @media (max-width: 1079px) {
-  .art-page { padding: 0 24px; }
+  .art-page { padding: 0 24px var(--e-section); }
   .art-sommaire { padding: 24px 0 0; }
   .art-sommaire ol {
     display: flex;
@@ -766,24 +768,64 @@
    son arrondi et sa fonction de cadre, la pile porte la repartition. */
 .art-piste > .art-pile { height: 100%; border-radius: 0; background: none; }
 
-/* Reperes sous les pistes : sans eux, une barre ne dit pas sur quoi elle se
-   compte. « 80 » ne veut rien dire, « 80 sur 100 g » se comprend. La
-   graduation reprend exactement les colonnes de .art-barre, sinon elle se
-   decale par rapport aux pistes qu'elle est censee mesurer. */
-.art-graduation {
-  display: grid;
-  grid-template-columns: minmax(96px, 24%) 1fr auto;
-  gap: 12px;
-  margin-top: 8px;
+
+/* ══ DEUX GROUPES QUI SE CROISENT ══════════════════════════════════════════
+/* Les bandes ne partent pas de zero : elles couvrent la moyenne du groupe
+   plus ou moins son ecart, seule facon de montrer que deux groupes se
+   recouvrent. */
+.art-croise-piste {
+  position: relative;
+  height: 76px;
+  background: var(--warm);
+  border-radius: 16px;
+  overflow: hidden;
 }
-.art-graduation-reperes {
-  grid-column: 2;
+/* Bordures en pointilles : la teinte seule ne suffit pas a borner la zone, et
+   elle ne se voit plus sous la bande qui la recouvre. */
+.art-croise-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(122, 107, 94, 0.16);
+  border-left: 1px dashed var(--mid);
+  border-right: 1px dashed var(--mid);
+}
+/* Le nom vit dans la bande : une colonne d'intitules a gauche rendrait la
+   position des bandes illisible, puisque c'est elle qui porte l'information. */
+.art-croise-bande {
+  position: absolute;
+  height: 28px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cream);
+  white-space: nowrap;
+}
+.art-croise-bande--haut { top: 10px; background: var(--rust); }
+.art-croise-bande--bas { bottom: 10px; background: #8C6A4F; }
+.art-croise-bornes {
   display: flex;
   justify-content: space-between;
+  font-family: 'DM Sans', sans-serif;
   font-size: 12px;
   color: var(--muted);
-  font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
+  margin: 8px 0 0;
 }
+.art-croise-cle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--mid);
+  margin: 14px 0 0;
+}
+.art-croise-cle span { display: inline-flex; align-items: center; gap: 8px; }
+.art-croise-cle i { width: 14px; height: 14px; border-radius: 4px; flex: none; }
 
 /* ══ TABLEAU ════════════════════════════════════════════════════════════
    Le cadre defile horizontalement plutot que de pousser la page : un tableau
@@ -973,9 +1015,6 @@
      pour le nom ne laissait que 150 px de piste, illisible. */
   .art-barre-nom { grid-column: 1 / -1; }
   .art-piste { grid-column: 1; }
-  /* La piste passe en premiere colonne : la graduation la suit. */
-  .art-graduation { grid-template-columns: 1fr auto; }
-  .art-graduation-reperes { grid-column: 1; }
   .art-tab th,
   .art-tab td { padding: 11px 16px; }
   .art-tab caption { padding: 16px 16px 0; }
@@ -1058,6 +1097,101 @@
   border-color: var(--art-jeu-encre);
   color: var(--art-jeu-encre);
 }
+
+
+/* ══ ARTICLE MYTHES ═════════════════════════════════════════════════════════
+   Meme mecanique que « --eau » et « --jeu » : un ton par article, pose sur la
+   classe de page. Le vert sauge vient de la rubrique Comportement. */
+:root { --art-mythe: #4A6B58; }
+
+.art-page--mythes .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
+.art-page--mythes .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
+.art-page--mythes .art-sommaire a:hover { color: var(--art-mythe); border-left-color: var(--art-mythe); }
+.art-page--mythes .art-fig-titre { color: var(--art-mythe); }
+.art-page--mythes .art-tab thead th { color: var(--art-mythe); }
+.art-page--mythes .art-tab caption { color: var(--art-mythe); }
+
+
+/* ── Les deux branches du ronronnement ────────────────────────────────────
+/* Pas .art-voies : ses connecteurs sont ancres sur la 2e branche, sa
+   geometrie est fausse a deux. */
+.art-page--mythes .art-branche { border-left: 4px solid var(--art-mythe); }
+.art-page--mythes .art-branche--b { border-left-color: var(--rust); }
+.art-page--mythes .art-branche-ou {
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  font-size: 15px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--art-mythe); margin: 0 0 12px;
+}
+.art-page--mythes .art-branche--b .art-branche-ou { color: var(--rust); }
+/* En bloc : « où » et « ce qui a été mesuré » ne se lisent pas en enfilade. */
+.art-page--mythes .art-branche-quoi {
+  display: block; font-size: 12px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+}
+
+/* ── Le schéma de l'œil ───────────────────────────────────────────────────
+   Aucun texte dans le SVG : il ne suivrait pas la mise à l'échelle. Les
+   libellés passent par la légende HTML déjà utilisée par les figures. */
+.art-page--mythes .art-schema-boite {
+  background: rgba(74, 107, 88, 0.05);
+  border-radius: 14px; padding: 12px 10px; margin-bottom: 16px;
+}
+.art-page--mythes .art-schema-svg { display: block; width: 100%; height: auto; }
+.art-page--mythes .sc-globe { fill: var(--cream); stroke: var(--sand); stroke-width: 2.5; }
+.art-page--mythes .sc-iris { fill: none; stroke: var(--deep); stroke-width: 7; stroke-linecap: round; }
+.art-page--mythes .sc-tapetum { fill: none; stroke: var(--art-mythe); stroke-width: 9; stroke-linecap: round; }
+.art-page--mythes .sc-retine { fill: none; stroke: var(--mid); stroke-width: 4; stroke-linecap: round; }
+.art-page--mythes .sc-cristallin { fill: rgba(184, 155, 128, 0.18); stroke: var(--sand); stroke-width: 2; }
+.art-page--mythes .sc-rayon {
+  fill: none; stroke: var(--terracotta); stroke-width: 3.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.art-page--mythes .sc-rayon--retour { stroke-dasharray: 9 7; }
+.art-page--mythes .sc-fleche { fill: var(--terracotta); }
+.art-page--mythes .sc-point { fill: var(--mid); }
+
+/* ── La citation détachée ─────────────────────────────────────────────────
+/* Pas .cred-quote-text : c'est le style des avis clients. */
+.art-page--mythes .art-citation {
+  margin: var(--e-bloc) 0;
+  padding: 2px 0 2px 26px;
+  border-left: 4px solid var(--art-mythe);
+}
+.art-page--mythes .art-citation p {
+  margin: 0;
+  font-size: 20px; line-height: 1.65; color: var(--deep);
+}
+
+/* ── Les quatre gestes, sortis du paragraphe ──────────────────────────── */
+.art-page--mythes .art-gestes { gap: 10px; margin: 0 0 var(--e-para); }
+.art-page--mythes .art-gestes .art-cat { font-size: 15px; padding: 9px 17px; border-radius: 999px; }
+
+/* Le libelle passe par ::before : un lecteur d'ecran ne le reenonce pas
+   dix fois avant la phrase. */
+.art-page--mythes .art-verdict {
+  margin: var(--e-bloc) 0;
+  padding: 0 0 0 22px;
+  border-left: 3px solid var(--art-mythe);
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--deep);
+}
+.art-page--mythes .art-verdict::before {
+  content: "Le verdict";
+  display: block;
+  margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--art-mythe);
+}
+
+/* Un bloc de cartes suivi d'un paragraphe : les deux se touchaient. */
+.art-page--mythes .art-corps > .art-duo { margin: var(--e-bloc) 0; }
+/* Photo carree : a pleine colonne elle ferait 810 px de haut. */
+.art-page--mythes .art-fig--photo { max-width: 480px; margin-inline: auto; }
 
 
 /* ══ SUITE D'ETAPES ════════════════════════════════════════════════════════

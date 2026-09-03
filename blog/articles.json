@@ -8,12 +8,16 @@
     "inLanguage": "fr-FR",
     "rubriques": [
       {
+        "nom": "Comportement",
+        "emoji": "🐾"
+      },
+      {
         "nom": "Matériel",
         "emoji": "🧰"
       },
       {
         "nom": "Enrichissement",
-        "emoji": "🧶"
+        "emoji": "🧩"
       },
       {
         "nom": "Alimentation",
@@ -26,6 +30,39 @@
     ]
   },
   "articles": [
+    {
+      "slug": "mythes-chat",
+      "url": "/mythes-chat.html",
+      "status": "published",
+      "category": "Comportement",
+      "affiliate": true,
+      "h1": "Les 10 idées reçues sur le chat, passées au crible",
+      "seoTitle": "Les 10 idées reçues sur le chat | Miaoucratie",
+      "description": "Le ronronnement, la vision nocturne, la couleur du pelage, la vengeance : dix croyances sur le chat, confrontées aux études qui les ont testées.",
+      "ldHeadline": "Les 10 idées reçues sur le chat, passées au crible",
+      "cardTitle": "Les 10 idées reçues sur le chat, passées au crible",
+      "cardText": [
+        "«&#8239;Un chat qui ronronne est content.&#8239;» La phrase paraît évidente, et elle ne résiste pas au premier chiffre&nbsp;: il ronronne aussi sur la table du vétérinaire.",
+        "Dix croyances confrontées aux travaux qui les ont testées. Certaines s'effondrent. D'autres tiennent, mais pas pour la raison qu'on imagine."
+      ],
+      "cardCta": "Les 10 verdicts",
+      "datePublished": "2026-09-03",
+      "dateModified": "2026-09-03",
+      "keywords": [
+        "idées reçues",
+        "comportement du chat",
+        "ronronnement",
+        "anthropomorphisme",
+        "chutes"
+      ],
+      "related": [
+        "jeu-chat",
+        "ce-que-jutilise",
+        "etiquette-nourriture-chat"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 1
+    },
     {
       "slug": "ce-que-jutilise",
       "url": "/ce-que-jutilise.html",
@@ -53,8 +90,8 @@
       ],
       "related": [
         "jeu-chat",
-        "etiquette-nourriture-chat",
-        "hydratation-du-chat"
+        "hydratation-du-chat",
+        "mythes-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
@@ -87,7 +124,7 @@
       "related": [
         "croquettes-et-patee",
         "ce-que-jutilise",
-        "jeu-chat"
+        "mythes-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
@@ -120,7 +157,7 @@
       "related": [
         "etiquette-nourriture-chat",
         "hydratation-du-chat",
-        "ce-que-jutilise"
+        "mythes-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 2
@@ -153,7 +190,7 @@
       "related": [
         "croquettes-et-patee",
         "etiquette-nourriture-chat",
-        "jeu-chat"
+        "mythes-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 4
@@ -185,8 +222,8 @@
       ],
       "related": [
         "ce-que-jutilise",
-        "croquettes-et-patee",
-        "hydratation-du-chat"
+        "hydratation-du-chat",
+        "mythes-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
