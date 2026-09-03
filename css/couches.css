@@ -294,7 +294,7 @@ body.cgv-page .brand-rule {
   outline: 2px solid rgba(242,205,176,0.8);
   outline-offset: 2px;
 }
-.tmenu-wrap { position: relative; flex-shrink: 0; }
+.tmenu-wrap { position: relative; flex-shrink: 0; align-self: stretch; display: flex; align-items: center; }
 .tmenu-btn {
   background: none; border: none; cursor: pointer;
   color: var(--light, #D4BEA8);
