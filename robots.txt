@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /presse/
 
 Sitemap: https://miaoucratie.fr/sitemap.xml
