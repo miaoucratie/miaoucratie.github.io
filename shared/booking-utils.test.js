@@ -25,6 +25,8 @@ import {
   dateRangeOverlaps,
   mergeRanges,
   rangeCollidesWithUnavailable,
+  availableSegments,
+  countCoveredDays,
   sanitizeReservationPayload,
   validateReservationPayload,
   validateUnavailabilityPayload,
@@ -205,6 +207,76 @@ describe('collision avec une indisponibilite', () => {
   });
 });
 
+describe('jours couverts d une periode', () => {
+  const seg = (s, e) => ({ startDate: s, endDate: e });
+
+  test('rend la periode entiere quand rien ne la bloque', () => {
+    assert.deepEqual(availableSegments('2030-07-10', '2030-07-18', []), [seg('2030-07-10', '2030-07-18')]);
+    assert.equal(countCoveredDays('2030-07-10', '2030-07-18', []), 9);
+  });
+
+  test('coupe la fin quand l absence commence en cours de sejour', () => {
+    const r = availableSegments('2030-07-10', '2030-07-18', [seg('2030-07-15', '2030-07-25')]);
+    assert.deepEqual(r, [seg('2030-07-10', '2030-07-14')]);
+  });
+
+  test('coupe le debut quand l absence court deja', () => {
+    const r = availableSegments('2030-07-10', '2030-07-18', [seg('2030-07-01', '2030-07-12')]);
+    assert.deepEqual(r, [seg('2030-07-13', '2030-07-18')]);
+  });
+
+  test('rend deux morceaux quand l absence tombe au milieu', () => {
+    const r = availableSegments('2030-07-10', '2030-07-18', [seg('2030-07-13', '2030-07-15')]);
+    assert.deepEqual(r, [seg('2030-07-10', '2030-07-12'), seg('2030-07-16', '2030-07-18')]);
+    assert.equal(countCoveredDays('2030-07-10', '2030-07-18', [seg('2030-07-13', '2030-07-15')]), 6);
+  });
+
+  test('rend trois morceaux quand deux absences trouent le sejour', () => {
+    const r = availableSegments('2030-07-01', '2030-07-20', [
+      seg('2030-07-05', '2030-07-07'),
+      seg('2030-07-12', '2030-07-13'),
+    ]);
+    assert.deepEqual(r, [
+      seg('2030-07-01', '2030-07-04'),
+      seg('2030-07-08', '2030-07-11'),
+      seg('2030-07-14', '2030-07-20'),
+    ]);
+  });
+
+  test('ne rend rien quand la periode est entierement bloquee', () => {
+    assert.deepEqual(availableSegments('2030-07-10', '2030-07-18', [seg('2030-07-01', '2030-07-31')]), []);
+    assert.equal(countCoveredDays('2030-07-10', '2030-07-18', [seg('2030-07-01', '2030-07-31')]), 0);
+  });
+
+  test('traite deux absences qui se touchent comme une seule', () => {
+    const r = availableSegments('2030-07-01', '2030-07-20', [
+      seg('2030-07-05', '2030-07-10'),
+      seg('2030-07-11', '2030-07-15'),
+    ]);
+    assert.deepEqual(r, [seg('2030-07-01', '2030-07-04'), seg('2030-07-16', '2030-07-20')]);
+  });
+
+  test('accepte une garde d un seul jour', () => {
+    assert.deepEqual(availableSegments('2030-07-10', '2030-07-10', []), [seg('2030-07-10', '2030-07-10')]);
+    assert.equal(countCoveredDays('2030-07-10', '2030-07-10', []), 1);
+  });
+
+  test('ne rend rien sur des dates illisibles ou inversees', () => {
+    assert.deepEqual(availableSegments('', '2030-07-18', []), []);
+    assert.deepEqual(availableSegments('2030-07-18', '2030-07-10', []), []);
+  });
+
+  test('ignore une indisponibilite illisible', () => {
+    const r = availableSegments('2030-07-10', '2030-07-18', [seg('pas-une-date', '2030-07-15')]);
+    assert.deepEqual(r, [seg('2030-07-10', '2030-07-18')]);
+  });
+
+  test('franchit un changement d heure sans decaler les bornes', () => {
+    const r = availableSegments('2030-10-20', '2030-11-05', [seg('2030-10-26', '2030-10-28')]);
+    assert.deepEqual(r, [seg('2030-10-20', '2030-10-25'), seg('2030-10-29', '2030-11-05')]);
+  });
+});
+
 describe('nettoyage de la demande', () => {
   test('accepte les noms de champs du formulaire comme ceux de l API', () => {
     const s = sanitizeReservationPayload({ nombre_chats: '3', date_debut: '2030-07-10', contact_email: 'A@B.FR' });
@@ -286,9 +358,14 @@ describe('validation de la demande', () => {
     assert.equal(valider({ frequence: 'autre', autreFrequence: 'Deux visites le week-end' }).isValid, true);
   });
 
-  test('refuse une periode qui tombe sur une indisponibilite', () => {
-    const r = valider({}, [{ startDate: '2030-07-12', endDate: '2030-07-14' }]);
+  test('refuse une periode dont aucun jour n est couvert', () => {
+    const r = valider({}, [{ startDate: '2030-07-01', endDate: '2030-07-31' }]);
     assert.ok(r.errors.dateRange);
+  });
+
+  test('accepte une periode partiellement couverte', () => {
+    const r = valider({}, [{ startDate: '2030-07-12', endDate: '2030-07-14' }]);
+    assert.equal(r.isValid, true, `erreurs inattendues : ${JSON.stringify(r.errors)}`);
   });
 
   test('accepte une periode a cote d une indisponibilite', () => {

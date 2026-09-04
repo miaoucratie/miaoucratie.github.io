@@ -1,4 +1,5 @@
 import {
+  availableSegments,
   sanitizeReservationPayload,
   sanitizeUnavailabilityPayload,
   validateReservationPayload,
@@ -53,7 +54,7 @@ export default {
       assertOriginAllowed(request, env);
 
       if (url.pathname === "/public/unavailabilities" && request.method === "GET") {
-        const ranges = await listUnavailabilities(env);
+        const ranges = await listUnavailabilities(env, { datesSeules: true });
         return jsonResponse({ ranges }, 200, request, env);
       }
 
@@ -128,7 +129,7 @@ export default {
 
 async function handlePublicReservation(request, env) {
   const payload = sanitizeReservationPayload(await parseJson(request));
-  const unavailableRanges = await listUnavailabilities(env, { includePast: false });
+  const unavailableRanges = await listUnavailabilities(env, { includePast: false, datesSeules: true });
   const validation = validateReservationPayload(payload, unavailableRanges);
 
   if (!validation.isValid) {
@@ -347,11 +348,16 @@ async function handleDeleteUnavailability(request, env, id) {
   );
 }
 
+/* Le calendrier du site n'a besoin que des dates : `datesSeules` laisse le
+   commentaire aux routes d'administration, qui sont les seules a l'afficher. */
 async function listUnavailabilities(env, options = {}) {
   const includePast = Boolean(options.includePast);
+  const colonnes = options.datesSeules
+    ? "id, start_date AS startDate, end_date AS endDate"
+    : "id, start_date AS startDate, end_date AS endDate, comment";
   const query = includePast
-    ? "SELECT id, start_date AS startDate, end_date AS endDate, comment FROM unavailability_periods ORDER BY start_date ASC, end_date ASC"
-    : "SELECT id, start_date AS startDate, end_date AS endDate, comment FROM unavailability_periods WHERE end_date >= date('now') ORDER BY start_date ASC, end_date ASC";
+    ? `SELECT ${colonnes} FROM unavailability_periods ORDER BY start_date ASC, end_date ASC`
+    : `SELECT ${colonnes} FROM unavailability_periods WHERE end_date >= date('now') ORDER BY start_date ASC, end_date ASC`;
 
   const result = await env.DB.prepare(query).all();
   return result.results || [];
@@ -382,7 +388,23 @@ async function listReservations(env) {
     .bind(STATUT_NOTIFICATION_ECHOUEE, DEMANDES_AFFICHEES)
     .all();
 
-  return result.results || [];
+  const demandes = result.results || [];
+
+  if (!demandes.length) {
+    return demandes;
+  }
+
+  /* Les jours couverts sont recalcules a la lecture, pas figes a l'envoi :
+     une absence ajoutee depuis doit se voir sur les demandes deja recues. */
+  const indisponibilites = await listUnavailabilities(env, {
+    includePast: true,
+    datesSeules: true,
+  });
+
+  return demandes.map((demande) => ({
+    ...demande,
+    joursCouverts: availableSegments(demande.dateDebut, demande.dateFin, indisponibilites),
+  }));
 }
 
 async function countRecentSubmissions(env, ipHash) {

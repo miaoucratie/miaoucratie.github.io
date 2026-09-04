@@ -162,6 +162,73 @@ export function rangeCollidesWithUnavailable(startDate, endDate, unavailableRang
   });
 }
 
+/* Decale une date ISO d'un nombre de jours, en UTC pour ignorer l'heure d'ete. */
+function shiftIsoDay(isoDate, step) {
+  const date = toDate(isoDate);
+
+  if (!date) {
+    return "";
+  }
+
+  date.setUTCDate(date.getUTCDate() + step);
+  return isoFromDate(date);
+}
+
+/* Morceaux de la periode demandee qui ne tombent sur aucune indisponibilite,
+   dans l'ordre du calendrier. Une absence en fin de sejour laisse un morceau,
+   une absence au milieu en laisse deux, une periode entierement bloquee n'en
+   laisse aucun. C'est ce decoupage qui permet d'annoncer les jours couverts
+   plutot qu'une date de bascule, fausse des qu'il y a un trou au milieu. */
+export function availableSegments(startDate, endDate, unavailableRanges = []) {
+  const start = normalizeDateInput(startDate);
+  const end = normalizeDateInput(endDate);
+
+  if (!isIsoDate(start) || !isIsoDate(end) || end < start) {
+    return [];
+  }
+
+  const blocking = mergeRanges(unavailableRanges).filter((range) =>
+    dateRangeOverlaps(start, end, range.startDate, range.endDate)
+  );
+
+  const segments = [];
+  let cursor = start;
+
+  for (const range of blocking) {
+    if (cursor > end) {
+      break;
+    }
+
+    if (range.startDate > cursor) {
+      segments.push({ startDate: cursor, endDate: shiftIsoDay(range.startDate, -1) });
+    }
+
+    if (range.endDate >= cursor) {
+      cursor = shiftIsoDay(range.endDate, 1);
+    }
+  }
+
+  if (cursor && cursor <= end) {
+    segments.push({ startDate: cursor, endDate: end });
+  }
+
+  return segments;
+}
+
+/* Nombre de jours couverts, bornes incluses. */
+export function countCoveredDays(startDate, endDate, unavailableRanges = []) {
+  return availableSegments(startDate, endDate, unavailableRanges).reduce((total, segment) => {
+    const from = toDate(segment.startDate);
+    const to = toDate(segment.endDate);
+
+    if (!from || !to) {
+      return total;
+    }
+
+    return total + Math.round((to.getTime() - from.getTime()) / 86400000) + 1;
+  }, 0);
+}
+
 export function sanitizeReservationPayload(payload = {}) {
   const catCount = Number.parseInt(String(payload.nombreChats ?? payload.nombre_chats ?? "").trim(), 10);
   const frequencyRaw = normalizeWhitespace(payload.frequence ?? payload.frequency ?? "");
@@ -255,12 +322,16 @@ export function validateReservationPayload(payload = {}, unavailableRanges = [],
     errors.autreFrequence = "Merci de préciser votre besoin complémentaire.";
   }
 
+  /* Une periode partiellement couverte reste recevable : le relais se decide
+     ensuite, avec la personne. Seule une periode dont aucun jour n'est couvert
+     est refusee, pour ne pas recevoir de demande impossible a honorer. */
   if (
     isIsoDate(sanitized.dateDebut) &&
     isIsoDate(sanitized.dateFin) &&
-    rangeCollidesWithUnavailable(sanitized.dateDebut, sanitized.dateFin, unavailableRanges)
+    sanitized.dateFin >= sanitized.dateDebut &&
+    availableSegments(sanitized.dateDebut, sanitized.dateFin, unavailableRanges).length === 0
   ) {
-    errors.dateRange = "Cette période n’est pas disponible. Merci de choisir d’autres dates.";
+    errors.dateRange = "Je ne prends pas de réservation sur ces dates.";
   }
 
   if (sanitized.honeypot) {
