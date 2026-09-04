@@ -28,10 +28,14 @@
       return carte.getBoundingClientRect().width + ecart;
     }
 
+    /* Les deux bouts se testent avec la meme marge de 4 px. Au repos la
+       grille n'est pas a zero : elle porte un retrait, et l'accroche aligne
+       la premiere carte dessus. Compare a zero, la fleche gauche restait
+       allumee alors qu'il n'y a rien avant. */
     function etat() {
-      var fin = grille.scrollWidth - grille.clientWidth - 2;
-      prec.classList.toggle('is-off', grille.scrollLeft <= 0);
-      suiv.classList.toggle('is-off', grille.scrollLeft >= fin);
+      var course = grille.scrollWidth - grille.clientWidth;
+      prec.classList.toggle('is-off', grille.scrollLeft <= 4);
+      suiv.classList.toggle('is-off', grille.scrollLeft >= course - 4);
     }
 
     prec.addEventListener('click', function () {
