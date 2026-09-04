@@ -73,13 +73,7 @@ jobs:
       # le registre des articles, jamais une liste recopiee : une page ajoutee
       # demain y entre d'elle-meme.
       - name: Contrôler le SEO, la rédaction, les espacements, les renvois et les feuilles
-        run: |
-          npm run blog:check
-          npm run seo:strict
-          npm run redaction:strict
-          npm run espacements:strict
-          npm run renvois:strict
-          npm run css
+        run: npm run controles:base
 
       # Ces deux-la relevent des defauts reels, mais anterieurs au blog :
       # 43 constats de mise en page — contraste, boutons casses, reperes
@@ -120,5 +114,5 @@ jobs:
           echo "Pour reproduire en local :" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
           echo 'npm run qa' >> $GITHUB_STEP_SUMMARY
-          echo 'npm run blog:check && npm run seo:strict && npm run redaction:strict && npm run espacements:strict && npm run css' >> $GITHUB_STEP_SUMMARY
+          echo 'npm run controles:base' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
