@@ -558,7 +558,24 @@ body.cgv-page .brand-rule {
   .avis-meta { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
   @media (max-width: 860px) { .avis-grid > * { flex-basis: calc((100% - 20px) / 2); } }
   @media (max-width: 768px) { .avis-nav { display: none; } }
-  @media (max-width: 560px) { .avis-grid > * { flex-basis: 100%; } .avis-card { padding: 24px; } }
+  /* Une seule carte tient dans l'ecran, et rien n'indiquait qu'il y en
+     avait d'autres : la piste va donc d'un bord a l'autre, le retrait de la
+     page repasse a l'interieur, et la carte suivante se montre par la
+     droite sur toute la hauteur.
+
+     14 px pris a la carte et 12 px d'ecart : l'apercu vaut 26 px, quelle
+     que soit la largeur de l'ecran, puisque la carte absorbe le reste. */
+  @media (max-width: 560px) {
+    .avis-grid {
+      --gouttiere: 24px; /* le retrait mobile de « .section » */
+      margin-inline: calc(var(--gouttiere) * -1);
+      padding-inline: var(--gouttiere);
+      scroll-padding-inline: var(--gouttiere);
+      column-gap: 12px;
+    }
+    .avis-grid > * { flex-basis: calc(100% - 14px); }
+    .avis-card { padding: 24px; }
+  }
 
 /* ── BARRE DU HAUT EN MOBILE ──────────────────────────────────────────
    Hors mobile, « .topbar-links » porte « margin-left: auto » et
