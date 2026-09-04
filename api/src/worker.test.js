@@ -27,11 +27,14 @@ function fausseBase({
   indisponibilites = [], envoisRecents = 0, echecsConnexionRecents = 0, demandes = [],
 } = {}) {
   const insertions = [];
+  const lectures = [];
 
   const base = {
     insertions,
+    lectures,
     prepare(sql) {
       let valeurs = [];
+      lectures.push(sql);
       const api = {
         bind(...v) { valeurs = v; return api; },
         async all() {
@@ -114,6 +117,36 @@ const demandeValide = (extra = {}) => ({
   frequence: '1 visite par jour',
   startedAt: Date.now() - 10_000,
   ...extra,
+});
+
+describe('liste publique des indisponibilites', () => {
+  test('ne demande que les dates, jamais le commentaire', async () => {
+    const environnement = {
+      DB: fausseBase({ indisponibilites: [] }),
+      ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
+    };
+    const reponse = await appeler('/public/unavailabilities', { environnement });
+    assert.equal(reponse.status, 200);
+
+    const requetes = environnement.DB.lectures.filter((sql) => sql.includes('unavailability_periods'));
+    assert.equal(requetes.length, 1);
+    assert.ok(!requetes[0].includes('comment'), `le commentaire ne doit pas sortir : ${requetes[0]}`);
+  });
+
+  test('le commentaire reste disponible cote administration', async () => {
+    const environnement = {
+      DB: fausseBase({ indisponibilites: [] }),
+      ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
+    };
+    const jeton = await jetonValide();
+    const reponse = await appeler('/admin/unavailabilities', {
+      environnement, entetes: { Authorization: `Bearer ${jeton}` },
+    });
+    assert.equal(reponse.status, 200);
+
+    const requetes = environnement.DB.lectures.filter((sql) => sql.includes('unavailability_periods'));
+    assert.ok(requetes.some((sql) => sql.includes('comment')), 'le commentaire doit rester lisible en administration');
+  });
 });
 
 describe('allowlist d origine', () => {
@@ -322,9 +355,9 @@ describe('garde anti-robot', () => {
     assert.ok(errors.nom, 'le nom aurait du etre signale');
   });
 
-  test('une periode indisponible est refusee cote serveur', async () => {
+  test('une periode dont aucun jour n est couvert est refusee cote serveur', async () => {
     const environnement = {
-      DB: fausseBase({ indisponibilites: [{ startDate: '2099-06-05', endDate: '2099-06-20', comment: '' }] }),
+      DB: fausseBase({ indisponibilites: [{ startDate: '2099-05-25', endDate: '2099-06-30', comment: '' }] }),
       ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
     };
     const reponse = await appeler('/public/reservations', {
@@ -333,6 +366,18 @@ describe('garde anti-robot', () => {
     assert.equal(reponse.status, 400);
     assert.ok((await reponse.json()).errors.dateRange);
     assert.equal(environnement.DB.insertions.length, 0);
+  });
+
+  test('une periode partiellement couverte est acceptee', async () => {
+    const environnement = {
+      DB: fausseBase({ indisponibilites: [{ startDate: '2099-06-05', endDate: '2099-06-20', comment: '' }] }),
+      ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
+    };
+    const reponse = await appeler('/public/reservations', {
+      methode: 'POST', corps: demandeValide(), environnement,
+    });
+    assert.equal(reponse.status, 200);
+    assert.equal(environnement.DB.insertions.length, 1, 'la demande aurait du etre enregistree');
   });
 });
 
@@ -414,7 +459,25 @@ describe('demandes de reservation relisibles', () => {
       entetes: { Authorization: `Bearer ${jeton}` }, environnement,
     });
     assert.equal(reponse.status, 200);
-    assert.deepEqual((await reponse.json()).demandes, [uneDemande]);
+    assert.deepEqual((await reponse.json()).demandes, [
+      { ...uneDemande, joursCouverts: [{ startDate: '2099-06-01', endDate: '2099-06-10' }] },
+    ]);
+  });
+
+  test('chaque demande porte les jours reellement couverts', async () => {
+    const environnement = {
+      DB: fausseBase({
+        demandes: [uneDemande],
+        indisponibilites: [{ startDate: '2099-06-06', endDate: '2099-06-30' }],
+      }),
+      ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
+    };
+    const jeton = await jetonValide(environnement);
+    const reponse = await appeler('/admin/reservations', {
+      entetes: { Authorization: `Bearer ${jeton}` }, environnement,
+    });
+    const { demandes } = await reponse.json();
+    assert.deepEqual(demandes[0].joursCouverts, [{ startDate: '2099-06-01', endDate: '2099-06-05' }]);
   });
 
   test('les demandes non notifiees remontent en tete', async () => {
@@ -423,13 +486,11 @@ describe('demandes de reservation relisibles', () => {
       ALLOWED_ORIGINS: ORIGINE, ADMIN_PASSWORD: MOT_DE_PASSE, ADMIN_TOKEN_SECRET: SECRET,
     };
     const jeton = await jetonValide(environnement);
-    let sqlLu = '';
-    const prepareOrigine = environnement.DB.prepare.bind(environnement.DB);
-    environnement.DB.prepare = (sql) => { sqlLu = sql; return prepareOrigine(sql); };
     await appeler('/admin/reservations', {
       entetes: { Authorization: `Bearer ${jeton}` }, environnement,
     });
-    assert.match(sqlLu, /ORDER BY \(status = \?\) DESC, submitted_at DESC/);
+    const listeDemandes = environnement.DB.lectures.find((sql) => sql.includes('FROM reservation_requests'));
+    assert.match(listeDemandes, /ORDER BY \(status = \?\) DESC, submitted_at DESC/);
   });
 });
 
