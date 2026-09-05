@@ -270,7 +270,6 @@
                 <div class="field" data-field="dateDebut">
                   <label for="dateDebut">Date de début <span aria-hidden="true">*</span></label>
                   <input id="dateDebut" name="date_debut" type="text" inputmode="none" required placeholder="Choisir une date">
-                  <p class="field-help">Les dates grisées sont indisponibles.</p>
                   <p class="field-error" id="dateDebut-error" aria-live="polite"></p>
                 </div>
 
@@ -285,6 +284,25 @@
               <div class="availability-note" id="availability-note" aria-live="polite">
                 Vérification des disponibilités en cours…
               </div>
+
+              <div class="periode" id="periode-recap" aria-live="polite" hidden>
+                <p class="periode__phrase" id="periode-phrase"></p>
+                <div class="periode__barre" id="periode-barre" aria-hidden="true"></div>
+                <div class="periode__bornes" id="periode-bornes" aria-hidden="true"></div>
+                <ul class="periode__legende" id="periode-legende" aria-hidden="true" hidden>
+                  <li><i class="periode__pastille periode__pastille--oui"></i>Je suis disponible</li>
+                  <li><i class="periode__pastille periode__pastille--non"></i>Je ne le suis pas</li>
+                </ul>
+              </div>
+
+              <aside class="relais" id="relais" aria-label="Autre solution de garde" hidden>
+                <p class="relais__texte" id="relais-texte"></p>
+                <p class="relais__identite"><span class="relais__lieu">La Maison Koala</span> <span aria-hidden="true">·</span> <span class="relais__lieu">Argentré-du-Plessis</span></p>
+                <a class="button button--tiers" href="mailto:lamaisonkoala@gmail.com">Contacter Éva</a>
+                <p class="field-help">Ouvre votre messagerie, votre formulaire reste&nbsp;rempli.</p>
+                <p class="field-help relais__secours">Ou par téléphone&nbsp;: <a href="tel:+33646152894">06&nbsp;46&nbsp;15&nbsp;28&nbsp;94</a></p>
+              </aside>
+
               <p class="field-error field-error--block" id="dateRange-error" aria-live="polite"></p>
             </div>
           </section>
@@ -314,6 +332,7 @@
               <span class="button__label">Envoyer ma demande</span>
               <span class="button__loader" aria-hidden="true"></span>
             </button>
+            <p class="field-help" id="submit-note" hidden>L’envoi rouvrira dès que vous aurez choisi des dates que je&nbsp;couvre.</p>
           </div>
         </form>
 
@@ -377,6 +396,6 @@
   </script>
 
   <script src="https://web3forms.com/client/script.js" async defer></script>
-  <script src="js/reservation.js" defer></script>
+  <script type="module" src="js/reservation.js"></script>
   </body>
 </html>

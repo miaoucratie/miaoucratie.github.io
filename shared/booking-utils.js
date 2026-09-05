@@ -175,10 +175,7 @@ function shiftIsoDay(isoDate, step) {
 }
 
 /* Morceaux de la periode demandee qui ne tombent sur aucune indisponibilite,
-   dans l'ordre du calendrier. Une absence en fin de sejour laisse un morceau,
-   une absence au milieu en laisse deux, une periode entierement bloquee n'en
-   laisse aucun. C'est ce decoupage qui permet d'annoncer les jours couverts
-   plutot qu'une date de bascule, fausse des qu'il y a un trou au milieu. */
+   dans l'ordre du calendrier. */
 export function availableSegments(startDate, endDate, unavailableRanges = []) {
   const start = normalizeDateInput(startDate);
   const end = normalizeDateInput(endDate);
