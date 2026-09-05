@@ -86,6 +86,9 @@
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
     window.gtag('config', ID_MESURE, {
+      // L'accueil se mesure sous une seule adresse, la racine, qu'il soit
+      // demande par « / » ou par son nom de fichier.
+      page_location: window.location.href.replace(/\/index\.html(?=$|[?#])/, '/'),
       // Pas de recoupement multi-appareils ni de ciblage publicitaire.
       allow_google_signals: false,
       allow_ad_personalization_signals: false,

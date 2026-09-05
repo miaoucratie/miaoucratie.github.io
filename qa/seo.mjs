@@ -145,8 +145,10 @@ for (const page of pages) {
     if (!href || /^(https?:|mailto:|tel:|#)/.test(href)) continue;
     const cible = href.split('#')[0].split('?')[0];
     if (!cible) continue;
+    // Un lien vers un dossier vise son index.html, comme chez l'hebergeur.
+    const fichier = cible.endsWith('/') ? cible + 'index.html' : cible;
     let existe = true;
-    try { readFileSync(join(RACINE, cible)); } catch { existe = false; }
+    try { readFileSync(join(RACINE, fichier)); } catch { existe = false; }
     verifier(page, 'lien interne valide', existe, `${href} ne correspond a aucun fichier`);
   }
 
