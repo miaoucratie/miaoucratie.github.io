@@ -627,8 +627,6 @@ textarea:disabled {
   border-left: 4px solid var(--color-tiers);
 }
 
-/* 52 caracteres bridaient la colonne bien en deca de la place disponible, et
-   les coupures tombaient n'importe ou. 68 reste dans la mesure confortable. */
 .relais__texte {
   max-width: 68ch;
 }
@@ -646,6 +644,18 @@ textarea:disabled {
 }
 
 .relais__lieu {
+  white-space: nowrap;
+}
+
+/* Secours : une messagerie n'est pas toujours configuree sur l'appareil.
+   La typographie vient de .field-help, seuls le lien et l'espacement changent. */
+.relais__secours {
+  margin-top: 0;
+}
+
+.relais__secours a {
+  color: var(--color-tiers);
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -923,9 +933,7 @@ textarea:disabled {
 
 @media (min-width: 48rem) {
 
-  /* Au large, le bouton se place a droite du texte plutot que sous lui : une
-     colonne de 52 caracteres dans un bloc de mille pixels laissait la moitie
-     du cadre vide, et l'action se retrouvait loin de la fin de la lecture. */
+  /* Au large, le bouton passe a droite du texte. */
   .relais {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
@@ -949,6 +957,10 @@ textarea:disabled {
     justify-self: end;
     max-width: 22ch;
     text-align: right;
+  }
+
+  .relais .relais__secours {
+    grid-row: 3;
   }
 
   .hero__grid,

@@ -518,10 +518,7 @@ async function loadUnavailableRanges() {
   }
 }
 
-/* Les jours indisponibles sont marques, pas condamnes.
-   Les interdire au clic laissait la personne devant un calendrier muet : rien
-   ne se passait, aucun message, aucune piste. Elle peut desormais choisir la
-   periode qui l'arrange, et le recapitulatif lui dit ce qui est couvert. */
+/* Les jours indisponibles sont marques, pas condamnes. */
 function applyUnavailableRangesToPickers() {
   state.startPicker?.redraw?.();
   state.endPicker?.redraw?.();
@@ -833,17 +830,17 @@ function texteRelais(joursCouverts, decouverts, end) {
   const confiance = "Elle a toute ma confiance.";
 
   if (joursCouverts === 0) {
-    return `Pour ces dates, contactez Eva. ${confiance}`;
+    return `Pour ces dates, contactez Éva. ${confiance}`;
   }
 
   if (joursCouverts <= JOURS_AVANT_RELAIS_EN_TETE) {
-    return `Pour une garde d’un seul tenant, contactez Eva. ${confiance} Si vous préférez que je prenne ces jours-là, envoyez-moi votre demande, on se relaiera.`;
+    return `Pour une garde d’un seul tenant, contactez Éva. ${confiance} Si vous préférez que je prenne ces jours-là, envoyez-moi votre demande, on se relaiera.`;
   }
 
   const enFinDeSejour = decouverts.length === 1 && decouverts[0].endDate === end;
   const quels = enFinDeSejour ? "Pour les jours suivants" : "Pour les jours que je ne couvre pas";
 
-  return `${quels}, Eva peut prendre le relais. ${confiance}`;
+  return `${quels}, Éva peut prendre le relais. ${confiance}`;
 }
 
 /* La barre reprend la periode a l'echelle : chaque morceau occupe la place du
