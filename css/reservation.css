@@ -627,8 +627,14 @@ textarea:disabled {
   border-left: 4px solid var(--color-tiers);
 }
 
+/* 52 caracteres bridaient la colonne bien en deca de la place disponible, et
+   les coupures tombaient n'importe ou. 68 reste dans la mesure confortable. */
 .relais__texte {
-  max-width: 52ch;
+  max-width: 68ch;
+}
+
+.relais__lieu {
+  white-space: nowrap;
 }
 
 .button--tiers {

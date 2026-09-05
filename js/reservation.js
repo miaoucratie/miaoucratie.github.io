@@ -760,7 +760,7 @@ function renderAvailability(start, end) {
   const joursCouverts = compterJours(couverts);
   const joursTotal = nombreDeJours(start, end);
 
-  periodePhrase.textContent = sansOrpheline(
+  periodePhrase.textContent = typographie(
     phraseDisponibilite(start, end, couverts, decouverts, joursCouverts, joursTotal)
   );
   dessinerBarre(start, end, couverts, decouverts);
@@ -777,7 +777,7 @@ function renderAvailability(start, end) {
     return true;
   }
 
-  relaisTexte.textContent = sansOrpheline(texteRelais(joursCouverts, decouverts, end));
+  poserTexteRelais(typographie(texteRelais(joursCouverts, decouverts, end)));
   relaisBloc.hidden = false;
   setSubmitBlocked(joursCouverts === 0);
 
@@ -824,6 +824,35 @@ function phraseAbsence(start, end, decouverts) {
   }
 
   return `${majuscule(enumerer(decouverts.map(formaterSegment)))}, je ne suis pas disponible.`;
+}
+
+/** Commune d'Eva, protegee des coupures : voir `poserTexteRelais`. */
+const COMMUNE_TIERS = "Argentré-du-Plessis";
+
+/**
+ * Ecrit le texte du relais en isolant le nom de la commune.
+ *
+ * « Argentré-du-Plessis » coupe en fin de ligne sur un de ses traits d'union,
+ * et un nom de commune coupe en deux se relit. Le trait d'union insecable
+ * d'Unicode reglerait le probleme sans element, mais il rend 6 px plus etroit
+ * que le trait normal dans DM Sans : deux traits differents dans le meme nom.
+ * C'est donc un element qui porte la regle.
+ */
+function poserTexteRelais(texte) {
+  relaisTexte.replaceChildren();
+
+  texte.split(COMMUNE_TIERS).forEach((morceau, index) => {
+    if (index > 0) {
+      const lieu = document.createElement("span");
+      lieu.className = "relais__lieu";
+      lieu.textContent = COMMUNE_TIERS;
+      relaisTexte.append(lieu);
+    }
+
+    if (morceau) {
+      relaisTexte.append(document.createTextNode(morceau));
+    }
+  });
 }
 
 function texteRelais(joursCouverts, decouverts, end) {
@@ -982,11 +1011,14 @@ function majuscule(texte) {
   return texte.charAt(0).toUpperCase() + texte.slice(1);
 }
 
-/* Lie les deux derniers mots pour qu'aucune phrase ne finisse sur un mot seul.
-   Les textes sont calcules a l'affichage : impossible de poser l'insecable a
-   la main dans le HTML comme ailleurs sur le site. */
-function sansOrpheline(texte) {
-  return texte.replace(/ (\S+)$/, " $1");
+/* Typographie des textes calcules a l'affichage : impossible d'y poser les
+   insecables a la main comme dans le HTML du reste du site.
+   Deux regles : aucun mot d'une seule lettre en fin de ligne, et jamais un
+   mot seul sur la derniere ligne. Deux passes, parce qu'une seule laisserait
+   passer deux mots d'une lettre qui se suivent. */
+function typographie(texte) {
+  const lierMotsCourts = (t) => t.replace(/(\s|^)(\S)\s/g, "$1$2 ");
+  return lierMotsCourts(lierMotsCourts(texte)).replace(/ (\S+)$/, " $1");
 }
 
 async function handleSubmit(event) {
