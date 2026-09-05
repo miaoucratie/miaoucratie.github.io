@@ -134,7 +134,8 @@ const MIME = {
 function demarrerServeur() {
   const serveur = createServer(async (req, res) => {
     const chemin = decodeURIComponent(req.url.split('?')[0]);
-    const fichier = join(RACINE, normalize(chemin).replace(/^(\.\.[/\\])+/, ''));
+    let fichier = join(RACINE, normalize(chemin).replace(/^(\.\.[/\\])+/, ''));
+    if (chemin.endsWith('/')) fichier = join(fichier, 'index.html');
     if (!fichier.startsWith(RACINE) || !existsSync(fichier)) {
       res.writeHead(404).end('introuvable');
       return;

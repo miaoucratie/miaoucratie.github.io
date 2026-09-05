@@ -110,7 +110,9 @@ for (const page of PAGES) {
   /* 2. Les liens vers un fichier du depot, et leur ancre s'ils en ont une. */
   for (const [, cible, ancre] of t.matchAll(/href="([^"#][^"]*?)(#[^"]*)?"/g)) {
     if (/^(https?:|mailto:|tel:|data:|\/\/)/.test(cible)) continue;
-    const chemin = cible.split('?')[0].replace(/^\//, '');
+    let chemin = cible.split('?')[0].replace(/^\//, '');
+    // Un lien vers un dossier vise son index.html, comme chez l'hebergeur.
+    if (chemin === '' || chemin.endsWith('/')) chemin += 'index.html';
     if (!existsSync(join(RACINE, chemin))) { noter(page, `fichier absent : ${cible}`); continue; }
     if (ancre && chemin.endsWith('.html') && !ancresDuFichier(chemin).has(ancre.slice(1))) {
       noter(page, `ancre absente chez la cible : ${cible}${ancre}`);
