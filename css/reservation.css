@@ -633,6 +633,18 @@ textarea:disabled {
   max-width: 68ch;
 }
 
+/* L'enseigne et la commune sortent de la phrase et forment leur propre ligne.
+   Dedans, « a Argentre-du-Plessis » pesait 150 px d'un seul tenant dans une
+   colonne de 256 : chaque fois qu'il ne tenait pas, la ligne precedente
+   s'arretait au tiers. Sortis de la phrase, ils ne cassent plus rien, et la
+   seule coupure possible tombe sur le point mediant, la ou on l'attend. */
+.relais__identite {
+  margin: -0.15rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
 .relais__lieu {
   white-space: nowrap;
 }

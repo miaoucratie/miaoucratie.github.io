@@ -777,7 +777,7 @@ function renderAvailability(start, end) {
     return true;
   }
 
-  poserTexteRelais(typographie(texteRelais(joursCouverts, decouverts, end)));
+  relaisTexte.textContent = typographie(texteRelais(joursCouverts, decouverts, end));
   relaisBloc.hidden = false;
   setSubmitBlocked(joursCouverts === 0);
 
@@ -826,51 +826,24 @@ function phraseAbsence(start, end, decouverts) {
   return `${majuscule(enumerer(decouverts.map(formaterSegment)))}, je ne suis pas disponible.`;
 }
 
-/** Commune d'Eva, protegee des coupures : voir `poserTexteRelais`. */
+const ENSEIGNE_TIERS = "La Maison Koala";
 const COMMUNE_TIERS = "Argentré-du-Plessis";
 
-/**
- * Ecrit le texte du relais en isolant le nom de la commune.
- *
- * « Argentré-du-Plessis » coupe en fin de ligne sur un de ses traits d'union,
- * et un nom de commune coupe en deux se relit. Le trait d'union insecable
- * d'Unicode reglerait le probleme sans element, mais il rend 6 px plus etroit
- * que le trait normal dans DM Sans : deux traits differents dans le meme nom.
- * C'est donc un element qui porte la regle.
- */
-function poserTexteRelais(texte) {
-  relaisTexte.replaceChildren();
-
-  texte.split(COMMUNE_TIERS).forEach((morceau, index) => {
-    if (index > 0) {
-      const lieu = document.createElement("span");
-      lieu.className = "relais__lieu";
-      lieu.textContent = COMMUNE_TIERS;
-      relaisTexte.append(lieu);
-    }
-
-    if (morceau) {
-      relaisTexte.append(document.createTextNode(morceau));
-    }
-  });
-}
-
 function texteRelais(joursCouverts, decouverts, end) {
-  /* Espaces insecables : un nom propre coupe en fin de ligne se lit deux fois. */
-  const eva = "Elle tient La Maison Koala, à Argentré-du-Plessis, et elle a toute ma confiance.";
+  const confiance = "Elle a toute ma confiance.";
 
   if (joursCouverts === 0) {
-    return `Pour ces dates, contactez Eva. ${eva}`;
+    return `Pour ces dates, contactez Eva. ${confiance}`;
   }
 
   if (joursCouverts <= JOURS_AVANT_RELAIS_EN_TETE) {
-    return `Pour une garde d’un seul tenant, contactez Eva. ${eva} Si vous préférez que je prenne ces jours-là, envoyez-moi votre demande, on se relaiera.`;
+    return `Pour une garde d’un seul tenant, contactez Eva. ${confiance} Si vous préférez que je prenne ces jours-là, envoyez-moi votre demande, on se relaiera.`;
   }
 
   const enFinDeSejour = decouverts.length === 1 && decouverts[0].endDate === end;
   const quels = enFinDeSejour ? "Pour les jours suivants" : "Pour les jours que je ne couvre pas";
 
-  return `${quels}, Eva peut prendre le relais. ${eva}`;
+  return `${quels}, Eva peut prendre le relais. ${confiance}`;
 }
 
 /* La barre reprend la periode a l'echelle : chaque morceau occupe la place du
