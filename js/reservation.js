@@ -1,263 +1,14 @@
-const FREQUENCE_OPTIONS = Object.freeze([
-  "1 visite par jour",
-  "2 visites par jour",
-  "autre",
-]);
-
-const DATE_ISO_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-const DATE_FR_REGEX = /^(\d{2})[\/\-.](\d{2})[\/\-.](\d{4})$/;
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-
-function normalizeWhitespace(value = "") {
-  return String(value).replace(/\s+/g, " ").trim();
-}
-
-function safeText(value = "", maxLength = 2000) {
-  return normalizeWhitespace(String(value)).slice(0, maxLength);
-}
-
-function safeMultilineText(value = "", maxLength = 4000) {
-  return String(value)
-    .replace(/\r\n/g, "\n")
-    .replace(/[^\S\n]+/g, " ")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim()
-    .slice(0, maxLength);
-}
-
-function sanitizeReservationPayload(payload = {}) {
-  const catCount = Number.parseInt(String(payload.nombreChats ?? payload.nombre_chats ?? "").trim(), 10);
-  const frequencyRaw = normalizeWhitespace(payload.frequence ?? payload.frequency ?? "");
-  const frequency = frequencyRaw === "Autre besoin à préciser" ? "autre" : frequencyRaw;
-
-  return {
-    nom: safeText(payload.nom, 100),
-    prenom: safeText(payload.prenom, 100),
-    telephone: safeText(payload.telephone ?? payload.phone ?? "", 30),
-    whatsapp: safeText(payload.whatsapp ?? payload.whatsapp_number ?? "", 30),
-    email: safeText(payload.email ?? payload.contact_email ?? "", 160).toLowerCase(),
-    commune: safeText(payload.commune, 150),
-    communeCode: safeText(payload.communeCode || payload.commune_code || "", 10),
-    communeCodePostal: safeText(payload.communeCodePostal || payload.commune_code_postal || "", 10),
-    nombreChats: Number.isFinite(catCount) ? catCount : NaN,
-    dateDebut: normalizeDateInput(payload.dateDebut ?? payload.date_debut ?? ""),
-    dateFin: normalizeDateInput(payload.dateFin ?? payload.date_fin ?? ""),
-    frequence: frequency,
-    autreFrequence: safeText(payload.autreFrequence ?? payload.frequence_autre ?? "", 160),
-    observations: safeMultilineText(payload.observations ?? "", 2000),
-    startedAt: Number.parseInt(String(payload.startedAt ?? payload.started_at ?? ""), 10),
-    honeypot: safeText(payload.website ?? payload.honeypot ?? "", 255),
-  };
-}
-
-function parseIsoDateParts(value = "") {
-  if (!DATE_ISO_REGEX.test(value)) {
-    return null;
-  }
-
-  const [year, month, day] = value.split("-").map((part) => Number.parseInt(part, 10));
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  if (
-    Number.isNaN(date.getTime()) ||
-    date.getUTCFullYear() !== year ||
-    date.getUTCMonth() !== month - 1 ||
-    date.getUTCDate() !== day
-  ) {
-    return null;
-  }
-
-  return { year, month, day, date };
-}
-
-function normalizeDateInput(value = "") {
-  if (value instanceof Date && Number.isFinite(value.getTime())) {
-    return isoFromDate(value);
-  }
-
-  const raw = safeText(value, 32);
-
-  if (!raw) {
-    return "";
-  }
-
-  const isoParts = parseIsoDateParts(raw);
-  if (isoParts) {
-    return raw;
-  }
-
-  const frMatch = raw.match(DATE_FR_REGEX);
-  if (frMatch) {
-    const [, day, month, year] = frMatch;
-    const isoValue = `${year}-${month}-${day}`;
-    return parseIsoDateParts(isoValue) ? isoValue : "";
-  }
-
-  return "";
-}
-
-function isIsoDate(value = "") {
-  return Boolean(parseIsoDateParts(value));
-}
-
-function toDate(value) {
-  const normalized = normalizeDateInput(value);
-  return parseIsoDateParts(normalized)?.date ?? null;
-}
-
-function isoFromDate(date) {
-  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
-    return "";
-  }
-  const year = date.getUTCFullYear();
-  const month = `${date.getUTCMonth() + 1}`.padStart(2, "0");
-  const day = `${date.getUTCDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function todayIso(now = new Date()) {
-  return isoFromDate(now);
-}
-
-function dateRangeOverlaps(startA, endA, startB, endB) {
-  return startA <= endB && startB <= endA;
-}
-
-function mergeRanges(ranges = []) {
-  const validRanges = ranges
-    .filter((range) => isIsoDate(range.startDate) && isIsoDate(range.endDate))
-    .map((range) => ({
-      ...range,
-      startDate: range.startDate,
-      endDate: range.endDate,
-      comment: normalizeWhitespace(range.comment || ""),
-    }))
-    .sort((a, b) => a.startDate.localeCompare(b.startDate));
-
-  if (!validRanges.length) {
-    return [];
-  }
-
-  const merged = [validRanges[0]];
-
-  for (const current of validRanges.slice(1)) {
-    const last = merged[merged.length - 1];
-    const lastEnd = toDate(last.endDate);
-    const currentStart = toDate(current.startDate);
-
-    if (!lastEnd || !currentStart) {
-      continue;
-    }
-
-    const lastEndPlusOne = new Date(lastEnd);
-    lastEndPlusOne.setUTCDate(lastEndPlusOne.getUTCDate() + 1);
-
-    if (current.startDate <= isoFromDate(lastEndPlusOne)) {
-      if (current.endDate > last.endDate) {
-        last.endDate = current.endDate;
-      }
-      last.comment = normalizeWhitespace([last.comment, current.comment].filter(Boolean).join(" · "));
-    } else {
-      merged.push({ ...current });
-    }
-  }
-
-  return merged;
-}
-
-function rangeCollidesWithUnavailable(startDate, endDate, unavailableRanges = []) {
-  if (!isIsoDate(startDate) || !isIsoDate(endDate)) {
-    return false;
-  }
-  return unavailableRanges.some((range) =>
-    isIsoDate(range.startDate) &&
-    isIsoDate(range.endDate) &&
-    dateRangeOverlaps(startDate, endDate, range.startDate, range.endDate)
-  );
-}
-
-function validateReservationPayload(payload = {}, unavailableRanges = [], options = {}) {
-  const errors = {};
-  const sanitized = sanitizeReservationPayload(payload);
-  const minDate = options.minDate || todayIso(options.now ? new Date(options.now) : new Date());
-
-  if (!sanitized.nom) {
-    errors.nom = "Merci de renseigner votre nom.";
-  }
-
-  if (!sanitized.prenom) {
-    errors.prenom = "Merci de renseigner votre prénom.";
-  }
-
-  if (!sanitized.telephone) {
-    errors.telephone = "Merci de renseigner votre téléphone de contact.";
-  } else if (sanitized.telephone.replace(/[^\d+]/g, "").length < 10) {
-    errors.telephone = "Merci de renseigner un numéro de téléphone valide.";
-  }
-
-  if (sanitized.whatsapp && sanitized.whatsapp.replace(/[^\d+]/g, "").length < 10) {
-    errors.whatsapp = "Merci de renseigner un numéro WhatsApp valide ou de laisser ce champ vide.";
-  }
-
-  if (!sanitized.email) {
-    errors.email = "Merci de renseigner votre e-mail de contact.";
-  } else if (!EMAIL_REGEX.test(sanitized.email)) {
-    errors.email = "Merci de renseigner une adresse e-mail valide.";
-  }
-
-  if (!sanitized.commune) {
-    errors.commune = "Merci de renseigner votre commune.";
-  }
-
-  if (!Number.isInteger(sanitized.nombreChats) || sanitized.nombreChats < 1) {
-    errors.nombreChats = "Merci d’indiquer un nombre de chats valide (minimum 1).";
-  }
-
-  if (!isIsoDate(sanitized.dateDebut)) {
-    errors.dateDebut = "Merci de choisir une date de début valide.";
-  } else if (sanitized.dateDebut < minDate) {
-    errors.dateDebut = "Les dates passées ne sont pas disponibles.";
-  }
-
-  if (!isIsoDate(sanitized.dateFin)) {
-    errors.dateFin = "Merci de choisir une date de fin valide.";
-  }
-
-  if (isIsoDate(sanitized.dateDebut) && isIsoDate(sanitized.dateFin) && sanitized.dateFin < sanitized.dateDebut) {
-    errors.dateFin = "La date de fin doit être postérieure ou égale à la date de début.";
-  }
-
-  if (!FREQUENCE_OPTIONS.includes(sanitized.frequence)) {
-    errors.frequence = "Merci de sélectionner une fréquence de visites.";
-  }
-
-  if (sanitized.frequence === "autre" && !sanitized.autreFrequence) {
-    errors.autreFrequence = "Merci de préciser votre besoin complémentaire.";
-  }
-
-  if (
-    isIsoDate(sanitized.dateDebut) &&
-    isIsoDate(sanitized.dateFin) &&
-    rangeCollidesWithUnavailable(sanitized.dateDebut, sanitized.dateFin, unavailableRanges)
-  ) {
-    errors.dateRange = "Cette période n’est pas disponible. Merci de choisir d’autres dates.";
-  }
-
-  if (sanitized.honeypot) {
-    errors.honeypot = "Envoi bloqué.";
-  }
-
-  return {
-    isValid: Object.keys(errors).length === 0,
-    errors,
-    sanitized,
-  };
-}
-
-function buildReservationSubject(payload = {}) {
-  const sanitized = sanitizeReservationPayload(payload);
-  return `Nouvelle demande de réservation – ${sanitized.prenom} ${sanitized.nom} – ${sanitized.dateDebut} au ${sanitized.dateFin}`;
-}
+import {
+  availableSegments,
+  buildReservationSubject,
+  isIsoDate,
+  mergeRanges,
+  normalizeDateInput,
+  normalizeWhitespace,
+  sanitizeReservationPayload,
+  todayIso,
+  validateReservationPayload,
+} from "../shared/booking-utils.js";
 
 
 const API_BASE = document
@@ -313,6 +64,14 @@ const successPanel = document.getElementById("success-panel");
 const newRequestButton = document.getElementById("new-request-button");
 const submitButton = document.getElementById("submit-button");
 const availabilityNote = document.getElementById("availability-note");
+const periodeRecap = document.getElementById("periode-recap");
+const periodePhrase = document.getElementById("periode-phrase");
+const periodeBarre = document.getElementById("periode-barre");
+const periodeBornes = document.getElementById("periode-bornes");
+const periodeLegende = document.getElementById("periode-legende");
+const relaisBloc = document.getElementById("relais");
+const relaisTexte = document.getElementById("relais-texte");
+const submitNote = document.getElementById("submit-note");
 const dateRangeError = document.getElementById("dateRange-error");
 const startedAtField = document.getElementById("started_at");
 const frequencyField = document.getElementById("frequence");
@@ -411,6 +170,9 @@ function initFlatpickr() {
     allowInput: false,
     disableMobile: true,
     minDate: "today",
+    onDayCreate(dObj, dStr, instance, dayElement) {
+      markUnavailableDay(dayElement, dayElement.dateObj);
+    },
     onReady(selectedDates, dateString, instance) {
       bindAltDateInput(instance, "dateDebut");
       syncPickerIsoValue(instance, dateString || instance.input?.value || "");
@@ -443,6 +205,9 @@ function initFlatpickr() {
     allowInput: false,
     disableMobile: true,
     minDate: "today",
+    onDayCreate(dObj, dStr, instance, dayElement) {
+      markUnavailableDay(dayElement, dayElement.dateObj);
+    },
     onReady(selectedDates, dateString, instance) {
       bindAltDateInput(instance, "dateFin");
       syncPickerIsoValue(instance, dateString || instance.input?.value || "");
@@ -719,11 +484,7 @@ function hideCommuneSuggestions() {
 }
 
 async function loadUnavailableRanges() {
-  if (!state.isFlatpickrAvailable) {
-    availabilityNote.textContent = "Vérification des disponibilités en cours…";
-  } else {
-    availabilityNote.textContent = "Vérification des disponibilités en cours…";
-  }
+  availabilityNote.textContent = "Vérification des disponibilités en cours…";
 
   try {
     const response = await fetch(ENDPOINTS.unavailable, {
@@ -742,23 +503,56 @@ async function loadUnavailableRanges() {
     applyUnavailableRangesToPickers();
     validateDatesLive();
 
-    availabilityNote.textContent = state.unavailableRanges.length
-      ? "Les dates grisées dans le calendrier sont indisponibles et ne peuvent pas être sélectionnées."
-      : "Aucune indisponibilité bloquante n’est enregistrée pour le moment.";
+    /* Le repli natif n'a pas de jours grises : lui parler du calendrier
+       reviendrait a decrire un ecran que la personne n'a pas sous les yeux. */
+    if (!state.unavailableRanges.length) {
+      availabilityNote.textContent = "Aucune indisponibilité n’est enregistrée pour le moment.";
+    } else if (state.isFlatpickrAvailable) {
+      availabilityNote.textContent = "Les dates grisées dans le calendrier sont celles où je ne suis pas disponible.";
+    } else {
+      availabilityNote.textContent = "Choisissez vos dates, je vous dis aussitôt ce que je peux assurer.";
+    }
   } catch (error) {
     state.availabilityLoaded = false;
     availabilityNote.textContent = "Les disponibilités n’ont pas pu être chargées pour le moment. Votre demande sera revérifiée côté serveur.";
   }
 }
 
+/* Les jours indisponibles sont marques, pas condamnes.
+   Les interdire au clic laissait la personne devant un calendrier muet : rien
+   ne se passait, aucun message, aucune piste. Elle peut desormais choisir la
+   periode qui l'arrange, et le recapitulatif lui dit ce qui est couvert. */
 function applyUnavailableRangesToPickers() {
-  const disabledRanges = state.unavailableRanges.map((range) => ({
-    from: range.startDate,
-    to: range.endDate,
-  }));
+  state.startPicker?.redraw?.();
+  state.endPicker?.redraw?.();
+}
 
-  state.startPicker?.set("disable", disabledRanges);
-  state.endPicker?.set("disable", disabledRanges);
+/* Pose la marque sur chaque jour du calendrier qui tombe dans une absence. */
+function markUnavailableDay(dayElement, date) {
+  const iso = isoFromLocalDate(date);
+  const indisponible = state.unavailableRanges.some(
+    (range) => iso >= range.startDate && iso <= range.endDate
+  );
+
+  dayElement.classList.toggle("jour-indisponible", indisponible);
+
+  if (indisponible) {
+    dayElement.setAttribute("aria-description", "Je ne suis pas disponible ce jour-là");
+  } else {
+    dayElement.removeAttribute("aria-description");
+  }
+}
+
+/* Flatpickr donne une date locale : la convertir en UTC decalerait d'un jour
+   les fuseaux a l'est de Greenwich, et grisait la mauvaise case. */
+function isoFromLocalDate(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const mois = `${date.getMonth() + 1}`.padStart(2, "0");
+  const jour = `${date.getDate()}`.padStart(2, "0");
+  return `${date.getFullYear()}-${mois}-${jour}`;
 }
 
 function attachFieldListeners() {
@@ -769,12 +563,21 @@ function attachFieldListeners() {
       return;
     }
 
+    /* Flatpickr ecrit dans le champ cache puis emet un « input » : cet
+       ecouteur passe donc APRES le calendrier. Effacer ici sans regarder quel
+       champ a bouge revenait a balayer, a chaque frappe et a chaque date
+       choisie, un message que le calendrier venait de poser. */
     field.addEventListener("input", () => {
       const key = toFieldKey(field.name || field.id);
+
       if (key) {
         clearFieldError(key);
       }
-      clearFieldError("dateRange");
+
+      if (key === "dateDebut" || key === "dateFin") {
+        clearFieldError("dateRange");
+      }
+
       saveDraft();
     });
 
@@ -888,39 +691,302 @@ function validateDatesLive() {
   const end = getDateFieldValue("dateFin", "date_fin");
 
   if (!start && !end) {
+    renderAvailability("", "");
     return true;
   }
 
   if (start && !isIsoDate(start)) {
     setFieldError("dateDebut", "Merci de choisir une date de début valide.");
+    renderAvailability("", "");
     return false;
   }
 
   if (start && start < TODAY_ISO) {
     setFieldError("dateDebut", "Les dates passées ne sont pas disponibles.");
+    renderAvailability("", "");
     return false;
   }
 
   if (!end) {
+    renderAvailability("", "");
     return true;
   }
 
   if (!isIsoDate(end)) {
     setFieldError("dateFin", "Merci de choisir une date de fin valide.");
+    renderAvailability("", "");
     return false;
   }
 
   if (start && end < start) {
     setFieldError("dateFin", "La date de fin doit être postérieure ou égale à la date de début.");
+    renderAvailability("", "");
     return false;
   }
 
-  if (start && rangeCollidesWithUnavailable(start, end, state.unavailableRanges)) {
-    setFieldError("dateRange", "Cette période n’est pas disponible. Merci de choisir d’autres dates.");
-    return false;
+  /* Une periode partiellement couverte reste envoyable : c'est le
+     recapitulatif qui dit ce qui est couvert, pas un message d'erreur. */
+  return renderAvailability(start, end);
+}
+
+/* ------------------------------------------------------------------ */
+/* Recapitulatif de la periode choisie                                 */
+/* ------------------------------------------------------------------ */
+
+/** Au-dela de ce nombre de jours couverts, la garde reste presentee comme la
+    mienne. En dessous, le relais passe devant : deux jours sur une semaine ne
+    valent ni le deplacement de la personne, ni le mien. */
+const JOURS_AVANT_RELAIS_EN_TETE = 2;
+
+const MOIS = [
+  "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+];
+
+/**
+ * Affiche ce que je couvre sur la periode demandee, et le relais s'il y a lieu.
+ * Rend `true` si la demande peut partir, `false` si aucun jour n'est couvert.
+ */
+function renderAvailability(start, end) {
+  if (!isIsoDate(start) || !isIsoDate(end) || end < start || !state.availabilityLoaded) {
+    periodeRecap.hidden = true;
+    relaisBloc.hidden = true;
+    setSubmitBlocked(false);
+    return true;
   }
 
-  return true;
+  const couverts = availableSegments(start, end, state.unavailableRanges);
+  const decouverts = complementSegments(start, end, couverts);
+  const joursCouverts = compterJours(couverts);
+  const joursTotal = nombreDeJours(start, end);
+
+  periodePhrase.textContent = sansOrpheline(
+    phraseDisponibilite(start, end, couverts, decouverts, joursCouverts, joursTotal)
+  );
+  dessinerBarre(start, end, couverts, decouverts);
+
+  periodeBornes.innerHTML = "";
+  periodeBornes.append(borne(start), borne(end));
+
+  periodeLegende.hidden = joursCouverts === 0 || joursCouverts === joursTotal;
+  periodeRecap.hidden = false;
+
+  if (joursCouverts === joursTotal) {
+    relaisBloc.hidden = true;
+    setSubmitBlocked(false);
+    return true;
+  }
+
+  relaisTexte.textContent = sansOrpheline(texteRelais(joursCouverts, decouverts, end));
+  relaisBloc.hidden = false;
+  setSubmitBlocked(joursCouverts === 0);
+
+  return joursCouverts > 0;
+}
+
+/** Ferme l'envoi quand aucun jour n'est couvert, et dit pourquoi. */
+function setSubmitBlocked(bloque) {
+  submitButton.disabled = bloque;
+  submitNote.hidden = !bloque;
+}
+
+function phraseDisponibilite(start, end, couverts, decouverts, joursCouverts, joursTotal) {
+  if (joursCouverts === joursTotal) {
+    return `Je suis disponible ${formaterSegment({ startDate: start, endDate: end })}, sur toute la période.`;
+  }
+
+  if (joursCouverts === 0) {
+    return `Je ne prends pas de réservation ${formaterSegment({ startDate: start, endDate: end })}.`;
+  }
+
+  /* « inclus » leve le doute sur la derniere journee, mais colle mal derriere
+     une enumeration : il ne sert que quand un seul morceau est couvert. */
+  const morceaux = enumerer(couverts.map(formaterSegment));
+  const cequejefais = joursCouverts <= JOURS_AVANT_RELAIS_EN_TETE
+    ? `Sur cette période, je ne peux assurer que ${morceaux}.`
+    : `Je peux assurer ${morceaux}${couverts.length === 1 ? " inclus" : ""}.`;
+
+  return `${cequejefais} ${phraseAbsence(start, end, decouverts)}`;
+}
+
+/** Dit les jours non couverts sans jamais en donner la raison. */
+function phraseAbsence(start, end, decouverts) {
+  if (decouverts.length === 1) {
+    const seul = decouverts[0];
+
+    if (seul.endDate === end) {
+      return `À partir du ${formaterJour(seul.startDate)}, je ne suis pas disponible.`;
+    }
+
+    if (seul.startDate === start) {
+      return `Jusqu’au ${formaterJour(seul.endDate)}, je ne suis pas disponible.`;
+    }
+  }
+
+  return `${majuscule(enumerer(decouverts.map(formaterSegment)))}, je ne suis pas disponible.`;
+}
+
+function texteRelais(joursCouverts, decouverts, end) {
+  /* Espaces insecables : un nom propre coupe en fin de ligne se lit deux fois. */
+  const eva = "Elle tient La Maison Koala, à Argentré-du-Plessis, et elle a toute ma confiance.";
+
+  if (joursCouverts === 0) {
+    return `Pour ces dates, contactez Eva. ${eva}`;
+  }
+
+  if (joursCouverts <= JOURS_AVANT_RELAIS_EN_TETE) {
+    return `Pour une garde d’un seul tenant, contactez Eva. ${eva} Si vous préférez que je prenne ces jours-là, envoyez-moi votre demande, on se relaiera.`;
+  }
+
+  const enFinDeSejour = decouverts.length === 1 && decouverts[0].endDate === end;
+  const quels = enFinDeSejour ? "Pour les jours suivants" : "Pour les jours que je ne couvre pas";
+
+  return `${quels}, Eva peut prendre le relais. ${eva}`;
+}
+
+/* La barre reprend la periode a l'echelle : chaque morceau occupe la place du
+   nombre de jours qu'il represente. Sans cela, une absence d'un jour sur trois
+   semaines paraitrait aussi lourde que le sejour entier. */
+function dessinerBarre(start, end, couverts, decouverts) {
+  const morceaux = [
+    ...couverts.map((segment) => ({ ...segment, couvert: true })),
+    ...decouverts.map((segment) => ({ ...segment, couvert: false })),
+  ].sort((a, b) => a.startDate.localeCompare(b.startDate));
+
+  periodeBarre.innerHTML = "";
+
+  for (const morceau of morceaux) {
+    const part = document.createElement("span");
+    part.className = morceau.couvert ? "periode__seg--oui" : "periode__seg--non";
+    part.style.flexGrow = String(nombreDeJours(morceau.startDate, morceau.endDate));
+    periodeBarre.append(part);
+  }
+}
+
+function borne(iso) {
+  const element = document.createElement("span");
+  element.textContent = formaterJourCourt(iso);
+  return element;
+}
+
+/* ------------------------------------------------------------------ */
+/* Dates en toutes lettres                                             */
+/* ------------------------------------------------------------------ */
+
+/** Morceaux de [start, end] laisses de cote par `couverts`. */
+function complementSegments(start, end, couverts) {
+  const trous = [];
+  let curseur = start;
+
+  for (const segment of couverts) {
+    if (segment.startDate > curseur) {
+      trous.push({ startDate: curseur, endDate: decalerJour(segment.startDate, -1) });
+    }
+    curseur = decalerJour(segment.endDate, 1);
+  }
+
+  if (curseur && curseur <= end) {
+    trous.push({ startDate: curseur, endDate: end });
+  }
+
+  return trous;
+}
+
+function partsIso(iso) {
+  const [annee, mois, jour] = iso.split("-").map(Number);
+  return { annee, mois, jour };
+}
+
+function decalerJour(iso, pas) {
+  const { annee, mois, jour } = partsIso(iso);
+  const date = new Date(Date.UTC(annee, mois - 1, jour + pas));
+  const m = `${date.getUTCMonth() + 1}`.padStart(2, "0");
+  const j = `${date.getUTCDate()}`.padStart(2, "0");
+  return `${date.getUTCFullYear()}-${m}-${j}`;
+}
+
+function nombreDeJours(start, end) {
+  const a = partsIso(start);
+  const b = partsIso(end);
+  const depart = Date.UTC(a.annee, a.mois - 1, a.jour);
+  const arrivee = Date.UTC(b.annee, b.mois - 1, b.jour);
+  return Math.round((arrivee - depart) / 86400000) + 1;
+}
+
+function compterJours(segments) {
+  return segments.reduce((total, segment) => total + nombreDeJours(segment.startDate, segment.endDate), 0);
+}
+
+/** Le quantieme seul : « 1er », « 5 ». */
+function quantieme(iso) {
+  const { jour } = partsIso(iso);
+  return jour === 1 ? "1er" : String(jour);
+}
+
+/**
+ * Un jour en toutes lettres, sans article : « 5 octobre ».
+ * L'annee n'apparait que si elle n'est pas l'annee en cours : « 3 janvier
+ * 2027 » ne se devine pas, « 5 octobre 2026 » alourdit pour rien.
+ */
+function formaterJour(iso) {
+  const { annee, mois } = partsIso(iso);
+  const anneeCourante = Number(TODAY_ISO.slice(0, 4));
+  return `${quantieme(iso)} ${MOIS[mois - 1]}${annee === anneeCourante ? "" : ` ${annee}`}`;
+}
+
+/* Abreviations d'usage, pas un decoupage automatique : « octobre » abrege en
+   « oct. », jamais en « octo. », et mars, mai, juin, aout ne s'abregent pas. */
+const MOIS_COURTS = [
+  "janv.", "févr.", "mars", "avril", "mai", "juin",
+  "juil.", "août", "sept.", "oct.", "nov.", "déc.",
+];
+
+/** Version courte pour les bornes de la barre : « 1er oct. ». */
+function formaterJourCourt(iso) {
+  const { mois } = partsIso(iso);
+  return `${quantieme(iso)} ${MOIS_COURTS[mois - 1]}`;
+}
+
+/** « le 4 octobre », « les 4 et 5 octobre », « du 1er au 5 octobre ». */
+function formaterSegment(segment) {
+  const { startDate, endDate } = segment;
+  const jours = nombreDeJours(startDate, endDate);
+  const memeMois = startDate.slice(0, 7) === endDate.slice(0, 7);
+  const debut = memeMois ? quantieme(startDate) : formaterJour(startDate);
+
+  if (jours === 1) {
+    return `le ${formaterJour(startDate)}`;
+  }
+
+  if (jours === 2) {
+    return `les ${debut} et ${formaterJour(endDate)}`;
+  }
+
+  return `du ${debut} au ${formaterJour(endDate)}`;
+}
+
+/** « A », « A et B », « A, B, puis C ». */
+function enumerer(morceaux) {
+  if (morceaux.length <= 1) {
+    return morceaux[0] || "";
+  }
+
+  if (morceaux.length === 2) {
+    return `${morceaux[0]}, puis ${morceaux[1]}`;
+  }
+
+  return `${morceaux.slice(0, -1).join(", ")}, puis ${morceaux[morceaux.length - 1]}`;
+}
+
+function majuscule(texte) {
+  return texte.charAt(0).toUpperCase() + texte.slice(1);
+}
+
+/* Lie les deux derniers mots pour qu'aucune phrase ne finisse sur un mot seul.
+   Les textes sont calcules a l'affichage : impossible de poser l'insecable a
+   la main dans le HTML comme ailleurs sur le site. */
+function sansOrpheline(texte) {
+  return texte.replace(/ (\S+)$/, " $1");
 }
 
 async function handleSubmit(event) {

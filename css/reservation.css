@@ -10,6 +10,8 @@
   --color-primary-deep: var(--rust, #A8472A);
   --color-primary-soft: rgba(200, 96, 58, 0.14);
   --color-border-soft: rgba(126, 88, 64, 0.14);
+  /* Couleur reservee a ce qui n'est pas Miaoucratie. */
+  --color-tiers: #2F5B66;
   --color-success-bg: #eef7f0;
   --color-success-text: #26543a;
   --color-error-bg: #fff1ef;
@@ -536,6 +538,109 @@ textarea:disabled {
   font-size: 0.94rem;
 }
 
+/* Recapitulatif de la periode choisie, et relais vers une autre garde.
+   Meme surface pour les deux : c'est le rail terracotta, plus bas, qui
+   distingue le relais du recapitulatif, pas un second jeu de reglages.
+   La barre reprend la periode a l'echelle, les bornes la datent, et la phrase
+   dit tout a elle seule : la barre est decorative pour un lecteur d'ecran. */
+.periode,
+.relais {
+  display: grid;
+  padding: 1.05rem 1.15rem;
+  border-radius: 1.1rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-border-soft);
+}
+
+.periode {
+  gap: 0.7rem;
+}
+
+.periode__phrase,
+.relais__texte {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.periode__barre {
+  display: flex;
+  height: 0.85rem;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: #efe7df;
+}
+
+.periode__seg--oui {
+  background: var(--color-primary);
+}
+
+.periode__seg--non,
+.periode__pastille--non {
+  background: repeating-linear-gradient(135deg, #ded3c8 0 5px, #ece4db 5px 10px);
+}
+
+.periode__bornes {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.periode__legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.periode__legende li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.periode__pastille {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 0.25rem;
+  flex: 0 0 auto;
+}
+
+.periode__pastille--oui {
+  background: var(--color-primary);
+}
+
+/* Encart d'un tiers.
+   Le rail et le bouton passent au petrole : assez desature pour tenir a cote
+   du terracotta sans le heurter, assez franc pour qu'on voie au premier coup
+   d'oeil qu'on quitte Miaoucratie. Un encart aux couleurs du site laisserait
+   croire que ce bouton mene chez moi. */
+.relais {
+  gap: 0.65rem;
+  justify-items: start;
+  border-left: 4px solid var(--color-tiers);
+}
+
+.relais__texte {
+  max-width: 52ch;
+}
+
+.button--tiers {
+  background: var(--color-tiers);
+  color: #fff;
+  box-shadow: 0 12px 22px rgba(47, 91, 102, 0.22);
+}
+
+.submit-panel .field-help {
+  text-align: center;
+}
+
 .alert {
   padding: 1rem 1.15rem;
   border-radius: 1.1rem;
@@ -761,12 +866,35 @@ textarea:disabled {
   border-color: transparent;
 }
 
+/* Dates passees : hors sujet, et non cliquables. */
 .flatpickr-day.flatpickr-disabled,
 .flatpickr-day.flatpickr-disabled:hover,
 .flatpickr-day.prevMonthDay.flatpickr-disabled,
 .flatpickr-day.nextMonthDay.flatpickr-disabled {
   color: rgba(111, 98, 88, 0.35);
   background: rgba(111, 98, 88, 0.06);
+}
+
+/* Jours ou je ne suis pas disponible : marques, mais choisissables.
+   La rayure porte l'information autant que la couleur, pour que le sens
+   survive a un ecran mal regle comme a une vision des couleurs atypique. */
+/* Le chiffre reste pleinement lisible : ces jours se choisissent, donc leur
+   quantieme doit se lire. C'est la rayure qui dit l'indisponibilite, pas un
+   texte affaibli. */
+.flatpickr-day.jour-indisponible {
+  color: var(--color-text);
+  background: repeating-linear-gradient(135deg, #ded3c8 0 5px, #ece4db 5px 10px);
+  border-color: transparent;
+}
+
+.flatpickr-day.jour-indisponible:hover {
+  border-color: rgba(201, 107, 62, 0.45);
+}
+
+.flatpickr-day.jour-indisponible.selected,
+.flatpickr-day.jour-indisponible.startRange,
+.flatpickr-day.jour-indisponible.endRange {
+  color: #fff;
 }
 
 @keyframes spin {
@@ -776,6 +904,34 @@ textarea:disabled {
 }
 
 @media (min-width: 48rem) {
+
+  /* Au large, le bouton se place a droite du texte plutot que sous lui : une
+     colonne de 52 caracteres dans un bloc de mille pixels laissait la moitie
+     du cadre vide, et l'action se retrouvait loin de la fin de la lecture. */
+  .relais {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 1.75rem;
+  }
+
+  .relais__texte {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .relais .button {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .relais .field-help {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    max-width: 22ch;
+    text-align: right;
+  }
 
   .hero__grid,
   .admin-grid {
