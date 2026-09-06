@@ -150,9 +150,12 @@ body.calculateur-page h1 {
   font-size: clamp(30px, 4vw, 42px) !important;
 }
 body h2,
-body .section-title,
-body .acc-question {
+body .section-title {
   font-size: clamp(22px, 2.3vw, 30px) !important;
+}
+/* Une question d'accordeon se lit sous le titre de sa section : un cran en dessous. */
+body .acc-question {
+  font-size: clamp(19px, 1.8vw, 22px) !important;
 }
 body h3 {
   font-size: clamp(18px, 1.8vw, 24px) !important;
