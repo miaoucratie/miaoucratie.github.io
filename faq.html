@@ -9,7 +9,7 @@
   <link rel="preload" href="/fonts/cormorant-garamond-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 
-  <title>Garde de chats&nbsp;: 37 questions, 37 réponses | Miaoucratie</title>
+  <title>Garde de chats&nbsp;: 40 questions, 40 réponses | Miaoucratie</title>
   <meta name="description" content="Combien de temps un chat peut rester seul, chat craintif, traitement, tarifs, zone : les questions qu'on me pose vraiment, et les réponses.">
 
   <link rel="canonical" href="https://miaoucratie.fr/faq.html">
@@ -19,7 +19,7 @@
   <meta property="og:locale" content="fr_FR">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Miaoucratie">
-  <meta property="og:title" content="Garde de chats : 37 questions, 37 réponses | Miaoucratie">
+  <meta property="og:title" content="Garde de chats : 40 questions, 40 réponses | Miaoucratie">
   <meta property="og:description" content="Combien de temps un chat peut rester seul, chat craintif, traitement, tarifs, zone : les questions qu'on me pose vraiment.">
   <meta property="og:url" content="https://miaoucratie.fr/faq.html">
   <meta property="og:image" content="https://miaoucratie.fr/images/logo.webp">
@@ -136,19 +136,6 @@
       color: var(--T);
       font-style: italic;
     }
-    .hero-sub {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 17px;
-      color: var(--muted);
-      font-weight: 300;
-      /* 600px plutot que 540 : la seconde phrase tient alors sur une ligne.
-         A 540 le mot « complètes » restait seul en bas. */
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.7;
-      /* Pour les largeurs intermediaires, ou la phrase doit bien se couper. */
-      text-wrap: balance;
-    }
     .hero-rule {
       /* Trait d'intensite variable plutot qu'un aplat epais : il s'eteint aux
          deux bouts, comme les connecteurs entre les etapes de l'accueil. */
@@ -159,54 +146,90 @@
       border-radius: 2px;
     }
 
-    /* ─── FILTERS ────────────────────────────────────── */
-    .filters-wrap {
-      max-width: 1040px;
-      margin: 0 auto;
-      padding: 0 48px 48px;
-      animation: fadeUp 0.7s 0.1s ease both;
-    }
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-    .filter-btn {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-      padding: 9px 22px;
-      border-radius: 999px;
-      border: 1.5px solid var(--sand);
-      background: var(--W);
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .filter-btn:hover {
-      border-color: var(--T);
-      color: var(--T);
-    }
-    .filter-btn.active {
-      background: var(--T);
-      border-color: var(--T);
-      color: var(--W);
-    }
-
-    /* ─── FAQ BODY ───────────────────────────────────── */
-    .faq-body {
+    /* ─── SOMMAIRE ───────────────────────────────────── */
+    /* Meme sommaire que les CGV et les articles, sous le prefixe de cette page.
+       Colonne collante au-dela de 900 px, rangee de reperes qui defile en deca. */
+    .faq-wrapper {
       max-width: 1040px;
       margin: 0 auto;
       padding: 0 48px 80px;
+      animation: fadeUp 0.7s 0.1s ease both;
     }
+    .faq-sommaire {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+    }
+    .faq-sommaire-titre {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .faq-sommaire ol { list-style: none; margin: 0; padding: 0; }
+    .faq-sommaire a {
+      display: block;
+      padding: 9px 0 9px 14px;
+      border-left: 2px solid var(--warm);
+      color: var(--mid, #4A3728);
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .faq-sommaire a:hover,
+    .faq-sommaire a:focus-visible,
+    .faq-sommaire a[aria-current="true"] {
+      color: var(--T);
+      border-left-color: var(--T);
+    }
+
+    @media (max-width: 900px) {
+      .faq-sommaire { padding: 0 0 32px; }
+      .faq-sommaire ol {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+      }
+      .faq-sommaire ol::-webkit-scrollbar { display: none; }
+      .faq-sommaire a {
+        white-space: nowrap;
+        border: 1.5px solid var(--warm);
+        border-radius: 999px;
+        padding: 9px 16px;
+        background: var(--W);
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .faq-sommaire a:hover,
+      .faq-sommaire a:focus-visible,
+      .faq-sommaire a[aria-current="true"] { border-color: var(--T); }
+    }
+
+    @media (min-width: 901px) {
+      .faq-wrapper {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        column-gap: 64px;
+        align-items: start;
+      }
+      .faq-sommaire {
+        position: sticky;
+        top: 74px;
+      }
+    }
+
+    /* ─── FAQ BODY ───────────────────────────────────── */
+    .faq-body { min-width: 0; }
 
     /* ─── CATEGORY SECTION ───────────────────────────── */
     .faq-section {
       margin-bottom: 64px;
       animation: fadeUp 0.6s ease both;
+      scroll-margin-top: 74px;
     }
-    .faq-section[data-cat].hidden { display: none; }
 
     .section-header {
       display: flex;
@@ -300,9 +323,17 @@
       flex-shrink: 0;
       transition: background 0.25s, transform 0.3s;
     }
+    /* Replie : un plus. Deplie : un moins, aux dimensions du trait du plus. */
     .acc-item.open .acc-icon {
       background: var(--T);
-      transform: rotate(45deg);
+    }
+    .acc-item.open .acc-icon svg { display: none; }
+    .acc-item.open .acc-icon::after {
+      content: "";
+      width: 14px;
+      height: 2.5px;
+      border-radius: 2px;
+      background: var(--W);
     }
     .acc-icon svg {
       width: 14px;
@@ -538,9 +569,8 @@
       .site-header { padding: 0 24px; }
       .nav-links { display: none; }
       .faq-hero { padding: 56px 24px 40px; }
-      .filters-wrap { padding: 0 24px 40px; }
       .search-wrap { padding: 0 24px; }
-      .faq-body { padding: 0 24px 60px; }
+      .faq-wrapper { padding: 0 24px 60px; }
       .faq-cta-wrap { padding: 0 0 60px; }
       .faq-cta {
         flex-direction: column;
@@ -588,6 +618,14 @@ body .faq-cta .cta-sub { color: rgba(255,255,255,0.60); }
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Le cat-sitting, c'est une garde de chat à domicile : je viens chez vous et votre chat reste dans son environnement habituel. Pas de transport, pas de pension. Je passe lors de visites régulières pour m'occuper de lui : nourriture, eau fraîche, litière propre, jeu et affection. Pour un chat, rester chez lui est souvent la solution la moins stressante."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quelle est la différence entre une garde et une visite de soins ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Dans les deux cas, je viens chez vous et votre chat ne bouge pas. Pendant une garde, je m'occupe de lui à votre place : nourriture, eau fraîche, litière propre, jeu et affection, et son traitement s'il en suit un. La visite de soins ne porte que sur le traitement. Vous êtes là, on fait le geste ensemble sur votre chat, et vous le refaites ensuite sans moi."
       }
     },
     {
@@ -707,7 +745,15 @@ body .faq-cta .cta-sub { color: rgba(255,255,255,0.60); }
       "name": "Pouvez-vous administrer des médicaments à mon chat ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Oui, dans la limite de ce qu'autorise la loi (article L243-1 du Code rural) : comprimés, crèmes, pommades, gouttes, aérosols et inhalations. Les injections, perfusions et tout acte invasif sont réservés aux vétérinaires. Cette limite n'est pas un choix, c'est la loi."
+        "text": "Oui. Pendant une garde, si votre chat suit un traitement au long cours et que son état est stabilisé, je lui donne ses médicaments à chaque passage pendant votre absence. C'est compris dans le prix de la garde. Comprimés, pommades, gouttes ou aérosol : il n'y a pas de supplément parce que votre chat a besoin d'un traitement. Si vous êtes chez vous et que c'est justement vous qui n'arrivez pas à lui donner, je peux aussi venir vous aider. C'est la visite de soins : on fait le geste ensemble, sur votre chat, pour que vous puissiez ensuite le refaire sans moi. Dans les deux cas, la loi fixe la même limite (article L243-1 du Code rural) : comprimés, crèmes, pommades, gouttes, aérosols et inhalations. Les injections, perfusions et tout acte invasif sont réservés aux vétérinaires. Cette limite n'est pas un choix, c'est la loi."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vous pouvez venir juste pour m'aider à donner un médicament ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. C'est exactement le principe de la visite de soins. Je viens chez vous et on le fait ensemble. Je vous montre sur votre chat, puis c'est vous qui refaites le geste pendant que je suis encore là. L'idée, c'est qu'à la prise suivante vous n'ayez plus besoin de moi."
       }
     },
     {
@@ -824,6 +870,14 @@ body .faq-cta .cta-sub { color: rgba(255,255,255,0.60); }
     },
     {
       "@type": "Question",
+      "name": "Je viens de perdre mon chat. Est-ce que je peux vous en parler ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. Et vous n'avez pas besoin d'être cliente. Si vous êtes dans ma zone, on peut se voir autour d'un café. Sinon, en visio. Vous pouvez me parler de lui. De ce qu'il faisait, de ses manies, de ce qui vous manque, de la fin aussi si vous en avez besoin. Il n'y a rien à payer. Je ne suis pas psychologue et je ne fais pas de thérapie. Je suis simplement quelqu'un qui a vu partir beaucoup de chats, les siens et ceux des autres, et qui sait qu'on peut perdre un animal et avoir l'impression d'avoir perdu un membre de sa famille. Je sais aussi qu'autour de vous, tout le monde ne comprendra pas forcément pourquoi ça fait aussi mal. Moi, je n'aurai pas besoin qu'on me l'explique."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "Quelles précautions d'hygiène prenez-vous entre plusieurs domiciles ?",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -933,7 +987,7 @@ html, body {
 body {
   background: var(--cream, #FBF7F0);
   color: var(--N, #1A1A1A);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 .topbar {
   width: 100%;
@@ -1016,9 +1070,11 @@ body.calculateur-page h1 {
   font-size: clamp(52px, 7vw, 88px);
 }
 body h2,
-body .section-title,
-body .acc-question {
+body .section-title {
   font-size: clamp(22px, 2.3vw, 30px);
+}
+body .acc-question {
+  font-size: clamp(19px, 1.8vw, 22px);
 }
 body h3 {
   font-size: clamp(18px, 1.8vw, 24px);
@@ -1322,7 +1378,6 @@ body.carte-page .zone-header {
 <section class="faq-hero">
 <span class="hero-eyebrow"><span aria-hidden="true">💬</span>Tout savoir avant de réserver</span>
 <h1 class="hero-title">Vos <em>questions,</em> <br/>mes réponses.</h1>
-<p class="hero-sub">Cat-sitting, réservation, soins, tarifs.<br/>Les questions qu'on me pose vraiment, avec des réponses complètes.</p>
 <div class="hero-rule"></div>
 </section>
 <!-- ─── SEARCH ─────────────────────────────────────── -->
@@ -1332,27 +1387,27 @@ body.carte-page .zone-header {
 <svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
 </span>
 </div>
-<!-- ─── FILTERS ─────────────────────────────────────── -->
-<div class="filters-wrap">
-<div class="filters" id="filtersBar">
-<button class="filter-btn active" data-filter="all">Toutes les questions</button>
-<button class="filter-btn" data-filter="service">Le service</button>
-<button class="filter-btn" data-filter="reservation">Réservation</button>
-<button class="filter-btn" data-filter="visites">Les visites</button>
-<button class="filter-btn" data-filter="soins">Soins &amp; santé</button>
-<button class="filter-btn" data-filter="legal">Cadre légal</button>
-<button class="filter-btn" data-filter="tarifs">Tarifs</button>
-<button class="filter-btn" data-filter="pratique">Pratique</button>
-</div>
-</div>
-<!-- ─── FAQ BODY ─────────────────────────────────────── -->
+<!-- ─── SOMMAIRE ET CORPS ───────────────────────────── -->
+<div class="faq-wrapper">
+<nav aria-label="Sommaire" class="faq-sommaire">
+<p class="faq-sommaire-titre">Sommaire</p>
+<ol>
+<li><a href="#faq-service">Le service</a></li>
+<li><a href="#faq-reservation">Réservation</a></li>
+<li><a href="#faq-visites">Les visites</a></li>
+<li><a href="#faq-soins">Soins &amp; santé</a></li>
+<li><a href="#faq-legal">Cadre légal</a></li>
+<li><a href="#faq-tarifs">Tarifs</a></li>
+<li><a href="#faq-pratique">Cas pratiques</a></li>
+</ol>
+</nav>
 <main class="faq-body" id="faqMain">
 <!-- === LE SERVICE === -->
-<section class="faq-section" data-cat="service">
+<section class="faq-section" data-cat="service" id="faq-service">
 <div class="section-header">
 <div class="section-icon">🧭</div>
 <h2 class="section-title">Le service</h2>
-<span class="section-count">7 questions</span>
+<span class="section-count">8 questions</span>
 </div>
 <div class="accordion">
 <div class="acc-item">
@@ -1365,6 +1420,19 @@ body.carte-page .zone-header {
 <p>Le cat-sitting, c'est une <strong>garde de chat à domicile</strong>&nbsp;: je viens chez vous, votre chat reste dans son environnement habituel.</p>
 <p>Pas de transport, pas de pension, pas d'odeurs inconnues.</p>
 <p>Je passe le voir régulièrement pour m'occuper de lui&nbsp;: nourriture, eau fraîche, litière propre, jeu et affection. Pour un chat, rester chez lui est souvent la solution la moins stressante.</p>
+</div>
+</div>
+</div>
+<div class="acc-item" data-mots="accompagnement">
+<button aria-expanded="false" class="acc-trigger">
+<span class="acc-question">Quelle est la différence entre une garde et une visite de soins&nbsp;?</span>
+<span class="acc-icon"><svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>
+</button>
+<div class="acc-body">
+<div class="acc-content">
+<p>Dans les deux cas, je viens chez vous et votre chat ne bouge pas.</p>
+<p>Pendant une garde, je m'occupe de lui à votre place&nbsp;: nourriture, eau fraîche, litière propre, jeu et affection, et son traitement s'il en suit un.</p>
+<p>La <a href="visite-soins.html">visite de soins</a> ne porte que sur le traitement. Vous êtes là, on fait le geste ensemble sur votre chat, et vous le refaites ensuite sans moi.</p>
 </div>
 </div>
 </div>
@@ -1450,7 +1518,7 @@ body.carte-page .zone-header {
 </div>
 </section>
 <!-- === RÉSERVATION === -->
-<section class="faq-section" data-cat="reservation">
+<section class="faq-section" data-cat="reservation" id="faq-reservation">
 <div class="section-header">
 <div class="section-icon">📞</div>
 <h2 class="section-title">Réservation</h2>
@@ -1540,7 +1608,7 @@ body.carte-page .zone-header {
 </div>
 </section>
 <!-- === LES VISITES === -->
-<section class="faq-section" data-cat="visites">
+<section class="faq-section" data-cat="visites" id="faq-visites">
 <div class="section-header">
 <div class="section-icon">🐱</div>
 <h2 class="section-title">Les visites</h2>
@@ -1609,21 +1677,25 @@ body.carte-page .zone-header {
 </div>
 </section>
 <!-- === SOINS & SANTÉ === -->
-<section class="faq-section" data-cat="soins">
+<section class="faq-section" data-cat="soins" id="faq-soins">
 <div class="section-header">
 <div class="section-icon">💊</div>
 <h2 class="section-title">Soins &amp; santé</h2>
-<span class="section-count">8 questions</span>
+<span class="section-count">9 questions</span>
 </div>
 <div class="accordion">
-<div class="acc-item">
+<div class="acc-item" data-mots="accompagnement">
 <button aria-expanded="false" class="acc-trigger">
 <span class="acc-question">Pouvez-vous administrer des médicaments à mon chat&nbsp;?</span>
 <span class="acc-icon"><svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>
 </button>
 <div class="acc-body">
 <div class="acc-content">
-<p>Oui, dans la limite de ce qu'autorise la loi (article L243-1 du Code rural)&nbsp;:</p>
+<p>Oui.</p>
+<p><strong>Pendant une garde</strong>, si votre chat suit un traitement au long cours et que son état est stabilisé, je lui donne ses médicaments à chaque passage pendant votre absence.</p>
+<p>C'est compris dans le prix de la garde. Comprimés, pommades, gouttes ou aérosol&nbsp;: il n'y a pas de supplément parce que votre chat a besoin d'un traitement.</p>
+<p><strong>Si vous êtes chez vous et que c'est justement vous qui n'arrivez pas à lui donner</strong>, je peux aussi venir vous aider. C'est la <a href="visite-soins.html">visite de soins</a>&nbsp;: on fait le geste ensemble, sur votre chat, pour que vous puissiez ensuite le refaire sans moi.</p>
+<p>Dans les deux cas, la loi fixe la même limite (article L243-1 du Code rural)&nbsp;:</p>
 <div class="tag-list">
 <span class="tag green">✓ Comprimés</span>
 <span class="tag green">✓ Crèmes, pommades et gouttes</span>
@@ -1633,6 +1705,18 @@ body.carte-page .zone-header {
 <span class="tag red">✗ Tout acte invasif</span>
 </div>
 <p style="margin-top:12px;">Les actes médicaux sont réservés aux vétérinaires. Cette limite n'est pas un choix&nbsp;: c'est la loi.</p>
+</div>
+</div>
+</div>
+<div class="acc-item" data-mots="accompagnement">
+<button aria-expanded="false" class="acc-trigger">
+<span class="acc-question">Vous pouvez venir juste pour m'aider à donner un médicament&nbsp;?</span>
+<span class="acc-icon"><svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>
+</button>
+<div class="acc-body">
+<div class="acc-content">
+<p>Oui. C'est exactement le principe de la <a href="visite-soins.html">visite de soins</a>.</p>
+<p>Je viens chez vous et on le fait ensemble. Je vous montre sur votre chat, puis c'est vous qui refaites le geste pendant que je&nbsp;suis encore là. L'idée, c'est qu'à la prise suivante vous n'ayez plus besoin de moi.</p>
 </div>
 </div>
 </div>
@@ -1739,7 +1823,7 @@ body.carte-page .zone-header {
 </div>
 </section>
 <!-- === CADRE LÉGAL === -->
-<section class="faq-section" data-cat="legal">
+<section class="faq-section" data-cat="legal" id="faq-legal">
 <div class="section-header">
 <div class="section-icon">🛡️</div>
 <h2 class="section-title">Cadre légal &amp; fiabilité</h2>
@@ -1815,7 +1899,7 @@ body.carte-page .zone-header {
 </div>
 </section>
 <!-- === TARIFS === -->
-<section class="faq-section" data-cat="tarifs">
+<section class="faq-section" data-cat="tarifs" id="faq-tarifs">
 <div class="section-header">
 <div class="section-icon">💰</div>
 <h2 class="section-title">Tarifs &amp; paiement</h2>
@@ -1886,11 +1970,11 @@ body.carte-page .zone-header {
 </div>
 </section>
 <!-- === PRATIQUE === -->
-<section class="faq-section" data-cat="pratique">
+<section class="faq-section" data-cat="pratique" id="faq-pratique">
 <div class="section-header">
 <div class="section-icon">🐾</div>
 <h2 class="section-title">Cas pratiques</h2>
-<span class="section-count">4 questions</span>
+<span class="section-count">5 questions</span>
 </div>
 <div class="accordion">
 <div class="acc-item">
@@ -1956,6 +2040,20 @@ body.carte-page .zone-header {
 </div>
 </div>
 </div>
+<div class="acc-item" data-mots="deuil perte perdu décès mort disparition euthanasie chagrin accompagnement">
+<button aria-expanded="false" class="acc-trigger">
+<span class="acc-question">Je viens de perdre mon chat. Est-ce que je peux vous en parler&nbsp;?</span>
+<span class="acc-icon"><svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>
+</button>
+<div class="acc-body">
+<div class="acc-content">
+<p>Oui. Et vous n'avez pas besoin d'être cliente. Si vous êtes dans ma <a href="carte.html">zone</a>, on peut se voir autour d'un café. Sinon, en visio.</p>
+<p>Vous pouvez me parler de lui. De ce qu'il faisait, de ses manies, de ce qui vous manque, de la fin aussi si vous en avez besoin. Il&nbsp;n'y a rien à payer.</p>
+<p>Je ne suis pas psychologue et je ne fais pas de thérapie. Je suis simplement quelqu'un qui a vu partir beaucoup de chats, les siens et ceux des autres, et qui sait qu'on peut perdre un animal et avoir l'impression d'avoir perdu un membre de sa famille.</p>
+<p>Je sais aussi qu'autour de vous, tout le monde ne comprendra pas forcément pourquoi ça fait aussi mal. Moi, je n'aurai pas besoin qu'on me l'explique.</p>
+</div>
+</div>
+</div>
 </div>
 </section>
 <!-- No results message -->
@@ -1965,6 +2063,7 @@ body.carte-page .zone-header {
 <p style="margin-top:8px; font-size:14px;">Essayez d'autres mots-clés ou <a href="reservation.html" style="color:var(--T); text-decoration:underline;">contactez-moi directement</a>.</p>
 </div>
 </main>
+</div>
 <!-- ─── CTA ─────────────────────────────────────────── -->
 <div class="faq-cta-wrap">
 <div class="faq-cta">
@@ -2015,19 +2114,23 @@ body.carte-page .zone-header {
     });
   });
 
-  // Filtres
-  document.querySelectorAll('.filter-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      var filter = btn.dataset.filter;
-      document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) {
-        if (filter === 'all') { s.classList.remove('hidden'); }
-        else { s.classList.toggle('hidden', s.dataset.cat !== filter); }
+  // Sommaire : la rubrique en cours se surligne au defilement. Le lien reste un lien,
+  // il fonctionne sans script.
+  var liens = [].slice.call(document.querySelectorAll('.faq-sommaire a'));
+  var sections = liens.map(function(a) { return document.querySelector(a.getAttribute('href')); });
+  if (window.IntersectionObserver && sections.every(Boolean)) {
+    var vues = new Map();
+    var obs = new IntersectionObserver(function(entrees) {
+      entrees.forEach(function(e) { vues.set(e.target, e.isIntersecting ? e.intersectionRatio : 0); });
+      var meilleure = null, score = 0;
+      sections.forEach(function(s) { var v = vues.get(s) || 0; if (v > score) { score = v; meilleure = s; } });
+      liens.forEach(function(a, i) {
+        if (sections[i] === meilleure) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
       });
-      checkNoResults();
-    });
-  });
+    }, { rootMargin: '-74px 0px -55% 0px', threshold: [0, 0.25, 0.5, 1] });
+    sections.forEach(function(s) { obs.observe(s); });
+  }
 
   // Recherche
   var searchInput = document.getElementById('faqSearch');
@@ -2037,22 +2140,14 @@ body.carte-page .zone-header {
       if (!query) {
         document.querySelectorAll('.acc-item').forEach(function(item) { item.style.display = ''; });
         document.querySelectorAll('.faq-section').forEach(function(s) { s.style.display = ''; });
-        var active = document.querySelector('.filter-btn.active');
-        var fVal = active ? active.dataset.filter : 'all';
-        document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) {
-          s.classList.toggle('hidden', fVal !== 'all' && s.dataset.cat !== fVal);
-        });
         checkNoResults(); return;
       }
-      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-      var allBtn = document.querySelector('[data-filter="all"]');
-      if (allBtn) allBtn.classList.add('active');
-      document.querySelectorAll('.faq-section[data-cat]').forEach(function(s) { s.classList.remove('hidden'); });
       var anyVisible = false;
       document.querySelectorAll('.faq-section').forEach(function(sec) {
         var hasMatch = false;
         sec.querySelectorAll('.acc-item').forEach(function(item) {
-          var match = item.textContent.toLowerCase().includes(query);
+          var texte = (item.textContent + ' ' + (item.dataset.mots || '')).toLowerCase();
+          var match = texte.includes(query);
           item.style.display = match ? '' : 'none';
           if (match) hasMatch = true;
         });
@@ -2066,7 +2161,7 @@ body.carte-page .zone-header {
 
   function checkNoResults() {
     var visible = Array.from(document.querySelectorAll('.faq-section')).filter(function(s) {
-      return s.style.display !== 'none' && !s.classList.contains('hidden');
+      return s.style.display !== 'none';
     });
     var el = document.getElementById('noResults');
     if (el) el.style.display = visible.length === 0 ? 'block' : 'none';

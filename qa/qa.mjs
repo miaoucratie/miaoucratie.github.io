@@ -467,20 +467,22 @@ async function testerFaq(page, echecs) {
   const aria = await item.locator('.acc-trigger').getAttribute('aria-expanded');
   if (aria !== String(apres)) echecs.push('faq : aria-expanded desynchronise de la classe');
 
-  // Filtres : chaque filtre ne doit laisser que sa categorie
-  for (const cat of ['soins', 'tarifs', 'legal']) {
-    await page.click(`.filter-btn[data-filter="${cat}"]`);
-    await attendre(350);
-    const visibles = await page.evaluate(() =>
-      [...document.querySelectorAll('.faq-section')]
-        .filter((s) => getComputedStyle(s).display !== 'none')
-        .map((s) => s.dataset.cat));
-    if (visibles.length !== 1 || visibles[0] !== cat) {
-      echecs.push(`faq : filtre "${cat}" affiche ${JSON.stringify(visibles)}`);
-    }
+  // Sommaire : une entree par section, et chacune mene a une ancre qui existe
+  const sommaire = await page.evaluate(() => {
+    const liens = [...document.querySelectorAll('.faq-sommaire a')];
+    return {
+      entrees: liens.length,
+      sections: document.querySelectorAll('.faq-section').length,
+      ancresMortes: liens.filter((a) => !document.querySelector(a.getAttribute('href')))
+        .map((a) => a.getAttribute('href')),
+    };
+  });
+  if (sommaire.entrees !== sommaire.sections) {
+    echecs.push(`faq : ${sommaire.entrees} entrees de sommaire pour ${sommaire.sections} sections`);
   }
-  await page.click('.filter-btn[data-filter="all"]');
-  await attendre(300);
+  if (sommaire.ancresMortes.length) {
+    echecs.push(`faq : ancre sans cible ${JSON.stringify(sommaire.ancresMortes)}`);
+  }
 
   // Recherche
   await page.fill('#faqSearch', 'canicule');
