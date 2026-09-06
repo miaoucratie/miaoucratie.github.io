@@ -1009,7 +1009,7 @@ const PARCOURS = [
 const REPERE = {
   'index.html': '.hero-title',
   'carte.html': '#searchInput',
-  'tarifs.html': '.t-price-header, .tarifs-hero h1',
+  'tarifs.html': '.t-hero h1',
   'faq.html': '.acc-question',
   'reservation.html': '#reservation-form',
 };
