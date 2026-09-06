@@ -7,7 +7,7 @@
   <link rel="preload" href="/fonts/cormorant-garamond-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 
-  <title>CGV garde de chats à domicile | Miaoucratie</title>
+  <title>CGV Miaoucratie</title>
   <meta name="description" content="Conditions générales de vente des prestations de garde de chats à domicile proposées par Miaoucratie.">
   <meta name="robots" content="noindex,follow">
 
@@ -36,6 +36,7 @@ h1, .hero-title {
   color: #A8472A;
   font-style: italic;
 }
+
 </style><style>
 body {
   margin:0;
@@ -403,6 +404,50 @@ body.cgv-page .cgv-wrapper {
 body.cgv-page .cgv-header {
   text-align: center;
 }
+body.cgv-page .cgv-article h2 {
+  margin-bottom: 12px;   
+}
+
+body.cgv-page .cgv-article p  { margin-bottom: 20px; }  
+body.cgv-page .cgv-article ul { margin: 20px 0; }       
+body.cgv-page .cgv-article    { margin-bottom: 48px; }  
+
+body.cgv-page .cgv-lie { white-space: nowrap; }
+
+body.cgv-page .cgv-sommaire { display: none; }
+body.cgv-page .cgv-sommaire-titre {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7A6B5E;
+  margin-bottom: 14px;
+}
+body.cgv-page .cgv-sommaire ol { list-style: none; margin: 0; padding: 0; }
+body.cgv-page .cgv-sommaire a {
+  display: block;
+  padding: 9px 0 9px 14px;
+  border-left: 2px solid #F0E8DA;
+  color: #4A3728;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+body.cgv-page .cgv-sommaire a:hover,
+body.cgv-page .cgv-sommaire a:focus-visible {
+  color: #A8472A;
+  border-left-color: #A8472A;
+}
+
+body.cgv-page .cgv-article[id] { scroll-margin-top: 74px; }
+
+body.cgv-page .cgv-mediavet {
+  background: #F0E8DA;
+  border: 1.5px solid #E8DDD0;
+  border-left: 4px solid #A8472A;
+  border-radius: 14px;
+  padding: 24px 32px 24px 29.5px;
+}
+
 body.cgv-page .cgv-brand {
   margin-left: auto;
   margin-right: auto;
@@ -433,6 +478,30 @@ body.carte-page .zone-header {
     padding: 0 24px 40px;
   }
 }
+@media (min-width: 1080px) {
+  
+  body.cgv-page main.cgv-wrapper {
+    max-width: 1200px;
+    padding: 48px 40px 80px;
+    display: grid;
+    grid-template-columns: 240px minmax(0, 760px);
+    column-gap: 64px;
+    justify-content: center;
+    align-items: start;
+  }
+  
+  body.cgv-page .cgv-header { grid-column: 2; }
+  body.cgv-page .cgv-sommaire {
+    display: block;
+    font-size: 14px;
+    position: sticky;
+    top: 74px;
+    grid-row: 1 / span 2;
+    padding-top: 8px;
+  }
+  body.cgv-page .cgv-corps { grid-column: 2; }
+}
+
 </style>
   <link rel="stylesheet" href="css/polices.css">
 <link rel="stylesheet" href="css/couches.css">
@@ -451,137 +520,161 @@ body.carte-page .zone-header {
 <header class="cgv-header">
 <div class="cgv-brand">Miaou<em>cratie.</em></div>
 <div class="brand-rule"></div>
-<h1 class="cgv-title">Conditions générales <em>de vente</em></h1>
-<p>Applicables à toute prestation de garde de chats à domicile réalisée par Miaoucratie, Irina TALBOT EI.<br/>
+<h1 class="cgv-title">Conditions générales <em>de&nbsp;vente</em></h1>
+<p>Applicables aux prestations réalisées par Miaoucratie, <span class="cgv-lie">Irina TALBOT EI.</span><br/>
       SIRET 100 988 138 00010 · TVA non applicable, article 293 B du CGI · ACACED n°&nbsp;2023/6532-c796<br/>
-      Dernière mise à jour&nbsp;: 11 août 2026</p>
+      Dernière mise à jour&nbsp;: 6 septembre 2026</p>
 </header>
-<div class="cgv-article">
-<h2>Article 1 - Objet de la prestation</h2>
-<p>Miaoucratie propose un service de garde de chats exclusivement au domicile du propriétaire, sous forme de visites à domicile. Cette prestation constitue une obligation de moyens.</p>
+<nav class="cgv-sommaire" aria-label="Sommaire">
+<p class="cgv-sommaire-titre">Sommaire</p>
+<ol>
+<li><a href="#article-1">1. Objet des prestations</a></li>
+<li><a href="#article-2">2. Conditions sanitaires</a></li>
+<li><a href="#article-3">3. Soins autorisés</a></li>
+<li><a href="#article-4">4. Sécurité de l'intervenante</a></li>
+<li><a href="#article-5">5. Sorties extérieures (garde uniquement)</a></li>
+<li><a href="#article-6">6. Accès au domicile (garde uniquement)</a></li>
+<li><a href="#article-7">7. Vidéosurveillance</a></li>
+<li><a href="#article-8">8. Annulation et modification</a></li>
+<li><a href="#article-9">9. Paiement</a></li>
+<li><a href="#article-10">10. Responsabilité</a></li>
+<li><a href="#article-11">11. Force majeure</a></li>
+<li><a href="#article-12">12. Urgences vétérinaires (garde uniquement)</a></li>
+<li><a href="#article-13">13. Protection des données personnelles</a></li>
+<li><a href="#article-14">14. Règlement des litiges</a></li>
+<li><a href="#article-15">15. Droit de rétractation</a></li>
+</ol>
+</nav>
+<div class="cgv-corps">
+<div class="cgv-article" id="article-1">
+<h2>1. Objet des&nbsp;prestations</h2>
+<p>Miaoucratie propose 2 prestations, exclusivement au domicile du&nbsp;propriétaire.</p>
+<p><strong>La garde</strong>&nbsp;: des visites pendant l'absence du propriétaire, qui confie ses&nbsp;clés.</p>
+<p><strong>La visite de soins</strong>&nbsp;: un passage pour administrer un traitement prescrit, en présence du&nbsp;propriétaire.</p>
+<p>Chacune constitue une obligation de moyens. Sauf mention contraire, tous les articles qui suivent s'appliquent aux 2 prestations. Les articles 5, 6 et 12 ne concernent que la&nbsp;garde.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 2 - Conditions sanitaires</h2>
-<p>Tout animal confié doit répondre aux conditions suivantes&nbsp;:</p>
+<div class="cgv-article" id="article-2">
+<h2>2. Conditions&nbsp;sanitaires</h2>
+<p>Le chat doit être identifié, par puce électronique ou tatouage, conformément à l'article L212-10 du code rural. Cette identification est exigée pour tout chat qui conserve un accès extérieur&nbsp;: un chat non identifié qui sort peut ne pas être&nbsp;retrouvé.</p>
+<p>Un chat malade, âgé ou sous traitement est accepté. Son état doit être connu, déclaré avant la prestation et décrit sur sa fiche. Une maladie chronique est acceptée dès lors qu'elle est diagnostiquée, stabilisée, et que l'ordonnance est&nbsp;fournie.</p>
+<p>Les traitements en cours sont laissés en quantité suffisante pour toute la durée de la prestation. Pour un médicament sur ordonnance sécurisée, la quantité couvre la durée de la prestation augmentée de 2&nbsp;jours.</p>
+<p>Miaoucratie n'accepte pas la prestation dans les cas suivants&nbsp;:</p>
 <ul>
-<li>Être identifié (puce électronique ou tatouage)</li>
-<li>Être à jour de ses vaccinations (TC intérieur obligatoire&nbsp;; TCL recommandée si sorties habituelles)</li>
-<li>Être en bon état sanitaire apparent à la date de prise en charge</li>
+<li>une maladie en cours d'aggravation, ou des symptômes clairs d'une maladie au moment du départ du propriétaire&nbsp;;</li>
+<li>un état dont la prise en charge exige des soins continus ou une surveillance rapprochée, incompatibles avec une prestation assurée par visites&nbsp;;</li>
+<li>un logement insalubre, ou dont les conditions d'hygiène ne permettent pas d'assurer la prestation dans de bonnes&nbsp;conditions.</li>
 </ul>
-<p>Les maladies chroniques sont acceptées à condition d'être diagnostiquées, stabilisées et qu'une ordonnance soit fournie si un traitement est en cours. Toute omission ou fausse déclaration engage la responsabilité exclusive du propriétaire.</p>
+<p>Toute omission ou fausse déclaration engage la responsabilité exclusive du&nbsp;propriétaire.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 3 - Soins autorisés</h2>
-<p>Conformément à l'article L243-1 du Code rural, Miaoucratie ne pratique aucun acte vétérinaire.</p>
+<div class="cgv-article" id="article-3">
+<h2>3. Soins&nbsp;autorisés</h2>
+<p>Conformément à l'article L243-1 du code rural, Miaoucratie ne pratique aucun acte&nbsp;vétérinaire.</p>
 <p>Soins autorisés&nbsp;:</p>
-<ul>
-<li>Administration de médicaments par voie orale</li>
-<li>Application de crèmes ou pommades sur prescription</li>
-<li>Administration de gouttes (oculaires, auriculaires, antiparasitaires) sur prescription</li>
-<li>Administration de traitements par inhalation ou aérosol, avec le matériel fourni par le propriétaire</li>
+<ul class="cgv-ok">
+<li>Administration de médicaments par voie&nbsp;orale</li>
+<li>Application de crèmes ou pommades sur&nbsp;prescription</li>
+<li>Administration de gouttes (oculaires, auriculaires, antiparasitaires) sur&nbsp;prescription</li>
+<li>Administration de traitements par inhalation ou aérosol, avec le matériel fourni par le&nbsp;propriétaire</li>
 </ul>
 <p>Actes interdits&nbsp;:</p>
-<ul>
-<li>Injections (y compris insuline)</li>
-<li>Perfusions et tout acte invasif</li>
+<ul class="cgv-ko">
+<li>Injections (y compris&nbsp;insuline)</li>
+<li>Perfusions et tout acte&nbsp;invasif</li>
 </ul>
+<p>Miaoucratie n'établit ni ne modifie aucune posologie. Les doses administrées sont celles de&nbsp;l'ordonnance.</p>
+<p>Un soin n'est administré que si le chat le permet. Si son comportement rend le geste impossible ou dangereux, Miaoucratie renonce au soin, en informe immédiatement le propriétaire et le&nbsp;consigne.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 4 - Exclusion des animaux dangereux</h2>
-<p>Miaoucratie se réserve le droit d'interrompre immédiatement la prestation, sans remboursement, si&nbsp;:</p>
-<ul>
-<li>L'animal présente un comportement agressif non déclaré préalablement</li>
-<li>L'intégrité physique de l'intervenante est compromise</li>
-<li>Les conditions de sécurité minimales ne sont pas réunies</li>
-</ul>
-<p>Les visites restantes demeurent dues dans leur intégralité.</p>
+<div class="cgv-article" id="article-4">
+<h2>4. Sécurité de&nbsp;l'intervenante</h2>
+<p>L'article 2 dit ce qui n'est pas accepté avant le début de la prestation. Le présent article dit ce qui l'arrête une fois&nbsp;commencée.</p>
+<p>Miaoucratie peut suspendre ou interrompre une prestation lorsque sa sécurité n'est plus assurée&nbsp;: lorsqu'elle est attaquée à répétition, lorsqu'un comportement n'a pas été déclaré, ou lorsque les conditions de sécurité du logement ne sont pas&nbsp;réunies.</p>
+<p>Elle en informe le propriétaire sans délai et cherche avec lui une&nbsp;solution.</p>
+<p>Si la prestation ne peut pas reprendre, les visites déjà effectuées restent dues. Pour une garde, les visites restantes de la période réservée restent également dues, le créneau ayant été&nbsp;bloqué.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 5 - Sorties extérieures - Sécurité</h2>
-<ul>
-<li>Par défaut, les chats demeurent à l'intérieur du logement pendant toute la prestation</li>
-<li>Aucune sortie n'est autorisée à l'initiative de Miaoucratie</li>
-</ul>
-<p>Par exception, le propriétaire dont le chat dispose d'un accès extérieur habituel (chatière, jardin) peut demander le maintien de cet accès. Cette demande fait l'objet d'une décharge écrite, signée avant le début de la garde et annexée au contrat de garde.</p>
-<p>Dans ce cas, Miaoucratie ne peut être tenue responsable de la disparition, de la blessure ou du décès du chat survenus hors du logement. En l'absence de décharge signée, l'accès extérieur est condamné pendant toute la durée de la prestation.</p>
+<div class="cgv-article" id="article-5">
+<h2>5. Sorties extérieures (garde&nbsp;uniquement)</h2>
+<p>Le maintien à l'intérieur est le principe. Un accès extérieur peut être maintenu lorsqu'il fait partie du mode de vie habituel du chat et que l'en priver risquerait d'altérer son&nbsp;<span class="cgv-lie">bien-être.</span></p>
+<p>Ce maintien exige la signature d'une décharge, établie en 2 exemplaires et signée avant le début de la garde. Le propriétaire y reconnaît les risques&nbsp;: fugue, disparition, non-retour, accident, impossibilité de localiser le&nbsp;chat.</p>
+<p>Lorsque la décharge est signée, Miaoucratie n'est pas responsable si le chat n'est pas visible au moment de la visite. Elle reste responsable de ses propres&nbsp;manquements.</p>
+<p>Sans décharge signée, l'accès extérieur est fermé pendant toute la&nbsp;garde.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 6 - Accès au domicile</h2>
+<div class="cgv-article" id="article-6">
+<h2>6. Accès au domicile (garde&nbsp;uniquement)</h2>
 <p>Le propriétaire garantit&nbsp;:</p>
 <ul>
-<li>L'accès libre et sécurisé au logement pendant toute la durée de la prestation</li>
-<li>Le bon fonctionnement des serrures, alarmes et digicodes</li>
-<li>L'absence de tout danger non déclaré (animaux supplémentaires, armes, substances dangereuses)</li>
+<li>L'accès libre et sécurisé au logement pendant toute la durée de la&nbsp;prestation</li>
+<li>Le bon fonctionnement des serrures, alarmes et&nbsp;digicodes</li>
+<li>L'absence de tout danger non déclaré (animaux supplémentaires, armes, substances&nbsp;dangereuses)</li>
 </ul>
-<p>En cas d'impossibilité d'accès (porte claquée, alarme non désactivée, clé défectueuse), les frais engagés par Miaoucratie seront facturés au propriétaire. Miaoucratie ne peut être tenue responsable d'une intervention des forces de l'ordre liée à une alarme mal paramétrée.</p>
+<p>En cas d'impossibilité d'accès (porte claquée, alarme non désactivée, clé défectueuse), les frais engagés par Miaoucratie seront facturés au propriétaire. Miaoucratie ne peut être tenue responsable d'une intervention des forces de l'ordre liée à une alarme mal&nbsp;paramétrée.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 7 - Vidéosurveillance</h2>
-<p>Le propriétaire doit informer Miaoucratie de la présence de tout dispositif de captation (caméra, enregistreur audio ou vidéo) avant le début de la prestation. Toute captation réalisée à l'insu de l'intervenante pourra entraîner la résiliation immédiate du contrat sans remboursement.</p>
+<div class="cgv-article" id="article-7">
+<h2>7.&nbsp;Vidéosurveillance</h2>
+<p>Le propriétaire informe Miaoucratie, avant le début de la prestation, de tout dispositif de captation d'image ou de son présent dans le logement, qu'il soit visible ou dissimulé, en fonctionnement ou&nbsp;non.</p>
+<p>Enregistrer l'image ou les paroles d'une personne dans un lieu privé sans son consentement est puni d'un an d'emprisonnement et de 45 000 € d'amende, article 226-1 du code&nbsp;pénal.</p>
+<p>Toute captation réalisée à l'insu de l'intervenante entraîne la résiliation immédiate du contrat, sans préavis. Les sommes déjà versées restent acquises à Miaoucratie et les prestations restantes de la période réservée restent dues. Miaoucratie se réserve d'engager toute&nbsp;action.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 8 - Annulation et modification</h2>
-<p>Annulation par le client&nbsp;:</p>
-<ul>
-<li>Plus de 72&nbsp;h avant le début&nbsp;: remboursement intégral de l'acompte</li>
-<li>Moins de 72&nbsp;h&nbsp;: acompte conservé à titre d'indemnité forfaitaire</li>
-<li>Séjour écourté à l'initiative du client&nbsp;: totalité du montant contractuel due, en raison de la réservation bloquée du créneau</li>
-</ul>
-<p>Annulation par Miaoucratie&nbsp;: remboursement intégral de l'acompte dans les meilleurs délais.</p>
-<p>Ces conditions s'appliquent sous réserve du droit de rétractation prévu à l'article 15.</p>
+<div class="cgv-article" id="article-8">
+<h2>8. Annulation et&nbsp;modification</h2>
+<p><strong>Garde.</strong> Plus de 72 h avant le début&nbsp;: remboursement intégral de l'acompte. Moins de 72 h&nbsp;: l'acompte est conservé à titre d'indemnité forfaitaire. Séjour écourté par le client&nbsp;: la totalité du montant reste due, le créneau ayant été&nbsp;bloqué.</p>
+<p><strong>Visite de soins.</strong> Une visite annulée n'est pas facturée, quel que soit le&nbsp;délai.</p>
+<p><strong>Annulation par Miaoucratie.</strong> Remboursement intégral des sommes versées, dans les 48&nbsp;h.</p>
+<p>Ces conditions s'appliquent sous réserve du droit de rétractation prévu à l'article&nbsp;15.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 9 - Conditions de paiement et pénalités</h2>
-<p>La facture de solde est émise le jour de la dernière visite. Elle est payable dans les 10&nbsp;jours suivant cette émission.</p>
-<p>En cas de retard de paiement, des intérêts de retard calculés au taux légal en vigueur pourront être appliqués à compter de la mise en demeure restée sans effet.</p>
-<p>Miaoucratie se réserve également le droit de refuser toute nouvelle prestation tant que les sommes dues ne sont pas intégralement réglées.</p>
+<div class="cgv-article" id="article-9">
+<h2>9.&nbsp;Paiement</h2>
+<p>Les prix sont publiés sur miaoucratie.fr. Chaque prestation fait l'objet d'un devis remis avant son&nbsp;début.</p>
+<p><strong>Garde.</strong> Un acompte de 30 % est versé à la réservation. Lorsqu'il reste moins d'une semaine avant le début de la garde, la totalité est réglée à la&nbsp;réservation.</p>
+<p>La facture de solde est émise le jour de la dernière visite. Le solde est exigible au plus tard 10 jours après cette visite, pour l'une comme pour l'autre&nbsp;prestation.</p>
+<p>En cas de retard de paiement, des intérêts au taux légal courent après mise en demeure restée sans&nbsp;effet.</p>
+<p>Tant que les sommes dues ne sont pas intégralement réglées, aucune nouvelle prestation n'est acceptée et aucune date n'est bloquée. Les réservations déjà enregistrées sont&nbsp;suspendues.</p>
+<p>Si la mise en demeure reste sans effet pendant 15 jours, le contrat est résilié de plein droit. Les sommes dues au titre des prestations déjà effectuées restent exigibles et leur recouvrement est poursuivi par toutes voies de&nbsp;droit.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 10 - Responsabilité</h2>
+<div class="cgv-article" id="article-10">
+<h2>10.&nbsp;Responsabilité</h2>
 <p>Le propriétaire demeure seul civilement responsable de son animal (art. 1243 C. civil). Miaoucratie ne saurait être tenue responsable&nbsp;:</p>
 <ul>
-<li>Des dommages causés par l'animal à des tiers ou aux biens</li>
-<li>Des dégradations du logement imputables à l'animal</li>
-<li>D'une réaction imprévisible de l'animal</li>
-<li>D'un cambriolage indépendant de sa faute</li>
-<li>D'une maladie préexistante ou d'une évolution pathologique indépendante</li>
-<li>D'un décès naturel</li>
+<li>Des dommages causés par l'animal à des tiers ou aux&nbsp;biens</li>
+<li>Des dégradations du logement imputables à&nbsp;l'animal</li>
+<li>D'une réaction imprévisible de&nbsp;l'animal</li>
+<li>D'un cambriolage indépendant de sa&nbsp;faute</li>
+<li>D'une maladie préexistante ou d'une évolution pathologique&nbsp;indépendante</li>
+<li>D'un décès&nbsp;naturel</li>
 </ul>
-<p>La responsabilité de Miaoucratie ne pourra être engagée qu'en cas de faute prouvée dans l'exécution de la prestation.</p>
+<p>La responsabilité de Miaoucratie ne pourra être engagée qu'en cas de faute prouvée dans l'exécution de la&nbsp;prestation.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 11 - Force majeure</h2>
-<p>Aucune des parties ne pourra être tenue responsable de l'inexécution de ses obligations en cas d'événement imprévisible, irrésistible et extérieur à sa volonté (maladie grave, catastrophe naturelle, accident). La partie concernée en informera l'autre dans les meilleurs délais.</p>
+<div class="cgv-article" id="article-11">
+<h2>11. Force&nbsp;majeure</h2>
+<p>Aucune des parties ne pourra être tenue responsable de l'inexécution de ses obligations en cas d'événement imprévisible, irrésistible et extérieur à sa volonté (maladie grave, catastrophe naturelle, accident). La partie concernée en informera l'autre dans les meilleurs&nbsp;délais.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 12 - Urgences vétérinaires</h2>
+<div class="cgv-article" id="article-12">
+<h2>12. Urgences vétérinaires (garde&nbsp;uniquement)</h2>
 <p>En cas d'urgence, Miaoucratie procède dans l'ordre suivant&nbsp;:</p>
 <ul>
-<li>Contact du propriétaire</li>
-<li>Contact de la personne désignée à la rubrique 5 du contrat</li>
-<li>Transport chez le vétérinaire habituel ou le plus proche disponible</li>
+<li>Contact du&nbsp;propriétaire</li>
+<li>Contact de la personne désignée à la rubrique 4 du&nbsp;contrat</li>
+<li>Transport chez le vétérinaire habituel ou le plus proche&nbsp;disponible</li>
 </ul>
-<p>Le transport peut être effectué par taxi animalier ou service d'urgence si nécessaire. Tous les frais vétérinaires restent à la charge exclusive du propriétaire.</p>
+<p>Le transport peut être effectué par taxi animalier ou service d'urgence si nécessaire. Tous les frais vétérinaires restent à la charge exclusive du&nbsp;propriétaire.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 13 - Protection des données personnelles</h2>
+<div class="cgv-article" id="article-13">
+<h2>13. Protection des données&nbsp;personnelles</h2>
 <p>Les données personnelles collectées sont utilisées exclusivement à des fins de gestion contractuelle et ne sont pas transmises à des tiers, sauf obligation légale (DDPP, autorité judiciaire). Conformément au RGPD, le propriétaire dispose d'un droit d'accès, de rectification et d'effacement, exerçable à&nbsp;: <a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 14 - Règlement des litiges et médiation de la consommation</h2>
-<p>En cas de différend, les parties s'engagent à rechercher une solution amiable en priorité. À défaut d'accord amiable dans un délai raisonnable, le consommateur peut recourir gratuitement à un médiateur de la consommation conformément aux articles L. 612-1 et suivants du Code de la consommation.</p>
+<div class="cgv-article" id="article-14">
+<h2>14. Règlement des&nbsp;litiges</h2>
+<p>En cas de différend, les parties s'engagent à rechercher une solution amiable en priorité. À défaut d'accord amiable dans un délai raisonnable, le consommateur peut recourir gratuitement à un médiateur de la consommation conformément aux articles L. 612-1 et suivants du Code de la&nbsp;consommation.</p>
 <p>Miaoucratie adhère au service de médiation suivant&nbsp;:</p>
-<p><strong>MEDIAVET</strong><br/>
-    Site internet&nbsp;: <a href="https://mediavet.net" rel="noopener" target="_blank">mediavet.net</a><br/>
-    Convention n°&nbsp;MEDIAVET-D-26-5754</p>
-<p>Pour saisir le médiateur, le consommateur doit avoir tenté préalablement de résoudre son litige directement auprès de Miaoucratie par réclamation écrite. À défaut de résolution amiable, le litige pourra être porté devant les juridictions territorialement compétentes conformément au droit commun.</p>
+<p class="cgv-mediavet">MEDIAVET · Site internet&nbsp;: <a href="https://mediavet.net" target="_blank" rel="noopener">mediavet.net</a> · Convention n°&nbsp;<span class="cgv-lie">MEDIAVET-D-26-5754</span></p>
+<p>Pour saisir le médiateur, le consommateur doit avoir tenté préalablement de résoudre son litige directement auprès de Miaoucratie par réclamation écrite. À défaut de résolution amiable, le litige pourra être porté devant les juridictions territorialement compétentes conformément au droit&nbsp;commun.</p>
 </div>
-<div class="cgv-article">
-<h2>Article 15 - Droit de rétractation</h2>
-<p>Le contrat conclu à distance ou lors d'une visite au domicile du client ouvre au consommateur un droit de rétractation de quatorze jours, à compter du jour de la conclusion du contrat.</p>
-<p>Pour l'exercer, le client informe Miaoucratie de sa décision par une déclaration dénuée d'ambiguïté, à <a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a> ou au moyen du formulaire de rétractation figurant au contrat de garde. Aucun motif n'est exigé.</p>
-<p>Lorsque la prestation doit commencer avant l'expiration de ce délai, elle ne peut débuter qu'à la demande expresse du client, formulée à la rubrique 7 du contrat. Le client qui se rétracte alors que la prestation a commencé règle les visites déjà effectuées, au prorata du prix convenu.</p>
-<p>Le droit de rétractation est perdu lorsque la prestation a été pleinement exécutée avant la fin du délai de quatorze jours, avec l'accord préalable et exprès du client et sa reconnaissance de la perte de ce droit.</p>
+<div class="cgv-article" id="article-15">
+<h2>15. Droit de&nbsp;rétractation</h2>
+<p>Le contrat conclu à distance ou lors d'une visite au domicile du client ouvre au consommateur un droit de rétractation de 14 jours, à compter du jour de la conclusion du&nbsp;contrat.</p>
+<p>Pour l'exercer, le client informe Miaoucratie de sa décision par une déclaration dénuée d'ambiguïté, à <a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a> ou au moyen du formulaire de rétractation figurant au contrat. Aucun motif n'est&nbsp;exigé.</p>
+<p>Lorsque la prestation doit commencer avant l'expiration de ce délai, elle ne peut débuter qu'à la demande expresse du client, formulée à la rubrique 7 du contrat. Le client qui se rétracte alors que la prestation a commencé règle les visites déjà effectuées, au prorata du prix&nbsp;convenu.</p>
+<p>Le droit de rétractation est perdu lorsque la prestation a été pleinement exécutée avant la fin du délai de 14 jours, avec l'accord préalable et exprès du client et sa reconnaissance de la perte de ce&nbsp;droit.</p>
+</div>
 </div>
 </main>
 
