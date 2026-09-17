@@ -540,6 +540,11 @@ body.cgv-page .brand-rule {
   .t-cta p a:hover {
     color: var(--deep, #1E1812);
   }
+  .avis-source { font-size: 13px; margin: 0 0 18px; color: var(--muted); }
+  .avis-source strong { font-weight: 600; color: var(--mid); }
+  .avis-source a { color: var(--rust); text-underline-offset: 2px; }
+  .avis-source a:hover { color: var(--deep); }
+
   .avis-carousel { display: flex; align-items: center; gap: 10px; }
   .avis-grid { flex: 1 1 auto; min-width: 0; display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 6px 2px 12px; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; }
   .avis-grid::-webkit-scrollbar { width: 0; height: 0; display: none; }
