@@ -16,6 +16,15 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  NOM_CLASSE,
+  classesDeBibliotheque,
+  classesManipulees,
+  commentairesNonFermes,
+  estTiers,
+  nomsDeClasses,
+  selecteursDePremierNiveau,
+} from './css-regles.mjs';
 
 const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STRICT = process.argv.includes('--strict');
@@ -31,9 +40,11 @@ const declarees = new Map();
 for (const f of feuilles) {
   const brut = readFileSync(join(RACINE, 'css', f), 'utf8');
 
-  const ouvre = (brut.match(/\/\*/g) || []).length;
-  const ferme = (brut.match(/\*\//g) || []).length;
-  if (ouvre !== ferme) noter(f, `commentaires desequilibres : ${ouvre} ouvertures, ${ferme} fermetures`);
+  const nonFermes = commentairesNonFermes(brut);
+  if (nonFermes.length) {
+    noter(f, `${nonFermes.length} commentaire(s) jamais ferme(s), ouvert(s) ligne(s) ${nonFermes.join(', ')}`
+      + ' — tout ce qui suit est avale jusqu\'au prochain */');
+  }
 
   const css = brut.replace(/\/\*[\s\S]*?\*\//g, '');
   let profondeur = 0, mini = 0;
@@ -44,41 +55,96 @@ for (const f of feuilles) {
   if (profondeur !== 0) noter(f, `accolades desequilibrees : ${profondeur > 0 ? profondeur + ' non fermee(s)' : -profondeur + ' en trop'}`);
   if (mini < 0) noter(f, 'une accolade fermante precede son ouvrante');
 
-  /* Selecteurs declares, pour le recoupement avec le balisage. */
-  const sels = [];
-  let tampon = '', prof = 0;
-  for (const c of css) {
-    if (c === '{') { if (prof === 0) sels.push(tampon.trim()); prof++; tampon = ''; }
-    else if (c === '}') { prof = Math.max(0, prof - 1); tampon = ''; }
-    else tampon += c;
-  }
-  declarees.set(f, sels);
+  declarees.set(f, selecteursDePremierNiveau(brut));
 
   const bang = (css.match(/!important/g) || []).length;
   if (bang) noter(f, `${bang} !important`);
 }
 
-/* ── Classes declarees mais jamais posees dans le balisage ── */
+/* ── Trois relevés, puis le recoupement dans les deux sens ─────────────────
+ *
+ * Les deux sens — « declaree jamais posee » et « posee jamais declaree » —
+ * partent des MEMES ensembles. Ils partaient auparavant de deux relevés
+ * differents, et se contredisaient donc sur les memes classes.
+ *
+ * PERIMETRE, etabli en lisant chaque fichier en entier.
+ *
+ *   posees      les 18 pages de la racine, sans exception : une classe morte
+ *               dans les mentions legales ou l'administration est de la dette
+ *               comme ailleurs. redaction.mjs en ecarte trois, mais pour une
+ *               autre raison — il juge la redaction editoriale, pas le CSS.
+ *   declarees   css/*.css et les <style> en ligne des pages. 724 regles vivent
+ *               dans les pages contre 1 118 dans css/ : les ignorer ferait
+ *               passer 39 % du CSS du site pour absent.
+ *   accroches   js/*.js et les <script> en ligne des pages — 42 blocs, 2 228
+ *               lignes, qui etaient ignores. shared/booking-utils.js et
+ *               shared/tarifs.js sont ecartes : lus en entier, ce sont des
+ *               fonctions pures, sans DOM ni classe. Les *.test.js, qa/ et
+ *               api/ ne sont jamais servis au visiteur.
+ */
 const posees = new Set();
 for (const p of pages) {
   const html = readFileSync(join(RACINE, p), 'utf8');
-  for (const m of html.matchAll(/class="([^"]+)"/g)) for (const c of m[1].trim().split(/\s+/)) posees.add(c);
-}
-/* Les classes ajoutees par script echappent au balisage : on les releve aussi. */
-for (const j of readdirSync(join(RACINE, 'js')).filter((f) => f.endsWith('.js'))) {
-  const src = readFileSync(join(RACINE, 'js', j), 'utf8');
-  for (const m of src.matchAll(/['"`]([a-z][\w-]*(?:\s+[a-z][\w-]*)*)['"`]/g)) for (const c of m[1].split(/\s+/)) posees.add(c);
+  for (const m of html.matchAll(/class="([^"]+)"/g)) for (const c of m[1].trim().split(/\s+/)) if (c) posees.add(c);
 }
 
+const declareesPartout = new Set();
+for (const sels of declarees.values()) {
+  for (const s of sels) for (const n of nomsDeClasses(s)) declareesPartout.add(n);
+}
+for (const p of pages) {
+  const html = readFileSync(join(RACINE, p), 'utf8');
+  for (const bloc of html.match(/<style[^>]*>[\s\S]*?<\/style>/g) || []) {
+    for (const n of nomsDeClasses(bloc.replace(/\/\*[\s\S]*?\*\//g, ''))) declareesPartout.add(n);
+  }
+}
+
+const accroches = new Set();
+const releverAccroches = (source) => {
+  for (const c of classesManipulees(source)) accroches.add(c);
+};
+for (const j of readdirSync(join(RACINE, 'js')).filter((f) => f.endsWith('.js'))) {
+  releverAccroches(readFileSync(join(RACINE, 'js', j), 'utf8'));
+}
+for (const p of pages) {
+  const html = readFileSync(join(RACINE, p), 'utf8');
+  for (const bloc of html.match(/<script(?![^>]*\ssrc=)[^>]*>[\s\S]*?<\/script>/g) || []) releverAccroches(bloc);
+}
+
+const seulementAvecTiers = classesDeBibliotheque([...declarees.values()].flat());
+
+/* ── Sens 1 : classe declaree dans une feuille, posee nulle part ── */
 for (const [f, sels] of declarees) {
   const orphelines = new Set();
   for (const s of sels) {
-    for (const c of s.match(/\.[-\w]+/g) || []) {
-      const nom = c.slice(1);
-      if (!posees.has(nom)) orphelines.add(nom);
+    for (const n of nomsDeClasses(s)) {
+      if (posees.has(n) || accroches.has(n)) continue;
+      if (estTiers(n) || seulementAvecTiers.has(n)) continue;
+      orphelines.add(n);
     }
   }
-  if (orphelines.size) noter(f, `${orphelines.size} classe(s) declaree(s) et jamais posee(s) : ${[...orphelines].sort().slice(0, 12).join(' ')}`);
+  if (orphelines.size) noter(f, `${orphelines.size} classe(s) declaree(s) et jamais posee(s) : ${[...orphelines].sort().join(' ')}`);
+}
+
+/* ── Sens 2 : classe posee dans le balisage, declaree nulle part ───────────
+ *
+ * Une page neuve part presque toujours d'une page existante. Elle recopie donc
+ * ses classes, y compris celles qui ne stylent plus rien. Le defaut est
+ * invisible, le rendu n'est pas casse : c'est du balisage mort qui se propage a
+ * chaque nouvelle page, et un modificateur dont on croit qu'il agit.
+ * « art-trio--lies » etait dans ce cas sur six articles.
+ */
+
+for (const p of pages) {
+  const html = readFileSync(join(RACINE, p), 'utf8');
+  const mortes = new Set();
+  for (const m of html.matchAll(/class="([^"]+)"/g)) {
+    for (const c of m[1].trim().split(/\s+/)) {
+      if (!c || declareesPartout.has(c) || accroches.has(c) || estTiers(c)) continue;
+      mortes.add(c);
+    }
+  }
+  if (mortes.size) noter(p, `${mortes.size} classe(s) posee(s) et declaree(s) nulle part : ${[...mortes].sort().join(' ')}`);
 }
 
 /* ── Selecteur declare deux fois dans la meme feuille ── */

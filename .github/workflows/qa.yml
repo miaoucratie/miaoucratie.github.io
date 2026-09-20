@@ -75,16 +75,13 @@ jobs:
       - name: Contrôler le SEO, la rédaction, les espacements, les renvois et les feuilles
         run: npm run controles:base
 
-      # Ces deux-la relevent des defauts reels, mais anterieurs au blog :
-      # 43 constats de mise en page — contraste, boutons casses, reperes
-      # <main>, <nav> et <header> absents — et une divergence entre les deux
-      # articles. Les rendre bloquants arreterait toute pull request tant que
-      # ces defauts ne sont pas traites. Ils tournent donc pour le releve, et
-      # le journal du job garde la trace de ce qui reste.
-      - name: Relever la mise en page et comparer les articles
-        run: |
-          npm run mise-en-page
-          npm run articles
+      # Mesure la page telle qu'elle s'affiche, du mobile au bureau.
+      - name: Contrôler la mise en page rendue
+        run: npm run mise-en-page:strict
+
+      # Relevé seulement : n'entre pas dans le verdict.
+      - name: Comparer les articles
+        run: npm run articles
 
       - name: Que faire en cas d'échec
         if: failure()
