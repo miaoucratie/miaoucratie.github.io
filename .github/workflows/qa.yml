@@ -124,12 +124,12 @@ jobs:
   # Ce que le relevé compare n'appartient donc à aucun poste de travail.
   empreinte:
     name: Empreinte visuelle
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 20
     # Relevé pour l'instant : n'entre pas dans le verdict.
     continue-on-error: true
     container:
-      image: mcr.microsoft.com/playwright:v1.62.1-noble-amd64@sha256:c091b21d9fae78c76e85cd4356431e9b018402f172a214fc7d7a5e9a7e29d8ac
+      image: mcr.microsoft.com/playwright:v1.62.1-noble-arm64@sha256:941cc91e5022880ac1d14ae90b476b624deb6399dbbc28d612d5d5bd7928fcbd
 
     steps:
       - uses: actions/checkout@v4

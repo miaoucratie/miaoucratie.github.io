@@ -26,7 +26,9 @@
     "controles:base": "npm run blog:check && npm run seo:strict && npm run redaction:strict && npm run espacements:strict && npm run renvois:strict && npm run css",
     "controles": "npm run controles:base && npm run mise-en-page:strict",
     "postinstall": "playwright install chromium",
-    "qa:empreinte": "node qa/qa.mjs"
+    "qa:empreinte": "node qa/qa.mjs",
+    "empreinte": "qa/conteneur.sh",
+    "empreinte:maj": "qa/conteneur.sh --update"
   },
   "devDependencies": {
     "playwright": "^1.49.0"
