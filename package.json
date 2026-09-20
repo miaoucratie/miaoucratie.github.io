@@ -24,9 +24,9 @@
     "blog": "node scripts/generate-blog.js",
     "blog:check": "node scripts/generate-blog.js --check",
     "controles:base": "npm run blog:check && npm run seo:strict && npm run redaction:strict && npm run espacements:strict && npm run renvois:strict && npm run css",
-    "controles": "npm run controles:base && npm run mise-en-page:strict",
+    "controles": "npm run controles:base && npm run mise-en-page:strict && npm run empreinte",
     "postinstall": "playwright install chromium",
-    "qa:empreinte": "node qa/qa.mjs",
+    "qa:empreinte": "node qa/qa.mjs --detail",
     "empreinte": "qa/conteneur.sh",
     "empreinte:maj": "qa/conteneur.sh --update"
   },
