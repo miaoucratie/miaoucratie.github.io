@@ -1205,7 +1205,6 @@
   "A||99|21|1133|2072|rgba(255, 255, 255, 0.55)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|21.45px|normal"
  ],
  "reservation.html@1272": [
-  "A|skip-link|1|1|-1272|0|rgb(30, 24, 18)|rgba(0, 0, 0, 0)|16px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|25.6px|normal",
   "HEADER|topbar|1272|50|0|0|rgb(30, 24, 18)|rgb(30, 24, 18)|16px|400|normal|\"DM Sans\"|flex|0px|0px 40px|0px|start|1|visible|25.6px|normal",
   "DIV|tmenu-wrap|53|46|40|2|rgb(30, 24, 18)|rgba(0, 0, 0, 0)|16px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|25.6px|normal",
   "BUTTON|tmenu-btn|53|46|40|2|rgb(212, 190, 168)|rgba(0, 0, 0, 0)|14px|600|normal|\"DM Sans\"|inline-flex|0px|12px 0px|0px|center|1|visible|22.4px|normal",
@@ -5655,7 +5654,6 @@
   "A||99|21|161|3613|rgba(255, 255, 255, 0.55)|rgba(0, 0, 0, 0)|13px|400|normal|\"DM Sans\"|block|0px|0px|0px|center|1|visible|21.45px|normal"
  ],
  "reservation.html@375": [
-  "A|skip-link|1|1|-375|0|rgb(30, 24, 18)|rgba(0, 0, 0, 0)|16px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|25.6px|normal",
   "HEADER|topbar|375|87|0|0|rgb(30, 24, 18)|rgb(30, 24, 18)|16px|400|normal|\"DM Sans\"|flex|0px|8px 20px|0px|start|1|visible|25.6px|normal",
   "DIV|tmenu-wrap|335|46|20|8|rgb(30, 24, 18)|rgba(0, 0, 0, 0)|16px|400|normal|\"DM Sans\"|block|0px|0px|0px|start|1|visible|25.6px|normal",
   "BUTTON|tmenu-btn|53|46|20|8|rgb(212, 190, 168)|rgba(0, 0, 0, 0)|14px|600|normal|\"DM Sans\"|inline-flex|0px|12px 0px|0px|center|1|visible|22.4px|normal",
