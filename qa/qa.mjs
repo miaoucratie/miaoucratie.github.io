@@ -91,13 +91,27 @@ const DETAIL = process.argv.includes('--detail');
  * ne règle ça : celle qui absorberait 29 px masquerait aussi la barre passée
  * de 50 à 67 px, régression réelle rencontrée le 11 août.
  *
- * L'empreinte reste donc un outil local, comparée à une référence produite
- * sur la même machine. En intégration continue, on ne garde que ce qui est
- * portable : comportement, erreurs JavaScript, débordement. C'est d'ailleurs
- * ce qui aurait attrapé la panne de la FAQ — menu mort, accordéon figé,
- * filtres inopérants — sans jamais mesurer un pixel.
+ * La conclusion d'alors : garder l'empreinte en local et ne mesurer, en
+ * intégration continue, que ce qui est portable — comportement, erreurs
+ * JavaScript, débordement.
+ *
+ * Elle ne tient plus. Le constat de départ était juste, le remède était le
+ * mauvais : l'empreinte n'est pas un outil local, c'est un outil qui exige un
+ * environnement fixe. Liée à une machine, elle meurt au premier changement de
+ * poste — et elle est morte ainsi, le 17 septembre 2026, avec 347 écarts dont
+ * aucun ne touchait une couleur, une police ou un alignement.
+ *
+ * Elle mesure donc désormais dans un environnement figé et unique, décrit dans
+ * le dépôt : une image de conteneur épinglée par son empreinte, dont le tag
+ * fixe aussi bien le système que l'architecture. La référence appartient à cet
+ * environnement, plus à personne. Aucun poste de travail n'intervient.
+ *
+ * `--comportement` reste, pour mesurer uniquement ce qui est portable depuis
+ * n'importe où. Ce qui a disparu, c'est la bascule implicite sur la variable
+ * CI : elle éteignait silencieusement le contrôle là où il doit justement
+ * s'exécuter.
  */
-const COMPORTEMENT_SEUL = process.argv.includes('--comportement') || !!process.env.CI;
+const COMPORTEMENT_SEUL = process.argv.includes('--comportement');
 
 const PAGES = [
   'index.html', 'tarifs.html', 'faq.html', 'carte.html', 'reservation.html',

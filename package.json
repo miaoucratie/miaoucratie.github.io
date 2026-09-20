@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "qa": "node qa/qa.mjs",
+    "qa": "node qa/qa.mjs --comportement",
     "qa:update": "node qa/qa.mjs --update",
     "seo": "node qa/seo.mjs",
     "seo:strict": "node qa/seo.mjs --strict",
@@ -24,8 +24,11 @@
     "blog": "node scripts/generate-blog.js",
     "blog:check": "node scripts/generate-blog.js --check",
     "controles:base": "npm run blog:check && npm run seo:strict && npm run redaction:strict && npm run espacements:strict && npm run renvois:strict && npm run css",
-    "controles": "npm run controles:base && npm run mise-en-page:strict",
-    "postinstall": "playwright install chromium"
+    "controles": "npm run controles:base && npm run mise-en-page:strict && npm run empreinte",
+    "postinstall": "playwright install chromium",
+    "qa:empreinte": "node qa/qa.mjs --detail",
+    "empreinte": "qa/conteneur.sh",
+    "empreinte:maj": "qa/conteneur.sh --update"
   },
   "devDependencies": {
     "playwright": "^1.49.0"
