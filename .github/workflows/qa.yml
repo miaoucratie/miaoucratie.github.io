@@ -18,6 +18,11 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      regenerer_empreinte:
+        description: "Régénérer l'empreinte et la publier en artefact"
+        type: boolean
+        default: false
 
 # Un push qui en suit un autre annule la vérification devenue obsolète.
 concurrency:
@@ -113,3 +118,37 @@ jobs:
           echo 'npm run qa' >> $GITHUB_STEP_SUMMARY
           echo 'npm run controles:base' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+
+  # L'apparence se mesure dans un environnement unique et figé, décrit ici :
+  # image épinglée par son empreinte, système et architecture fixés par le tag.
+  # Ce que le relevé compare n'appartient donc à aucun poste de travail.
+  empreinte:
+    name: Empreinte visuelle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    # Relevé pour l'instant : n'entre pas dans le verdict.
+    continue-on-error: true
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble-amd64@sha256:c091b21d9fae78c76e85cd4356431e9b018402f172a214fc7d7a5e9a7e29d8ac
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Comparer
+        if: ${{ inputs.regenerer_empreinte != true }}
+        run: npm run qa:empreinte
+
+      - name: Régénérer
+        if: ${{ inputs.regenerer_empreinte == true }}
+        run: npm run qa:update
+
+      - name: Publier le relevé régénéré
+        if: ${{ inputs.regenerer_empreinte == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference
+          path: qa/reference.json
+          retention-days: 7
