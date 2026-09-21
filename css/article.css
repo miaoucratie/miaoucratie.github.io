@@ -265,7 +265,7 @@
    correction : 0 px entre la note d'affiliation et « Deux procedes, deux
    contraintes », la ou toutes les autres sections en ont 88. */
 .section--suite > :is(h2, h3):first-child { margin-top: var(--e-section); }
-.art-corps > :is(figure, table, .cred-item, .art-tab-cadre, .art-fig, .art-etapes, details) {
+.art-corps > :is(figure, table, .cred-item, .art-tab-cadre, .art-fig, .art-etapes, details, .art-produit) {
   margin: var(--e-bloc) 0;
 }
 
@@ -1659,6 +1659,13 @@
 .art-fig--photo { padding: 0; overflow: hidden; }
 .art-fig--photo img { display: block; width: 100%; height: auto; }
 .art-fig--photo figcaption { margin: 0; padding: 16px 28px 20px; border-top: 0; }
+
+/* Sous 768 px l'intitule passe au-dessus de sa barre : la piste reprend toute
+   la largeur, la valeur garde sa colonne. Declaree apres la regle de base, qui
+   l'emporterait sinon a specificite egale. */
+@media (max-width: 768px) {
+  .art-barres--aligne .art-barre { grid-template-columns: 1fr 78px; }
+}
 
 /* ── Lignes orphelines dans les blocs ──────────────────────────────────────
    La regle posee plus haut ne vise que les enfants DIRECTS de « .art-corps ».
