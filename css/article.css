@@ -54,6 +54,14 @@
   --e-bloc: 36px;
   --e-sous: 48px;
   --e-section: 68px;
+  /* Une encre et un ton par article, portes par la classe de page. Petrole
+     pour l'eau, vert de la rubrique Enrichissement pour le jeu, sauge de la
+     rubrique Comportement. */
+  --art-eau-encre: #1E5566;
+  --art-eau: #3E7C8F;
+  --art-jeu-encre: #3B5540;
+  --art-jeu: #5E8266;
+  --art-mythe: #4A6B58;
 }
 
 /* ══ LA COMPOSITION D'UN ARTICLE ════════════════════════════════════════
@@ -304,20 +312,6 @@
   grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: var(--e-para);
 }
-
-/* ══ COULEUR DE L'EAU DANS LES FIGURES ═════════════════════════════════════
-   La palette du site n'a aucun bleu, et pour cause : elle n'avait jusqu'ici
-   aucune donnee a representer. Mais dans un graphique, la couleur porte du
-   sens : peindre l'eau en terracotta oblige a lire la legende pour comprendre
-   ce qu'on regarde.
-
-   Bleu ardoise, choisi sourd pour rester dans la famille chaude du site
-   plutot qu'un bleu vif. Contraste mesure sur la piste creme : 4,54:1, au-
-   dessus du seuil de 3:1 des elements non textuels.
-
-   Le jeton est declare dans le module du blog, pas dans style.css : aucune
-   autre page n'a de graphique. */
-:root { --art-eau: #3C6E8F; }
 
 /* ══ FICHES ET BOUTONS SUR PETIT ECRAN ═════════════════════════════════════
    A 320 px, une fiche a 36 px de retrait de chaque cote laisse 198 px utiles,
@@ -642,7 +636,12 @@
    pastille dans la requete des 768 px, plus bas dans la feuille, et reprendrait
    la main sur celle-ci. */
 .art-etapes--parcours .art-etape .step-bubble {
-  display: block;
+  /* « .step-bubble » de style.css centre son contenu : ici le chiffre et
+     l'illustration partent du meme bord que le filet et le titre. */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
   width: auto;
   height: auto;
   margin: 0 0 16px;
@@ -723,6 +722,8 @@
   color: var(--muted);
   margin-bottom: 18px;
 }
+/* Une unite abregee garde sa casse : « kHz » en capitales se lirait « KHZ ». */
+.art-fig-unite abbr { text-transform: none; text-decoration: none; }
 
 .art-barres { display: flex; flex-direction: column; gap: 14px; }
 .art-barre { display: grid; grid-template-columns: minmax(96px, 24%) 1fr auto; align-items: center; gap: 12px; }
@@ -1033,6 +1034,11 @@
   .art-duo { grid-template-columns: 1fr; }
   .art-etape { grid-template-columns: 44px 1fr; gap: 14px; padding: 14px 16px; }
   .art-etape .step-bubble { width: 44px; height: 44px; font-size: 22px; }
+  /* Article Umwelt : une bande de couleurs prend toute la largeur, et la
+     graduation n'a pas d'intitule. La classe de page donne a ces regles le pas
+     sur celles, plus bas, qu'elles adaptent. */
+  .art-page--umwelt .art-barre--bande { grid-template-columns: 1fr; }
+  .art-page--umwelt .art-barre--axe > .art-barre-nom { display: none; }
 }
 
 @media (max-width: 520px) {
@@ -1079,10 +1085,6 @@
    3,85:1 sur le fond sable, au-dessus du seuil de 3:1 des elements non
    textuels. Les deux segments d'une meme barre sont separes par le filet
    creme de .art-pile, la couleur ne porte pas seule la distinction. */
-:root {
-  --art-eau-encre: #1E5566;
-  --art-eau: #3E7C8F;
-}
 
 /* Tout est porte par la classe de page : aucun autre article ne bouge. */
 .art-page--eau .eyebrow { color: var(--art-eau-encre); background: rgba(30, 85, 102, 0.10); }
@@ -1095,7 +1097,6 @@
 /* ══ ARTICLE JEU ════════════════════════════════════════════════════════════
    Meme mecanique que « --eau » ci-dessus : une encre et un ton par article,
    poses sur la classe de page. Le vert vient de la rubrique Enrichissement. */
-:root { --art-jeu-encre: #3B5540; --art-jeu: #5E8266; }
 .art-page--jeu .eyebrow { color: var(--art-jeu-encre); background: rgba(59, 85, 64, 0.10); }
 .art-page--jeu .art-sommaire a { border-left-color: rgba(59, 85, 64, 0.22); }
 .art-page--jeu .art-sommaire a:hover { color: var(--art-jeu-encre); border-left-color: var(--art-jeu-encre); }
@@ -1107,14 +1108,13 @@
 /* ══ ARTICLE MYTHES ═════════════════════════════════════════════════════════
    Meme mecanique que « --eau » et « --jeu » : un ton par article, pose sur la
    classe de page. Le vert sauge vient de la rubrique Comportement. */
-:root { --art-mythe: #4A6B58; }
 
-.art-page--mythes .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
-.art-page--mythes .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
-.art-page--mythes .art-sommaire a:hover { color: var(--art-mythe); border-left-color: var(--art-mythe); }
-.art-page--mythes .art-fig-titre { color: var(--art-mythe); }
-.art-page--mythes .art-tab thead th { color: var(--art-mythe); }
-.art-page--mythes .art-tab caption { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt) .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
+:is(.art-page--mythes, .art-page--umwelt) .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
+:is(.art-page--mythes, .art-page--umwelt) .art-sommaire a:hover { color: var(--art-mythe); border-left-color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt) .art-fig-titre { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt) .art-tab thead th { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt) .art-tab caption { color: var(--art-mythe); }
 
 
 /* ── Les deux branches du ronronnement ────────────────────────────────────
@@ -1173,7 +1173,7 @@
 
 /* Le libelle passe par ::before : un lecteur d'ecran ne le reenonce pas
    dix fois avant la phrase. */
-.art-page--mythes .art-verdict {
+:is(.art-page--mythes, .art-page--umwelt) .art-verdict {
   margin: var(--e-bloc) 0;
   padding: 0 0 0 22px;
   border-left: 3px solid var(--art-mythe);
@@ -1181,7 +1181,7 @@
   line-height: 1.6;
   color: var(--deep);
 }
-.art-page--mythes .art-verdict::before {
+:is(.art-page--mythes, .art-page--umwelt) .art-verdict::before {
   content: "Le verdict";
   display: block;
   margin-bottom: 8px;
@@ -1197,6 +1197,55 @@
 .art-page--mythes .art-corps > .art-duo { margin: var(--e-bloc) 0; }
 /* Photo carree : a pleine colonne elle ferait 810 px de haut. */
 .art-page--mythes .art-fig--photo { max-width: 480px; margin-inline: auto; }
+
+/* ══ ARTICLE UMWELT ═════════════════════════════════════════════════════════
+   Meme rubrique que l'article mythes : il reprend son encre et son encart de
+   fin de section par les regles « :is() » ci-dessus. Ne s'ajoute ici que ce
+   qui lui est propre. */
+.art-page--umwelt .art-verdict::before { content: "À retenir"; }
+.art-page--umwelt .art-etapes--suite .step-bubble {
+  border-color: var(--art-mythe);
+  color: var(--art-mythe);
+}
+
+/* Une bande de couleurs n'a pas de valeur a afficher : sa ligne prend la
+   grille des barres, sans la colonne des chiffres. */
+.art-barre--bande { grid-template-columns: minmax(96px, 24%) 1fr; }
+.art-bande { height: 26px; border-radius: 999px; }
+/* Ce que voit un humain, du violet au rouge, sur 400 a 700 nm. La piste part
+   de 350 nm : les 50 premiers nanometres restent vides chez nous. */
+.art-bande--humain {
+  margin-left: 14.29%;
+  background: linear-gradient(90deg, #6A3FB5, #3050D8 17%, #1E9BD0 33%, #2FAE5A 50%, #D8D33A 62%, #EE8A2A 75%, #D8322A 88%, #9E1F1F);
+}
+/* Deux cones au lieu de trois : du bleu au jaune, et une zone neutre vers
+   505 nm que le chat ne distingue pas du blanc. Les hachures a gauche sont
+   les UVA que son cristallin laisse passer, sans preuve qu'il les voie. */
+.art-bande--chat {
+  background:
+    linear-gradient(90deg, transparent 14.29%, #4A58C8 14.29%, #3C62D6 28.57%, #8C97B8 40%, #C9C3B4 44.29%, #CDBF7A 50%, #D4BE4A 58%, #B9A33C 80%, #7E7030),
+    repeating-linear-gradient(135deg, rgba(74, 88, 200, 0.55) 0 4px, transparent 4px 8px);
+}
+/* Graduation sous la derniere piste : les reperes sont en HTML, jamais dans
+   le dessin, pour rester lisibles a toutes les largeurs. Chaque repere est
+   pose a sa valeur, en pourcentage de la piste. */
+.art-axe { position: relative; height: 18px; font-size: 12px; color: var(--muted); font-variant-numeric: var(--chiffres, lining-nums) tabular-nums; }
+.art-axe > span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.art-axe > span:first-child { transform: none; }
+.art-axe > span:last-child { transform: translateX(-100%); }
+.art-barre--axe { margin-top: -6px; }
+/* Cellules et legendes etroites sur telephone : le navigateur equilibre
+   leurs lignes pour qu'aucun mot ne reste seul. */
+.art-page--umwelt :is(.art-tab td, .art-tab th, .art-legende-item) { text-wrap-style: pretty; }
+/* Sur telephone, l'intitule de chaque ligne passe au-dessus, et les deux
+   valeurs comparees se partagent toute la largeur. */
+@media (max-width: 560px) {
+  .art-page--umwelt .art-tab--duel tr { display: grid; grid-template-columns: 1fr 1fr; }
+  .art-page--umwelt .art-tab--duel thead th:first-child { display: none; }
+  .art-page--umwelt .art-tab--duel thead th { width: auto; }
+  .art-page--umwelt .art-tab--duel tbody th { grid-column: 1 / -1; padding-bottom: 6px; }
+  .art-page--umwelt .art-tab--duel tbody tr + tr td { border-top: 0; }
+}
 
 
 /* ══ SUITE D'ETAPES ════════════════════════════════════════════════════════
@@ -1333,7 +1382,7 @@
 .art-etapes--echelle .art-etape {
   position: relative;
   display: block;
-  align-items: center;
+  align-items: start;
   border: 0;
   border-radius: 14px;
   padding: 18px 24px;
@@ -1354,9 +1403,6 @@
 .art-etapes--echelle .art-etape h3 { font-size: 26px !important; margin: 0; }
 .art-etapes--echelle .art-etape h3 span { font-weight: 600; }
 .art-etapes--echelle .art-etape p { margin: 3px 0 0; font-size: 15px; color: var(--mid); }
-/* Le rond se cale sur la ligne de titre, pas sur le milieu du palier : centre,
-   il descendait des que la description prenait une ligne de plus. */
-.art-etapes--echelle .art-etape { align-items: start; }
 
 
 .art-etapes--echelle .art-etape:nth-child(1) { background: rgba(30, 85, 102, 0.08); }
@@ -1494,14 +1540,6 @@
    Sources en 176 px, affichees en 76 : elles restent nettes sur un ecran a
    double densite. Carrees et calees de la meme facon, sans quoi les trois
    n'auraient pas le meme poids optique dans la rangee. */
-.art-etapes--parcours .art-etape .step-bubble {
-  display: flex;
-  align-items: center;
-  /* « .step-bubble » de style.css centre son contenu : ici le chiffre et
-     l'illustration doivent partir du meme bord que le filet et le titre. */
-  justify-content: flex-start;
-  gap: 16px;
-}
 .art-etapes--parcours .art-etape-icone { width: 76px; height: 76px; flex-shrink: 0; }
 
 /* ── Le cycle du jouet ─────────────────────────────────────────────────────
@@ -1843,15 +1881,6 @@
 .cq-mise p{font-size:15px;color:#4A3728;margin-bottom:16px;line-height:1.9}
 .cq-mise p:last-child{margin-bottom:0}
 
-/* ── Bloc final ── */
-.cq-final{text-align:center;background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:44px 32px}
-.cq-final h2{margin-bottom:10px}
-.cq-final h2 em{font-style:italic;font-weight:400;color:#A8472A}
-.cq-final p{font-size:15px;color:#7A6B5E;margin-bottom:26px}
-.cq-final-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center}
-.cq-ghost{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#D4BEA8;transition:color .2s,text-decoration-color .2s}
-.cq-ghost:hover{color:#1E1812;text-decoration-color:#1E1812}
-
 /* ── Mots orphelins ──
    Aucun mot ne doit tomber seul sur sa derniere ligne.
 
@@ -1863,13 +1892,11 @@
 
    « balance » egalise les lignes EN LES RACCOURCISSANT. Sur un paragraphe
    pleine largeur, il ne laisse plus que 56 % et 53 % de remplissage, soit une
-   colonne de blanc a droite qui se voit immediatement. Il est donc reserve au
-   seul bloc final, qui est centre et tient en une phrase courte : la, egaliser
-   est exactement ce qu'on veut. Ne pas l'etendre a un paragraphe courant.
+   colonne de blanc a droite qui se voit immediatement. Il se reserve a un
+   texte centre d'une phrase courte, jamais a un paragraphe courant.
 
    Les navigateurs qui ne connaissent pas ces valeurs les ignorent et coupent
-   comme avant : rien ne casse. C'est pour cela que le texte du bloc final est
-   aussi garde court, la CSS n'est qu'un filet. */
+   comme avant : rien ne casse. */
 .cq-said p,
 .cq-aff p,
 .cq-mise p,
@@ -1879,7 +1906,6 @@
 .cq-asso p,
 .cq-hors p,
 .cq-brand{text-wrap:pretty}
-.cq-final p{text-wrap:balance}
 
 @media (max-width:720px){
   .cq-card{padding:24px 22px}
@@ -1889,10 +1915,7 @@
   .cq-mise{padding:28px 22px}
   .cq-hors{padding:28px 22px}
 .cq-asso{padding:22px 16px}
-  .cq-final{padding:36px 22px}
   .cq-bloc h2,.cq-bloc>p{padding-left:22px;padding-right:22px}
   .cq-actions{flex-direction:column;align-items:stretch}
   .cq-actions .btn-primary{justify-content:center}
-  .cq-final-cta{flex-direction:column;align-items:stretch}
-  .cq-final-cta .btn-primary{justify-content:center}
 }

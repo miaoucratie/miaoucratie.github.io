@@ -58,10 +58,43 @@
       "related": [
         "jeu-chat",
         "ce-que-jutilise",
-        "etiquette-nourriture-chat"
+        "sens-du-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
+    },
+    {
+      "slug": "sens-du-chat",
+      "url": "/sens-du-chat.html",
+      "status": "published",
+      "category": "Comportement",
+      "affiliate": true,
+      "h1": "L'Umwelt du chat, le monde tel qu'il le perçoit",
+      "seoTitle": "Les 5 sens du chat : ce qu'il voit, entend et sent | Miaoucratie",
+      "description": "Le chat voit-il en couleur ? Entend-il mieux que nous ? Ses 5 sens mesurés un par un, et ce que ça change pour lui à la maison.",
+      "ldHeadline": "L'Umwelt du chat, le monde tel qu'il le perçoit",
+      "cardTitle": "L'Umwelt du chat, le monde tel qu'il le perçoit",
+      "cardText": [
+        "Il entend jusqu'à 85&nbsp;kHz, là où l'oreille humaine s'arrête vers 20. Il voit 2&nbsp;couleurs de base au lieu de&nbsp;3, et il n'a aucun capteur du sucré.",
+        "Ce que ses sens captent de votre maison, mesuré un par un, et ce que ça change pour lui au quotidien."
+      ],
+      "cardCta": "Ses 5 sens",
+      "datePublished": "2026-09-21",
+      "dateModified": "2026-09-21",
+      "keywords": [
+        "Umwelt",
+        "sens du chat",
+        "vision du chat",
+        "audition du chat",
+        "odorat du chat"
+      ],
+      "related": [
+        "mythes-chat",
+        "jeu-chat",
+        "hydratation-du-chat"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 2
     },
     {
       "slug": "ce-que-jutilise",
