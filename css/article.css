@@ -1102,12 +1102,6 @@
 .art-page--jeu .art-fig-titre { color: var(--art-jeu-encre); }
 .art-page--jeu .art-tab thead th { color: var(--art-jeu-encre); }
 .art-page--jeu .art-fig .art-part { background: var(--art-jeu); }
-/* Le cercle de « --suite » va chercher l'encre de l'article hydratation :
-   sur cette page, c'est celle du jeu. */
-.art-page--jeu .art-etapes--suite .step-bubble {
-  border-color: var(--art-jeu-encre);
-  color: var(--art-jeu-encre);
-}
 
 
 /* ══ ARTICLE MYTHES ═════════════════════════════════════════════════════════
@@ -1639,32 +1633,6 @@
   }
   .art-cycle-legende::before { content: "\2191\00a0\00a0"; font-size: 17px; }
 }
-
-/* ── Les 6 temps d'une chasse ──────────────────────────────────────────────
-   « .art-etapes--suite » avec 2 reglages : le cercle descend de 92 a 64 px,
-   parce que 6 temps empiles font une hauteur qu'aucun lecteur ne parcourt ;
-   et l'encre passe au vert de la page, la regle de base allant chercher
-   celle de l'article hydratation. */
-.art-etapes--temps { --e-cercle: 64px; gap: 30px; }
-.art-page--jeu .art-etapes--suite .step-bubble {
-  border-color: var(--art-jeu-encre);
-  color: var(--art-jeu-encre);
-}
-
-/* Les valeurs n'ont pas la meme largeur de texte : « reference » est plus long
-   que « -25 % ». Avec une 3e colonne en « auto », chaque ligne calculait sa
-   propre largeur, et les 2 pistes ne faisaient pas la meme longueur : la
-   comparaison etait fausse a l'oeil. Deux barres qu'on compare partagent
-   exactement la meme piste. */
-.art-barres--aligne .art-barre { grid-template-columns: minmax(132px, 22%) 1fr 78px; }
-
-/* ── Une photo dans le cadre de figure ─────────────────────────────────────
-   Meme cadre que les figures de donnees : le lecteur reconnait un bloc qui lui
-   montre quelque chose. Le rembourrage tombe pour que l'image aille d'un bord
-   a l'autre, et le filet de la legende avec : l'image fait deja separation. */
-.art-fig--photo { padding: 0; overflow: hidden; }
-.art-fig--photo img { display: block; width: 100%; height: auto; }
-.art-fig--photo figcaption { margin: 0; padding: 16px 28px 20px; border-top: 0; }
 
 /* ── Les 6 temps d'une chasse ──────────────────────────────────────────────
    « .art-etapes--suite » avec 2 reglages : le cercle descend de 92 a 64 px,
