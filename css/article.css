@@ -1105,16 +1105,17 @@
 .art-page--jeu .art-fig .art-part { background: var(--art-jeu); }
 
 
-/* ══ ARTICLE MYTHES ═════════════════════════════════════════════════════════
-   Meme mecanique que « --eau » et « --jeu » : un ton par article, pose sur la
-   classe de page. Le vert sauge vient de la rubrique Comportement. */
+/* ══ ARTICLES DE LA RUBRIQUE COMPORTEMENT ═══════════════════════════════════
+   Meme mecanique que « --eau » et « --jeu » : un ton par rubrique, pose sur la
+   classe de page. Le vert sauge vient de la rubrique Comportement, que
+   partagent les articles mythes, umwelt et enfants. */
 
-:is(.art-page--mythes, .art-page--umwelt) .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
-:is(.art-page--mythes, .art-page--umwelt) .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
-:is(.art-page--mythes, .art-page--umwelt) .art-sommaire a:hover { color: var(--art-mythe); border-left-color: var(--art-mythe); }
-:is(.art-page--mythes, .art-page--umwelt) .art-fig-titre { color: var(--art-mythe); }
-:is(.art-page--mythes, .art-page--umwelt) .art-tab thead th { color: var(--art-mythe); }
-:is(.art-page--mythes, .art-page--umwelt) .art-tab caption { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants) .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants) .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants) .art-sommaire a:hover { color: var(--art-mythe); border-left-color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants) .art-fig-titre { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants) .art-tab thead th { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants) .art-tab caption { color: var(--art-mythe); }
 
 
 /* ── Les deux branches du ronronnement ────────────────────────────────────
@@ -1142,6 +1143,12 @@
   border-radius: 14px; padding: 12px 10px; margin-bottom: 16px;
 }
 .art-page--mythes .art-schema-svg { display: block; width: 100%; height: auto; }
+/* Schema pose sur une image : l'image reste une <img>, lisible par les moteurs
+   d'images, et les reperes passent sur un calque SVG a la meme echelle. Les
+   coins reprennent le rayon de 40 unites sur 1536 x 1024 du dessin. */
+.art-page--enfants .art-schema-calque { position: relative; aspect-ratio: 1536 / 1024; }
+.art-page--enfants .art-schema-calque > :is(img, svg) { position: absolute; inset: 0; width: 100%; height: 100%; }
+.art-page--enfants .art-schema-calque > img { border-radius: 2.604% / 3.906%; }
 .art-page--mythes .sc-globe { fill: var(--cream); stroke: var(--sand); stroke-width: 2.5; }
 .art-page--mythes .sc-iris { fill: none; stroke: var(--deep); stroke-width: 7; stroke-linecap: round; }
 .art-page--mythes .sc-tapetum { fill: none; stroke: var(--art-mythe); stroke-width: 9; stroke-linecap: round; }
@@ -1194,7 +1201,7 @@
 }
 
 /* Un bloc de cartes suivi d'un paragraphe : les deux se touchaient. */
-.art-page--mythes .art-corps > .art-duo { margin: var(--e-bloc) 0; }
+:is(.art-page--mythes, .art-page--enfants) .art-corps > .art-duo { margin: var(--e-bloc) 0; }
 /* Photo carree : a pleine colonne elle ferait 810 px de haut. */
 .art-page--mythes .art-fig--photo { max-width: 480px; margin-inline: auto; }
 
@@ -1401,23 +1408,25 @@
    taille disent lequel se lit en premier. Le <span> tient la couleur, la
    couche TITLES-V5 imposant la sienne en !important sur le h3 lui-meme. */
 .art-etapes--echelle .art-etape h3 { font-size: 26px !important; margin: 0; }
-.art-etapes--echelle .art-etape h3 span { font-weight: 600; }
+.art-etapes--echelle .art-etape h3 span { font-weight: 600; color: var(--palier); }
 .art-etapes--echelle .art-etape p { margin: 3px 0 0; font-size: 15px; color: var(--mid); }
+/* Plusieurs constats sur un palier : une liste, meme corps que la description,
+   puces a la couleur du palier. Le bas du palier perd l'interligne de la
+   derniere puce pour rester a l'equilibre avec le haut. */
+.art-etapes--echelle .art-etape ul { margin: 8px 0 0; padding-left: 20px; }
+.art-etapes--echelle .art-etape li { margin: 0; font-size: 15px; line-height: 1.7; color: var(--mid); }
+.art-etapes--echelle .art-etape li::marker { color: var(--palier); }
+.art-etapes--echelle .art-etape:has(> ul) { padding-bottom: 13px; }
 
 
-.art-etapes--echelle .art-etape:nth-child(1) { background: rgba(30, 85, 102, 0.08); }
-.art-etapes--echelle .art-etape:nth-child(1) h3 span { color: var(--art-eau-encre); }
-
-.art-etapes--echelle .art-etape:nth-child(2) { background: rgba(74, 107, 88, 0.08); }
-.art-etapes--echelle .art-etape:nth-child(2) h3 span { color: #4A6B58; }
-
-.art-etapes--echelle .art-etape:nth-child(3) { background: rgba(168, 71, 42, 0.08); }
-.art-etapes--echelle .art-etape:nth-child(3) h3 span { color: var(--rust); }
+.art-etapes--echelle .art-etape:nth-child(1) { background: rgba(30, 85, 102, 0.08); --palier: var(--art-eau-encre); }
+.art-etapes--echelle .art-etape:nth-child(2) { background: rgba(74, 107, 88, 0.08); --palier: #4A6B58; }
+.art-etapes--echelle .art-etape:nth-child(3) { background: rgba(168, 71, 42, 0.08); --palier: var(--rust); }
 
 @media (max-width: 720px) {
   .art-etapes--echelle { --e-retrait: 30px; }
   .art-etapes--echelle .art-etape { padding: 16px 18px; }
-
+  .art-etapes--echelle .art-etape:has(> ul) { padding-bottom: 11px; }
 }
 
 /* ══ TROIS PISTES ══════════════════════════════════════════════════════════
