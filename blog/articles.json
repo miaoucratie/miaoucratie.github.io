@@ -64,6 +64,40 @@
       "rang": 1
     },
     {
+      "slug": "enfants-et-chats",
+      "url": "/enfants-et-chats.html",
+      "status": "published",
+      "category": "Comportement",
+      "affiliate": true,
+      "h1": "Enfants et chats, ce que le lien apporte vraiment",
+      "seoTitle": "Enfants et chats : ce que le lien apporte vraiment | Miaoucratie",
+      "description": "Grossesse, allergies, morsures, câlins refusés : ce que les études disent du lien entre un enfant et son chat, et 3 règles pour les aider à s'entendre.",
+      "ldHeadline": "Enfants et chats, ce que le lien apporte vraiment",
+      "cardTitle": "Enfants et chats, ce que le lien apporte vraiment",
+      "cardText": [
+        "Plus l'enfant est petit, moins le chat se montre câlin avec lui. Il a de bonnes raisons, et ça se travaille.",
+        "Grossesse, arrivée du bébé, allergies, caresses&nbsp;: ce que les études disent vraiment, et 3&nbsp;règles pour qu'ils s'entendent."
+      ],
+      "cardCta": "Les 3 règles",
+      "datePublished": "2026-09-22",
+      "dateModified": "2026-09-22",
+      "keywords": [
+        "enfant et chat",
+        "chat et bébé",
+        "chat et grossesse",
+        "toxoplasmose et chat",
+        "allergie au chat chez l'enfant",
+        "où caresser un chat"
+      ],
+      "related": [
+        "mythes-chat",
+        "jeu-chat",
+        "sens-du-chat"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 2
+    },
+    {
       "slug": "sens-du-chat",
       "url": "/sens-du-chat.html",
       "status": "published",
@@ -94,7 +128,7 @@
         "hydratation-du-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
-      "rang": 2
+      "rang": 3
     },
     {
       "slug": "ce-que-jutilise",
@@ -255,7 +289,7 @@
       ],
       "related": [
         "ce-que-jutilise",
-        "hydratation-du-chat",
+        "enfants-et-chats",
         "mythes-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
