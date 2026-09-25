@@ -127,6 +127,7 @@ const PAGES = [
   'etiquette-nourriture-chat.html', 'croquettes-et-patee.html',
   'hydratation-du-chat.html', 'jeu-chat.html', 'mythes-chat.html',
   'sens-du-chat.html', 'enfants-et-chats.html',
+  '404.html',
 ];
 const LARGEURS = [1272, 375];
 
