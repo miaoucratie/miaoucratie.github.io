@@ -354,7 +354,7 @@
     background: linear-gradient(90deg, rgba(200,96,58,0.05), var(--terracotta));
     pointer-events: none;
   }
-  .step { display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1; }
+  .steps-row .step { display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1; }
   /* Pastille teintee, sans anneau ni ombre : l'aplat sombre d'origine etait
      dur, et l'anneau fin qui l'avait remplace laissait le cercle creux. Le
      chiffre passe de 22 a 34px, il se perdait dans un cercle de 72px. */
@@ -397,6 +397,8 @@
   /* Reste sous les titres de section, qui plafonnent a 30px. */
   .cred-name { font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 2vw, 26px); font-weight: 700; color: var(--deep); line-height: 1.1; }
   .cred-role { font-size: 13px; color: var(--mid); font-weight: 500; letter-spacing: 1px; }
+  /* Pastilles empilees a la meme taille : la plus large et la plus haute donnent la mesure. */
+  .cred-badges { display: grid; grid-auto-rows: 1fr; gap: 12px; }
   /* Meme langage que .cred-item : carte blanche, filet terracotta a gauche.
      Cette mention etait la seule etiquette en aplat sombre de la page — 16,5
      de contraste sur un fond creme, elle sautait au visage et introduisait un
