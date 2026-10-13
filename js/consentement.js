@@ -125,6 +125,30 @@
     }
   }
 
+  /* ── Clics de contact ───────────────────────────────────────────────── */
+
+  // Telephone, WhatsApp et e-mail sont des prises de contact au meme titre que
+  // le formulaire. Rien n'est envoye tant que la mesure n'est pas chargee.
+  function moyenDeContact(href) {
+    if (href.indexOf('tel:') === 0) return 'telephone';
+    if (href.indexOf('mailto:') === 0) return 'email';
+    if (href.indexOf('https://wa.me/') === 0) return 'whatsapp';
+    return null;
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!mesureChargee || !e.target.closest) return;
+    var lien = e.target.closest('a[href]');
+    if (!lien) return;
+    var moyen = moyenDeContact(lien.getAttribute('href'));
+    if (!moyen) return;
+    window.gtag('event', 'contact_clic', {
+      moyen: moyen,
+      // Les liens du relais menent a une consoeur, pas a Miaoucratie.
+      destinataire: lien.closest('.relais') ? 'relais' : 'miaoucratie',
+    });
+  });
+
   /* ── Bandeau ────────────────────────────────────────────────────────── */
 
   var STYLE = [
