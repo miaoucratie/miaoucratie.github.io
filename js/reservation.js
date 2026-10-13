@@ -88,6 +88,29 @@ const endDateInput = document.getElementById("dateFin");
 
 init();
 
+/** Envoie un evenement de mesure, si le visiteur a accepte la mesure d'audience. */
+function mesurer(nom, parametres = {}) {
+  if (typeof gtag === "function") {
+    gtag("event", nom, parametres);
+  }
+}
+
+const ETAPES = ["coordonnees", "garde", "observations"];
+const etapesCommencees = new Set();
+
+/* Signale une fois chaque etape du formulaire, a la premiere saisie dedans. */
+function mesurerEtape(field) {
+  const carte = field.closest(".step-card");
+  const etape = ETAPES[[...form.querySelectorAll(".step-card")].indexOf(carte)];
+
+  if (!etape || etapesCommencees.has(etape)) {
+    return;
+  }
+
+  etapesCommencees.add(etape);
+  mesurer("formulaire_etape", { etape });
+}
+
 function init() {
   if (!form) {
     return;
@@ -567,6 +590,8 @@ function attachFieldListeners() {
     field.addEventListener("input", () => {
       const key = toFieldKey(field.name || field.id);
 
+      mesurerEtape(field);
+
       if (key) {
         clearFieldError(key);
       }
@@ -579,6 +604,7 @@ function attachFieldListeners() {
     });
 
     field.addEventListener("change", () => {
+      mesurerEtape(field);
       saveDraft();
     });
   });
@@ -777,8 +803,23 @@ function renderAvailability(start, end) {
   relaisTexte.textContent = typographie(texteRelais(joursCouverts, decouverts, end));
   relaisBloc.hidden = false;
   setSubmitBlocked(joursCouverts === 0);
+  mesurerRelais(start, end, joursCouverts);
 
   return joursCouverts > 0;
+}
+
+let dernierRelaisMesure = "";
+
+/* Signale l'affichage du relais une fois par periode choisie. */
+function mesurerRelais(start, end, joursCouverts) {
+  const periode = `${start}_${end}`;
+
+  if (periode === dernierRelaisMesure) {
+    return;
+  }
+
+  dernierRelaisMesure = periode;
+  mesurer("relais_affiche", { envoi_ferme: joursCouverts === 0 });
 }
 
 /** Ferme l'envoi quand aucun jour n'est couvert, et dit pourquoi. */
@@ -999,7 +1040,10 @@ async function handleSubmit(event) {
   const payload = getFormPayload();
   const validation = validateReservationPayload(payload, state.unavailableRanges);
 
+  mesurer("formulaire_envoi_tente");
+
   if (!validation.isValid) {
+  mesurer("formulaire_erreurs", { champs: Object.keys(validation.errors).join(",") });
   applyErrors(validation.errors);
   focusFirstError(validation.errors);
   return;
@@ -1008,6 +1052,7 @@ async function handleSubmit(event) {
   const hCaptchaResponse = getHCaptchaResponse();
 
   if (isHCaptchaExpected() && !hCaptchaResponse) {
+  mesurer("formulaire_erreurs", { champs: "antispam" });
   showAlert(
     "error",
     "Merci de valider la vérification anti-spam avant d’envoyer votre demande."
@@ -1035,6 +1080,7 @@ setButtonLoading(submitButton, true);
       }
 
       const message = result?.message || "Une erreur est survenue pendant l’envoi. Merci de réessayer.";
+      mesurer("formulaire_erreurs", { champs: `serveur_${response.status}` });
       showAlert("error", message);
       focusFirstError(result?.errors || {});
       return;
