@@ -57,7 +57,7 @@
       ],
       "related": [
         "jeu-chat",
-        "ce-que-jutilise",
+        "enfants-et-chats",
         "sens-du-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
@@ -90,7 +90,7 @@
         "où caresser un chat"
       ],
       "related": [
-        "mythes-chat",
+        "lechage-chat",
         "jeu-chat",
         "sens-du-chat"
       ],
@@ -125,7 +125,7 @@
       "related": [
         "mythes-chat",
         "jeu-chat",
-        "hydratation-du-chat"
+        "lechage-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 3
@@ -290,10 +290,45 @@
       "related": [
         "ce-que-jutilise",
         "enfants-et-chats",
-        "mythes-chat"
+        "lechage-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
+    },
+    {
+      "slug": "lechage-chat",
+      "url": "/lechage-chat.html",
+      "status": "published",
+      "category": "Comportement",
+      "affiliate": true,
+      "h1": "Un chat qui se lèche, ce que ça peut vouloir dire",
+      "seoTitle": "Un chat qui se lèche : ce que ça peut vouloir dire | Miaoucratie",
+      "description": "Toilette, léchage entre chats, main léchée, nez et babines, perte de poils : ce que veut dire le léchage d'un chat, et quand voir le vétérinaire.",
+      "ldHeadline": "Un chat qui se lèche, ce que ça peut vouloir dire",
+      "cardTitle": "Un chat qui se lèche, ce que ça peut vouloir dire",
+      "cardText": [
+        "Il se lèche, vous lèche la main, lèche l'autre chat&nbsp;: le même geste ne veut pas dire la même chose.",
+        "Toilette, tension, douleur, affection&nbsp;: ce que disent les études et les professionnels, et quand voir le vétérinaire."
+      ],
+      "cardCta": "Les 5 repères",
+      "datePublished": "2026-10-18",
+      "dateModified": "2026-10-18",
+      "keywords": [
+        "pourquoi mon chat me lèche",
+        "chat qui se lèche",
+        "chat qui se lèche beaucoup",
+        "chat qui se lèche le nez",
+        "chat qui se lèche les babines",
+        "pourquoi les chats se lèchent entre eux",
+        "chat qui se lèche le derrière"
+      ],
+      "related": [
+        "enfants-et-chats",
+        "sens-du-chat",
+        "ce-que-jutilise"
+      ],
+      "image": "https://miaoucratie.fr/images/lechage-partage.jpg",
+      "rang": 4
     }
   ]
 }
