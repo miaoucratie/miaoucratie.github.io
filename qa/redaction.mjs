@@ -54,6 +54,7 @@ const INTERDIT = [
   [/qui ecrit\s*\?|qui écrit\s*\?/gi, 'Exces de zele, hors sujet'],
   [/la science du chat en clair/gi, 'Presomptueux'],
   [/aucun chat ne sert de test|sert de test/gi, 'Presenter un chat comme servant de test est pejoratif'],
+  [/je ne suis pas psychologue/gi, 'Formulation refusee : on ecrit « ni therapie, ni accompagnement psychologique, ni coaching », point'],
 ];
 
 /* Libelles de bouton.
