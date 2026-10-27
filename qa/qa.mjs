@@ -58,7 +58,7 @@
 import { chromium } from 'playwright';
 import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { extname, join, resolve, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 // Importe pour son effet : le fichier pose son contenu sur globalThis au lieu
@@ -113,22 +113,12 @@ const DETAIL = process.argv.includes('--detail');
  */
 const COMPORTEMENT_SEUL = process.argv.includes('--comportement');
 
-const PAGES = [
-  'index.html', 'tarifs.html', 'faq.html', 'carte.html', 'reservation.html',
-  'presse.html', 'ce-que-jutilise.html', 'cgv.html', 'mentions-legales.html',
-  'calculateur-miaoucratie.html', 'admin-indisponibilites.html',
-  /* alimentation-du-chat.html a ete scindee en deux articles : l'un sur la
-     lecture d'une etiquette, l'autre sur la repartition entre croquettes et
-     patee. La page n'existe plus. */
-  'coulisses-miaoucratie.html',
-  /* Les articles du blog, tous couverts : trois d'entre eux ne l'etaient
-     pas, et une modification de css/article.css passait donc sans empreinte.
-     Ils partagent le meme gabarit, une regression y est invisible autrement. */
-  'etiquette-nourriture-chat.html', 'croquettes-et-patee.html',
-  'hydratation-du-chat.html', 'jeu-chat.html', 'mythes-chat.html',
-  'sens-du-chat.html', 'enfants-et-chats.html', 'lechage-chat.html',
-  '404.html',
-];
+/* Toutes les pages du site, lues dans le dossier comme le font les autres
+   controles : une page ajoutee y entre d'elle-meme. Une page a ne pas
+   mesurer se retire par SANS_EMPREINTE, jamais en l'omettant ici. */
+const PAGES = readdirSync(RACINE)
+  .filter((f) => f.endsWith('.html') && !f.startsWith('maquette-'))
+  .sort();
 const LARGEURS = [1272, 375];
 
 /**
@@ -283,7 +273,7 @@ async function figerApiAdresse(contexte, requetesInconnues) {
  * l'oracle ne doit dependre ni d'un reseau ni d'un etat de navigateur.
  *
  * 1. Un refus est ecrit dans localStorage avant toute navigation. Le bandeau
- *    ne s'affiche donc pas sur les 20 vues, et l'empreinte reste celle d'un
+ *    ne s'affiche donc sur aucune vue, et l'empreinte reste celle d'un
  *    visiteur ayant deja repondu. Sans ca, un composant flottant s'ajoutait a
  *    chaque page et masquait des liens dans les parcours.
  * 2. Toute requete vers Google est interceptee et comptee. Une page qui
