@@ -34,6 +34,10 @@ const STRICT = process.argv.includes('--strict');
 const PAGES = readdirSync(RACINE).filter((f) => f.endsWith('.html')).sort();
 const registre = JSON.parse(readFileSync(join(RACINE, 'blog', 'articles.json'), 'utf8'));
 const PUBLIES = registre.articles.filter((a) => a.status === 'published');
+/* Un article declare avec « related » vide n'a pas de bloc « A lire
+   ensuite ». Il doit alors etre atteint par le lien d'une autre page que
+   lui-meme et que la grille du blog. */
+const SANS_LIES = new Set(PUBLIES.filter((a) => !a.related.length).map((a) => a.url.replace(/^\//, '')));
 
 const lire = (f) => readFileSync(join(RACINE, f), 'utf8');
 const ancresDe = (t) => new Set([...t.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
@@ -144,7 +148,7 @@ for (const page of PAGES) {
   /* 5. « A lire ensuite » : la rangee tient trois colonnes, une page ne se
         cite pas elle-meme, et chaque carte mene quelque part. */
   const bloc = t.match(/<!-- GENERATED:RELATED:START -->([\s\S]*?)<!-- GENERATED:RELATED:END -->/);
-  if (bloc) {
+  if (bloc && !(SANS_LIES.has(page) && !bloc[1].trim())) {
     const cartes = [...bloc[1].matchAll(/<a class="btn-primary" href="([^"]+)"/g)].map((m) => m[1]);
     if (cartes.length !== 3) noter(page, `« A lire ensuite » : ${cartes.length} carte(s), 3 attendues`);
     if (cartes.includes(page)) noter(page, '« A lire ensuite » renvoie vers la page elle-meme');
@@ -154,8 +158,13 @@ for (const page of PAGES) {
 
 /* 6. Personne ne reste hors d'atteinte. */
 const cibles = new Set(PUBLIES.flatMap((a) => a.related));
+const grille = registre.site.blogUrl.replace(/^\//, '');
 for (const a of PUBLIES) {
-  if (!cibles.has(a.slug)) noter('blog/articles.json', `aucune page ne mene a « ${a.slug} »`);
+  if (cibles.has(a.slug)) continue;
+  const f = a.url.replace(/^\//, '');
+  const atteint = SANS_LIES.has(f)
+    && PAGES.some((p) => p !== f && p !== grille && lire(p).includes(`href="${f}"`));
+  if (!atteint) noter('blog/articles.json', `aucune page ne mene a « ${a.slug} »`);
 }
 
 console.log(`\nRenvois — ${PAGES.length} page(s)\n`);

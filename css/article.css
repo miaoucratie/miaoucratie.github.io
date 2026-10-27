@@ -1932,3 +1932,115 @@
   .cq-actions{flex-direction:column;align-items:stretch}
   .cq-actions .btn-primary{justify-content:center}
 }
+
+/* ══ INFOGRAPHIES DU SONDAGE DEUIL ANIMAL ═══════════════════════════════
+   Composants ajoutés pour l'article sondage-deuil-animal.html.
+   Rouille : la part qui compte. Brun : le point de départ ou de comparaison.
+   Sable clair : le reste. Chaque chiffre est écrit en texte : la forme n'est
+   jamais le seul porteur de l'information. */
+
+/* Chiffres en Cormorant : forcer les chiffres alignés. Par défaut, Cormorant
+   dessine des chiffres elzéviriens, et le 3 de "3 sur 4" descend sous la ligne. */
+.sd-chiffre {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rust);
+  font-variant-numeric: lining-nums;
+  font-feature-settings: 'lnum' 1;
+  margin: 0;
+  white-space: nowrap;
+}
+.sd-chiffre small { font-size: 0.5em; font-weight: 600; margin: 0 0.16em; }
+.sd-texte { font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.5; color: var(--mid); margin: 0; }
+.sd-etiquette {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 10px;
+}
+
+/* 1, 3 et 5 : un chiffre seul, son texte, un visuel, groupés au centre */
+.sd-cle { display: grid; grid-template-columns: auto auto auto; justify-content: center; align-items: center; column-gap: 44px; }
+.sd-cle .sd-chiffre { font-size: 80px; }
+.sd-cle .sd-texte { font-size: 18px; color: var(--deep); max-width: 30ch; }
+
+/* Silhouettes (1, 2 et 3) */
+.sd-silhouettes { display: flex; gap: 12px; }
+.sd-silhouettes svg { width: 46px; height: 69px; display: block; }
+.sd-on { fill: var(--rust); }
+.sd-off { fill: var(--light); }
+
+/* Anneau (5) : r = 36, circonférence 226,19 ; 45 % = 101,79 */
+.sd-anneau { width: 96px; height: 96px; display: block; }
+.sd-anneau .piste { fill: none; stroke: var(--warm); stroke-width: 12; }
+.sd-anneau .part { fill: none; stroke: var(--rust); stroke-width: 12; stroke-linecap: butt; }
+
+/* 2 et 8 : deux panneaux côte à côte */
+.sd-duo { display: grid; grid-template-columns: 1fr 1fr; }
+.sd-duo > div { padding: 0 28px; display: flex; flex-direction: column; align-items: flex-start; }
+.sd-duo > div:first-child { padding-left: 0; }
+.sd-duo > div:last-child { padding-right: 0; border-left: 1px solid var(--warm); }
+.sd-duo .sd-chiffre { font-size: 56px; margin-bottom: 8px; }
+.sd-duo .sd-texte { margin-bottom: 20px; max-width: 28ch; }
+.sd-duo .sd-silhouettes, .sd-duo .sd-points, .sd-duo .sd-jauge { margin-top: auto; }
+
+/* Points (2) : 12 colonnes x 5 rangées = 60 */
+.sd-points { display: grid; grid-template-columns: repeat(12, 10px); gap: 7px; }
+.sd-points i { width: 10px; height: 10px; border-radius: 50%; background: var(--light); display: block; }
+.sd-points i.on { background: var(--rust); box-shadow: 0 0 0 3px rgba(168, 71, 42, 0.18); }
+
+/* Jauge (8) : piste pleine = 100 % */
+.sd-jauge { width: 100%; height: 12px; border-radius: 999px; background: var(--warm); overflow: hidden; }
+.sd-jauge span { display: block; height: 100%; border-radius: 999px; background: var(--rust); }
+
+/* 4 : deux colonnes face à face. Chaque colonne a 4 rangées (étiquette,
+   chiffre, 2 citations) partagées par sous-grille : les lignes des deux
+   colonnes restent alignées quelle que soit la longueur des textes. */
+.sd-face { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); }
+.sd-face > div {
+  padding: 0 28px; display: grid; grid-row: span 4; grid-template-rows: subgrid;
+  align-content: start; align-items: start;
+}
+.sd-face > div:first-child { padding-left: 0; }
+.sd-face > div:last-child { padding-right: 0; border-left: 1px solid var(--warm); }
+.sd-citation {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 21px; line-height: 1.35; color: var(--deep);
+  margin: 0 0 14px; padding-left: 14px; border-left: 3px solid var(--rust);
+}
+.sd-face > div:last-child .sd-citation { border-left-color: var(--mid); }
+.sd-compte { margin: 0 0 18px; display: flex; align-items: baseline; gap: 12px; }
+.sd-compte .sd-texte { max-width: 26ch; }
+.sd-compte .sd-chiffre { font-size: 44px; }
+.sd-face > div:last-child .sd-compte .sd-chiffre { color: var(--mid); }
+
+/* 7 : deux chiffres de part et d'autre d'un filet, reliés par une flèche
+   dans une pastille. Chaque bloc prend la largeur de son contenu et le
+   groupe est centré : la pastille est à égale distance des deux. */
+.sd-fleche { display: grid; grid-template-columns: auto 1px auto; justify-content: center; }
+.sd-fleche > div { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.sd-fleche > div:first-child { padding-right: 52px; }
+.sd-fleche > div:last-child { padding-left: 52px; }
+.sd-fleche .sd-chiffre { font-size: 56px; margin-bottom: 8px; }
+.sd-fleche > div:first-child .sd-chiffre { color: var(--mid); }
+.sd-pivot { position: relative; background: var(--warm); }
+/* Pastille centrée sur la ligne des chiffres : étiquette (17 + 10 px) + moitié du chiffre (28 px). */
+.sd-pivot svg {
+  position: absolute; left: 50%; top: 55px; transform: translate(-50%, -50%);
+  width: 52px; height: 52px; padding: 13px; box-sizing: border-box;
+  border-radius: 50%; background: var(--cream); border: 1px solid var(--warm);
+}
+.sd-pivot path { fill: none; stroke: var(--rust); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+@media (max-width: 600px) {
+  .sd-cle { grid-template-columns: 1fr; justify-items: center; text-align: center; row-gap: 18px; }
+  .sd-cle .sd-chiffre { font-size: 64px; }
+  .sd-cle .sd-texte { font-size: 16px; }
+  .sd-duo, .sd-face { grid-template-columns: 1fr; }
+  .sd-duo > div, .sd-face > div { padding: 0; }
+  .sd-duo > div:last-child, .sd-face > div:last-child { border-left: 0; border-top: 1px solid var(--warm); margin-top: 22px; padding-top: 22px; }
+  .sd-duo .sd-chiffre, .sd-fleche .sd-chiffre { font-size: 48px; }
+  .sd-fleche { grid-template-columns: 1fr; }
+  .sd-fleche > div:first-child, .sd-fleche > div:last-child { padding: 0; }
+  .sd-pivot { height: 1px; margin: 44px 0; }
+  .sd-pivot svg { top: 0; transform: translate(-50%, -50%) rotate(90deg); }
+}
