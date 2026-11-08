@@ -556,3 +556,71 @@ describe('routage', () => {
     }
   });
 });
+
+describe('agenda et itinéraire de l appli', () => {
+  test('l agenda exige un jeton', async () => {
+    const reponse = await appeler('/admin/calendar?date=2026-11-09', {
+      environnement: env({ AGENDA_ICAL_URL: 'https://agenda.test/prive.ics' }),
+    });
+    assert.equal(reponse.status, 401);
+  });
+
+  test('sans adresse d agenda configurée, l erreur le dit', async () => {
+    const environnement = env();
+    const jeton = await jetonValide(environnement);
+    const reponse = await appeler('/admin/calendar?date=2026-11-09', {
+      environnement, entetes: { Authorization: `Bearer ${jeton}` },
+    });
+    assert.equal(reponse.status, 500);
+    assert.equal((await reponse.json()).message, 'Agenda non configuré.');
+  });
+
+  test('le calcul d itinéraire exige un jeton', async () => {
+    for (const calcul of ['loop', 'optimize']) {
+      const reponse = await appeler(`/admin/routing/${calcul}`, {
+        methode: 'POST', corps: { addresses: ['Vitré'] },
+        environnement: env({ ADRESSE_DEPART: 'Domagné' }),
+      });
+      assert.equal(reponse.status, 401, calcul);
+    }
+  });
+
+  test('onze étapes sont refusées avant tout appel aux services de cartes', async () => {
+    const environnement = env({ ADRESSE_DEPART: 'Domagné' });
+    const jeton = await jetonValide(environnement);
+    const fetchAvant = globalThis.fetch;
+    let appels = 0;
+    globalThis.fetch = async () => { appels += 1; throw new Error('aucun appel attendu'); };
+    try {
+      const reponse = await appeler('/admin/routing/optimize', {
+        methode: 'POST', corps: { addresses: Array(11).fill('Vitré') },
+        environnement, entetes: { Authorization: `Bearer ${jeton}` },
+      });
+      assert.equal(reponse.status, 400);
+      assert.equal((await reponse.json()).message, 'Maximum 10 étapes par tournée.');
+      assert.equal(appels, 0);
+    } finally {
+      globalThis.fetch = fetchAvant;
+    }
+  });
+
+  test('sans adresse de départ configurée, l erreur le dit', async () => {
+    const environnement = env();
+    const jeton = await jetonValide(environnement);
+    const reponse = await appeler('/admin/routing/loop', {
+      methode: 'POST', corps: { addresses: ['Vitré'] },
+      environnement, entetes: { Authorization: `Bearer ${jeton}` },
+    });
+    assert.equal(reponse.status, 500);
+    assert.equal((await reponse.json()).message, 'Adresse de départ non configurée.');
+  });
+});
+
+describe('état public de l agenda', () => {
+  test('sans adresse configurée, il répond non, sans jeton ni erreur serveur', async () => {
+    const reponse = await appeler('/public/agenda-etat');
+    assert.equal(reponse.status, 200);
+    assert.deepEqual(await reponse.json(), { ok: false, raison: 'NON_CONFIGURE' });
+  });
+});
+

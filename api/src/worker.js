@@ -5,6 +5,14 @@ import {
   validateReservationPayload,
   validateUnavailabilityPayload,
 } from "../../shared/booking-utils.js";
+import { ErreurAgenda, aujourdhuiAParis, etatAgenda, evenementsDuJour } from "./agenda.js";
+import {
+  ErreurAdresse,
+  ErreurTrajet,
+  boucle,
+  erreurEtapes,
+  meilleurOrdre,
+} from "./itineraire.js";
 
 const JSON_HEADERS = {
   "Content-Type": "application/json; charset=utf-8",
@@ -101,6 +109,22 @@ export default {
       if (updateMatch && request.method === "DELETE") {
         await assertAdmin(request, env);
         return await handleDeleteUnavailability(request, env, Number(updateMatch[1]));
+      }
+
+      if (url.pathname === "/public/agenda-etat" && request.method === "GET") {
+        return await handleEtatAgenda(request, env);
+      }
+
+      if (url.pathname === "/admin/calendar" && request.method === "GET") {
+        await assertAdmin(request, env);
+        return await handleAgenda(request, env, url);
+      }
+
+      const itineraireMatch = url.pathname.match(/^\/admin\/routing\/(loop|optimize)$/);
+
+      if (itineraireMatch && request.method === "POST") {
+        await assertAdmin(request, env);
+        return await handleItineraire(request, env, itineraireMatch[1]);
       }
 
       return jsonResponse({ message: "Route introuvable." }, 404, request, env);
@@ -346,6 +370,75 @@ async function handleDeleteUnavailability(request, env, id) {
     request,
     env
   );
+}
+
+/** Agenda du jour de l'appli, lu dans l'agenda Google privé. */
+async function handleAgenda(request, env, url) {
+  if (!env.AGENDA_ICAL_URL) {
+    throw new HttpError(500, "Agenda non configuré.");
+  }
+
+  const date = url.searchParams.get("date") || aujourdhuiAParis();
+
+  try {
+    const events = await evenementsDuJour(env.AGENDA_ICAL_URL, date);
+    return jsonResponse({ date, events }, 200, request, env);
+  } catch (error) {
+    if (error instanceof ErreurAgenda && error.code === "DATE_INVALIDE") {
+      throw new HttpError(400, "Date invalide (format attendu : AAAA-MM-JJ).");
+    }
+    if (error instanceof ErreurAgenda && error.code === "AGENDA_ILLISIBLE") {
+      throw new HttpError(502, "Agenda illisible. Réessayez.");
+    }
+    throw new HttpError(502, "Agenda injoignable. Réessayez.");
+  }
+}
+
+/** L'agenda est-il joignable ? Oui ou non, sans rien de son contenu. */
+async function handleEtatAgenda(request, env) {
+  if (!env.AGENDA_ICAL_URL) {
+    return jsonResponse({ ok: false, raison: "NON_CONFIGURE" }, 200, request, env);
+  }
+
+  try {
+    return jsonResponse(await etatAgenda(env.AGENDA_ICAL_URL), 200, request, env);
+  } catch (error) {
+    const raison = error instanceof ErreurAgenda ? error.code : "ERREUR";
+    return jsonResponse({ ok: false, raison }, 200, request, env);
+  }
+}
+
+/**
+ * Tournée de l'appli : distance de la boucle dans l'ordre donné (`loop`), ou
+ * meilleur ordre de passage (`optimize`). Le point de départ et d'arrivée est
+ * fixé côté serveur, jamais envoyé par l'appli.
+ */
+async function handleItineraire(request, env, calcul) {
+  const payload = await parseJson(request);
+  const adresses = payload?.addresses;
+  const invalide = erreurEtapes(adresses);
+
+  if (invalide) {
+    throw new HttpError(400, invalide);
+  }
+  if (!env.ADRESSE_DEPART) {
+    throw new HttpError(500, "Adresse de départ non configurée.");
+  }
+
+  try {
+    const resultat = calcul === "loop"
+      ? await boucle(env.ADRESSE_DEPART, adresses)
+      : await meilleurOrdre(env.ADRESSE_DEPART, adresses);
+    return jsonResponse(resultat, 200, request, env);
+  } catch (error) {
+    if (error instanceof ErreurAdresse) {
+      throw new HttpError(422, `Adresse introuvable : "${error.adresse}".`);
+    }
+    if (error instanceof ErreurTrajet) {
+      throw new HttpError(422, error.message);
+    }
+    throw new HttpError(502, "Calcul d'itinéraire impossible pour le moment.");
+  }
 }
 
 /* Le calendrier du site n'a besoin que des dates : `datesSeules` laisse le
