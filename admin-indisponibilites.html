@@ -101,8 +101,8 @@
     }
 
     body.admin-reservation-page .admin-grid {
-      max-width: 42rem;
-      margin: 0 auto;
+      max-width: 44rem;
+      margin: 0;
       grid-template-columns: minmax(0, 1fr);
     }
 
@@ -172,7 +172,7 @@
             </form>
           </div>
 
-          <div class="admin-panel" id="management-panel" hidden>
+          <div class="admin-gestion" id="management-panel" hidden>
             <div class="admin-panel__toolbar">
               <div>
                 <p class="step-card__eyebrow">Calendrier public</p>
@@ -230,15 +230,14 @@
               <div id="period-list" class="period-list" aria-live="polite">
                 <p class="empty-state">Aucune indisponibilité enregistrée pour le moment.</p>
               </div>
+
+              <details class="period-archive" id="period-archive" hidden>
+                <summary>Périodes passées <span data-nombre></span></summary>
+                <div class="period-list"></div>
+              </details>
             </div>
 
-            <!--
-              Les demandes de réservation étaient enregistrées sans que rien ne
-              permette de les relire : le seul e-mail qui prévient part du
-              navigateur du visiteur, et son échec passait inaperçu. Cette
-              liste est la vue de secours — elle montre tout ce qui est arrivé,
-              e-mail parti ou non.
-            -->
+            <!-- Demandes de réservation reçues ces 30 derniers jours, en lecture seule. -->
             <div class="period-list-card">
               <div class="period-list-card__header">
                 <h3>Demandes de réservation</h3>

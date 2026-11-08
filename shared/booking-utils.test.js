@@ -32,6 +32,8 @@ import {
   validateUnavailabilityPayload,
   formatDateFr,
   buildReservationSubject,
+  separerPassees,
+  demandesRecentes,
 } from './booking-utils.js';
 
 /** Demande valide de reference : chaque test n'en modifie qu'un aspect. */
@@ -401,5 +403,53 @@ describe('objet du message', () => {
     assert.match(sujet, /Durand/);
     assert.match(sujet, /2030-07-10/);
     assert.match(sujet, /2030-07-18/);
+  });
+});
+
+describe('tri de l ecran d administration', () => {
+  const jour = '2026-11-08';
+
+  test('une periode qui finit aujourd hui est encore a venir', () => {
+    const { aVenir, passees } = separerPassees([
+      { startDate: '2026-11-01', endDate: '2026-11-08' },
+      { startDate: '2026-11-01', endDate: '2026-11-07' },
+    ], jour);
+    assert.deepEqual(aVenir.map((p) => p.endDate), ['2026-11-08']);
+    assert.deepEqual(passees.map((p) => p.endDate), ['2026-11-07']);
+  });
+
+  test('a venir : la plus proche d abord ; passees : la plus recente d abord', () => {
+    const { aVenir, passees } = separerPassees([
+      { startDate: '2027-02-15', endDate: '2027-02-22' },
+      { startDate: '2026-07-01', endDate: '2026-07-14' },
+      { startDate: '2026-12-24', endDate: '2026-12-26' },
+      { startDate: '2026-08-10', endDate: '2026-08-20' },
+    ], jour);
+    assert.deepEqual(aVenir.map((p) => p.startDate), ['2026-12-24', '2027-02-15']);
+    assert.deepEqual(passees.map((p) => p.startDate), ['2026-08-10', '2026-07-01']);
+  });
+
+  const maintenant = new Date('2026-11-08T09:00:00Z');
+  const recue = (id, soumiseLe) => ({ id, soumiseLe });
+
+  test('seules les demandes des 30 derniers jours restent, la plus recente d abord', () => {
+    const liste = demandesRecentes([
+      recue('octobre', '2026-10-28 21:04:33'),
+      recue('mai', '2026-05-15 10:00:00'),
+      recue('hier', '2026-11-07 18:42:10'),
+    ], maintenant);
+    assert.deepEqual(liste.map((d) => d.id), ['hier', 'octobre']);
+  });
+
+  test('la limite est a 30 jours pile, heure comprise', () => {
+    const liste = demandesRecentes([
+      recue('dedans', '2026-10-09 09:00:00'),
+      recue('dehors', '2026-10-09 08:59:59'),
+    ], maintenant);
+    assert.deepEqual(liste.map((d) => d.id), ['dedans']);
+  });
+
+  test('une date de reception illisible est gardee', () => {
+    assert.equal(demandesRecentes([recue('sans-date', '')], maintenant).length, 1);
   });
 });
