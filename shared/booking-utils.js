@@ -383,3 +383,37 @@ export function buildReservationSubject(payload) {
   const sanitized = sanitizeReservationPayload(payload);
   return `Nouvelle demande de réservation – ${sanitized.prenom} ${sanitized.nom} – ${sanitized.dateDebut} au ${sanitized.dateFin}`;
 }
+
+/* Separe ce qui reste a venir de ce qui est termine a la date du jour, borne
+   de fin incluse. A venir : le plus proche d'abord. Termine : le plus recent
+   d'abord. */
+export function separerPassees(elements = [], aujourdhui = todayIso(), { debut = "startDate", fin = "endDate" } = {}) {
+  const aVenir = [];
+  const passees = [];
+
+  for (const element of elements) {
+    (String(element?.[fin] ?? "") >= aujourdhui ? aVenir : passees).push(element);
+  }
+
+  aVenir.sort((a, b) => String(a[debut]).localeCompare(String(b[debut])));
+  passees.sort((a, b) => String(b[debut]).localeCompare(String(a[debut])));
+  return { aVenir, passees };
+}
+
+/* Demandes recues depuis `jours` jours, la plus recente d'abord. Une date de
+   reception illisible est gardee : mieux vaut une demande de trop qu'une
+   demande manquee. */
+export function demandesRecentes(demandes = [], maintenant = new Date(), jours = 30) {
+  const limite = maintenant.getTime() - jours * 86400000;
+  const recue = (demande) => dateHeureD1(demande?.soumiseLe).getTime();
+
+  return demandes
+    .filter((demande) => !(recue(demande) < limite))
+    .sort((a, b) => (recue(b) || 0) - (recue(a) || 0));
+}
+
+/* « 2026-08-17 21:04:33 » tel que le rend D1, en heure UTC. */
+export function dateHeureD1(valeur = "") {
+  const texte = String(valeur ?? "");
+  return new Date(texte.replace(" ", "T") + (texte.endsWith("Z") ? "" : "Z"));
+}

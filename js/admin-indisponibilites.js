@@ -1,8 +1,13 @@
 import {
+  dateHeureD1,
+  demandesRecentes,
   formatDateFr,
   isoFromDate,
   normalizeDateInput,
   sanitizeUnavailabilityPayload,
+  separerPassees,
+  toDate,
+  todayIso,
   validateUnavailabilityPayload,
 } from "../shared/booking-utils.js";
 
@@ -20,6 +25,18 @@ const ENDPOINTS = {
 /** Statut pose par le navigateur du visiteur quand l'e-mail n'est pas parti. */
 const STATUT_NOTIFICATION_ECHOUEE = "notification_echouee";
 
+/** Les demandes servent de controle : seules les plus recentes s'affichent. */
+const JOURS_DEMANDES = 30;
+
+/** « sam. 20 déc. 2026 » : le jour de la semaine compte pour organiser une garde. */
+const FORMAT_JOUR = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
 const SESSION_KEY = "miaoucratie:reservation:admin-token:v1";
 
 const loginPanel = document.getElementById("login-panel");
@@ -35,6 +52,7 @@ const logoutButton = document.getElementById("logout-button");
 const cancelEditButton = document.getElementById("cancel-edit-button");
 const periodList = document.getElementById("period-list");
 const periodCount = document.getElementById("period-count");
+const periodArchive = document.getElementById("period-archive");
 const demandeList = document.getElementById("demande-list");
 const demandeCount = document.getElementById("demande-count");
 const formTitle = document.getElementById("admin-form-title");
@@ -199,55 +217,43 @@ async function loadPeriods(silent = false) {
 }
 
 function renderPeriods(periods = []) {
-  periodList.innerHTML = "";
+  const { aVenir, passees } = separerPassees(periods, todayIso());
+  const pluriel = aVenir.length > 1 ? "s" : "";
 
-  if (!periods.length) {
-    periodCount.textContent = "0 période enregistrée";
-    periodList.innerHTML = '<p class="empty-state">Aucune indisponibilité enregistrée pour le moment.</p>';
-    return;
-  }
+  periodCount.textContent = periods.length
+    ? `${aVenir.length} période${pluriel} à venir`
+    : "0 période enregistrée";
 
-  periodCount.textContent = `${periods.length} période${periods.length > 1 ? "s" : ""} enregistrée${periods.length > 1 ? "s" : ""}`;
+  remplirListe(
+    periodList,
+    aVenir.map(creerCartePeriode),
+    periods.length ? "Aucune indisponibilité à venir." : "Aucune indisponibilité enregistrée pour le moment."
+  );
+  remplirArchive(periodArchive, passees.map(creerCartePeriode));
+}
 
-  periods.forEach((period) => {
-    const card = document.createElement("article");
-    card.className = "period-card";
+function creerCartePeriode(period) {
+  const card = element("article", "period-card");
+  const actions = element("div", "period-card__actions");
 
-    const dates = document.createElement("p");
-    dates.className = "period-card__dates";
-    dates.textContent = `${formatDateFr(period.startDate)} → ${formatDateFr(period.endDate)}`;
-
-    const comment = document.createElement("p");
-    comment.className = "period-card__comment";
-    comment.textContent = period.comment || "Aucun commentaire";
-
-    const actions = document.createElement("div");
-    actions.className = "period-card__actions";
-
-    const editButton = document.createElement("button");
-    editButton.type = "button";
-    editButton.className = "button button--secondary";
-    editButton.textContent = "Modifier";
-    editButton.addEventListener("click", () => populatePeriodForm(period));
-
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.className = "button button--ghost";
-    deleteButton.textContent = "Supprimer";
-    deleteButton.addEventListener("click", () => handleDeletePeriod(period));
-
-    actions.append(editButton, deleteButton);
-    card.append(dates, comment, actions);
-    periodList.append(card);
-  });
+  actions.append(
+    bouton("Modifier", "button--secondary", () => populatePeriodForm(period)),
+    bouton("Supprimer", "button--ghost", () => handleDeletePeriod(period))
+  );
+  card.append(
+    element("p", "period-card__dates", formatPeriode(period.startDate, period.endDate)),
+    element("p", "period-card__comment", period.comment || "Aucun commentaire"),
+    actions
+  );
+  return card;
 }
 
 /**
- * Charge les demandes de reservation enregistrees.
+ * Charge les demandes de reservation recues ces derniers jours, en lecture
+ * seule : de quoi verifier qu'aucune n'a ete manquee.
  *
- * Silencieux par construction : c'est une vue de secours, elle ne doit pas
- * masquer le retour de la gestion des indisponibilites, qui est la raison
- * d'etre de la page. Un echec s'affiche dans la liste elle-meme.
+ * Silencieux quand tout va bien : le retour en haut de page reste celui des
+ * indisponibilites. Un echec s'affiche dans la carte des demandes.
  */
 async function loadDemandes() {
   if (!state.token || !demandeList) {
@@ -275,90 +281,135 @@ async function loadDemandes() {
 
     renderDemandes(Array.isArray(result?.demandes) ? result.demandes : []);
   } catch (error) {
-    demandeList.innerHTML = "";
-    const echec = document.createElement("p");
-    echec.className = "empty-state";
-    echec.textContent = error.message || "Chargement des demandes impossible.";
-    demandeList.append(echec);
+    remplirListe(demandeList, [], error.message || "Chargement des demandes impossible.");
   }
 }
 
 function renderDemandes(demandes = []) {
-  demandeList.innerHTML = "";
+  const recentes = demandesRecentes(demandes, new Date(), JOURS_DEMANDES);
+  const enAlerte = recentes.filter((d) => d.statut === STATUT_NOTIFICATION_ECHOUEE).length;
+  const pluriel = recentes.length > 1 ? "s" : "";
 
-  if (!demandes.length) {
-    demandeCount.textContent = "0 demande enregistrée";
-    demandeList.innerHTML = '<p class="empty-state">Aucune demande enregistrée pour le moment.</p>';
+  demandeCount.textContent = `${recentes.length} demande${pluriel} reçue${pluriel} en ${JOURS_DEMANDES}\u00a0jours${
+    enAlerte ? ` · ${enAlerte} sans e-\u2060mail de notification` : ""
+  }`;
+
+  remplirListe(
+    demandeList,
+    recentes.map(creerCarteDemande),
+    `Aucune demande reçue ces ${JOURS_DEMANDES}\u00a0derniers jours.`
+  );
+}
+
+function creerCarteDemande(demande) {
+  const card = element("article", "period-card demande-card");
+
+  if (demande.statut === STATUT_NOTIFICATION_ECHOUEE) {
+    card.append(element(
+      "p",
+      "demande-card__alerte",
+      "⚠ L’e-mail de notification n’est pas parti : cette demande n’a peut-être jamais été vue."
+    ));
+  }
+
+  const tete = element("div", "demande-card__tete");
+  tete.append(
+    element("h4", "demande-card__nom", `${demande.prenom || ""} ${demande.nom || ""}`.trim()),
+    element("p", "period-card__dates", formatPeriode(demande.dateDebut, demande.dateFin)),
+    element("p", "demande-card__recue", `Reçue le ${formatDateHeure(demande.soumiseLe).replace(" à ", " à\u00a0")}`)
+  );
+  card.append(tete);
+
+  const chats = Number(demande.nombreChats) || 0;
+  const infos = element("dl", "demande-card__infos");
+  ajouterInfo(infos, "Commune", demande.commune);
+  ajouterInfo(infos, "Chats", String(chats));
+  ajouterInfo(
+    infos,
+    "Visites",
+    demande.frequence === "autre" ? demande.frequenceAutre || "autre besoin" : demande.frequence,
+    "double"
+  );
+  ajouterInfo(infos, "Contact", liensContact(demande), "large");
+  ajouterInfo(infos, "Observations", demande.observations, "large");
+  card.append(infos);
+
+  return card;
+}
+
+/* largeur : "large" occupe toute la ligne, "double" deux colonnes. */
+function ajouterInfo(liste, intitule, valeur, largeur = "") {
+  const vide = valeur instanceof Node ? !valeur.childNodes.length : !valeur;
+  if (vide) {
     return;
   }
 
-  const nonNotifiees = demandes.filter((d) => d.statut === STATUT_NOTIFICATION_ECHOUEE).length;
-  const pluriel = demandes.length > 1 ? "s" : "";
-  demandeCount.textContent = nonNotifiees
-    ? `${demandes.length} demande${pluriel} · ${nonNotifiees} sans e-mail de notification`
-    : `${demandes.length} demande${pluriel} enregistrée${pluriel}`;
+  const ligne = element("div", `demande-card__info${largeur ? ` demande-card__info--${largeur}` : ""}`);
+  const dd = element("dd");
+  dd.append(valeur);
+  ligne.append(element("dt", "", intitule), dd);
+  liste.append(ligne);
+}
 
-  demandes.forEach((demande) => {
-    const card = document.createElement("article");
-    card.className = "period-card";
+function liensContact(demande) {
+  const contact = element("span", "demande-card__contact");
 
-    if (demande.statut === STATUT_NOTIFICATION_ECHOUEE) {
-      const alerte = document.createElement("p");
-      alerte.className = "period-card__comment";
-      alerte.textContent = "⚠ L’e-mail de notification n’est pas parti : cette demande n’a peut-être jamais été vue.";
-      card.append(alerte);
-    }
-
-    const dates = document.createElement("p");
-    dates.className = "period-card__dates";
-    dates.textContent = `${formatDateFr(demande.dateDebut)} → ${formatDateFr(demande.dateFin)}`;
-    card.append(dates);
-
-    const identite = document.createElement("p");
-    identite.className = "period-card__comment";
-    const chats = Number(demande.nombreChats) || 0;
-    identite.textContent = [
-      `${demande.prenom} ${demande.nom}`.trim(),
-      demande.commune,
-      `${chats} chat${chats > 1 ? "s" : ""}`,
-      demande.frequence === "autre" ? demande.frequenceAutre || "autre besoin" : demande.frequence,
-    ].filter(Boolean).join(" · ");
-    card.append(identite);
-
-    const contact = document.createElement("p");
-    contact.className = "period-card__comment";
-    [
-      demande.telephone && { texte: demande.telephone, href: `tel:${demande.telephone.replace(/\s+/g, "")}` },
-      demande.whatsapp && { texte: `WhatsApp ${demande.whatsapp}`, href: `https://wa.me/${demande.whatsapp.replace(/\D/g, "")}` },
-      demande.email && { texte: demande.email, href: `mailto:${demande.email}` },
-    ].filter(Boolean).forEach((lien, index) => {
-      if (index) contact.append(" · ");
-      const a = document.createElement("a");
-      a.href = lien.href;
-      a.textContent = lien.texte;
-      contact.append(a);
-    });
-    card.append(contact);
-
-    if (demande.observations) {
-      const observations = document.createElement("p");
-      observations.className = "period-card__comment";
-      observations.textContent = demande.observations;
-      card.append(observations);
-    }
-
-    const recue = document.createElement("p");
-    recue.className = "period-card__comment";
-    recue.textContent = `Reçue le ${formatDateHeure(demande.soumiseLe)}`;
-    card.append(recue);
-
-    demandeList.append(card);
+  [
+    demande.telephone && { texte: demande.telephone, href: `tel:${demande.telephone.replace(/\s+/g, "")}` },
+    demande.whatsapp && { texte: `WhatsApp ${demande.whatsapp}`, href: `https://wa.me/${demande.whatsapp.replace(/\D/g, "")}` },
+    demande.email && { texte: demande.email, href: `mailto:${demande.email}` },
+  ].filter(Boolean).forEach((lien) => {
+    const a = element("a", "", lien.texte);
+    a.href = lien.href;
+    contact.append(a);
   });
+
+  return contact;
+}
+
+/* Une liste et son message quand elle est vide. */
+function remplirListe(liste, cartes, messageVide) {
+  liste.replaceChildren(...(cartes.length ? cartes : [element("p", "empty-state", messageVide)]));
+}
+
+/* Les periodes terminees, repliees sous la liste, avec leur nombre. */
+function remplirArchive(archive, cartes) {
+  archive.hidden = !cartes.length;
+  archive.querySelector("[data-nombre]").textContent = `(${cartes.length})`;
+  archive.querySelector(".period-list").replaceChildren(...cartes);
+}
+
+function element(tag, className = "", texte) {
+  const noeud = document.createElement(tag);
+  if (className) {
+    noeud.className = className;
+  }
+  if (texte !== undefined) {
+    noeud.textContent = texte;
+  }
+  return noeud;
+}
+
+function bouton(texte, variante, onClick) {
+  const noeud = element("button", `button ${variante}`, texte);
+  noeud.type = "button";
+  noeud.addEventListener("click", onClick);
+  return noeud;
+}
+
+/* Insecables : une date ne se coupe jamais, la ligne ne passe qu'apres la fleche. */
+function formatJour(valeur) {
+  const date = toDate(valeur);
+  return (date ? FORMAT_JOUR.format(date) : String(valeur || "")).replace(/ /g, "\u00a0");
+}
+
+function formatPeriode(debut, fin) {
+  return `${formatJour(debut)}\u00a0→ ${formatJour(fin)}`;
 }
 
 /** « 2026-08-17 21:04:33 » tel que le rend D1, en date lisible. */
 function formatDateHeure(valeur = "") {
-  const date = new Date(String(valeur).replace(" ", "T") + (String(valeur).endsWith("Z") ? "" : "Z"));
+  const date = dateHeureD1(valeur);
 
   if (!Number.isFinite(date.getTime())) {
     return valeur || "date inconnue";
