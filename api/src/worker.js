@@ -226,15 +226,83 @@ async function handlePublicReservation(request, env) {
  * constate l'echec, et il n'a aucun jeton. Elle ne peut que faire passer une
  * demande de « recue » a « notification echouee », donc la rendre plus
  * visible dans l'administration. Une demande deja traitee n'est pas touchee.
+ *
+ * Au premier signalement, la demande part aussi vers le relais de secours
+ * (MAKE_WEBHOOK_URL), qui cree la fiche du CRM et envoie l'e-mail a sa place.
+ * Un second signalement de la meme demande ne la renvoie pas.
  */
 async function handleNotificationEchouee(request, env, reservationId) {
-  await env.DB.prepare(
+  const result = await env.DB.prepare(
     "UPDATE reservation_requests SET status = ? WHERE id = ? AND status = ?"
   )
     .bind(STATUT_NOTIFICATION_ECHOUEE, reservationId, STATUT_RECUE)
     .run();
 
+  if (Number(result?.meta?.changes) > 0 && env.MAKE_WEBHOOK_URL) {
+    await relayerDemande(env, reservationId);
+  }
+
   return jsonResponse({ message: "Signalement enregistré." }, 200, request, env);
+}
+
+/**
+ * Envoie une demande au relais de secours, avec les memes champs que l'e-mail
+ * du formulaire. Sans effet sur la reponse : si le relais ne repond pas, la
+ * demande reste signalee dans l'administration.
+ */
+async function relayerDemande(env, reservationId) {
+  const demande = await env.DB.prepare(
+    `
+      SELECT id, submitted_at, nom, prenom, telephone, whatsapp, email, commune,
+        commune_code_postal, nombre_chats, date_debut, date_fin, frequence,
+        frequence_autre, observations
+      FROM reservation_requests
+      WHERE id = ?
+    `
+  )
+    .bind(reservationId)
+    .first();
+
+  if (!demande) {
+    return;
+  }
+
+  const frequence =
+    demande.frequence === "autre"
+      ? `Autre besoin à préciser${demande.frequence_autre ? ` : ${demande.frequence_autre}` : ""}`
+      : demande.frequence;
+
+  const recueLe = new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "full",
+    timeStyle: "short",
+    timeZone: "Europe/Paris",
+  }).format(new Date(`${String(demande.submitted_at).replace(" ", "T")}Z`));
+
+  try {
+    await fetch(env.MAKE_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nom: demande.nom,
+        prenom: demande.prenom,
+        email: demande.email,
+        telephone: demande.telephone,
+        whatsapp: demande.whatsapp || "Non renseigné",
+        commune: demande.commune,
+        commune_code_postal: demande.commune_code_postal || "",
+        nombre_chats: Number(demande.nombre_chats),
+        date_debut: demande.date_debut,
+        date_fin: demande.date_fin,
+        frequence,
+        observations: demande.observations || "",
+        submitted_at: recueLe,
+        reservation_id: demande.id,
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch {
+    // Le statut « notification echouee » suffit a la retrouver.
+  }
 }
 
 async function handleAdminLogin(request, env) {

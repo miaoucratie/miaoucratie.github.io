@@ -25,6 +25,7 @@ const MOT_DE_PASSE = 'mot-de-passe-de-test';
  */
 function fausseBase({
   indisponibilites = [], envoisRecents = 0, echecsConnexionRecents = 0, demandes = [],
+  lignesModifiees = 1, demandeEnregistree = null,
 } = {}) {
   const insertions = [];
   const lectures = [];
@@ -52,11 +53,12 @@ function fausseBase({
           }
           if (sql.includes('COUNT(*)')) return { count: envoisRecents };
           if (sql.includes('unavailability_periods')) return indisponibilites[0] ?? null;
+          if (sql.includes('FROM reservation_requests') && sql.includes('WHERE id = ?')) return demandeEnregistree;
           return null;
         },
         async run() {
           insertions.push({ sql, valeurs });
-          return { success: true, meta: { last_row_id: 1 } };
+          return { success: true, meta: { last_row_id: 1, changes: lignesModifiees } };
         },
       };
       return api;
@@ -520,6 +522,74 @@ describe('signalement d une notification non partie', () => {
     const { sql, valeurs } = environnement.DB.insertions[0];
     assert.match(sql, /WHERE id = \? AND status = \?/);
     assert.deepEqual(valeurs, ['notification_echouee', ID, 'received']);
+  });
+
+  const DEMANDE = {
+    id: ID, submitted_at: '2026-11-09 17:08:15', nom: 'Martin', prenom: 'Claire',
+    telephone: '0612345678', whatsapp: '', email: 'claire@example.fr',
+    commune: 'Domagné (35113)', commune_code_postal: '35113', nombre_chats: 2,
+    date_debut: '2026-12-26', date_fin: '2026-12-31', frequence: 'autre',
+    frequence_autre: '2 visites le samedi', observations: 'Deux chats\ntrès câlins',
+  };
+
+  /** Remplace fetch le temps d'un appel et rend les envois captés. */
+  async function avecRelais(environnement, reponseRelais = async () => new Response('Accepted')) {
+    const envois = [];
+    const fetchAvant = globalThis.fetch;
+    globalThis.fetch = async (url, options) => { envois.push({ url, options }); return reponseRelais(); };
+    try {
+      const reponse = await appeler(`/public/reservations/${ID}/notification-echouee`, {
+        methode: 'POST', environnement,
+      });
+      return { reponse, envois };
+    } finally {
+      globalThis.fetch = fetchAvant;
+    }
+  }
+
+  test('au premier signalement, la demande part vers le relais avec les champs du formulaire', async () => {
+    const environnement = env({
+      DB: fausseBase({ demandeEnregistree: DEMANDE }),
+      MAKE_WEBHOOK_URL: 'https://relais.test/abc',
+    });
+    const { reponse, envois } = await avecRelais(environnement);
+    assert.equal(reponse.status, 200);
+    assert.equal(envois.length, 1);
+    assert.equal(envois[0].url, 'https://relais.test/abc');
+    assert.deepEqual(JSON.parse(envois[0].options.body), {
+      nom: 'Martin', prenom: 'Claire', email: 'claire@example.fr', telephone: '0612345678',
+      whatsapp: 'Non renseigné', commune: 'Domagné (35113)', commune_code_postal: '35113',
+      nombre_chats: 2, date_debut: '2026-12-26', date_fin: '2026-12-31',
+      frequence: 'Autre besoin à préciser : 2 visites le samedi',
+      observations: 'Deux chats\ntrès câlins',
+      submitted_at: 'lundi 9 novembre 2026 à 18:08',
+      reservation_id: ID,
+    });
+  });
+
+  test('une demande deja signalee ne repart pas', async () => {
+    const environnement = env({
+      DB: fausseBase({ demandeEnregistree: DEMANDE, lignesModifiees: 0 }),
+      MAKE_WEBHOOK_URL: 'https://relais.test/abc',
+    });
+    const { envois } = await avecRelais(environnement);
+    assert.equal(envois.length, 0);
+  });
+
+  test('sans adresse de relais configuree, rien ne part', async () => {
+    const environnement = env({ DB: fausseBase({ demandeEnregistree: DEMANDE }) });
+    const { reponse, envois } = await avecRelais(environnement);
+    assert.equal(reponse.status, 200);
+    assert.equal(envois.length, 0);
+  });
+
+  test('un relais injoignable ne change pas la reponse', async () => {
+    const environnement = env({
+      DB: fausseBase({ demandeEnregistree: DEMANDE }),
+      MAKE_WEBHOOK_URL: 'https://relais.test/abc',
+    });
+    const { reponse } = await avecRelais(environnement, async () => { throw new Error('réseau'); });
+    assert.equal(reponse.status, 200);
   });
 
   test('un identifiant qui n est pas un UUID ne correspond a aucune route', async () => {
