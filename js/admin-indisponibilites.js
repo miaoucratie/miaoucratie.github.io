@@ -330,6 +330,7 @@ function creerCarteDemande(demande) {
     demande.frequence === "autre" ? demande.frequenceAutre || "autre besoin" : demande.frequence,
     "double"
   );
+  ajouterInfo(infos, "Adresse", demande.adresse, "large");
   ajouterInfo(infos, "Contact", liensContact(demande), "large");
   ajouterInfo(infos, "Observations", demande.observations, "large");
   card.append(infos);

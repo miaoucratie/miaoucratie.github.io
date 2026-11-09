@@ -231,6 +231,24 @@
                   </div>
                                     <p class="field-error" id="commune-error" aria-live="polite"></p>
                 </div>
+
+                <div class="field field--full" data-field="adresse">
+                  <label for="adresse">Adresse <span class="field-optional">facultatif</span></label>
+                  <div class="autocomplete" data-autocomplete>
+                    <input
+                      id="adresse"
+                      name="adresse"
+                      type="text"
+                      autocomplete="off"
+                      spellcheck="false"
+                      aria-autocomplete="list"
+                      aria-expanded="false"
+                      aria-controls="adresse-suggestions"
+                      placeholder="Numéro et nom de la rue">
+                    <div id="adresse-suggestions" class="autocomplete__list" role="listbox" hidden></div>
+                  </div>
+                  <p class="field-error" id="adresse-error" aria-live="polite"></p>
+                </div>
               </div>
             </div>
           </section>

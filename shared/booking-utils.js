@@ -240,6 +240,7 @@ export function sanitizeReservationPayload(payload = {}) {
     commune: safeText(payload.commune, 150),
     communeCode: safeText(payload.communeCode || payload.commune_code || "", 10),
     communeCodePostal: safeText(payload.communeCodePostal || payload.commune_code_postal || "", 10),
+    adresse: safeText(payload.adresse ?? "", 200),
     nombreChats: Number.isFinite(catCount) ? catCount : NaN,
     dateDebut: normalizeDateInput(payload.dateDebut ?? payload.date_debut ?? ""),
     dateFin: normalizeDateInput(payload.dateFin ?? payload.date_fin ?? ""),
@@ -377,6 +378,20 @@ export function formatDateFr(value) {
   }
 
   return `${String(parts.day).padStart(2, "0")}/${String(parts.month).padStart(2, "0")}/${parts.year}`;
+}
+
+/* Adresse postale complete, telle qu'elle part dans le CRM et l'itineraire :
+   « 12 rue des Lilas, 35113 Domagné ». Vide si aucune rue n'est donnee. La
+   commune arrive de l'autocompletion sous la forme « Domagné (35113) ». */
+export function adresseComplete({ adresse = "", commune = "", communeCodePostal = "" } = {}) {
+  const rue = normalizeWhitespace(adresse);
+  if (!rue) {
+    return "";
+  }
+
+  const nomCommune = normalizeWhitespace(String(commune).replace(/\s*\(\d{5}\)\s*$/, ""));
+  const lieu = [normalizeWhitespace(communeCodePostal), nomCommune].filter(Boolean).join(" ");
+  return lieu ? `${rue}, ${lieu}` : rue;
 }
 
 export function buildReservationSubject(payload) {
