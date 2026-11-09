@@ -1,4 +1,5 @@
 import {
+  adresseComplete,
   availableSegments,
   sanitizeReservationPayload,
   sanitizeUnavailabilityPayload,
@@ -182,9 +183,9 @@ async function handlePublicReservation(request, env) {
   await env.DB.prepare(
     `
       INSERT INTO reservation_requests (
-        id, nom, prenom, telephone, whatsapp, email, commune, commune_code, commune_code_postal, nombre_chats,
-        date_debut, date_fin, frequence, frequence_autre, observations, ip_hash, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        id, nom, prenom, telephone, whatsapp, email, commune, commune_code, commune_code_postal, adresse,
+        nombre_chats, date_debut, date_fin, frequence, frequence_autre, observations, ip_hash, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
   )
     .bind(
@@ -197,6 +198,7 @@ async function handlePublicReservation(request, env) {
       validation.sanitized.commune,
       validation.sanitized.communeCode,
       validation.sanitized.communeCodePostal,
+      validation.sanitized.adresse,
       validation.sanitized.nombreChats,
       validation.sanitized.dateDebut,
       validation.sanitized.dateFin,
@@ -254,7 +256,7 @@ async function relayerDemande(env, reservationId) {
   const demande = await env.DB.prepare(
     `
       SELECT id, submitted_at, nom, prenom, telephone, whatsapp, email, commune,
-        commune_code_postal, nombre_chats, date_debut, date_fin, frequence,
+        commune_code_postal, adresse, nombre_chats, date_debut, date_fin, frequence,
         frequence_autre, observations
       FROM reservation_requests
       WHERE id = ?
@@ -297,6 +299,12 @@ async function relayerDemande(env, reservationId) {
         observations: demande.observations || "",
         submitted_at: recueLe,
         reservation_id: demande.id,
+        adresse: demande.adresse || "",
+        adresse_complete: adresseComplete({
+          adresse: demande.adresse,
+          commune: demande.commune,
+          communeCodePostal: demande.commune_code_postal,
+        }),
       }),
       signal: AbortSignal.timeout(8000),
     });
@@ -538,7 +546,7 @@ async function listReservations(env) {
       SELECT
         id, submitted_at AS soumiseLe, status AS statut,
         nom, prenom, telephone, whatsapp, email,
-        commune, commune_code_postal AS communeCodePostal, nombre_chats AS nombreChats,
+        commune, commune_code_postal AS communeCodePostal, adresse, nombre_chats AS nombreChats,
         date_debut AS dateDebut, date_fin AS dateFin,
         frequence, frequence_autre AS frequenceAutre, observations
       FROM reservation_requests

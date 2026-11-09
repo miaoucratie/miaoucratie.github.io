@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS reservation_requests (
   commune TEXT NOT NULL,
   commune_code TEXT DEFAULT '',
   commune_code_postal TEXT DEFAULT '',
+  adresse TEXT NOT NULL DEFAULT '',
   nombre_chats INTEGER NOT NULL,
   date_debut TEXT NOT NULL,
   date_fin TEXT NOT NULL,

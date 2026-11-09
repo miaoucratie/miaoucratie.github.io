@@ -28,6 +28,7 @@ import {
   availableSegments,
   countCoveredDays,
   sanitizeReservationPayload,
+  adresseComplete,
   validateReservationPayload,
   validateUnavailabilityPayload,
   formatDateFr,
@@ -393,6 +394,31 @@ describe('validation des indisponibilites', () => {
     const r = validateUnavailabilityPayload({ startDate: 'demain', endDate: '' });
     assert.ok(r.errors.startDate);
     assert.ok(r.errors.endDate);
+  });
+});
+
+describe('adresse complete', () => {
+  test('assemble la rue, le code postal et la commune sans parentheses', () => {
+    assert.equal(
+      adresseComplete({ adresse: ' 12  rue des Lilas ', commune: 'Domagné (35113)', communeCodePostal: '35113' }),
+      '12 rue des Lilas, 35113 Domagné'
+    );
+  });
+
+  test('garde une commune tapee a la main, sans code postal', () => {
+    assert.equal(
+      adresseComplete({ adresse: '3 impasse du Moulin', commune: 'st jean sur vilaine', communeCodePostal: '' }),
+      '3 impasse du Moulin, st jean sur vilaine'
+    );
+  });
+
+  test('reste vide sans rue', () => {
+    assert.equal(adresseComplete({ adresse: '  ', commune: 'Domagné (35113)', communeCodePostal: '35113' }), '');
+  });
+
+  test('l adresse est facultative et bornee a 200 caracteres', () => {
+    assert.equal(sanitizeReservationPayload({}).adresse, '');
+    assert.equal(sanitizeReservationPayload({ adresse: 'a'.repeat(300) }).adresse.length, 200);
   });
 });
 

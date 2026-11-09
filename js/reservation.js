@@ -1,5 +1,6 @@
 import {
   availableSegments,
+  adresseComplete,
   buildReservationSubject,
   isIsoDate,
   mergeRanges,
@@ -31,6 +32,7 @@ const ENDPOINTS = {
 
 const DRAFT_KEY = "miaoucratie:reservation:draft:v1";
 const COMMUNE_ENDPOINT = "https://geo.api.gouv.fr/communes";
+const ADRESSE_ENDPOINT = "https://data.geopf.fr/geocodage/search";
 const TODAY_ISO = todayIso(new Date());
 
 
@@ -53,8 +55,6 @@ const state = {
   availabilityLoaded: false,
   startPicker: null,
   endPicker: null,
-  communeAbortController: null,
-  communeTimer: null,
   isFlatpickrAvailable: Boolean(window.flatpickr),
 };
 
@@ -83,6 +83,8 @@ const communeInput = document.getElementById("commune");
 const communeCodeInput = document.getElementById("commune_code");
 const communeCodePostalInput = document.getElementById("commune_code_postal");
 const communeSuggestions = document.getElementById("commune-suggestions");
+const adresseInput = document.getElementById("adresse");
+const adresseSuggestions = document.getElementById("adresse-suggestions");
 const startDateInput = document.getElementById("dateDebut");
 const endDateInput = document.getElementById("dateFin");
 
@@ -160,6 +162,7 @@ function initDynamicFields() {
   });
 
   initCommuneAutocomplete();
+  initAdresseAutocomplete();
 }
 
 function toggleOtherFrequency(value) {
@@ -347,59 +350,134 @@ function syncPickerIsoValue(instance, rawValue = "") {
 }
 
 
-function initCommuneAutocomplete() {
-  if (!communeInput || !communeSuggestions) {
+/* Liste de suggestions sous un champ. La commune et l'adresse partagent le
+   meme comportement : delai de frappe, requete precedente annulee, fermeture
+   au clic en dehors du champ ou sur Echap. */
+function brancherSuggestions({ champ, liste, longueurMin, chercher, auSaisie }) {
+  if (!champ || !liste) {
     return;
   }
 
-  communeInput.addEventListener("input", () => {
-    communeCodeInput.value = "";
-    communeCodePostalInput.value = "";
-    clearFieldError("commune");
-    saveDraft();
+  const conteneur = champ.closest("[data-autocomplete]");
+  let minuterie = null;
+  let controleur = null;
 
-    window.clearTimeout(state.communeTimer);
+  const fermer = () => {
+    liste.innerHTML = "";
+    liste.hidden = true;
+    liste.classList.remove("is-open");
+    champ.setAttribute("aria-expanded", "false");
+  };
 
-    const query = communeInput.value.trim();
-    if (query.length < 2) {
-      hideCommuneSuggestions();
+  const afficher = (options = []) => {
+    liste.innerHTML = "";
+
+    if (!options.length) {
+      fermer();
       return;
     }
 
-    state.communeTimer = window.setTimeout(() => {
-      fetchCommuneSuggestions(query);
+    for (const { principal, detail, choisir } of options) {
+      const option = document.createElement("button");
+      option.type = "button";
+      option.className = "autocomplete__option";
+      option.setAttribute("role", "option");
+
+      const ligne1 = document.createElement("span");
+      ligne1.className = "autocomplete__option-main";
+      ligne1.textContent = principal;
+
+      const ligne2 = document.createElement("small");
+      ligne2.className = "autocomplete__option-meta";
+      ligne2.textContent = detail;
+
+      option.append(ligne1, ligne2);
+      option.addEventListener("click", () => {
+        choisir();
+        fermer();
+        saveDraft();
+      });
+
+      liste.append(option);
+    }
+
+    liste.hidden = false;
+    liste.classList.add("is-open");
+    champ.setAttribute("aria-expanded", "true");
+  };
+
+  champ.addEventListener("input", () => {
+    auSaisie?.();
+    saveDraft();
+
+    window.clearTimeout(minuterie);
+
+    const requete = champ.value.trim();
+    if (requete.length < longueurMin) {
+      fermer();
+      return;
+    }
+
+    minuterie = window.setTimeout(async () => {
+      controleur?.abort();
+      controleur = new AbortController();
+
+      try {
+        afficher(await chercher(requete, controleur.signal));
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          fermer();
+        }
+      }
     }, 220);
   });
 
-  communeInput.addEventListener("focus", () => {
-    const query = communeInput.value.trim();
-    if (query.length >= 2 && communeSuggestions.childElementCount > 0) {
-      communeSuggestions.hidden = false;
-      communeSuggestions.classList.add("is-open");
-      communeInput.setAttribute("aria-expanded", "true");
+  champ.addEventListener("focus", () => {
+    if (champ.value.trim().length >= longueurMin && liste.childElementCount > 0) {
+      liste.hidden = false;
+      liste.classList.add("is-open");
+      champ.setAttribute("aria-expanded", "true");
     }
   });
 
   document.addEventListener("click", (event) => {
-    if (!event.target.closest("[data-autocomplete]")) {
-      hideCommuneSuggestions();
+    if (!conteneur?.contains(event.target)) {
+      fermer();
     }
   });
 
-  communeInput.addEventListener("keydown", (event) => {
+  champ.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      hideCommuneSuggestions();
+      fermer();
     }
   });
 }
 
-async function fetchCommuneSuggestions(query) {
-  if (state.communeAbortController) {
-    state.communeAbortController.abort();
-  }
+function initCommuneAutocomplete() {
+  brancherSuggestions({
+    champ: communeInput,
+    liste: communeSuggestions,
+    longueurMin: 2,
+    chercher: chercherCommunes,
+    auSaisie: () => {
+      communeCodeInput.value = "";
+      communeCodePostalInput.value = "";
+      clearFieldError("commune");
+    },
+  });
+}
 
-  state.communeAbortController = new AbortController();
+/* Les rues proposees sont celles de la commune choisie juste au-dessus. */
+function initAdresseAutocomplete() {
+  brancherSuggestions({
+    champ: adresseInput,
+    liste: adresseSuggestions,
+    longueurMin: 3,
+    chercher: chercherAdresses,
+  });
+}
 
+async function chercherCommunes(query, signal) {
   const params = new URLSearchParams({
     fields: "nom,code,codesPostaux,departement",
     limit: "10",
@@ -413,9 +491,11 @@ async function fetchCommuneSuggestions(query) {
     params.set("boost", "population");
   }
 
+  let communes;
+
   try {
     const response = await fetch(`${COMMUNE_ENDPOINT}?${params.toString()}`, {
-      signal: state.communeAbortController.signal,
+      signal,
       headers: {
         Accept: "application/json",
       },
@@ -425,19 +505,62 @@ async function fetchCommuneSuggestions(query) {
       throw new Error("Impossible de récupérer les communes.");
     }
 
-    const suggestions = await response.json();
-    renderCommuneSuggestions(suggestions);
+    communes = await response.json();
   } catch (error) {
     if (error.name === "AbortError") {
-      return;
+      throw error;
     }
-    const fallback = getFallbackCommunes(query);
-    if (fallback.length) {
-      renderCommuneSuggestions(fallback);
-      return;
-    }
-    hideCommuneSuggestions();
+    communes = getFallbackCommunes(query);
   }
+
+  return (Array.isArray(communes) ? communes : []).map((commune) => {
+    const postalCode = Array.isArray(commune.codesPostaux) && commune.codesPostaux.length
+      ? commune.codesPostaux[0]
+      : "";
+
+    return {
+      principal: commune.nom || "",
+      detail: postalCode || "Commune",
+      choisir: () => {
+        communeInput.value = postalCode ? `${commune.nom} (${postalCode})` : commune.nom;
+        communeCodeInput.value = commune.code || "";
+        communeCodePostalInput.value = postalCode;
+      },
+    };
+  });
+}
+
+async function chercherAdresses(query, signal) {
+  const commune = communeInput.value.trim();
+  const params = new URLSearchParams({ autocomplete: "1", limit: "6" });
+
+  if (communeCodeInput.value) {
+    params.set("q", query);
+    params.set("citycode", communeCodeInput.value);
+  } else {
+    params.set("q", commune ? `${query} ${commune}` : query);
+  }
+
+  const response = await fetch(`${ADRESSE_ENDPOINT}?${params.toString()}`, {
+    signal,
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const { features = [] } = await response.json();
+
+  return features.map(({ properties = {} }) => ({
+    principal: properties.name || "",
+    detail: [properties.postcode, properties.city].filter(Boolean).join(" "),
+    choisir: () => {
+      adresseInput.value = properties.name || "";
+    },
+  }));
 }
 
 function getFallbackCommunes(query) {
@@ -454,56 +577,6 @@ function getFallbackCommunes(query) {
       : "";
     return name.includes(normalizedQuery) || String(postal).includes(digitsQuery);
   }).slice(0, 8);
-}
-
-function renderCommuneSuggestions(suggestions = []) {
-  communeSuggestions.innerHTML = "";
-
-  if (!Array.isArray(suggestions) || !suggestions.length) {
-    hideCommuneSuggestions();
-    return;
-  }
-
-  for (const commune of suggestions) {
-    const option = document.createElement("button");
-    option.type = "button";
-    option.className = "autocomplete__option";
-    option.setAttribute("role", "option");
-
-    const postalCode = Array.isArray(commune.codesPostaux) && commune.codesPostaux.length
-      ? commune.codesPostaux[0]
-      : "";
-    const line1 = document.createElement("span");
-    line1.className = "autocomplete__option-main";
-    line1.textContent = commune.nom || "";
-
-    const line2 = document.createElement("small");
-    line2.className = "autocomplete__option-meta";
-    line2.textContent = postalCode || "Commune";
-
-    option.append(line1, line2);
-
-    option.addEventListener("click", () => {
-      communeInput.value = postalCode ? `${commune.nom} (${postalCode})` : commune.nom;
-      communeCodeInput.value = commune.code || "";
-      communeCodePostalInput.value = postalCode;
-      hideCommuneSuggestions();
-      saveDraft();
-    });
-
-    communeSuggestions.append(option);
-  }
-
-  communeSuggestions.hidden = false;
-  communeSuggestions.classList.add("is-open");
-  communeInput.setAttribute("aria-expanded", "true");
-}
-
-function hideCommuneSuggestions() {
-  communeSuggestions.innerHTML = "";
-  communeSuggestions.hidden = true;
-  communeSuggestions.classList.remove("is-open");
-  communeInput.setAttribute("aria-expanded", "false");
 }
 
 async function loadUnavailableRanges() {
@@ -620,6 +693,7 @@ function toFieldKey(fieldName) {
     commune: "commune",
     commune_code: "communeCode",
     commune_code_postal: "communeCodePostal",
+    adresse: "adresse",
     nombre_chats: "nombreChats",
     frequence: "frequence",
     frequence_autre: "autreFrequence",
@@ -694,6 +768,7 @@ function getFormPayload() {
     commune: formData.get("commune"),
     commune_code: formData.get("commune_code"),
     commune_code_postal: formData.get("commune_code_postal"),
+    adresse: formData.get("adresse"),
     nombre_chats: formData.get("nombre_chats"),
     frequence: formData.get("frequence"),
     frequence_autre: formData.get("frequence_autre"),
@@ -1298,6 +1373,8 @@ function buildWeb3FormsPayload(payload, reservationId = "", hCaptchaResponse = "
     observations: payload.observations || "",
     submitted_at: submittedAt,
     reservation_id: reservationId,
+    adresse: payload.adresse || "",
+    adresse_complete: adresseComplete(payload),
    };
 }
 
@@ -1327,6 +1404,7 @@ function clearAllErrors() {
     "whatsapp",
     "email",
     "commune",
+    "adresse",
     "nombreChats",
     "frequence",
     "autreFrequence",
@@ -1451,6 +1529,7 @@ function restoreDraft() {
   communeInput.value = draft.commune || "";
   communeCodeInput.value = draft.communeCode || "";
   communeCodePostalInput.value = draft.communeCodePostal || "";
+  form.querySelector("#adresse").value = draft.adresse || "";
   form.querySelector("#nombreChats").value = Number.isFinite(draft.nombreChats) ? draft.nombreChats : "";
   frequencyField.value = draft.frequence || "";
   toggleOtherFrequency(frequencyField.value);

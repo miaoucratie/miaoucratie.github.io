@@ -303,6 +303,16 @@ describe('quota d envoi par adresse IP', () => {
     assert.equal(environnement.DB.insertions.length, 1, 'la demande aurait du etre enregistree');
   });
 
+  test('l adresse saisie est enregistree avec la demande', async () => {
+    const environnement = environnementAvec(0);
+    await appeler('/public/reservations', {
+      methode: 'POST', corps: { ...demandeValide(), adresse: '12 rue des Lilas' }, environnement,
+    });
+    const { sql, valeurs } = environnement.DB.insertions[0];
+    assert.match(sql, /adresse/);
+    assert.ok(valeurs.includes('12 rue des Lilas'));
+  });
+
   test('le quatrieme est refuse en 429', async () => {
     const environnement = environnementAvec(4);
     const reponse = await appeler('/public/reservations', {
@@ -530,6 +540,7 @@ describe('signalement d une notification non partie', () => {
     commune: 'Domagné (35113)', commune_code_postal: '35113', nombre_chats: 2,
     date_debut: '2026-12-26', date_fin: '2026-12-31', frequence: 'autre',
     frequence_autre: '2 visites le samedi', observations: 'Deux chats\ntrès câlins',
+    adresse: '12 rue des Lilas',
   };
 
   /** Remplace fetch le temps d'un appel et rend les envois captés. */
@@ -564,6 +575,8 @@ describe('signalement d une notification non partie', () => {
       observations: 'Deux chats\ntrès câlins',
       submitted_at: 'lundi 9 novembre 2026 à 18:08',
       reservation_id: ID,
+      adresse: '12 rue des Lilas',
+      adresse_complete: '12 rue des Lilas, 35113 Domagné',
     });
   });
 
