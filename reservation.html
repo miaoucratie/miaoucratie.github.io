@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- Mesure d'audience : chargee uniquement apres consentement explicite. -->
+  <!-- Mesure d'audience -->
   <script src="js/consentement.js" data-mesure="G-X3H7NL9GEL" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -358,12 +358,7 @@
           <p class="success-panel__eyebrow" id="success-eyebrow">Demande envoyée</p>
           <h2 id="success-title">Votre demande a bien été envoyée.</h2>
           <p id="success-message">Je vous réponds sous 24 à 48&nbsp;h.</p>
-          <!--
-            Affiché uniquement si la demande a bien été enregistrée mais que
-            l'e-mail qui me prévient n'est pas parti. Sans ce bloc le visiteur
-            voyait un écran de confirmation identique et attendait une réponse
-            qui ne pouvait pas venir.
-          -->
+          <!-- Relance -->
           <p id="success-relance" class="success-panel__relance" hidden>
             En revanche, l’e-mail qui me prévient n’est pas parti. Votre demande est
             enregistrée, mais pour que je la traite tout de suite, prévenez-moi par

@@ -1,29 +1,6 @@
-/*
- * Styles propres au calculateur de tarif.
- *
- * Sortis de calculateur-miaoucratie.html le 17 aout 2026 : la page comptait
- * 838 lignes de CSS reparties en quatre blocs <style>, soit 77 % du fichier.
- * Une regle ne se trouvait qu'en lisant le HTML, et rien ne disait ou elle se
- * plaçait dans la cascade.
- *
- * PLACE DANS LA CASCADE — a ne pas changer :
- *
- *   style.css        base commune
- *   polices.css      faces DM Sans et Cormorant
- *   overrides.css    barre et titres partages
- *   calculateur.css  CE FICHIER : ce qui n'appartient qu'a cette page
- *   couches.css      couches historiques, toujours en dernier
- *
- * C'est l'ordre pose par le chantier des 15-16 aout 2026 : la base d'abord,
- * le propre a la page au milieu, les couches en dernier. Deplacer ce lien
- * ailleurs dans le <head> change le rendu.
- *
- * Les quatre blocs sont repris ci-dessous dans leur ordre d'origine, separes
- * par des titres. Le deplacement a ete verifie neutre : 128 elements releves
- * sur sept largeurs (375, 600, 700, 800, 900, 1024, 1272), zero ecart.
- */
+/* Calculateur de tarif */
 
-/* ── 1. Base de la page : palette, fond, carte, commandes ─────────── */
+/* ── 1. Base de la page ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -341,7 +318,7 @@
   .result-line .amount {
     font-weight: 400;
     color: #4A3728;
-    /* Idem : voir MIAOUCRATIE-CHIFFRES dans css/couches.css. */
+    /* Chiffres alignés */
     font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
   }
 
@@ -409,8 +386,7 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--dark);
-    /* Les deux mots-cles ensemble, jamais tabular-nums seul : voir le piege
-       documente dans MIAOUCRATIE-CHIFFRES, css/couches.css. */
+    /* Chiffres alignés */
     font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
   }
 
@@ -446,9 +422,7 @@
     margin-left: 6px;
   }
 
-/* ── 2. Titres — herite de l'epoque ou la page n'avait pas de couche
-      TITLES. Conserve tel quel : couches.css, chargee apres, impose de
-      toute facon la police, la taille et la couleur des h1 avec !important. */
+/* ── 2. Titres ── */
 h1, .hero-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(52px, 7vw, 88px);
@@ -459,8 +433,7 @@ h1, .hero-title {
   font-style: italic;
 }
 
-/* ── 3. Reste d'une mise en page partagee avec la page tarifs.
-      .tarifs-layout n'existe pas dans ce document. */
+/* ── 3. Mise en page tarifs ── */
 body {
   margin:0;
   padding:0;
@@ -469,7 +442,7 @@ body {
   display:block;
 }
 
-/* ── 4. Panneau de resultat, pied de page, media queries ──────────── */
+/* ── 4. Résultat et pied de page ── */
 /* MIAOUCRATIE-FADE-V4 */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
@@ -864,6 +837,6 @@ body.carte-page .zone-header {
 @media(max-width:768px){
 }
 
-/* OVERRIDE: footer fix + font fix */
+/* Pied de page */
 body.calculateur-page { display: flex; flex-direction: column; min-height: 100vh; }
 body.calculateur-page .container { flex: 1; }

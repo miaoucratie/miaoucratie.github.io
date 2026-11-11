@@ -1,6 +1,4 @@
-/* Correctifs partages par index, faq, cgv et calculateur.
-   Ce bloc etait recopie a l'identique dans les 4 pages.
-   Charge a la position exacte de l'ancien <style> pour preserver la cascade. */
+/* Commun : index, faq, cgv, calculateur */
 
 /* MIAOUCRATIE-TOPBAR-V2 */
 .topbar {
@@ -65,8 +63,6 @@ body .cgv-title,
 body .hero-title {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 700;
-  /* « body .container > header h1 » retire ici comme dans couches.css : voir
-     l'explication a cet endroit. Il ne visait que le calculateur. */
   letter-spacing: -3px;
   line-height: 1;
   color: var(--deep, #1E1812);

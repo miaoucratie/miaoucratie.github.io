@@ -1,21 +1,4 @@
-/*
- * Polices servies par le site, plus par Google.
- *
- * Trois raisons : le trajet vers fonts.gstatic.com cassait environ une fois
- * sur sept et rendait la verification visuelle aleatoire ; une connexion a un
- * tiers de moins accelere le premier rendu ; et l'adresse IP des visiteurs
- * n'est plus transmise a Google.
- *
- * Les deux familles sont variables : un seul fichier couvre toutes les
- * graisses d'un meme style. D'ou 6 fichiers seulement, en latin et
- * latin-ext — les autres sous-ensembles ne servent a rien en francais.
- *
- * Les graisses vues a l'ecran hors de ces plages — Cormorant 300 italique et
- * 800 — restent synthetisees par le navigateur, exactement comme avant.
- *
- * Fichiers repris de Google Fonts ; pour les mettre a jour, refaire la meme
- * demande et remplacer le dossier fonts/.
- */
+/* Polices */
 @font-face {
   font-family: 'Cormorant Garamond';
   font-style: italic;

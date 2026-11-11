@@ -1,38 +1,10 @@
-/**
- * Consentement a la mesure d'audience.
- *
- * Ce fichier est le seul endroit du site qui charge Google Analytics. Le
- * script gtag n'est plus ecrit en dur dans les pages : il n'est injecte
- * qu'apres un choix explicite du visiteur. Sans choix, rien n'est charge et
- * aucun cookie n'est depose.
- *
- * Comment le brancher sur une page :
- *
- *   <script src="js/consentement.js" data-mesure="G-XXXXXXX" defer></script>
- *     la page est mesuree ; le bandeau s'affiche tant qu'aucun choix n'est
- *     enregistre.
- *
- *   <script src="js/consentement.js" defer></script>
- *     la page n'est pas mesuree et n'affiche pas de bandeau, mais les
- *     commandes de reglage qu'elle contient restent actives. C'est le cas des
- *     mentions legales, ou le visiteur peut revenir sur son choix.
- *
- *   <button type="button" data-consentement-reglages>...</button>
- *     rouvre le bandeau, quel que soit le choix deja enregistre.
- *
- * Le style est injecte par ce fichier plutot que pose dans une feuille : le
- * bandeau est un composant autonome, une page l'obtient en ajoutant une seule
- * ligne. Aucune regle ne vise de h1/h2/h3 — la couche de titres de
- * couches.css est chargee en dernier et les repeindrait.
- */
+/** Consentement à la mesure d'audience */
 (function () {
   'use strict';
 
   var CLE = 'miaoucratie.consentement';
   var VERSION = 1;
-  // Six mois : la duree recommandee par la CNIL pour conserver un choix. Elle
-  // est volontairement plus longue que celle du cookie de mesure — reposer la
-  // question tous les deux mois serait exactement l'inverse de « discret ».
+  // Six mois
   var DUREE_MS = 182 * 24 * 60 * 60 * 1000;
 
   var script = document.currentScript;
@@ -50,8 +22,7 @@
       if (!choix.date || Date.now() - Date.parse(choix.date) > DUREE_MS) return null;
       return choix.valeur;
     } catch (e) {
-      // Stockage indisponible (navigation privee, cookies bloques) : on se
-      // comporte comme si aucun choix n'avait ete fait, donc sans mesure.
+      // Stockage indisponible
       return null;
     }
   }
@@ -64,8 +35,7 @@
         date: new Date().toISOString(),
       }));
     } catch (e) {
-      // Sans stockage, le choix ne vaut que pour la page en cours. C'est le
-      // comportement le moins mauvais : on n'insiste pas, et on ne mesure pas.
+      // Sans stockage
     }
   }
 
@@ -86,26 +56,18 @@
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
     window.gtag('config', ID_MESURE, {
-      // L'accueil se mesure sous une seule adresse, la racine, qu'il soit
-      // demande par « / » ou par son nom de fichier.
+      // Accueil : racine
       page_location: window.location.href.replace(/\/index\.html(?=$|[?#])/, '/'),
-      // Pas de recoupement multi-appareils ni de ciblage publicitaire.
+      // Sans ciblage
       allow_google_signals: false,
       allow_ad_personalization_signals: false,
-      // Cookie ramene de 2 ans (defaut) a 2 mois, pour coller a la duree de
-      // conservation reglee dans GA4. Au-dela, les donnees de l'utilisateur
-      // sont supprimees cote Google : garder l'identifiant plus longtemps sur
-      // le terminal ne mesurerait plus rien.
+      // Cookie : 2 mois
       cookie_expires: 5184000,
       cookie_flags: 'SameSite=Lax;Secure',
     });
   }
 
-  /**
-   * Efface les cookies deja poses. Indispensable pour un visiteur qui avait
-   * ete mesure avant l'arrivee du bandeau, ou qui revient sur son accord :
-   * refuser sans nettoyer laisserait l'identifiant en place pendant six mois.
-   */
+  /** Effacement des cookies */
   function effacerCookiesMesure() {
     var hote = window.location.hostname;
     var parties = hote.split('.');
@@ -115,8 +77,7 @@
     var cookies = document.cookie ? document.cookie.split(';') : [];
     for (var i = 0; i < cookies.length; i++) {
       var nom = cookies[i].split('=')[0].trim();
-      // _ga* : identifiants de mesure. _gcl* : pose par le meme script pour le
-      // suivi de conversion publicitaire, il n'a rien a faire ici non plus.
+      // _ga*, _gcl*
       if (nom.indexOf('_ga') !== 0 && nom.indexOf('_gcl') !== 0) continue;
       for (var j = 0; j < domaines.length; j++) {
         document.cookie = nom + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
@@ -127,8 +88,6 @@
 
   /* ── Clics de contact ───────────────────────────────────────────────── */
 
-  // Telephone, WhatsApp et e-mail sont des prises de contact au meme titre que
-  // le formulaire. Rien n'est envoye tant que la mesure n'est pas chargee.
   function moyenDeContact(href) {
     if (href.indexOf('tel:') === 0) return 'telephone';
     if (href.indexOf('mailto:') === 0) return 'email';
@@ -144,7 +103,7 @@
     if (!moyen) return;
     window.gtag('event', 'contact_clic', {
       moyen: moyen,
-      // Les liens du relais menent a une consoeur, pas a Miaoucratie.
+      // Liens du relais
       destinataire: lien.closest('.relais') ? 'relais' : 'miaoucratie',
     });
   });
@@ -159,10 +118,7 @@
     'border:1px solid var(--light,#D4BEA8);border-radius:14px;',
     'box-shadow:0 10px 30px rgba(30,24,18,.16);animation:consentement-entree .35s ease-out}',
 
-    // L'animation ne touche ni l'opacite ni le remplissage : un onglet en
-    // arriere-plan gele ses animations a l'image zero, et un fondu depuis
-    // opacity:0 laisserait alors un bandeau invisible mais bien present.
-    // Gele, celui-ci est simplement pose 12px plus bas.
+    // Animation sans opacité
     '@keyframes consentement-entree{from{transform:translateY(12px)}to{transform:none}}',
     '@media (prefers-reduced-motion:reduce){.consentement{animation:none}}',
 
@@ -172,8 +128,7 @@
     '.consentement-texte a{color:var(--rust,#A8472A);text-decoration:underline;',
     'text-underline-offset:2px}',
 
-    // Les deux boutons partagent la meme geometrie et occupent la largeur du
-    // cadre : refuser demande exactement le meme geste qu'accepter.
+    // Boutons identiques
     '.consentement-choix{display:flex;gap:10px;margin-top:14px}',
     '.consentement-choix button{flex:1 1 0;min-height:44px;padding:10px 12px;',
     "font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;line-height:1.2;",
@@ -266,9 +221,7 @@
 
   /* ── Demarrage ──────────────────────────────────────────────────────── */
 
-  // Signal « Global Privacy Control » : c'est une opposition deja exprimee par
-  // le visiteur au niveau de son navigateur. La respecter evite de lui poser
-  // une question a laquelle il a deja repondu.
+  // Global Privacy Control
   var oppositionNavigateur = window.navigator.globalPrivacyControl === true;
 
   var choix = lireChoix();

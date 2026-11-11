@@ -90,7 +90,7 @@ const endDateInput = document.getElementById("dateFin");
 
 init();
 
-/** Envoie un evenement de mesure, si le visiteur a accepte la mesure d'audience. */
+/** Événement de mesure */
 function mesurer(nom, parametres = {}) {
   if (typeof gtag === "function") {
     gtag("event", nom, parametres);
@@ -100,7 +100,7 @@ function mesurer(nom, parametres = {}) {
 const ETAPES = ["coordonnees", "garde", "observations"];
 const etapesCommencees = new Set();
 
-/* Signale une fois chaque etape du formulaire, a la premiere saisie dedans. */
+/* Suivi des étapes */
 function mesurerEtape(field) {
   const carte = field.closest(".step-card");
   const etape = ETAPES[[...form.querySelectorAll(".step-card")].indexOf(carte)];
@@ -350,9 +350,7 @@ function syncPickerIsoValue(instance, rawValue = "") {
 }
 
 
-/* Liste de suggestions sous un champ. La commune et l'adresse partagent le
-   meme comportement : delai de frappe, requete precedente annulee, fermeture
-   au clic en dehors du champ ou sur Echap. */
+/* Suggestions */
 function brancherSuggestions({ champ, liste, longueurMin, chercher, auSaisie }) {
   if (!champ || !liste) {
     return;
@@ -467,7 +465,7 @@ function initCommuneAutocomplete() {
   });
 }
 
-/* Les rues proposees sont celles de la commune choisie juste au-dessus. */
+/* Rues de la commune */
 function initAdresseAutocomplete() {
   brancherSuggestions({
     champ: adresseInput,
@@ -599,8 +597,6 @@ async function loadUnavailableRanges() {
     applyUnavailableRangesToPickers();
     validateDatesLive();
 
-    /* Le repli natif n'a pas de jours grises : lui parler du calendrier
-       reviendrait a decrire un ecran que la personne n'a pas sous les yeux. */
     if (!state.unavailableRanges.length) {
       availabilityNote.textContent = "Aucune indisponibilité n’est enregistrée pour le moment.";
     } else if (state.isFlatpickrAvailable) {
@@ -614,13 +610,12 @@ async function loadUnavailableRanges() {
   }
 }
 
-/* Les jours indisponibles sont marques, pas condamnes. */
+/* Jours indisponibles */
 function applyUnavailableRangesToPickers() {
   state.startPicker?.redraw?.();
   state.endPicker?.redraw?.();
 }
 
-/* Pose la marque sur chaque jour du calendrier qui tombe dans une absence. */
 function markUnavailableDay(dayElement, date) {
   const iso = isoFromLocalDate(date);
   const indisponible = state.unavailableRanges.some(
@@ -636,8 +631,7 @@ function markUnavailableDay(dayElement, date) {
   }
 }
 
-/* Flatpickr donne une date locale : la convertir en UTC decalerait d'un jour
-   les fuseaux a l'est de Greenwich, et grisait la mauvaise case. */
+/* Date locale */
 function isoFromLocalDate(date) {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
     return "";
@@ -656,10 +650,6 @@ function attachFieldListeners() {
       return;
     }
 
-    /* Flatpickr ecrit dans le champ cache puis emet un « input » : cet
-       ecouteur passe donc APRES le calendrier. Effacer ici sans regarder quel
-       champ a bouge revenait a balayer, a chaque frappe et a chaque date
-       choisie, un message que le calendrier venait de poser. */
     field.addEventListener("input", () => {
       const key = toFieldKey(field.name || field.id);
 
@@ -822,8 +812,6 @@ function validateDatesLive() {
     return false;
   }
 
-  /* Une periode partiellement couverte reste envoyable : c'est le
-     recapitulatif qui dit ce qui est couvert, pas un message d'erreur. */
   return renderAvailability(start, end);
 }
 
@@ -831,9 +819,7 @@ function validateDatesLive() {
 /* Recapitulatif de la periode choisie                                 */
 /* ------------------------------------------------------------------ */
 
-/** Au-dela de ce nombre de jours couverts, la garde reste presentee comme la
-    mienne. En dessous, le relais passe devant : deux jours sur une semaine ne
-    valent ni le deplacement de la personne, ni le mien. */
+/** Seuil du relais */
 const JOURS_AVANT_RELAIS_EN_TETE = 2;
 
 const MOIS = [
@@ -841,10 +827,7 @@ const MOIS = [
   "juillet", "août", "septembre", "octobre", "novembre", "décembre",
 ];
 
-/**
- * Affiche ce que je couvre sur la periode demandee, et le relais s'il y a lieu.
- * Rend `true` si la demande peut partir, `false` si aucun jour n'est couvert.
- */
+/** Récapitulatif */
 function renderAvailability(start, end) {
   if (!isIsoDate(start) || !isIsoDate(end) || end < start || !state.availabilityLoaded) {
     periodeRecap.hidden = true;
@@ -885,7 +868,7 @@ function renderAvailability(start, end) {
 
 let dernierRelaisMesure = "";
 
-/* Signale l'affichage du relais une fois par periode choisie. */
+/* Suivi du relais */
 function mesurerRelais(start, end, joursCouverts) {
   const periode = `${start}_${end}`;
 
@@ -897,7 +880,7 @@ function mesurerRelais(start, end, joursCouverts) {
   mesurer("relais_affiche", { envoi_ferme: joursCouverts === 0 });
 }
 
-/** Ferme l'envoi quand aucun jour n'est couvert, et dit pourquoi. */
+/** Envoi bloqué */
 function setSubmitBlocked(bloque) {
   submitButton.disabled = bloque;
   submitNote.hidden = !bloque;
@@ -912,8 +895,6 @@ function phraseDisponibilite(start, end, couverts, decouverts, joursCouverts, jo
     return `Je ne prends pas de réservation ${formaterSegment({ startDate: start, endDate: end })}.`;
   }
 
-  /* « inclus » leve le doute sur la derniere journee, mais colle mal derriere
-     une enumeration : il ne sert que quand un seul morceau est couvert. */
   const morceaux = enumerer(couverts.map(formaterSegment));
   const cequejefais = joursCouverts <= JOURS_AVANT_RELAIS_EN_TETE
     ? `Sur cette période, je ne peux assurer que ${morceaux}.`
@@ -922,7 +903,7 @@ function phraseDisponibilite(start, end, couverts, decouverts, joursCouverts, jo
   return `${cequejefais} ${phraseAbsence(start, end, decouverts)}`;
 }
 
-/** Dit les jours non couverts sans jamais en donner la raison. */
+/** Jours non couverts */
 function phraseAbsence(start, end, decouverts) {
   if (decouverts.length === 1) {
     const seul = decouverts[0];
@@ -959,9 +940,7 @@ function texteRelais(joursCouverts, decouverts, end) {
   return `${quels}, Éva peut prendre le relais. ${confiance}`;
 }
 
-/* La barre reprend la periode a l'echelle : chaque morceau occupe la place du
-   nombre de jours qu'il represente. Sans cela, une absence d'un jour sur trois
-   semaines paraitrait aussi lourde que le sejour entier. */
+/* Barre à l'échelle */
 function dessinerBarre(start, end, couverts, decouverts) {
   const morceaux = [
     ...couverts.map((segment) => ({ ...segment, couvert: true })),
@@ -988,7 +967,7 @@ function borne(iso) {
 /* Dates en toutes lettres                                             */
 /* ------------------------------------------------------------------ */
 
-/** Morceaux de [start, end] laisses de cote par `couverts`. */
+/** Jours hors couverture */
 function complementSegments(start, end, couverts) {
   const trous = [];
   let curseur = start;
@@ -1032,37 +1011,32 @@ function compterJours(segments) {
   return segments.reduce((total, segment) => total + nombreDeJours(segment.startDate, segment.endDate), 0);
 }
 
-/** Le quantieme seul : « 1er », « 5 ». */
+/** Quantième */
 function quantieme(iso) {
   const { jour } = partsIso(iso);
   return jour === 1 ? "1er" : String(jour);
 }
 
-/**
- * Un jour en toutes lettres, sans article : « 5 octobre ».
- * L'annee n'apparait que si elle n'est pas l'annee en cours : « 3 janvier
- * 2027 » ne se devine pas, « 5 octobre 2026 » alourdit pour rien.
- */
+/** Jour en lettres */
 function formaterJour(iso) {
   const { annee, mois } = partsIso(iso);
   const anneeCourante = Number(TODAY_ISO.slice(0, 4));
   return `${quantieme(iso)} ${MOIS[mois - 1]}${annee === anneeCourante ? "" : ` ${annee}`}`;
 }
 
-/* Abreviations d'usage, pas un decoupage automatique : « octobre » abrege en
-   « oct. », jamais en « octo. », et mars, mai, juin, aout ne s'abregent pas. */
+/* Abréviations des mois */
 const MOIS_COURTS = [
   "janv.", "févr.", "mars", "avril", "mai", "juin",
   "juil.", "août", "sept.", "oct.", "nov.", "déc.",
 ];
 
-/** Version courte pour les bornes de la barre : « 1er oct. ». */
+/** Version courte */
 function formaterJourCourt(iso) {
   const { mois } = partsIso(iso);
   return `${quantieme(iso)} ${MOIS_COURTS[mois - 1]}`;
 }
 
-/** « le 4 octobre », « les 4 et 5 octobre », « du 1er au 5 octobre ». */
+/** Plage de dates */
 function formaterSegment(segment) {
   const { startDate, endDate } = segment;
   const jours = nombreDeJours(startDate, endDate);
@@ -1080,7 +1054,7 @@ function formaterSegment(segment) {
   return `du ${debut} au ${formaterJour(endDate)}`;
 }
 
-/** « A », « A et B », « A, B, puis C ». */
+/** Énumération */
 function enumerer(morceaux) {
   if (morceaux.length <= 1) {
     return morceaux[0] || "";
@@ -1097,11 +1071,7 @@ function majuscule(texte) {
   return texte.charAt(0).toUpperCase() + texte.slice(1);
 }
 
-/* Typographie des textes calcules a l'affichage : impossible d'y poser les
-   insecables a la main comme dans le HTML du reste du site.
-   Deux regles : aucun mot d'une seule lettre en fin de ligne, et jamais un
-   mot seul sur la derniere ligne. Deux passes, parce qu'une seule laisserait
-   passer deux mots d'une lettre qui se suivent. */
+/* Insécables */
 function typographie(texte) {
   const lierMotsCourts = (t) => t.replace(/(\s|^)(\S)\s/g, "$1$2 ");
   return lierMotsCourts(lierMotsCourts(texte)).replace(/ (\S+)$/, " $1");
@@ -1161,12 +1131,7 @@ setButtonLoading(submitButton, true);
       return;
     }
 
-    // La demande est enregistree cote serveur, mais c'est cet appel-ci qui
-    // previent Miaoucratie. S'il echoue — service indisponible, requete
-    // bloquee par une extension, onglet ferme trop tot — la demande existe
-    // sans que personne ne le sache. On ne l'avale donc pas : le visiteur est
-    // prevenu qu'il lui reste un geste, et le serveur marque la demande pour
-    // qu'elle remonte en tete de l'administration.
+    // Notification
     let notificationEnvoyee = true;
 
     try {
@@ -1222,14 +1187,7 @@ function resetHCaptcha() {
   }
 }
 
-/**
- * Affiche l'ecran de confirmation.
- *
- * Deux issues, et elles ne se disent pas de la meme facon. Si la notification
- * est partie, la demande suit son cours. Sinon elle est bien enregistree, mais
- * personne n'en sera prevenu : le visiteur doit le savoir, sinon il attend une
- * reponse qui ne peut pas venir.
- */
+/** Écran de confirmation */
 function afficherPanneauSucces(notificationEnvoyee) {
   const relance = document.getElementById("success-relance");
   const titre = document.getElementById("success-title");
@@ -1251,14 +1209,7 @@ function afficherPanneauSucces(notificationEnvoyee) {
   successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/**
- * Marque la demande comme non notifiee, pour qu'elle remonte en tete de la
- * page d'administration.
- *
- * Best effort : si ce signalement echoue lui aussi, il n'y a plus rien a
- * tenter cote navigateur, et le visiteur a de toute facon deja le message qui
- * l'invite a prevenir par WhatsApp.
- */
+/** Marque non notifiée */
 async function signalerNotificationEchouee(reservationId) {
   if (!reservationId) {
     return;
@@ -1557,8 +1508,7 @@ function restoreDraft() {
 
 function resetForNewRequest() {
   successPanel.hidden = true;
-  // Sinon la relance d'une demande precedente resterait affichee sur la
-  // confirmation de la suivante.
+  // Remise à zéro
   const relance = document.getElementById("success-relance");
   if (relance) relance.hidden = true;
   form.hidden = false;

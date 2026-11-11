@@ -1,10 +1,7 @@
-/* Mise en page des documents juridiques : CGV et mentions legales.
-   Les deux pages doivent rester jumelles. */
+/* CGV et mentions légales */
 :root {
       --T: #A8472A;
       --N: #1E1812;
-      /* Nom propre a ces pages : redefinir --cream le faisait deteindre sur
-         tout ce qui utilise la creme de la palette, jusqu'au logo du pied. */
       --fond-legal: #F9F5F0;
       --rule: #e8ddd4;
     }

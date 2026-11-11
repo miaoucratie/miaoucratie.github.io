@@ -2,7 +2,7 @@
 
 <html lang="fr">
 <head>
-  <!-- Mesure d'audience : chargee uniquement apres consentement explicite. -->
+  <!-- Mesure d'audience -->
   <script src="js/consentement.js" data-mesure="G-X3H7NL9GEL" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -137,8 +137,6 @@
       font-style: italic;
     }
     .hero-rule {
-      /* Trait d'intensite variable plutot qu'un aplat epais : il s'eteint aux
-         deux bouts, comme les connecteurs entre les etapes de l'accueil. */
       width: 120px;
       height: 2px;
       background: linear-gradient(90deg, transparent, var(--T) 35%, var(--T) 65%, transparent);
@@ -147,8 +145,6 @@
     }
 
     /* ─── SOMMAIRE ───────────────────────────────────── */
-    /* Meme sommaire que les CGV et les articles, sous le prefixe de cette page.
-       Colonne collante au-dela de 900 px, rangee de reperes qui defile en deca. */
     .faq-wrapper {
       max-width: 1040px;
       margin: 0 auto;
@@ -323,7 +319,7 @@
       flex-shrink: 0;
       transition: background 0.25s, transform 0.3s;
     }
-    /* Replie : un plus. Deplie : un moins, aux dimensions du trait du plus. */
+    /* Plus / moins */
     .acc-item.open .acc-icon {
       background: var(--T);
     }
@@ -425,12 +421,6 @@
     }
 
     /* ─── CTA SECTION ────────────────────────────────── */
-    /* Ce conteneur portait un style en ligne, donc hors d'atteinte des media
-       queries. Ses 48px de retrait s'ajoutaient a la marge et au retrait de
-       « .faq-cta » : a 320px, 208px des 320 partaient en chrome et il restait
-       112px pour les boutons, ou « Envoyer un message » tombait sur trois
-       lignes. Sous 768px « .faq-cta » pose deja sa propre marge, ce retrait
-       n'a plus d'objet et il est repris a zero. */
     .faq-cta-wrap { max-width: 1040px; margin: 0 auto; padding: 0 48px 80px; }
     .faq-cta {
       background: #1E1812;
@@ -463,8 +453,6 @@
       color: var(--W);
       margin-bottom: 16px;
     }
-    /* Seule regle qui colore ce fragment. Trois autres l'ecrasaient plus bas,
-       en peche puis en blanc, si bien qu'il ne se detachait plus du titre. */
     .cta-title em { color: var(--terracotta, #C8603A); font-style: italic; font-weight: 400; }
     .cta-sub {
       font-family: 'DM Sans', sans-serif;
@@ -586,9 +574,7 @@
 body .faq-cta .cta-eyebrow { color: rgba(255,255,255,0.70) !important; }
 body .faq-cta .cta-sub { color: rgba(255,255,255,0.60); }
 
-    /* Appel a l'action en fin de reponse. Un seul motif pour toutes les
-       reponses qui en portent un : il y en avait deux, l'un pale au point
-       d'etre invisible, l'autre glisse au fil d'une phrase. */
+    /* CTA de réponse */
     .acc-cta {
       margin-top: 18px;
       display: flex;
@@ -1107,9 +1093,7 @@ body .cta-eyebrow {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-/* Aligné sur la pastille des autres pages (0.14em).
-   Sélecteur volontairement plus spécifique : le bloc 0.12em ci-dessus
-   est dupliqué trois fois dans ce fichier, l'ordre source ne suffit pas. */
+/* Pastille */
 body .faq-hero .hero-eyebrow {
   letter-spacing: 0.14em !important;
 }
@@ -2119,8 +2103,7 @@ body.carte-page .zone-header {
     });
   });
 
-  // Sommaire : la rubrique en cours se surligne au defilement. Le lien reste un lien,
-  // il fonctionne sans script.
+  // Sommaire actif
   var liens = [].slice.call(document.querySelectorAll('.faq-sommaire a'));
   var sections = liens.map(function(a) { return document.querySelector(a.getAttribute('href')); });
   if (window.IntersectionObserver && sections.every(Boolean)) {
@@ -2172,7 +2155,7 @@ body.carte-page .zone-header {
     if (el) el.style.display = visible.length === 0 ? 'block' : 'none';
   }
 
-  // Ouvrir la 1ère question de chaque section
+  // 1re question ouverte
   document.querySelectorAll('.faq-section').forEach(function(sec) {
     var first = sec.querySelector('.acc-trigger');
     if (first) {

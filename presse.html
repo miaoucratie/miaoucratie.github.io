@@ -2,7 +2,7 @@
 
 <html lang="fr">
 <head>
-  <!-- Mesure d'audience : chargee uniquement apres consentement explicite. -->
+  <!-- Mesure d'audience -->
   <script src="js/consentement.js" data-mesure="G-X3H7NL9GEL" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,26 +28,10 @@
   <link rel="stylesheet" href="css/polices.css">
 <link href="css/style.css" rel="stylesheet"/>
 <style>
-/* ──────────────────────────────────────────────────────────────────────────
-   Vocabulaire propre a la page presse. Prefixe « pr- » : aucune de ces
-   classes n'est utilisee ailleurs, modifier ce bloc ne peut repeindre aucune
-   autre page.
-
-   Ce qui n'est PAS redeclare ici, et pourquoi :
-   .topbar, .tmenu-*, .footer-bar        definis une seule fois dans couches.css
-   .btn-primary                          defini une seule fois dans style.css
-   taille, graisse, couleur des h1 et h2 imposes par la couche TITLES-V5 de
-                                         couches.css, chargee en dernier. Les
-                                         redeclarer sur le h2 lui-meme donnerait
-                                         des lignes mortes.
-   ────────────────────────────────────────────────────────────────────────── */
+/* ── Page presse ── */
 
 html{height:100%}
 body{min-height:100vh;display:flex;flex-direction:column}
-/* 1100, comme toutes les autres pages du site. Aucun texte n'est bride en
-   largeur ici : titres, paragraphes et boutons vont tous au bord du cadre.
-   Les lignes sont longues, l'interlignage est donc ouvert a 1.9 pour que
-   l'oeil retrouve le debut de la ligne suivante. */
 .page-wrap{max-width:1100px;margin:0 auto;padding:52px 40px 80px;flex:1}
 
 /* ── Hero ── */
@@ -61,46 +45,30 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .pr-list{display:grid;gap:20px;margin-bottom:56px}
 .pr-card{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:28px 32px}
 
-/* Le nom du journal est une etiquette, pas un titre : en petites capitales
-   rouille, il cesse de concurrencer le titre de l'article juste en dessous.
-   C'est ce qui cree la hierarchie dans la carte. */
+/* Nom du journal */
 .pr-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:12px}
 .pr-journal{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#A8472A}
 .pr-date{font-size:13px;color:#7A6B5E}
-/* Le statut d'acces est porte par le mot, jamais par la couleur seule. */
+/* Statut d'accès */
 .pr-access{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap}
 .pr-access.is-open{color:#1E1812;background:rgba(122,158,142,.22)}
 .pr-access.is-paid{color:#4A3728;background:rgba(184,155,128,.22)}
 
-/* Le titre de l'article est dans un <span> et non directement dans le h2 :
-   la couche TITLES-V5 impose « font-weight: 700 !important » a tout h2, et
-   du Cormorant italique en 700 ne ressemble a rien d'autre sur le site. Le
-   span echappe a la couche sans qu'on ait a poser un !important de plus.
-   L'italique 400 est une vraie fonte, pas une synthese : polices.css sert
-   Cormorant italique en variable de 400 a 700. C'est la graisse de tous les
-   <em> du site. */
+/* Titre de l'article */
 .pr-title{font-style:italic;margin-bottom:6px}
 .pr-title span{display:block;font-weight:400;font-size:clamp(24px,2.6vw,32px);line-height:1.25;letter-spacing:-.01em}
 .pr-byline{font-size:13px;color:#7A6B5E;margin-bottom:20px}
 
-/* Paragraphes courts et separes : un pave de six lignes ne se lit pas. */
 .pr-said{margin-bottom:24px}
 .pr-said p{font-size:16px;line-height:1.9;color:#1E1812;margin-bottom:16px}
 .pr-said p:last-child{margin-bottom:0}
 
-/* ── Actions ──
-   Les deux liens tiennent 44 px de haut, cible tactile minimale. Le lien
-   discret garde son soulignement : sans lui, seule la couleur le distinguerait
-   du texte voisin. */
+/* ── Actions ── */
 .pr-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .pr-ghost{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#D4BEA8;transition:color .2s,text-decoration-color .2s}
 .pr-ghost:hover{color:#1E1812;text-decoration-color:#1E1812}
 
-/* ── Bloc journalistes ──
-   Fond clair et non sombre : la couche TITLES-V5 impose « color: #1E1812 »
-   a tout h2 du site, un h2 pose sur #1E1812 serait invisible. C'est la panne
-   qu'avait le pied de page de reservation.html. Le bloc reprend donc le fond
-   sable de l'appel a l'action des tarifs. */
+/* ── Bloc journalistes ── */
 .pr-press{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:36px 40px;margin-bottom:48px}
 .pr-press h2{margin-bottom:12px}
 .pr-press p{font-size:15px;color:#4A3728;margin-bottom:16px;line-height:1.9}
@@ -116,9 +84,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .pr-final p{font-size:15px;color:#7A6B5E;margin-bottom:26px}
 .pr-final-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center}
 
-/* ── Focus ──
-   couches.css n'outille que la barre et le menu deroulant. Les liens du
-   contenu de cette page ont donc besoin de leur propre indicateur. */
+/* ── Focus ── */
 .page-wrap a:focus-visible{outline:2px solid #A8472A;outline-offset:3px;border-radius:4px}
 
 @media (max-width:720px){

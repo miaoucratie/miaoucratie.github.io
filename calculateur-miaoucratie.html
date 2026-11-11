@@ -2,7 +2,7 @@
 
 <html lang="fr">
 <head>
-  <!-- Mesure d'audience : chargee uniquement apres consentement explicite. -->
+  <!-- Mesure d'audience -->
   <script src="js/consentement.js" data-mesure="G-X3H7NL9GEL" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -100,20 +100,7 @@
 <p class="mention">TVA non applicable · Art. 293 B du CGI</p>
 </div>
 </main>
-<!--
-  Le calcul n'est plus ecrit ici : il vient de shared/tarifs.js, avec les taux
-  metier du site. C'est ce qui le rend testable — un tarif faux ne deplace
-  aucun pixel et ne casse aucun clic, il passait donc la QA sans un mot.
-
-  Les deux scripts sont CLASSIQUES, volontairement. Une premiere version
-  importait shared/tarifs.js en module ES : ouvrir cette page en
-  double-cliquant dessus ne chargeait alors plus rien du tout et les boutons
-  ne repondaient plus, un module ES ne se chargeant pas depuis file://.
-  Ne pas y remettre type="module".
-
-  Les gestionnaires onclick du balisage ont ete remplaces par data-ajuster /
-  data-option et des ecouteurs, poses en bas de ce script.
--->
+<!-- Calcul -->
 <script src="shared/tarifs.js"></script>
 <script>
   const { FRAIS_KM_EUR, SEUIL_SEJOUR_LONG, estimerSejour, formatEuros } = MiaouTarifs;
@@ -205,8 +192,7 @@
     document.getElementById('result-area').style.display = 'block';
   }
 
-  // Branchement des commandes. Il remplace les onclick du balisage, qui ne
-  // pouvaient plus fonctionner une fois le script passe en module.
+  // Commandes
   for (const bouton of document.querySelectorAll('[data-ajuster]')) {
     bouton.addEventListener('click', () => {
       change(bouton.dataset.ajuster, Number(bouton.dataset.pas));
