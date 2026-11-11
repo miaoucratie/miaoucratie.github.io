@@ -388,7 +388,8 @@
 .art-flux :is(p, li, figcaption, dd, dt, td, th, summary) a:not([class]),
 .art-sources a:not([class]),
 .art-fig a:not([class]),
-.art-tab a:not([class]) {
+.art-tab a:not([class]),
+.cq-said a:not([class]) {
   color: var(--rust);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -398,7 +399,8 @@
 .art-flux :is(p, li, figcaption, dd, dt, td, th, summary) a:not([class]):hover,
 .art-sources a:not([class]):hover,
 .art-fig a:not([class]):hover,
-.art-tab a:not([class]):hover { color: var(--deep); }
+.art-tab a:not([class]):hover,
+.cq-said a:not([class]):hover { color: var(--deep); }
 
 /* Les appels de note sont des liens, mais minuscules : le soulignement les
    rendrait illisibles. La couleur et l'exposant suffisent a les identifier,
