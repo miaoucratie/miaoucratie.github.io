@@ -1,62 +1,15 @@
-/*
- * Module editorial : page d'entree du blog et articles.
- *
- * ── Pourquoi un fichier et pas des regles dans style.css ──
- * Le site range deja un fichier par ensemble fonctionnel, charge apres
- * style.css : reservation.css, calculateur.css, page-legale.css. Les regles
- * ci-dessous ne servent qu'aux pages editoriales. Les poser dans style.css les
- * enverrait aux quatorze pages du site, dont la reservation et la carte, qui
- * n'en ont aucun usage. Un fichier par PAGE serait l'erreur inverse : il n'y
- * en a qu'un pour les quatre pages du blog.
- *
- * ══ LA GRILLE ══════════════════════════════════════════════════════════════
- *
- * Deux largeurs sur tout le blog, deux fonctions, et rien d'autre. Un
- * composant qui prend une troisieme largeur est un defaut, pas une variante.
- *
- *   --blog-lecture  760px   colonne d'article. TOUT y tient : paragraphes,
- *                           titres, figures, tableaux, encadres, listes. Un
- *                           visuel plus large que sa colonne de texte casse
- *                           l'harmonie et la lisibilite.
- *   --blog-grille  1120px   page d'entree, ou l'on balaie des cartes plutot
- *                           que de lire. Les textes d'accompagnement y sont
- *                           brides a la mesure de lecture.
- *
- * ══ L'ECHELLE VERTICALE ════════════════════════════════════════════════════
- *
- * Cinq valeurs, une par relation. Aucune marge ne se decide au cas par cas.
- *
- *   --e-titre    12px   entre un titre et ce qu'il annonce
- *   --e-para     20px   entre deux paragraphes
- *   --e-bloc     36px   autour d'un bloc : figure, tableau, encadre
- *   --e-sous     48px   avant un sous-titre
- *   --e-section  68px   avant un titre de section
- *
- * ── Ce que ce fichier ne redeclare pas ──
- * De style.css : .section .section-label .eyebrow .cards-grid .pcard
- * .steps-row .step .step-bubble .cred-item .btn-primary .btn-secondary
- * .cta-section .cta-btns .topbar .footer-bar.
- * De couches.css : la coque body.standalone-page, et la typographie des titres
- * — la couche TITLES-V5 impose famille, graisse, interlettrage, interligne et
- * couleur en !important, on ne fournit ici que les tailles manquantes.
- */
+/* Blog et articles */
 
 :root {
   --blog-lecture: 760px;
   --blog-grille: 1120px;
-  /* Une seule echelle verticale pour tout l'article : aucune marge ne se decide
-     au cas par cas. Elle a ete resserree d'un cran apres relecture d'Irina, les
-     ecarts de section ouvrant un vide trop large avant les titres. Les rapports
-     entre crans sont conserves, entre 1,3 et 1,8, ce qui garde les niveaux
-     distinguables d'un coup d'oeil sans avoir a mesurer. */
+  /* Échelle verticale */
   --e-titre: 12px;
   --e-para: 20px;
   --e-bloc: 36px;
   --e-sous: 48px;
   --e-section: 68px;
-  /* Une encre et un ton par article, portes par la classe de page. Petrole
-     pour l'eau, vert de la rubrique Enrichissement pour le jeu, sauge de la
-     rubrique Comportement. */
+  /* Encre par article */
   --art-eau-encre: #1E5566;
   --art-eau: #3E7C8F;
   --art-jeu-encre: #3B5540;
@@ -64,40 +17,13 @@
   --art-mythe: #4A6B58;
 }
 
-/* ══ LA COMPOSITION D'UN ARTICLE ════════════════════════════════════════
-   Une colonne de 760 px posee au milieu d'un ecran 16:9 laisse deux bandes
-   vides de 580 px et donne l'impression d'une petite page coincee au centre.
-   Etirer la prose sur 1900 px n'est pas la reponse : une ligne de 200 signes
-   ne se lit pas.
-   La reponse est de donner un role a l'espace, et de laisser la mesure
-   grandir avec l'ecran :
-
-     · le corps de texte suit le viewport, de 17 a 21 px ;
-     · la colonne se mesure en signes, pas en pixels : 74 signes, donc elle
-       s'elargit exactement autant que le texte grossit ;
-     · la bande de gauche porte le sommaire, colle au defilement — l'espace
-       sert a quelque chose au lieu d'etre vide ;
-     · sous 1080 px il n'y a plus de bande : le sommaire passe en rangee
-       horizontale sous l'en-tete, et la colonne prend toute la largeur.
-
-   TOUT ce que contient la colonne partage sa largeur : paragraphes, titres,
-   figures, tableaux, encadres. Un composant qui en sort est un defaut. */
+/* ══ LA COMPOSITION D'UN ARTICLE ══ */
 .art-page {
-  /* 1200 moins les deux fois 40 de remplissage : 1120 de contenu, soit la
-     largeur que « .section » donne aux blocs de la page d'entree. Le sommaire,
-     la colonne de lecture et les blocs de bas de page partagent des lors les
-     memes bords sur toutes les pages du blog. */
   width: min(1200px, 100%);
   margin: 0 auto;
-  /* Le bas reprend l'ecart de section : le bloc de fin respire autant sous
-     lui qu'au-dessus, au lieu de buter contre le pied de page. */
   padding: 0 40px var(--e-section);
 }
-/* 16 px fixe sur tous les articles, decision d'Irina : agrandir le texte ne
-   rend pas la lecture longue plus confortable, ca gonfle la page et ca reduit
-   ce qu'on embrasse d'un coup d'oeil. C'est aussi la valeur de
-   « ce-que-jutilise.html », ou 66 paragraphes sont deja rendus en 16 px.
-   La mesure reste en signes : la colonne suit le corps sans reglage a part. */
+/* Corps 16 px */
 .art-flux { font-size: 16px; max-width: 74ch; }
 .art-flux > .section {
   max-width: none;
@@ -106,9 +32,6 @@
 }
 
 @media (min-width: 1080px) {
-  /* La grille est portee par une enveloppe et non par le conteneur de page :
-     la zone du sommaire collant s'arrete ainsi ou l'article s'arrete, au lieu
-     de courir sous « A lire ensuite » et le bloc de fin. */
   .art-colonnes {
     display: grid;
     grid-template-columns: 240px minmax(0, 1fr);
@@ -117,11 +40,7 @@
   }
 }
 
-/* La page d'entree n'est pas un article : ses blocs prennent la grille, comme
-   ceux de « Ce que j'utilise » et de la page presse, ou le titre et le chapo
-   courent sur toute la largeur du conteneur. Les avoir bordes a la mesure de
-   lecture laissait, sur un ecran large, une bande vide de 280 px a droite du
-   chapo pendant que les cartes dessous allaient jusqu'au bord. */
+/* Page d'entrée */
 
 /* ══ SOMMAIRE ═══════════════════════════════════════════════════════════ */
 .art-sommaire { font-size: 14px; }
@@ -153,9 +72,7 @@
   }
 }
 
-/* Sous 1080 px, plus de bande laterale : le sommaire devient une rangee de
-   reperes qui defile horizontalement, juste sous l'en-tete. Il occupe alors
-   une ligne au lieu d'une colonne, et ne repousse pas le contenu. */
+/* Sommaire mobile */
 @media (max-width: 1079px) {
   .art-page { padding: 0 24px var(--e-section); }
   .art-sommaire { padding: 24px 0 0; }
@@ -180,17 +97,13 @@
   .art-sommaire a:hover { border-color: var(--rust); }
 }
 
-/* Deux sections voisines sur le meme fond cumulent leurs retraits : 80 en bas
-   plus 80 en haut, soit 160 px de vide la ou 80 suffisent. Sur l'accueil le
-   defaut ne se voit pas, les sections y alternent les fonds. Une seule des
-   deux voisines renonce a son retrait, jamais les deux. */
+/* Sections voisines */
 .section--hero { padding-bottom: 0; }
 .section--suite { padding-top: 0; }
 
 /* ══ EN-TETE ════════════════════════════════════════════════════════════ */
 
-/* TITLES-V5 ne dimensionne que .hero-title et quelques titres nommes : un h1
-   nu retombe sur le 2em du navigateur. On lui donne une taille, rien d'autre. */
+/* Titre h1 */
 .art-titre { font-size: clamp(34px, 5vw, 52px); margin-bottom: var(--e-para); }
 .art-titre em { font-style: italic; font-weight: 400; color: var(--terracotta); }
 
@@ -202,48 +115,12 @@
 }
 .art-chapo + .art-chapo { margin-top: 14px; }
 .art-hero + .cred-item { margin-top: var(--e-bloc); }
-/* Deux encadres qui se suivent se touchaient : le premier n'a pas de marge
-   basse, le second pas de marge haute, et les deux cadres se collaient bord
-   a bord. */
+/* Encadrés successifs */
 .cred-item + .cred-item { margin-top: var(--e-bloc); }
 
 /* ══ CORPS D'ARTICLE ════════════════════════════════════════════════════ */
 
-/* Lignes orphelines : un paragraphe dont la derniere ligne ne porte qu'un mot,
-   seul a gauche. Mesure du 2 septembre 2026 sur les quatre articles en ligne,
-   en iframe de largeur fixe apres « document.fonts.ready » :
-
-     paragraphes finissant sur un mot isole     1280 px   375 px   320 px
-     hydratation-du-chat                              0        6        9
-     etiquette-nourriture-chat                        3        5        7
-     croquettes-et-patee                              2        3        3
-
-   Aucune reecriture ne les corrige aux trois largeurs a la fois : allonger une
-   phrase pour reparer 375 px en cree une autre a 1280. « text-wrap: pretty »
-   demande au navigateur de reequilibrer les lignes precedentes pour eviter la
-   derniere ligne trop courte. Mesure apres : zero partout.
-
-   Le repli est sans risque : un navigateur qui ne connait pas la valeur
-   l'ignore et coupe comme avant.
-
-   Les elements de liste manquaient a cette liste de selecteurs, et ce sont
-   les seuls qui restaient. Mesure du 3 septembre 2026 sur les cinq articles
-   en ligne, meme methode, paragraphes deja a zero :
-
-     elements de liste finissant     1280 px      375 px      320 px
-     sur un mot isole              avant apres  avant apres  avant apres
-     croquettes-et-patee               3     0      5     3      6     2
-     etiquette-nourriture-chat         1     0      2     0      0     0
-     hydratation-du-chat               1     0      3     0      8     0
-     jeu-chat                          0     0      2     0      6     0
-     ce-que-jutilise                   0     0      0     0      0     0
-     total                             5     0     12     3     20     2
-
-   Il reste cinq cas, tous sur « croquettes-et-patee » : des elements de deux
-   lignes ou le moteur n'a rien a remonter sans laisser la premiere ligne trop
-   courte. Ils sont connus — « Facile a doser », « Utilisable dans un
-   distributeur », la note sur les graisses — et aucune reecriture ne les
-   corrige aux trois largeurs a la fois. */
+/* Lignes orphelines */
 .art-corps > p,
 .art-corps > h2,
 .art-corps > h3,
@@ -259,19 +136,11 @@
 }
 .art-corps > h2 {
   margin-top: var(--e-section);
-  /* style.css pose 40 px sous les h2 de section ; dans un article, le titre
-     doit rester colle au paragraphe qu'il annonce. */
   margin-bottom: var(--e-titre);
 }
 .art-corps > h3 { margin-top: var(--e-sous); margin-bottom: var(--e-titre); }
-/* Un titre en tete de section ne reprend pas l'ecart de section : le retrait
-   de la section le porte deja, et cumuler les deux ouvrirait un vide double. */
 .art-corps > :is(h2, h3):first-child { margin-top: 0; }
-/* Sauf dans une section « --suite », qui n'a justement pas de retrait haut.
-   Sans cette reprise, les deux regles se cumulaient a zero et le premier
-   titre du corps venait se coller a l'encart qui le precede. Mesure avant
-   correction : 0 px entre la note d'affiliation et « Deux procedes, deux
-   contraintes », la ou toutes les autres sections en ont 88. */
+/* Sections --suite */
 .section--suite > :is(h2, h3):first-child { margin-top: var(--e-section); }
 .art-corps > :is(figure, table, .cred-item, .art-tab-cadre, .art-fig, .art-etapes, details, .art-produit) {
   margin: var(--e-bloc) 0;
@@ -287,64 +156,21 @@
 }
 .art-corps li::marker { color: var(--terracotta); }
 
-/* La barre du haut est collante sur 50 px : une cible d'ancre arrivait
-   dessous. */
+/* Ancres */
 .art-corps [id] { scroll-margin-top: 74px; }
 
-/* ══ FICHE PRODUIT ══════════════════════════════════════════════════════
-   Une colonne, fiches pleine largeur. C'est la disposition de la production.
-   Passees a deux colonnes elles tombent a 510 px : six lignes sur vingt se
-   coupent en deux et les hauteurs ne se repondent plus d'une rangee a
-   l'autre. */
+/* ══ FICHE PRODUIT ══ */
 .art-fiches { display: grid; gap: var(--e-para); }
 
-/* Les trois articles, cote a cote. Ils doivent tenir dans le premier ecran :
-   arriver sur « Les coulisses de Miaoucratie » puis devoir faire defiler pour
-   decouvrir ce qu'on peut y lire est une friction inutile. Trois colonnes sur
-   bureau, deux sur tablette, une sur telephone. */
-/* « auto-fill » et non un nombre fixe de colonnes : la rangee pose autant de
-   colonnes que la largeur permet, et le jour ou le blog aura dix ou cinquante
-   articles, rien n'est a changer dans cette feuille. « min(300px, 100%) »
-   plutot que « 300px » : sur un ecran de 320, une colonne de 300 px plus les
-   retraits sortirait de la fenetre. */
+/* Articles en rangée */
 .art-trio {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: var(--e-para);
 }
 
-/* ══ FICHES ET BOUTONS SUR PETIT ECRAN ═════════════════════════════════════
-   A 320 px, une fiche a 36 px de retrait de chaque cote laisse 198 px utiles,
-   dont 56 pris par le retrait interne du bouton : il ne reste que 142 px de
-   texte, et tout libelle de plus de 24 signes passe sur deux lignes.
-
-   Mesure : « Le tapis en inox sur Amazon » y tient sur deux lignes, « Le
-   tapis inox » sur une. Raccourcir les libelles traiterait le symptome et
-   ferait perdre la destination du lien ; c'est la place qui manque.
-
-   On rend donc la place : 20 px de retrait de fiche et 18 px de retrait de
-   bouton en dessous de 400 px. Les deux regles sont bornees aux composants du
-   blog, aucun bouton d'une autre page ne bouge. */
-/* ══ BLOC DE FIN ═══════════════════════════════════════════════════════════
-   Le bandeau « .cta-section » du site est un aplat terracotta plein cadre.
-   Sur le blog il pose trois problemes mesures :
-
-     · la regle globale « h2 em » peint le mot mis en valeur en terracotta,
-       donc terracotta sur terracotta, contraste 1,00:1 : le mot disparait ;
-     · le bouton blanc a texte terracotta plafonne a 4,05:1, sous le seuil ;
-     · le paragraphe a 85 % d'opacite tombe a 3,37:1.
-
-   La variante du blog remplace l'aplat par le fond teinte a 6 % de la bande
-   d'avis, « .avis-bg », et son filet haut a 18 %. Meme famille de couleur,
-   l'orange redevient un accent. Titre en --deep : 14,80:1. Bouton
-   « .btn-primary », qui est deja le bouton du site.
-
-   Aucune page hors blog n'est touchee : « .cta-section » reste tel quel. */
-/* Le bandeau final n'avait aucune marge haute : sur les quatre pages du blog
-   et aux trois largeurs, son bord touchait le bloc precedent — l'encart des
-   sources sur la page d'entree, « A lire ensuite » sur les articles. Deux
-   aplats differents colles bord a bord, sans respiration.
-   Meme cran que « .art-lies », qui est l'autre bloc terminal de la colonne. */
+/* ══ FICHES ET BOUTONS SUR PETIT ECRAN ══ */
+/* ══ BLOC DE FIN ══ */
 .art-fin {
   margin-top: var(--e-section);
   background: rgba(200, 96, 58, 0.06);
@@ -370,21 +196,7 @@
   .art-fin-btns .btn-primary, .art-fin-btns .btn-secondary { justify-content: center; }
 }
 
-/* ══ LIENS DANS LE TEXTE ═══════════════════════════════════════════════════
-   Le site ne declare aucune couleur de lien generique : chaque contexte a la
-   sienne, « .topbar a », « .footer-links a », « .step p a ». Un <a> pose dans
-   un contexte non prevu retombe donc sur le bleu du navigateur, et c'est
-   exactement ce qui arrivait aux articles.
-
-   Les valeurs sont celles de « .step p a » dans style.css, qui est la
-   convention du site pour un lien au fil du texte. Elles sont redeclarees ici
-   plutot qu'ajoutees a la regle globale : la portee reste le blog, et aucune
-   autre page ne peut bouger.
-
-   Le selecteur couvre tout ce qui porte du texte dans un article : corps,
-   listes, legendes de figure, cellules de tableau, sources et sommaire. Les
-   boutons en sont exclus, sinon un « .btn-primary » pose dans un paragraphe
-   se retrouverait en rouille sur rouille. */
+/* ══ LIENS DANS LE TEXTE ══ */
 .art-flux :is(p, li, figcaption, dd, dt, td, th, summary) a:not([class]),
 .art-sources a:not([class]),
 .art-fig a:not([class]),
@@ -400,16 +212,11 @@
 .art-fig a:not([class]):hover,
 .art-tab a:not([class]):hover { color: var(--deep); }
 
-/* Les appels de note sont des liens, mais minuscules : le soulignement les
-   rendrait illisibles. La couleur et l'exposant suffisent a les identifier,
-   et leur cible est un renvoi interne, pas une destination. */
+/* Appels de note */
 .art-flux sup a { text-decoration: none; }
 .art-flux sup a:hover { text-decoration: underline; }
 
-/* Bloc « articles lies », pose en bas d'article par le generateur.
-   Il ne cree aucun composant : la rangee est « .art-trio », la carte est
-   « .pcard.art-produit ». Seuls le titre du bloc et sa respiration sont a
-   declarer. */
+/* Articles liés */
 .art-lies { margin-top: var(--e-section); }
 .art-mention-legale {
   font-family: 'DM Sans', sans-serif;
@@ -429,24 +236,10 @@
   margin-bottom: var(--e-para);
 }
 
-/* Trois cartes posees cote a cote se lisent en parallele : leurs pastilles,
-   leurs titres et leurs boutons doivent se trouver a la meme hauteur. Sans
-   cela, une pastille qui passe sur deux lignes decale le titre d'une seule
-   carte et casse la rangee. La grille de la rangee traverse les cartes, ce
-   qui aligne leurs lignes internes quel que soit leur contenu. */
-/* L'alignement ligne a ligne n'a de sens que si les cartes sont cote a cote.
-   Empilees, la sous-grille leur imposait encore la hauteur de ligne de la
-   plus grande, ce qui ouvrait des espaces sous les pastilles. */
+/* Sous-grille des cartes */
 @supports (grid-template-rows: subgrid) {
   @media (min-width: 641px) {
-  /* Les quatre lignes sont en « auto » : chacune prend la hauteur du plus
-     grand des trois contenus, et les boutons se retrouvent donc a la meme
-     hauteur. Avec « 1fr » sur la ligne de texte, la carte la plus bavarde
-     debordait et son bouton descendait de 86 px sous les autres. */
   .art-trio { grid-template-rows: auto auto auto auto; }
-  /* .art-produit pose « display: flex » plus loin dans ce fichier, avec la
-     meme specificite : sans la classe supplementaire ici, c'est le flex qui
-     l'emportait et la sous-grille ne s'appliquait jamais. */
   .art-trio > .pcard.art-produit {
     display: grid;
     grid-row: span 4;
@@ -458,13 +251,7 @@
 }
 
 .pcard.art-produit { display: flex; flex-direction: column; padding: 32px 36px; }
-/* Titre de fiche : exactement le composant de la production.
-   `.cq-title` porte l'italique et un <span> interieur porte la graisse 400 —
-   c'est ce detour qui donne l'italique clair du site, parce que la couche
-   TITLES-V5 impose « font-weight: 700 !important » sur h1, h2 et h3 et qu'un
-   element interieur y echappe. Sans le <span>, on obtient un italique 700 qui
-   n'existe nulle part ailleurs sur le site. Meme mecanique que « h2 em » et
-   « .art-titre em », qui repassent tous en 400 de cette facon. */
+/* Titre de fiche */
 .art-produit :is(h2, h3) { font-style: italic; margin-bottom: var(--e-titre); }
 .art-produit :is(h2, h3) > span {
   display: block;
@@ -473,19 +260,13 @@
   line-height: 1.25;
   letter-spacing: -0.01em;
 }
-/* Le titre mene a l'article. Il garde exactement l'aspect d'un titre : la
-   convention du lien rouille souligne vaut pour un lien AU MILIEU d'un texte,
-   ou il faut le distinguer de ce qui l'entoure. Un titre entier est deja
-   distinct, le souligner en permanence l'alourdit. Il n'apparait qu'au survol
-   et au clavier. */
+/* Titre-lien */
 .art-produit :is(h2, h3) > span > a {
   color: inherit;
   text-decoration: none;
 }
 .art-produit :is(h2, h3) > span > a:hover,
 .art-produit :is(h2, h3) > span > a:focus-visible { text-decoration: underline; }
-/* Les paragraphes d'une fiche, qu'ils soient poses directement dans la carte
-   ou regroupes dans le conteneur que la grille alignee demande. */
 .art-produit > p,
 .art-carte-texte > p {
   font-size: 16px;
@@ -495,20 +276,10 @@
 }
 .art-produit > p:last-of-type { margin-bottom: var(--e-bloc); }
 .art-carte-texte > p:last-child { margin-bottom: var(--e-bloc); }
-/* Dans une fiche, l'encadre reprend la largeur du texte et s'en detache par
-   sa marge, pas par un second cadre. */
 .art-produit .cred-item { margin: 6px 0 18px; }
 
-/* Etiquettes en tete de fiche : la categorie, et la mention du lien.
-   .eyebrow n'est pas repris : sa marge basse de 24 px et sa taille sont
-   calibrees pour un haut de page, pas pour deux pastilles cote a cote. */
+/* Étiquettes de fiche */
 .art-etiquettes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-/* Les cartes qui menent a un article se lisent en rangee, et elles sont
-   etroites : avec « flex-wrap », la voisine dont le nom de rubrique etait plus
-   court gardait ses deux etiquettes sur une ligne quand l'autre passait a deux.
-   La mise en page dependait du texte. Elles sont donc toutes empilees.
-   Les fiches produit sont larges : leurs deux etiquettes tiennent cote a cote
-   et n'ont aucune raison de descendre. */
 .art-trio .art-etiquettes,
 .avis-grid .art-etiquettes { flex-direction: column; align-items: flex-start; }
 .art-cat,
@@ -524,19 +295,12 @@
   line-height: 1.4;
 }
 .art-cat { color: var(--rust); background: rgba(168, 71, 42, 0.1); }
-/* --mid et non --muted : sur le sable, le gris chaud donnait 4,22:1, sous le
-   seuil de 4,5:1. Mesure avec --mid : 9,24:1. La mention du lien informe,
-   elle n'alerte pas : elle reste en retrait de la categorie. */
 .art-tag { color: var(--mid); background: var(--warm); font-weight: 600; }
 
-/* Rangee de boutons, poussee en bas de la fiche pour que les boutons de deux
-   fiches voisines s'alignent. */
+/* Boutons de fiche */
 .art-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 10px; }
 
-/* ══ ENCADRES ═══════════════════════════════════════════════════════════
-   .cred-item fournit la carte blanche a filet terracotta. Deux variantes :
-   une note s'en contente, une alerte doit se distinguer au premier coup
-   d'oeil sans sortir de la palette. */
+/* ══ ENCADRES ══ */
 .cred-item--large { padding: 28px 30px; }
 .cred-item--large p { font-size: 16px; line-height: 1.8; }
 .cred-item--large p + p { margin-top: 16px; }
@@ -558,11 +322,7 @@
   margin-bottom: var(--e-titre);
 }
 
-/* ══ ETAPES EN COLONNE ══════════════════════════════════════════════════
-   .steps-row de style.css tient cinq etapes sur une rangee, ce qui demande
-   1120 px. Dans une colonne de lecture de 760, chaque etape tomberait a
-   136 px. Les memes pastilles, empilees : le sommaire se lit d'un coup et
-   reste dans la colonne. */
+/* ══ ETAPES EN COLONNE ══ */
 .art-etapes { display: grid; gap: 14px; }
 .art-etape {
   display: grid;
@@ -574,10 +334,6 @@
   border-radius: 16px;
   padding: 16px 20px;
 }
-/* Pastille pleine et non un chiffre rouille sur un rond creme : sur une carte
-   blanche, le rond se confondait avec elle et la suite d'etapes n'avait plus
-   d'accroche pour l'oeil. Le filet reprend la meme couleur et separe le numero
-   de son texte, sans ajouter de trait au dessin. */
 .art-etape .step-bubble {
   width: 52px; height: 52px;
   font-size: 26px;
@@ -585,22 +341,10 @@
   background: var(--rust);
   color: var(--cream);
 }
-/* Un filet separe le numero de son texte, sans ajouter de trait au dessin. Sa
-   couleur est reprise par les variantes qui en ont une. */
 .art-etape > div:last-child { border-left: 2px solid var(--warm); padding-left: 16px; }
 .art-etape h3 span { color: var(--rust); }
 
-/* UNE COULEUR PAR ETAPE. Les cinq existent deja : sauge foncee et petrole
-   viennent des figures de l'article hydratation, terracotta, rouille et brun
-   sont des variables du site. Aucune n'est inventee, et toutes tiennent le
-   seuil de 3:1 des grands textes et des elements non textuels.
-   Elles ne disent rien du contenu, elles distinguent : la ou une couleur porte
-   une information, comme le produit dans les tableaux et les figures, elle
-   reste reservee a cette information.
-
-   La carte reste blanche : un fond teinte demandait « color-mix », qui rend du
-   « color(srgb ... ) » que le controle de contraste du projet ne sait pas lire.
-   Il mesurait alors des rapports faux et ne voyait plus rien. */
+/* Couleur par étape */
 .art-etapes--couleurs .art-etape:nth-child(1) { --et: #4A6B58; }
 .art-etapes--couleurs .art-etape:nth-child(2) { --et: #7A6B5E; }
 .art-etapes--couleurs .art-etape:nth-child(3) { --et: #1E5566; }
@@ -611,11 +355,7 @@
 .art-etapes--couleurs .art-etape h3 span { color: var(--et); }
 .art-etape p { font-size: 15px; line-height: 1.7; color: var(--mid); }
 
-/* ══ UN PROCEDE, DE GAUCHE A DROITE ═════════════════════════════════════════
-   Un enchainement se raconte dans le sens de la lecture. Le chiffre devient le
-   repere, souligne de sa couleur, et la fleche marque le passage d'une etape a
-   la suivante. Sous 720 px les trois colonnes n'ont plus la place : elles
-   s'empilent et la fleche bascule vers le bas, sans changer de dessin. */
+/* ══ UN PROCEDE, DE GAUCHE A DROITE ══ */
 .art-etapes--parcours {
   --p-fleche: 34px;
   grid-auto-flow: column;
@@ -632,12 +372,7 @@
   padding: 0;
 }
 .art-etapes--parcours .art-etape > div:last-child { border-left: 0; padding-left: 0; }
-/* Trois classes et non deux : la regle generale des etapes redefinit la
-   pastille dans la requete des 768 px, plus bas dans la feuille, et reprendrait
-   la main sur celle-ci. */
 .art-etapes--parcours .art-etape .step-bubble {
-  /* « .step-bubble » de style.css centre son contenu : ici le chiffre et
-     l'illustration partent du meme bord que le filet et le titre. */
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -653,8 +388,7 @@
   font-size: 46px;
   line-height: 1;
 }
-/* Deux bords d'un carre pivote, comme le chevron de « --suite » : aucune image
-   a charger, aucune police a attendre. */
+/* Flèche */
 .art-etapes--parcours .art-etape + .art-etape::before {
   content: "";
   position: absolute;
@@ -676,9 +410,7 @@
   .art-etapes--parcours .art-etape .step-bubble { width: auto; height: auto; font-size: 38px; }
 }
 
-/* ══ FIGURES DE DONNEES ═════════════════════════════════════════════════
-   Chaque barre porte son intitule et sa valeur en texte : la largeur n'est
-   jamais le seul porteur de l'information. */
+/* ══ FIGURES DE DONNEES ══ */
 .art-fig {
   background: #fff;
   border: 1.5px solid var(--warm);
@@ -694,12 +426,7 @@
   padding-top: 16px;
   border-top: 1px solid var(--warm);
 }
-/* Titre de composant : un seul traitement pour l'encart, la figure et
-   l'etape. DM Sans et non Cormorant, qui reste la police des niveaux de
-   titre : un titre de composant qui l'emprunte entre en concurrence avec eux. */
-/* 17 et non 14 px : a 14, la hauteur d'x du titre valait 7 px contre 8 pour le
-   texte courant et pour les valeurs qu'il annonce. Un titre de bloc ne peut pas
-   se lire plus petit que ce qu'il coiffe. */
+/* Titre de composant */
 .art-fig-titre,
 .art-tab caption,
 .art-etape h3,
@@ -713,8 +440,7 @@
   color: var(--deep);
   margin: 0 0 var(--e-titre);
 }
-/* Unite annoncee une fois, au-dessus des barres : la repeter sur chaque
-   valeur alourdit sans rien apprendre. */
+/* Unité */
 .art-fig-unite {
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -722,25 +448,17 @@
   color: var(--muted);
   margin-bottom: 18px;
 }
-/* Une unite abregee garde sa casse : « kHz » en capitales se lirait « KHZ ». */
 .art-fig-unite abbr { text-transform: none; text-decoration: none; }
 
 .art-barres { display: flex; flex-direction: column; gap: 14px; }
 .art-barre { display: grid; grid-template-columns: minmax(96px, 24%) 1fr auto; align-items: center; gap: 12px; }
 .art-barre-nom { font-size: 14px; color: var(--mid); }
 .art-piste { background: var(--warm); border-radius: 999px; height: 20px; overflow: hidden; }
-/* Rouille et non sable : le sable donnait 2,15:1 sur la piste, sous le seuil
-   de 3:1 des elements non textuels. */
 .art-part { display: block; height: 100%; background: var(--rust); border-radius: 999px; }
 .art-part--clair { background: var(--sand); }
-/* Sauge foncee et non la sauge du site, qui donne 2,43:1 sur la piste, sous le
-   meme seuil de 3:1 que le sable. Mesure : 4,88:1. */
 .art-part--sauge { background: #4A6B58; }
 
-/* Deux produits compares sur plusieurs mesures. Chaque mesure fait un groupe,
-   et chaque produit garde sa couleur d'un groupe a l'autre : quatre barres a la
-   suite obligeaient a relire les intitules pour savoir laquelle repond a
-   laquelle. */
+/* Deux produits comparés */
 .art-barres--duel { gap: 0; }
 .art-barres--duel .art-groupe { display: grid; gap: 10px; padding: 18px 0; }
 .art-barres--duel .art-groupe:first-child { padding-top: 0; }
@@ -763,9 +481,7 @@
   text-align: right;
 }
 
-/* Barre empilee : une piste, plusieurs parts. Chaque part est separee de la
-   suivante par un filet, faute de quoi deux teintes voisines se confondent en
-   vision basse. */
+/* Barre empilée */
 .art-pile { display: flex; height: 26px; border-radius: 999px; overflow: hidden; background: var(--warm); }
 .art-pile > span { display: block; box-shadow: inset -1px 0 0 var(--cream); }
 .art-pile > span:last-child { box-shadow: none; }
@@ -776,15 +492,10 @@
   border: 1px solid rgba(30, 24, 18, 0.28);
 }
 
-/* Une pile posee dans une piste en occupe toute la hauteur : la piste garde
-   son arrondi et sa fonction de cadre, la pile porte la repartition. */
 .art-piste > .art-pile { height: 100%; border-radius: 0; background: none; }
 
 
-/* ══ DEUX GROUPES QUI SE CROISENT ══════════════════════════════════════════
-/* Les bandes ne partent pas de zero : elles couvrent la moyenne du groupe
-   plus ou moins son ecart, seule facon de montrer que deux groupes se
-   recouvrent. */
+/* ══ DEUX GROUPES QUI SE CROISENT ══ */
 .art-croise-piste {
   position: relative;
   height: 76px;
@@ -792,8 +503,6 @@
   border-radius: 16px;
   overflow: hidden;
 }
-/* Bordures en pointilles : la teinte seule ne suffit pas a borner la zone, et
-   elle ne se voit plus sous la bande qui la recouvre. */
 .art-croise-zone {
   position: absolute;
   top: 0;
@@ -802,8 +511,6 @@
   border-left: 1px dashed var(--mid);
   border-right: 1px dashed var(--mid);
 }
-/* Le nom vit dans la bande : une colonne d'intitules a gauche rendrait la
-   position des bandes illisible, puisque c'est elle qui porte l'information. */
 .art-croise-bande {
   position: absolute;
   height: 28px;
@@ -839,9 +546,7 @@
 .art-croise-cle span { display: inline-flex; align-items: center; gap: 8px; }
 .art-croise-cle i { width: 14px; height: 14px; border-radius: 4px; flex: none; }
 
-/* ══ TABLEAU ════════════════════════════════════════════════════════════
-   Le cadre defile horizontalement plutot que de pousser la page : un tableau
-   a chasse fixe avait deja elargi le document de 84 px en mobile. */
+/* ══ TABLEAU ══ */
 .art-tab-cadre {
   overflow-x: auto;
   border: 1.5px solid var(--warm);
@@ -849,11 +554,6 @@
   background: #fff;
 }
 .art-tab { width: 100%; border-collapse: collapse; font-size: 15px; }
-/* La legende ne porte que sa position et son retrait : son ecriture est celle
-   des autres titres de composant, plus haut. En Cormorant 19 px, sa hauteur
-   d'x valait 8 px, exactement celle du texte courant : elle avait beau etre
-   annoncee plus grande et en gras, elle se lisait plus petite que le
-   paragraphe d'en dessous. */
 .art-tab caption {
   caption-side: top;
   text-align: left;
@@ -874,24 +574,12 @@
 .art-tab tbody tr + tr td { border-top: 1px solid var(--warm); }
 .art-tab tbody th { font-weight: 600; color: var(--deep); }
 .art-tab td { color: var(--mid); }
-/* La meme piste que dans les figures, a la taille d'une cellule. La piste
-   vaut 100 %, la part remplie ce que la formule garantit : « au boeuf » se
-   lit alors pour ce qu'il est. */
-/* Pleine largeur de sa cellule, sans valeur en dur : les 104 px d'origine
-   etaient tailles pour un tableau precis, et la seule page qui utilise encore
-   cette piste les annulait deja par une surcharge. */
+/* Piste de cellule */
 .art-tab .art-piste--tab { display: block; height: 8px; margin-top: 7px; }
 
-/* Un plafond n'est pas un minimum : « moins de 4 % » se dessine en contour,
-   pour qu'on ne le lise pas comme les 4 % garantis de la ligne suivante. */
+/* Plafond */
 .art-part--plafond { background: none; border: 1.5px solid var(--rust); }
-/* Comparer deux produits critere par critere. La colonne de chaque produit
-   porte sa teinte, celle-la meme que ses barres dans les figures : la couleur
-   dit de quel produit on parle, du tableau au graphique, sans legende a
-   apprendre. Le numero du critere reprend la pastille des etapes. */
-/* Les colonnes de valeurs sont reservees : laissees libres, la colonne
-   d'explication prenait toute la place et « 9,5 % de proteines » se coupait sur
-   trois lignes. */
+/* Comparatif par critère */
 .art-tab--duel thead th:first-child { width: 20%; }
 .art-tab--duel thead th.art-duel-a,
 .art-tab--duel thead th.art-duel-b { width: 23%; }
@@ -899,9 +587,6 @@
 .art-tab--duel .art-duel-b { background: rgba(74, 107, 88, 0.07); }
 .art-tab--duel td.art-duel-a { color: var(--rust); }
 .art-tab--duel td.art-duel-b { color: #4A6B58; }
-/* La valeur reste sous le titre du bloc et au-dessus de ce qui la precise :
-   17 px comme le titre, avec la couleur du produit en plus, et la ligne qui
-   la qualifie un cran en dessous. */
 .art-tab--duel td.art-duel-a strong,
 .art-tab--duel td.art-duel-b strong {
   display: block;
@@ -913,9 +598,6 @@
 .art-tab--duel td.art-duel-a,
 .art-tab--duel td.art-duel-b { font-size: 14px; }
 .art-tab--duel thead th span { display: block; font-weight: 400; text-transform: none; letter-spacing: 0; }
-/* Le numero et son intitule forment une ligne a part entiere : en flux, un
-   intitule de deux mots repassait sous la pastille au lieu de s'aligner sur
-   lui-meme. */
 .art-crit { display: flex; align-items: center; gap: 11px; }
 .art-num {
   flex: 0 0 auto;
@@ -945,21 +627,12 @@
   font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
 }
 
-/* ══ COMPARAISON DEUX A DEUX ════════════════════════════════════════════
-   Deux fiches qui se comparent doivent se lire en parallele : memes reperes,
-   memes hauteurs, separateurs alignes. Sans la mise en colonne, la liste de
-   gauche etant plus longue que celle de droite, les deux filets se
-   retrouvaient a des hauteurs differentes et la comparaison se cassait. */
+/* ══ COMPARAISON DEUX A DEUX ══ */
 .art-duo { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--e-para); }
 .art-duo > .pcard { display: flex; flex-direction: column; }
 .art-duo > .pcard ul { flex: 1; }
 .art-duo > .pcard .note { margin-top: auto; }
 
-/* Pousser la note en bas de carte aligne les BAS, pas les filets : la note la
-   plus longue commence 22 px plus haut que l'autre, et le trait de separation
-   se retrouve a deux hauteurs differentes au milieu d'une comparaison. La
-   grille de la rangee traverse les deux fiches : pictogramme, titre, liste et
-   note occupent chacun une ligne commune, donc les filets se repondent. */
 @supports (grid-template-rows: subgrid) {
   @media (min-width: 769px) {
     .art-duo { grid-template-rows: auto auto auto auto; }
@@ -974,9 +647,7 @@
   }
 }
 
-/* ══ SOURCES ════════════════════════════════════════════════════════════
-   Repliees par defaut : qui veut verifier ouvre, qui ne veut pas voit
-   seulement qu'elles existent. */
+/* ══ SOURCES ══ */
 .art-sources {
   background: var(--warm);
   border-radius: 20px;
@@ -1011,20 +682,14 @@
 .art-sources li { font-size: 14px; line-height: 1.75; color: var(--mid); margin-bottom: var(--e-titre); }
 .art-sources li::marker { color: var(--muted); }
 
-/* La convention du lien rouille souligne est declaree dans couches.css, pour
-   .cred-item p a, .pcard p a, .note a et le corps d'article. Elle n'est pas
-   redeclaree ici. */
 
-/* ══ RESPONSIVE ═════════════════════════════════════════════════════════
-   .section passe deja a 56px/24px sous 768. Restent les elements du module. */
+/* ══ RESPONSIVE ══ */
 @media (max-width: 768px) {
   .art-titre { font-size: clamp(30px, 8vw, 38px); }
   .art-corps > p,
   .art-corps li { font-size: 16px; }
   .art-fig { padding: 20px 18px; }
   .art-barre { grid-template-columns: 1fr auto; row-gap: 6px; }
-  /* L'intitule passe au-dessus de sa barre : a 375 px, une colonne de 96 px
-     pour le nom ne laissait que 150 px de piste, illisible. */
   .art-barre-nom { grid-column: 1 / -1; }
   .art-piste { grid-column: 1; }
   .art-tab th,
@@ -1034,35 +699,18 @@
   .art-duo { grid-template-columns: 1fr; }
   .art-etape { grid-template-columns: 44px 1fr; gap: 14px; padding: 14px 16px; }
   .art-etape .step-bubble { width: 44px; height: 44px; font-size: 22px; }
-  /* Article Umwelt : une bande de couleurs prend toute la largeur, et la
-     graduation n'a pas d'intitule. La classe de page donne a ces regles le pas
-     sur celles, plus bas, qu'elles adaptent. */
+  /* Article Umwelt */
   .art-page--umwelt .art-barre--bande { grid-template-columns: 1fr; }
   .art-page--umwelt .art-barre--axe > .art-barre-nom { display: none; }
 }
 
 @media (max-width: 520px) {
-  /* Deux boutons cote a cote dans une fiche n'ont plus la place : ils passent
-     l'un sous l'autre, pleine largeur, ce qui les rend aussi plus faciles a
-     atteindre au pouce. Le retrait horizontal est reduit par style.css pour
-     tous les boutons du site a cette largeur. */
   .art-actions { flex-direction: column; align-items: stretch; }
   .art-actions .btn-primary,
   .art-actions .btn-secondary { justify-content: center; }
 }
 
-/* ══ SOUS 400 PX ════════════════════════════════════════════════════════════
-   Une seule gouttiere pour tout le blog : conteneur de page, fiche, bouton.
-   Trois valeurs empilees mangeaient 120 px des 320 disponibles, et un libelle
-   de la forme « groupe nominal + destination » n'y tenait plus.
-
-   Ce bloc vient EN FIN DE FICHIER, apres les regles qu'il reprend. A specificite
-   egale c'est l'ordre qui tranche : place plus haut, « .pcard.art-produit
-   { padding-left: 16px } » perdait contre « .pcard.art-produit
-   { padding: 32px 36px } » declare plus bas, et ne servait a rien.
-
-   Le retrait se declare sur le bouton lui-meme, pas sur ses parents : enumerer
-   les parents laissait de cote celui du bloc association. */
+/* ══ SOUS 400 PX ══ */
 @media (max-width: 400px) {
   .art-page,
   .page-wrap { padding-left: 16px; padding-right: 16px; }
@@ -1073,20 +721,8 @@
   .btn-secondary { padding-left: 16px; padding-right: 16px; }
 }
 
-/* ══ ARTICLE HYDRATATION ═══════════════════════════════════════════════════
-   Le terracotta du site raconte la terre seche, et cet article parle d'eau.
-   Le bleu y prend donc les reperes de lecture et les donnees ; le terracotta
-   garde les alertes et les cibles, pour qu'une couleur ne dise qu'une chose.
+/* ══ ARTICLE HYDRATATION ══ */
 
-   Famille petrole, voisine du sauge deja present, et non un bleu ardoise qui
-   jurerait avec les terres du site. Deux tons seulement.
-
-   Mesures : l'encre donne 7,72:1 en texte sur creme ; le ton moyen donne
-   3,85:1 sur le fond sable, au-dessus du seuil de 3:1 des elements non
-   textuels. Les deux segments d'une meme barre sont separes par le filet
-   creme de .art-pile, la couleur ne porte pas seule la distinction. */
-
-/* Tout est porte par la classe de page : aucun autre article ne bouge. */
 .art-page--eau .eyebrow { color: var(--art-eau-encre); background: rgba(30, 85, 102, 0.10); }
 .art-page--eau .art-sommaire a { border-left-color: rgba(30, 85, 102, 0.22); }
 .art-page--eau .art-sommaire a:hover { color: var(--art-eau-encre); border-left-color: var(--art-eau-encre); }
@@ -1094,9 +730,7 @@
 .art-page--eau .art-tab thead th { color: var(--art-eau-encre); }
 .art-page--eau .art-tab .art-part { background: var(--art-eau); }
 
-/* ══ ARTICLE JEU ════════════════════════════════════════════════════════════
-   Meme mecanique que « --eau » ci-dessus : une encre et un ton par article,
-   poses sur la classe de page. Le vert vient de la rubrique Enrichissement. */
+/* ══ ARTICLE JEU ══ */
 .art-page--jeu .eyebrow { color: var(--art-jeu-encre); background: rgba(59, 85, 64, 0.10); }
 .art-page--jeu .art-sommaire a { border-left-color: rgba(59, 85, 64, 0.22); }
 .art-page--jeu .art-sommaire a:hover { color: var(--art-jeu-encre); border-left-color: var(--art-jeu-encre); }
@@ -1105,10 +739,7 @@
 .art-page--jeu .art-fig .art-part { background: var(--art-jeu); }
 
 
-/* ══ ARTICLES DE LA RUBRIQUE COMPORTEMENT ═══════════════════════════════════
-   Meme mecanique que « --eau » et « --jeu » : un ton par rubrique, pose sur la
-   classe de page. Le vert sauge vient de la rubrique Comportement, que
-   partagent les articles mythes, umwelt, enfants et léchage. */
+/* ══ ARTICLES DE LA RUBRIQUE COMPORTEMENT ══ */
 
 :is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
 :is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
@@ -1118,9 +749,7 @@
 :is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .art-tab caption { color: var(--art-mythe); }
 
 
-/* ── Les deux branches du ronronnement ────────────────────────────────────
-/* Pas .art-voies : ses connecteurs sont ancres sur la 2e branche, sa
-   geometrie est fausse a deux. */
+/* ── Les deux branches du ronronnement ── */
 .art-page--mythes .art-branche { border-left: 4px solid var(--art-mythe); }
 .art-page--mythes .art-branche--b { border-left-color: var(--rust); }
 .art-page--mythes .art-branche-ou {
@@ -1129,23 +758,18 @@
   color: var(--art-mythe); margin: 0 0 12px;
 }
 .art-page--mythes .art-branche--b .art-branche-ou { color: var(--rust); }
-/* En bloc : « où » et « ce qui a été mesuré » ne se lisent pas en enfilade. */
 .art-page--mythes .art-branche-quoi {
   display: block; font-size: 12px; letter-spacing: .08em;
   text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
 }
 
-/* ── Le schéma de l'œil ───────────────────────────────────────────────────
-   Aucun texte dans le SVG : il ne suivrait pas la mise à l'échelle. Les
-   libellés passent par la légende HTML déjà utilisée par les figures. */
+/* ── Le schéma de l'œil ── */
 .art-page--mythes .art-schema-boite {
   background: rgba(74, 107, 88, 0.05);
   border-radius: 14px; padding: 12px 10px; margin-bottom: 16px;
 }
 .art-page--mythes .art-schema-svg { display: block; width: 100%; height: auto; }
-/* Schema pose sur une image : l'image reste une <img>, lisible par les moteurs
-   d'images, et les reperes passent sur un calque SVG a la meme echelle. Les
-   coins reprennent le rayon de 40 unites sur 1536 x 1024 du dessin. */
+/* Schéma sur image */
 .art-page--enfants .art-schema-calque { position: relative; aspect-ratio: 1536 / 1024; }
 .art-page--enfants .art-schema-calque > :is(img, svg) { position: absolute; inset: 0; width: 100%; height: 100%; }
 .art-page--enfants .art-schema-calque > img { border-radius: 2.604% / 3.906%; }
@@ -1162,8 +786,7 @@
 .art-page--mythes .sc-fleche { fill: var(--terracotta); }
 .art-page--mythes .sc-point { fill: var(--mid); }
 
-/* ── La citation détachée ─────────────────────────────────────────────────
-/* Pas .cred-quote-text : c'est le style des avis clients. */
+/* ── La citation détachée ── */
 .art-page--mythes .art-citation {
   margin: var(--e-bloc) 0;
   padding: 2px 0 2px 26px;
@@ -1174,12 +797,10 @@
   font-size: 20px; line-height: 1.65; color: var(--deep);
 }
 
-/* ── Les quatre gestes, sortis du paragraphe ──────────────────────────── */
+/* ── Les quatre gestes ── */
 .art-page--mythes .art-gestes { gap: 10px; margin: 0 0 var(--e-para); }
 .art-page--mythes .art-gestes .art-cat { font-size: 15px; padding: 9px 17px; border-radius: 999px; }
 
-/* Le libelle passe par ::before : un lecteur d'ecran ne le reenonce pas
-   dix fois avant la phrase. */
 :is(.art-page--mythes, .art-page--umwelt) .art-verdict {
   margin: var(--e-bloc) 0;
   padding: 0 0 0 22px;
@@ -1200,52 +821,38 @@
   color: var(--art-mythe);
 }
 
-/* Un bloc de cartes suivi d'un paragraphe : les deux se touchaient. */
 :is(.art-page--mythes, .art-page--enfants) .art-corps > .art-duo { margin: var(--e-bloc) 0; }
-/* Photo carree : a pleine colonne elle ferait 810 px de haut. */
+/* Photo carrée */
 :is(.art-page--mythes, .art-page--lechage) .art-fig--photo { max-width: 480px; margin-inline: auto; }
 
-/* ══ ARTICLE UMWELT ═════════════════════════════════════════════════════════
-   Meme rubrique que l'article mythes : il reprend son encre et son encart de
-   fin de section par les regles « :is() » ci-dessus. Ne s'ajoute ici que ce
-   qui lui est propre. */
+/* ══ ARTICLE UMWELT ══ */
 .art-page--umwelt .art-verdict::before { content: "À retenir"; }
 .art-page--umwelt .art-etapes--suite .step-bubble {
   border-color: var(--art-mythe);
   color: var(--art-mythe);
 }
 
-/* Une bande de couleurs n'a pas de valeur a afficher : sa ligne prend la
-   grille des barres, sans la colonne des chiffres. */
+/* Bande de couleurs */
 .art-barre--bande { grid-template-columns: minmax(96px, 24%) 1fr; }
 .art-bande { height: 26px; border-radius: 999px; }
-/* Ce que voit un humain, du violet au rouge, sur 400 a 700 nm. La piste part
-   de 350 nm : les 50 premiers nanometres restent vides chez nous. */
+/* Spectre humain */
 .art-bande--humain {
   margin-left: 14.29%;
   background: linear-gradient(90deg, #6A3FB5, #3050D8 17%, #1E9BD0 33%, #2FAE5A 50%, #D8D33A 62%, #EE8A2A 75%, #D8322A 88%, #9E1F1F);
 }
-/* Deux cones au lieu de trois : du bleu au jaune, et une zone neutre vers
-   505 nm que le chat ne distingue pas du blanc. Les hachures a gauche sont
-   les UVA que son cristallin laisse passer, sans preuve qu'il les voie. */
+/* Spectre du chat */
 .art-bande--chat {
   background:
     linear-gradient(90deg, transparent 14.29%, #4A58C8 14.29%, #3C62D6 28.57%, #8C97B8 40%, #C9C3B4 44.29%, #CDBF7A 50%, #D4BE4A 58%, #B9A33C 80%, #7E7030),
     repeating-linear-gradient(135deg, rgba(74, 88, 200, 0.55) 0 4px, transparent 4px 8px);
 }
-/* Graduation sous la derniere piste : les reperes sont en HTML, jamais dans
-   le dessin, pour rester lisibles a toutes les largeurs. Chaque repere est
-   pose a sa valeur, en pourcentage de la piste. */
+/* Graduation */
 .art-axe { position: relative; height: 18px; font-size: 12px; color: var(--muted); font-variant-numeric: var(--chiffres, lining-nums) tabular-nums; }
 .art-axe > span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
 .art-axe > span:first-child { transform: none; }
 .art-axe > span:last-child { transform: translateX(-100%); }
 .art-barre--axe { margin-top: -6px; }
-/* Cellules et legendes etroites sur telephone : le navigateur equilibre
-   leurs lignes pour qu'aucun mot ne reste seul. */
 :is(.art-page--umwelt, .art-page--lechage) :is(.art-tab td, .art-tab th, .art-legende-item) { text-wrap-style: pretty; }
-/* Sur telephone, l'intitule de chaque ligne passe au-dessus, et les deux
-   valeurs comparees se partagent toute la largeur. */
 @media (max-width: 560px) {
   :is(.art-page--umwelt, .art-page--lechage) .art-tab--duel tr { display: grid; grid-template-columns: 1fr 1fr; }
   :is(.art-page--umwelt, .art-page--lechage) .art-tab--duel thead th:first-child { display: none; }
@@ -1259,18 +866,7 @@
 }
 
 
-/* ══ SUITE D'ETAPES ════════════════════════════════════════════════════════
-   Une suite d'etapes n'est pas une pile de cartes : pas de cadre, pas de fond.
-   Le lien se fait par quatre elements dessines, tous derives des deux mesures
-   posees ci-dessous — changer le diametre du cercle deplace tout le reste.
-
-     · le cercle filaire qui porte le chiffre
-     · le point et le trait court qui vont du cercle au texte
-     · le filet vertical qui longe le texte
-     · le chevron qui descend d'une etape a la suivante
-
-   Le sable porte les liaisons, l'encre porte les chiffres : le regard suit les
-   chiffres, les liaisons se voient sans se faire remarquer. */
+/* ══ SUITE D'ETAPES ══ */
 .art-etapes--suite {
   --e-cercle: 92px;
   --e-gouttiere: 30px;
@@ -1290,7 +886,7 @@
   align-items: center;
 }
 
-/* Le cercle : un filet, rien dedans. Le chiffre y respire, en Cormorant. */
+/* Cercle */
 .art-etapes--suite .step-bubble {
   width: var(--e-cercle);
   height: var(--e-cercle);
@@ -1300,8 +896,7 @@
   font-size: calc(var(--e-cercle) * 0.58);
 }
 
-/* Le point se pose sur le bord droit du cercle, le trait le relie au filet.
-   Les deux vivent dans la gouttiere, donc leur largeur en decoule. */
+/* Point et trait */
 .art-etapes--suite .step-bubble::before,
 .art-etapes--suite .step-bubble::after {
   content: "";
@@ -1323,14 +918,13 @@
   background: var(--light);
 }
 
-/* Le filet vertical longe le texte, sans le toucher. */
+/* Filet vertical */
 .art-etapes--suite .art-etape > div:last-child {
   border-left: 1px solid var(--light);
   padding-left: 26px;
 }
 
-/* Le chevron descend d'une etape a la suivante, dans l'axe des cercles. Deux
-   bords d'un carre pivote : aucune image a charger, aucune police a attendre. */
+/* Chevron */
 .art-etapes--suite .art-etape + .art-etape::before {
   content: "";
   position: absolute;
@@ -1344,7 +938,7 @@
   transform: rotate(45deg);
 }
 
-/* Le filet horizontal separe deux etapes, a partir du texte. */
+/* Filet horizontal */
 .art-etapes--suite .art-etape + .art-etape::after {
   content: "";
   position: absolute;
@@ -1362,16 +956,7 @@
   .art-etapes--suite .art-etape + .art-etape::after { top: -19px; }
 }
 
-/* ══ ECHELLE GRADUEE ═══════════════════════════════════════════════════════
-   Variante de la suite d'etapes pour un bloc qui n'enchaine pas des causes
-   mais gradue une mesure. La couleur y porte l'information : le degrade va de
-   l'eau a la terre seche, et chaque palier reprend son ton. Ce n'est pas un
-   habillage, c'est l'echelle elle-meme.
-
-   Les trois tons existent deja sur le site. Mesures sur creme : chiffre creme
-   a 7,72 / 5,56 / 5,46 sur les ronds, titre a 6,82 / 5,01 / 4,88 sur sa
-   teinte, tous au-dessus de 4,5:1. Les valeurs claires du sauge et du
-   terracotta ne tenaient pas ce seuil en texte, d'ou ces trois-la. */
+/* ══ ECHELLE GRADUEE ══ */
 .art-etapes--echelle {
   --e-rail: 10px;
   --e-retrait: 46px;
@@ -1398,7 +983,7 @@
   border-radius: 14px;
   padding: 18px 24px;
 }
-/* Le tiret relie le rail au palier, a hauteur de son rond. */
+/* Tiret */
 .art-etapes--echelle .art-etape::before {
   content: "";
   position: absolute;
@@ -1408,15 +993,11 @@
   height: 1px;
   background: var(--light);
 }
-/* Le titre porte le palier, la description l'explique : la graisse et la
-   taille disent lequel se lit en premier. Le <span> tient la couleur, la
-   couche TITLES-V5 imposant la sienne en !important sur le h3 lui-meme. */
+/* Titre de palier */
 .art-etapes--echelle .art-etape h3 { font-size: 26px !important; margin: 0; }
 .art-etapes--echelle .art-etape h3 span { font-weight: 600; color: var(--palier); }
 .art-etapes--echelle .art-etape p { margin: 3px 0 0; font-size: 15px; color: var(--mid); }
-/* Plusieurs constats sur un palier : une liste, meme corps que la description,
-   puces a la couleur du palier. Le bas du palier perd l'interligne de la
-   derniere puce pour rester a l'equilibre avec le haut. */
+/* Liste de palier */
 .art-etapes--echelle .art-etape ul { margin: 8px 0 0; padding-left: 20px; }
 .art-etapes--echelle .art-etape li { margin: 0; font-size: 15px; line-height: 1.7; color: var(--mid); }
 .art-etapes--echelle .art-etape li::marker { color: var(--palier); }
@@ -1433,16 +1014,7 @@
   .art-etapes--echelle .art-etape:has(> ul) { padding-bottom: 11px; }
 }
 
-/* ══ TROIS PISTES ══════════════════════════════════════════════════════════
-   Trois options qui partent d'un meme but. Les numeroter dirait qu'on les
-   suit dans l'ordre, ce qui est faux : le lecteur en choisit une. D'ou le
-   noyau a gauche et les trois branches a droite.
-
-   Les liaisons sont des equerres a angles arrondis, ancrees sur chaque carte :
-   une courbe libre demanderait des coordonnees fixes, qui se decrochent des
-   qu'une carte change de hauteur. Ici rien a realigner, jamais.
-
-   Trois tons deja au travail dans la page : l'eau, le pivot, la terre. */
+/* ══ TROIS PISTES ══ */
 .art-voies {
   --v-noyau: 210px;
   --v-liaison: 72px;
@@ -1475,13 +1047,8 @@
 }
 .art-voies-note { font-size: 13px; color: var(--mid); margin: 8px 0 0; line-height: 1.5; }
 
-/* Les trois cartes prennent la meme hauteur : c'est ce qui rend les courbes
-   calculables. Sans ca, la distance d'une carte a l'axe du noyau depend de la
-   hauteur de sa voisine, qu'une carte ne peut pas connaitre. */
 .art-voies-liste { display: grid; grid-auto-rows: 1fr; gap: var(--v-ecart); }
 
-/* L'icone est centree verticalement : c'est la hauteur a laquelle la courbe
-   arrive, et c'est ce qui fait qu'elles se rejoignent au lieu de se croiser. */
 .art-voie {
   position: relative;
   display: grid;
@@ -1499,10 +1066,7 @@
 .art-voie p { margin: 6px 0 0; font-size: 15px; color: var(--mid); }
 .art-voie-icone { display: grid; place-items: center; width: 46px; height: 46px; }
 
-/* La courbe part du noyau et rejoint la carte. Chaque branche porte la sienne
-   et la dessine dans sa propre boite : rien a recalculer quand une carte gagne
-   une ligne. Le trace est en pourcentages et s'etire avec la boite ; le
-   « non-scaling-stroke » garde une epaisseur constante malgre l'etirement. */
+/* Courbes */
 .art-voie-lien {
   position: absolute;
   left: calc(var(--v-liaison) * -1);
@@ -1514,18 +1078,11 @@
 .art-voie:nth-child(2) { background: rgba(168, 71, 42, 0.06); color: var(--rust); }
 .art-voie:nth-child(3) { background: rgba(74, 107, 88, 0.07); color: #4A6B58; }
 
-/* La branche du haut sort a sa propre hauteur puis descend vers l'axe du
-   noyau : horizontale en haut, verticale a gauche. Celle du bas fait
-   l'inverse. Celle du milieu est deja dans l'axe, un trait suffit. */
-/* Du milieu de sa carte a l'axe du noyau : une demi-carte, l'ecart, une
-   demi-carte. La hauteur est posee et non deduite de « top » et « bottom » :
-   un SVG a un ratio intrinseque, qui reprend la main des que la hauteur est
-   laissee libre. */
 .art-voie:nth-child(1) .art-voie-lien { top: 50%; height: calc(100% + var(--v-ecart)); }
 .art-voie:nth-child(2) .art-voie-lien { top: calc(50% - 1px); height: 2px; }
 .art-voie:nth-child(3) .art-voie-lien { bottom: 50%; height: calc(100% + var(--v-ecart)); }
 
-/* Le point qui pose la branche sur la carte. */
+/* Point d'ancrage */
 .art-voie::after {
   content: "";
   position: absolute;
@@ -1537,8 +1094,6 @@
 }
 
 @media (max-width: 720px) {
-  /* Le noyau passe au-dessus : les branches n'auraient plus de sens en
-     colonne, elles disparaissent avec leur point. */
   .art-voies { grid-template-columns: 1fr; row-gap: 20px; }
   .art-voies-noyau { aspect-ratio: auto; border-radius: 18px; padding: 22px 20px; }
   .art-voie-lien { display: none; }
@@ -1546,29 +1101,10 @@
   .art-voie { grid-template-columns: 40px 1fr; column-gap: 14px; padding: 16px 18px; }
 }
 
-/* Les 3 illustrations, une par geste. Elles se posent sur la ligne du chiffre,
-   juste a cote : le filet de « --parcours » leur sert de tablette et le bloc ne
-   gagne pas un etage. Trois classes, parce que la regle generale des etapes
-   redefinit la pastille plus bas dans article.css.
-   Sources en 176 px, affichees en 76 : elles restent nettes sur un ecran a
-   double densite. Carrees et calees de la meme facon, sans quoi les trois
-   n'auraient pas le meme poids optique dans la rangee. */
+/* Illustrations des gestes */
 .art-etapes--parcours .art-etape-icone { width: 76px; height: 76px; flex-shrink: 0; }
 
-/* ── Le cycle du jouet ─────────────────────────────────────────────────────
-   Une suite d'etapes qui revient a son point de depart. Le dessin garde la
-   pastille pleine et la carte de « .art-etapes » ; s'y ajoutent deux choses,
-   et deux seulement.
-
-   1. Un rail sombre relie les pastilles, avec un point au milieu de chaque
-      intervalle. Il dit « ca descend », comme une frise.
-   2. Un trajet de retour part sous la derniere etape, file en pointille vers
-      la droite, remonte, et revient pointer sur la premiere. C'est lui qui
-      transforme la liste en cycle : le pointille dit que le temps passe, la
-      fleche dit ou on retombe.
-
-   La reserve de 200 px a droite lui appartient. Sous 720 px elle disparait :
-   le trajet se replie en une simple fleche sous la derniere etape. */
+/* ── Le cycle du jouet ── */
 .art-etapes--cycle {
   position: relative;
   gap: 22px;
@@ -1576,8 +1112,6 @@
   padding-bottom: 40px;
 }
 
-/* La carte quitte le conteneur pour le texte : la pastille se retrouve sur le
-   rail, a l'exterieur, comme dans la variante « --suite ». */
 .art-etapes--cycle .art-etape {
   position: relative;
   background: none;
@@ -1593,8 +1127,7 @@
 }
 .art-etapes--cycle .step-bubble { position: relative; z-index: 2; }
 
-/* Le rail : du centre d'une pastille au centre de la suivante. La derniere le
-   prolonge jusqu'au trajet de retour. */
+/* Rail */
 .art-etapes--cycle .art-etape::before {
   content: "";
   position: absolute;
@@ -1607,8 +1140,7 @@
 }
 .art-etapes--cycle .art-etape:last-of-type::before { bottom: -40px; }
 
-/* Le trajet de retour, en 2 morceaux : le crochet a droite, et le pointille
-   qui court sous les etapes jusqu'a lui. */
+/* Trajet de retour */
 .art-etapes--cycle::before {
   content: "";
   position: absolute;
@@ -1634,8 +1166,7 @@
   z-index: 0;
 }
 
-/* La pointe, au bout du segment horizontal du haut. Deux bords d'un carre
-   pivote, comme les chevrons du reste de la feuille. */
+/* Pointe */
 .art-cycle-fleche {
   position: absolute;
   top: 26px;
@@ -1648,8 +1179,7 @@
   z-index: 1;
 }
 
-/* La legende se pose sur la verticale et la coupe : c'est ce qui evite un
-   trait qui traverse le texte. */
+/* Légende */
 .art-cycle-legende {
   position: absolute;
   right: 0;
@@ -1667,8 +1197,6 @@
 }
 
 @media (max-width: 720px) {
-  /* Plus la place pour un trajet a droite : il se replie sous la derniere
-     etape, en une fleche et sa legende. */
   .art-etapes--cycle { padding-right: 0; padding-bottom: 0; }
   .art-etapes--cycle::before,
   .art-etapes--cycle::after,
@@ -1685,79 +1213,36 @@
   .art-cycle-legende::before { content: "\2191\00a0\00a0"; font-size: 17px; }
 }
 
-/* ── Les 6 temps d'une chasse ──────────────────────────────────────────────
-   « .art-etapes--suite » avec 2 reglages : le cercle descend de 92 a 64 px,
-   parce que 6 temps empiles font une hauteur qu'aucun lecteur ne parcourt ;
-   et l'encre passe au vert de la page, la regle de base allant chercher
-   celle de l'article hydratation. */
+/* ── Les 6 temps d'une chasse ── */
 .art-etapes--temps { --e-cercle: 64px; gap: 30px; }
 .art-page--jeu .art-etapes--suite .step-bubble {
   border-color: var(--art-jeu-encre);
   color: var(--art-jeu-encre);
 }
 
-/* Les valeurs n'ont pas la meme largeur de texte : « reference » est plus long
-   que « -25 % ». Avec une 3e colonne en « auto », chaque ligne calculait sa
-   propre largeur, et les 2 pistes ne faisaient pas la meme longueur : la
-   comparaison etait fausse a l'oeil. Deux barres qu'on compare partagent
-   exactement la meme piste. */
 .art-barres--aligne .art-barre { grid-template-columns: minmax(132px, 22%) 1fr 78px; }
 
-/* ── Une photo dans le cadre de figure ─────────────────────────────────────
-   Meme cadre que les figures de donnees : le lecteur reconnait un bloc qui lui
-   montre quelque chose. Le rembourrage tombe pour que l'image aille d'un bord
-   a l'autre, et le filet de la legende avec : l'image fait deja separation. */
+/* ── Photo dans une figure ── */
 .art-fig--photo { padding: 0; overflow: hidden; }
 .art-fig--photo img { display: block; width: 100%; height: auto; }
 .art-fig--photo figcaption { margin: 0; padding: 16px 28px 20px; border-top: 0; }
 
-/* Sous 768 px l'intitule passe au-dessus de sa barre : la piste reprend toute
-   la largeur, la valeur garde sa colonne. Declaree apres la regle de base, qui
-   l'emporterait sinon a specificite egale. */
 @media (max-width: 768px) {
   .art-barres--aligne .art-barre { grid-template-columns: 1fr 78px; }
 }
 
-/* ── Lignes orphelines dans les blocs ──────────────────────────────────────
-   La regle posee plus haut ne vise que les enfants DIRECTS de « .art-corps ».
-   Or un paragraphe vit aussi dans une etape, une fiche produit ou un encart,
-   ou la colonne est plus etroite : il s'y termine sur un mot seul plus vite
-   qu'en pleine largeur. Mesure du 3 septembre 2026 sur l'article jeu, en
-   iframe de largeur fixe apres « document.fonts.ready » : 3 mots isoles a
-   1280 px avant cette regle, 0 apres.
-   Le repli reste sans risque : un navigateur qui ne connait pas la valeur
-   l'ignore et coupe comme avant. */
+/* ── Lignes orphelines dans les blocs ── */
 .art-etape p,
 .art-carte-texte p,
 .cred-item p,
 .pcard p,
 .art-fig-unite { text-wrap: pretty; }
 
-/* Un titre de bloc ne se corrige pas en fin de ligne, il s'equilibre :
-   « balance » repartit ses lignes a peu pres egales, ce que « pretty » ne
-   fait pas. C'est deja le traitement des titres dans style.css. */
+/* Titres de bloc */
 .art-fig-titre,
 .pcard h3 { text-wrap: balance; }
 
-/* ══ PAGE « CE QUE J'UTILISE » ══════════════════════════════════════════════
-   Vocabulaire propre a la page « Ce que j'utilise ». Prefixe « cq- » : aucune
-   de ces classes n'est utilisee ailleurs, modifier ce bloc ne peut repeindre
-   aucune autre page. Deplace ici depuis un <style> inline de la page ; le seul
-   echafaudage reste inline (html, body, .page-wrap) car il n'est pas propre a
-   cette page.
-
-   Ce qui n'est PAS redeclare ici, et pourquoi :
-   .topbar, .tmenu-*, .footer-bar        definis une seule fois dans couches.css
-   .btn-primary                          defini une seule fois dans style.css
-   taille, graisse, couleur des h1 et h2 imposes par la couche TITLES-V5 de
-                                         couches.css, chargee en dernier. Les
-                                         redeclarer ici donnerait des lignes
-                                         mortes.
-
-   La page est calquee sur presse.html : meme largeur de cadre, meme carte
-   blanche sur fond sable, meme interlignage ouvert. Deux pages editoriales
-   qui se ressemblent se lisent sans reapprentissage.
-   ────────────────────────────────────────────────────────────────────────── */
+/* ══ PAGE « CE QUE J'UTILISE » ══ */
 
 /* ── Hero ── */
 .cq-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A8472A;background:rgba(168,71,42,.1);border-radius:999px;padding:7px 14px;margin-bottom:20px}
@@ -1766,150 +1251,71 @@
 .cq-hero h1 em{font-style:italic;font-weight:400;color:#A8472A}
 .cq-hero-sub{font-size:16px;color:#7A6B5E;line-height:1.8}
 
-/* ── Encart d'affiliation ──
-   La loi du 9 juin 2023 demande une mention claire et visible AVANT les liens,
-   pas seulement en pied de page. Le contrat Amazon Partenaires impose en plus
-   sa formule. Les deux sont ici, en haut, avant la premiere carte.
-   Le fond sable et le liseré rouille le detachent du texte courant sans en
-   faire une alerte : c'est une information, pas un avertissement. */
+/* ── Encart d'affiliation ── */
 .cq-aff{background:#F0E8DA;border:1.5px solid #E8DDD0;border-left:4px solid #A8472A;border-radius:14px;padding:24px 32px 24px 29.5px;margin-bottom:48px}
-/* Deux encarts, deux sujets, deux couleurs de la charte : le rouille pour ce
-   qui touche a l'affiliation, la sauge pour ce que contient la liste. La sauge
-   est celle du bloc de l'association, plus bas sur la page. */
 .cq-aff--liste{background:rgba(122,158,142,.10);border-color:rgba(122,158,142,.35);border-left-color:#7A9E8E}
 .cq-aff p{font-size:14.5px;line-height:1.8;color:#4A3728;margin-bottom:10px}
 .cq-aff p:last-child{margin-bottom:0}
 .cq-aff strong{font-weight:600;color:#1E1812}
 
-/* ── Retrait horizontal, regle unique ──
-   Tous les blocs de premier niveau partagent le meme retrait : 32 px sur
-   bureau, 22 px sous 720 px. Cartes, encart d'affiliation, blocs sable, bloc
-   final, et le titre de la section « A lire » qui n'est pas une carte mais
-   doit s'aligner sur le contenu des cartes qui la suivent.
-
-   La page en comptait cinq valeurs differentes, de 26 a 40 px : les titres de
-   section ne tombaient pas sur la meme verticale que le texte des fiches, et
-   ca se voyait. Toute nouvelle boite reprend 32 px et 22 px, sans exception.
-   Le seul retrait different est celui de l'encart de danger, qui est imbrique
-   dans une carte et se mesure donc par rapport a elle. */
+/* ── Retrait horizontal ── */
 
 /* ── Liste des produits ── */
 .cq-list{display:grid;gap:20px;margin-bottom:56px}
 .cq-card{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:28px 32px}
 
-/* La categorie est une etiquette, pas un titre : en petites capitales rouille,
-   elle cesse de concurrencer le nom du produit juste en dessous. C'est ce qui
-   cree la hierarchie dans la carte. */
+/* Catégorie */
 .cq-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:12px}
 .cq-cat{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#A8472A}
-/* L'etiquette « lien affilie » est portee par le mot, jamais par la couleur
-   seule : elle reste lisible en niveaux de gris et au lecteur d'ecran. */
+/* Étiquette lien affilié */
 .cq-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap;color:#4A3728;background:rgba(184,155,128,.22)}
 
-/* Le nom du produit est dans un <span> et non directement dans le h3 : la
-   couche TITLES-V5 impose « font-weight: 700 !important » a tout h1, h2 et h3, et du
-   Cormorant italique en 700 ne ressemble a rien d'autre sur le site. Le span
-   echappe a la couche sans qu'on ait a poser un !important de plus. */
+/* Nom du produit */
 .cq-title{font-style:italic;margin-bottom:6px}
 .cq-title span{display:block;font-weight:400;font-size:clamp(24px,2.6vw,32px);line-height:1.25;letter-spacing:-.01em}
 .cq-brand{font-size:13px;color:#7A6B5E;margin-bottom:20px}
 
-/* Paragraphes courts et separes : un pave de six lignes ne se lit pas. */
 .cq-said{margin-bottom:24px}
 .cq-said p{font-size:16px;line-height:1.9;color:#1E1812;margin-bottom:16px}
 .cq-said p:last-child{margin-bottom:0}
 
-/* ── Actions ──
-   Le lien tient 44 px de haut, cible tactile minimale. */
+/* ── Actions ── */
 .cq-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .cq-note{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:13px;color:#7A6B5E}
 
-/* ── Encart de danger ──
-   Reserve a ce qui peut tuer un chat. Un seul sur la page : un second lui
-   ferait perdre sa force.
-
-   Trois choses le rendent visible sans clignoter. Le fond rougi et le liseré
-   epais le sortent de la carte blanche. Le texte est plus gros que le corps
-   de la fiche, pas seulement plus gras, parce qu'un gras dans un paragraphe
-   se lit comme une insistance et non comme un avertissement. Et le mot
-   « danger mortel » porte l'information : en niveaux de gris, au lecteur
-   d'ecran, ou pour un daltonien, l'encart dit encore ce qu'il est.
-   Le pictogramme est decoratif, d'ou aria-hidden : il double le mot, il ne
-   le remplace pas. */
+/* ── Encart de danger ── */
 .cq-danger{background:#FBEDE7;border:1.5px solid #E4BCAB;border-left:6px solid #A8472A;border-radius:12px;padding:20px 24px;margin:22px 0}
 .cq-danger-label{display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#A8472A;margin-bottom:12px}
 .cq-danger p{font-size:18px;line-height:1.7;color:#1E1812;margin:0}
 .cq-danger p+p{margin-top:12px;font-size:15.5px;color:#4A3728}
 .cq-danger strong{font-weight:700}
 
-/* ── Section « Ni Amazon, ni magasin » ──
-   Placee juste apres la liste des produits, et c'est voulu : le lecteur qui
-   vient de parcourir dix-neuf liens remuneres tombe sur les deux conseils qui
-   ne rapportent rien. C'est ce bloc qui rend le reste de la page credible, il
-   ne se deplace pas plus bas et ne se supprime pas pour gagner de la place.
-
-   Le titre ne dit pas « ici » : le site ne vend rien, il recommande. Parler
-   d'achat « ici » laisserait croire a une boutique qui n'existe pas. Il ne
-   nomme pas Amazon seul non plus : aucun des deux conseils ne passe par un
-   commercant, le premier ne coute rien et le second finance une association.
-   Fond blanc, contrairement au bloc de mise au point : ce n'est pas un
-   avertissement, c'est du conseil. */
+/* ── Section « Ni Amazon, ni magasin » ── */
 .cq-hors{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:36px 32px;margin-bottom:56px}
 .cq-hors h2{margin-bottom:12px}
 .cq-hors p{font-size:16px;color:#1E1812;margin-bottom:16px;line-height:1.9;text-wrap:pretty}
 .cq-hors p:last-child{margin-bottom:0}
 
-/* ── Bloc a titre, pose au-dessus d'une liste de fiches ──
-   Deux sections l'emploient, « A utiliser » et « A lire ». Les livres ne
-   s'adressent pas au chat mais a la personne, et les sortir de la liste des
-   produits evite qu'un livre sur la fin de vie se lise a la suite d'une canne
-   a peche. Les deux reutilisent .cq-list et .cq-card : meme vocabulaire,
-   aucun style de carte en double. Le retrait de 32px pose le titre et son
-   chapeau sur la meme verticale que le texte des fiches, qui sont des cartes
-   a bord interieur. */
+/* ── Bloc à titre ── */
 .cq-bloc{margin-bottom:56px}
 .cq-bloc h2,.cq-bloc>p{padding-left:32px;padding-right:32px}
-/* ── Encart association ──
-   Le seul lien de la page qui finance des chats plutot qu'une commission :
-   il a droit au meme bouton que les liens Amazon, sinon il se lit comme une
-   note de bas de page. Teinte verte, celle deja utilisee par l'etiquette
-   « sans affiliation », pour que l'oeil fasse le rapprochement. */
+/* ── Encart association ── */
 .cq-asso{background:rgba(122,158,142,.12);border:1px solid rgba(122,158,142,.4);border-radius:14px;padding:22px 24px;margin-top:22px}
 .cq-asso p{font-size:16px;line-height:1.8;color:#1E1812;margin-bottom:16px;text-wrap:pretty}
 .cq-asso .cq-note{margin-left:14px}
 .cq-bloc h2{margin-bottom:10px}
 .cq-bloc>p{font-size:15px;color:#7A6B5E;line-height:1.9;margin-bottom:24px}
 .cq-bloc .cq-list{margin-bottom:0}
-/* Etiquette de langue. Teinte verte, pour ne pas se confondre avec
-   l'etiquette « lien affilie » qui est sable. L'information est portee par le
-   mot, jamais par la couleur seule. */
+/* Étiquette de langue */
 .cq-lang{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap;color:#1E1812;background:rgba(122,158,142,.22)}
 
-/* ── Bloc mise au point ──
-   Fond clair et non sombre : la couche TITLES-V5 impose « color: #1E1812 » a
-   tout h2 du site, un h2 pose sur #1E1812 serait invisible. C'est la panne
-   qu'avait le pied de page de reservation.html. */
+/* ── Bloc mise au point ── */
 .cq-mise{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:36px 32px;margin-bottom:48px}
 .cq-mise h2{margin-bottom:12px}
 .cq-mise p{font-size:15px;color:#4A3728;margin-bottom:16px;line-height:1.9}
 .cq-mise p:last-child{margin-bottom:0}
 
-/* ── Mots orphelins ──
-   Aucun mot ne doit tomber seul sur sa derniere ligne.
-
-   Deux proprietes, deux usages, et la nuance a coute une correction.
-
-   « pretty » est la regle par defaut : le navigateur retouche les dernieres
-   lignes pour qu'aucun mot ne reste isole, et remplit la largeur normalement.
-   Mesure sur cette page : 98 % puis 85 % de la largeur disponible.
-
-   « balance » egalise les lignes EN LES RACCOURCISSANT. Sur un paragraphe
-   pleine largeur, il ne laisse plus que 56 % et 53 % de remplissage, soit une
-   colonne de blanc a droite qui se voit immediatement. Il se reserve a un
-   texte centre d'une phrase courte, jamais a un paragraphe courant.
-
-   Les navigateurs qui ne connaissent pas ces valeurs les ignorent et coupent
-   comme avant : rien ne casse. */
+/* ── Mots orphelins ── */
 .cq-said p,
 .cq-aff p,
 .cq-mise p,
@@ -1933,14 +1339,9 @@
   .cq-actions .btn-primary{justify-content:center}
 }
 
-/* ══ INFOGRAPHIES DU SONDAGE DEUIL ANIMAL ═══════════════════════════════
-   Composants ajoutés pour l'article sondage-deuil-animal.html.
-   Rouille : la part qui compte. Brun : le point de départ ou de comparaison.
-   Sable clair : le reste. Chaque chiffre est écrit en texte : la forme n'est
-   jamais le seul porteur de l'information. */
+/* ══ INFOGRAPHIES DU SONDAGE DEUIL ANIMAL ══ */
 
-/* Chiffres en Cormorant : forcer les chiffres alignés. Par défaut, Cormorant
-   dessine des chiffres elzéviriens, et le 3 de "3 sur 4" descend sous la ligne. */
+/* Chiffres alignés */
 .sd-chiffre {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 700;
@@ -1958,7 +1359,7 @@
   color: var(--muted); margin: 0 0 10px;
 }
 
-/* 1, 3 et 5 : un chiffre seul, son texte, un visuel, groupés au centre */
+/* 1, 3 et 5 */
 .sd-cle { display: grid; grid-template-columns: auto auto auto; justify-content: center; align-items: center; column-gap: 44px; }
 .sd-cle .sd-chiffre { font-size: 80px; }
 .sd-cle .sd-texte { font-size: 18px; color: var(--deep); max-width: 30ch; }
@@ -1969,7 +1370,7 @@
 .sd-on { fill: var(--rust); }
 .sd-off { fill: var(--light); }
 
-/* Anneau (5) : r = 36, circonférence 226,19 ; 45 % = 101,79 */
+/* Anneau (5) */
 .sd-anneau { width: 96px; height: 96px; display: block; }
 .sd-anneau .piste { fill: none; stroke: var(--warm); stroke-width: 12; }
 .sd-anneau .part { fill: none; stroke: var(--rust); stroke-width: 12; stroke-linecap: butt; }
@@ -1992,9 +1393,7 @@
 .sd-jauge { width: 100%; height: 12px; border-radius: 999px; background: var(--warm); overflow: hidden; }
 .sd-jauge span { display: block; height: 100%; border-radius: 999px; background: var(--rust); }
 
-/* 4 : deux colonnes face à face. Chaque colonne a 4 rangées (étiquette,
-   chiffre, 2 citations) partagées par sous-grille : les lignes des deux
-   colonnes restent alignées quelle que soit la longueur des textes. */
+/* 4 : deux colonnes */
 .sd-face { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); }
 .sd-face > div {
   padding: 0 28px; display: grid; grid-row: span 4; grid-template-rows: subgrid;
@@ -2013,9 +1412,7 @@
 .sd-compte .sd-chiffre { font-size: 44px; }
 .sd-face > div:last-child .sd-compte .sd-chiffre { color: var(--mid); }
 
-/* 7 : deux chiffres de part et d'autre d'un filet, reliés par une flèche
-   dans une pastille. Chaque bloc prend la largeur de son contenu et le
-   groupe est centré : la pastille est à égale distance des deux. */
+/* 7 : deux chiffres */
 .sd-fleche { display: grid; grid-template-columns: auto 1px auto; justify-content: center; }
 .sd-fleche > div { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .sd-fleche > div:first-child { padding-right: 52px; }
@@ -2023,7 +1420,6 @@
 .sd-fleche .sd-chiffre { font-size: 56px; margin-bottom: 8px; }
 .sd-fleche > div:first-child .sd-chiffre { color: var(--mid); }
 .sd-pivot { position: relative; background: var(--warm); }
-/* Pastille centrée sur la ligne des chiffres : étiquette (17 + 10 px) + moitié du chiffre (28 px). */
 .sd-pivot svg {
   position: absolute; left: 50%; top: 55px; transform: translate(-50%, -50%);
   width: 52px; height: 52px; padding: 13px; box-sizing: border-box;

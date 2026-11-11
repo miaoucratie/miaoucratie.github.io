@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- Mesure d'audience : chargee uniquement apres consentement explicite. -->
+  <!-- Mesure d'audience -->
   <script src="js/consentement.js" data-mesure="G-X3H7NL9GEL" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -86,9 +86,6 @@
 
     .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);padding:32px;margin-bottom:24px}
     .hero-left{padding:32px}
-    /* align-items:stretch est indispensable : style.css centre cette colonne,
-       et les cartes prenaient alors la largeur de leur contenu. « Hors zone »
-       faisait 499px face aux 558px de « Comment je fonctionne ». */
     .hero-right{padding:0;display:flex;flex-direction:column;gap:20px;align-items:stretch}
     .search-card,.legend,.rule-card,.info-card{padding:32px}
 
@@ -99,8 +96,7 @@
     .intro{margin:0;max-width:72ch;color:var(--muted);font-size:16px}
 
     .hero-points{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-    /* Meme animation au survol que les cartes de « Comment je fonctionne » :
-       ce sont les memes petites cartes, elles doivent reagir pareil. */
+    /* Survol */
     .mini{padding:14px;border-radius:16px;border:1px solid var(--line);background:#fff;transition:transform .15s ease,box-shadow .15s ease}
     .mini:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(30,24,18,.08)}
     .mini strong{display:block;font-family:'Cormorant Garamond',serif;font-size:25px;line-height:1;color:var(--deep);margin-bottom:6px}
@@ -201,8 +197,7 @@
 
     .desktop-sticky-cta{position:fixed;right:24px;bottom:24px;z-index:1100;width:min(320px, calc(100vw - 48px));background:rgba(255,252,249,.92);backdrop-filter:blur(16px);border:1px solid rgba(232,218,200,.95);border-radius:18px;box-shadow:0 12px 28px rgba(30,24,18,.12);padding:12px 14px;display:none}
     .desktop-sticky-cta.show{display:block}
-    /* Pastille compacte : couleur et typo alignees sur le reste du site,
-       mais sans le fond arrondi des en-tetes de page, trop lourd ici. */
+    /* Pastille */
     .desktop-sticky-cta .eyebrow{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--rust,#A8472A);background:none;padding:0;border-radius:0;margin-bottom:10px}
     .desktop-sticky-cta .title{color:var(--deep,#1E1812)}
     .desktop-sticky-cta .title{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.1;letter-spacing:-.02em;margin:0 0 6px}
@@ -371,9 +366,7 @@
   const FALLBACK_ORIGIN = [48.0572, -1.3365];
   let originLatLng = FALLBACK_ORIGIN;
   const map = L.map('map', { scrollWheelZoom: false, zoomControl: false }).setView(FALLBACK_ORIGIN, 10.2);
-  /* Les commandes de Leaflet arrivent nommees « Zoom in » et « Zoom out ».
-     Deux defauts : l'anglais sur un site francais, et un nom accessible qui
-     ne reprend pas le glyphe affiche, ce que demande le critere 2.5.3. */
+  /* Commandes de zoom */
   L.control.zoom({ zoomInTitle: '+ Zoom avant', zoomOutTitle: '− Zoom arrière' }).addTo(map);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
@@ -902,8 +895,7 @@
     if(resultLabelEl){ resultLabelEl.textContent = ''; resultLabelEl.hidden = true; }
     if(resultTextEl){ resultTextEl.textContent = 'Entrez une commune pour vérifier.'; resultTextEl.hidden = false; }
     dynamicCTA.innerHTML = '';
-    // On remet le contenu a l'etat initial avant de masquer :
-    // sinon la carte reapparait avec le resultat de la recherche precedente.
+    // Réinitialisation
     updateSticky({ kind:'unknown', label:'' });
     sticky.classList.remove('show');
   });

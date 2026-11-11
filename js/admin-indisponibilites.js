@@ -22,13 +22,13 @@ const ENDPOINTS = {
   demandes: `${API_BASE}/admin/reservations`,
 };
 
-/** Statut pose par le navigateur du visiteur quand l'e-mail n'est pas parti. */
+/** Statut non notifié */
 const STATUT_NOTIFICATION_ECHOUEE = "notification_echouee";
 
-/** Les demandes servent de controle : seules les plus recentes s'affichent. */
+/** Demandes récentes */
 const JOURS_DEMANDES = 30;
 
-/** « sam. 20 déc. 2026 » : le jour de la semaine compte pour organiser une garde. */
+/** Format de date */
 const FORMAT_JOUR = new Intl.DateTimeFormat("fr-FR", {
   weekday: "short",
   day: "numeric",
@@ -248,13 +248,7 @@ function creerCartePeriode(period) {
   return card;
 }
 
-/**
- * Charge les demandes de reservation recues ces derniers jours, en lecture
- * seule : de quoi verifier qu'aucune n'a ete manquee.
- *
- * Silencieux quand tout va bien : le retour en haut de page reste celui des
- * indisponibilites. Un echec s'affiche dans la carte des demandes.
- */
+/** Demandes reçues */
 async function loadDemandes() {
   if (!state.token || !demandeList) {
     return;
@@ -338,7 +332,7 @@ function creerCarteDemande(demande) {
   return card;
 }
 
-/* largeur : "large" occupe toute la ligne, "double" deux colonnes. */
+/* largeur : large | double */
 function ajouterInfo(liste, intitule, valeur, largeur = "") {
   const vide = valeur instanceof Node ? !valeur.childNodes.length : !valeur;
   if (vide) {
@@ -368,12 +362,12 @@ function liensContact(demande) {
   return contact;
 }
 
-/* Une liste et son message quand elle est vide. */
+/* Liste et message vide */
 function remplirListe(liste, cartes, messageVide) {
   liste.replaceChildren(...(cartes.length ? cartes : [element("p", "empty-state", messageVide)]));
 }
 
-/* Les periodes terminees, repliees sous la liste, avec leur nombre. */
+/* Périodes terminées */
 function remplirArchive(archive, cartes) {
   archive.hidden = !cartes.length;
   archive.querySelector("[data-nombre]").textContent = `(${cartes.length})`;
@@ -398,7 +392,7 @@ function bouton(texte, variante, onClick) {
   return noeud;
 }
 
-/* Insecables : une date ne se coupe jamais, la ligne ne passe qu'apres la fleche. */
+/* Insécables */
 function formatJour(valeur) {
   const date = toDate(valeur);
   return (date ? FORMAT_JOUR.format(date) : String(valeur || "")).replace(/ /g, "\u00a0");
@@ -408,7 +402,7 @@ function formatPeriode(debut, fin) {
   return `${formatJour(debut)}\u00a0→ ${formatJour(fin)}`;
 }
 
-/** « 2026-08-17 21:04:33 » tel que le rend D1, en date lisible. */
+/** Date D1 lisible */
 function formatDateHeure(valeur = "") {
   const date = dateHeureD1(valeur);
 

@@ -2,7 +2,7 @@
 
 <html lang="fr">
 <head>
-  <!-- Mesure d'audience : chargee uniquement apres consentement explicite. -->
+  <!-- Mesure d'audience -->
   <script src="js/consentement.js" data-mesure="G-X3H7NL9GEL" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -42,7 +42,7 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 .t-section{margin-bottom:48px}
 .t-section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,40px);font-weight:700;color:#1E1812;letter-spacing:-.03em;margin-bottom:24px}
 .t-section-title em{font-style:italic;font-weight:400;color:#C8603A}
-/* Titre dans un span : la couche TITLES-V5 force la couleur de tout h2. */
+/* Titre dans un span */
 .t-price-amount{display:flex;align-items:baseline;gap:1px}
 .t-price-amount strong{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,3.5vw,42px);font-weight:700;color:#C8603A;letter-spacing:-.04em;line-height:1}
 .t-price-amount span{font-size:13px;color:#7A6B5E}
@@ -62,7 +62,7 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 @media(max-width:768px){
   .page-wrap{padding:32px 20px 56px}
 }
-/* ── Miaoucratie corrections ── */
+/* ── Compléments ── */
 .t-eyebrow{color:#A8472A;background:rgba(168,71,42,.1)}
 .t-hero h1 em,.t-section-title em{color:#A8472A}
 .t-price-amount strong{color:#A8472A}
@@ -75,47 +75,22 @@ body{font-family:'DM Sans',sans-serif;background:#FBF7F0;color:#1E1812;font-size
 html{height:100%}
 body{min-height:100vh;display:flex;flex-direction:column}
 .page-wrap{flex:1}
-/* La page pose body{display:flex;flex-direction:column} pour caler le pied de page. Sans
-   largeur declaree, la colonne principale se dimensionne sur son contenu le plus large et la
-   page deborde sur telephone. La largeur explicite, bornee par le max-width deja pose, la
-   remet dans la page. */
 .page-wrap{width:100%;min-width:0}
-/* Indicateur de focus. Celui du navigateur, orange, ne tient pas 3:1 sur le fond d'un bouton
-   plein. Celui-ci est pose a l'exterieur de l'element : il se detache sur le creme de la page,
-   quel que soit ce qu'il entoure. */
+/* Focus */
 .page-wrap a:focus-visible,.page-wrap button:focus-visible{outline:3px solid #1E1812;outline-offset:3px;border-radius:4px}
-/* Les cartes et les conditions partagent le nombre de colonnes et la gouttiere. Elles ne
-   peuvent donc pas se desaligner, et un service de plus met les deux grilles a jour. */
-/* L'echelle d'espacement est celle que la page pose deja : 48 entre deux sections, 32, 24,
-   20, 14, 8. Le retrait interieur des cartes vaut 24, comme l'ecart sous un titre de
-   section. Une seule valeur declaree ici, jamais une mesure decidee bande par bande. */
-/* Les jetons sont poses sur la colonne entiere, pas sur une section : un bloc sorti d'une
-   section perdait la gouttiere et ses colonnes se touchaient. */
+/* Grille partagée */
+/* Espacements */
 .page-wrap{--t-gouttiere:20px;--t-colonnes:1;--t-pad:24px}
 @media(min-width:901px){
   .page-wrap{--t-colonnes:3}
 }
-/* ══ LE CHAPEAU ══
-   La ligne « Un chat craintif… au meme prix. » mesure 662 px d'un bout a l'autre, et la
-   mesure du chapeau en production en fait 660 : il manquait 2 px, et la phrase se coupait.
-   La colonne en offre 1020. Le chapeau passe a 680 px, la seule valeur changee, et la ligne
-   tient d'un bloc. Rien d'autre du composant n'est retouche. */
+/* ══ LE CHAPEAU ══ */
 .t-hero-sub{max-width:680px}
-/* ══ LES CARTES DE SERVICE ══
-   Cinq bandes, toujours dans le meme ordre : identite, prix, contenu, bouton, lien. La
-   sous-grille les aligne d'une carte a l'autre : les trois boutons partent du meme trait, les
-   trois liens aussi, quelle que soit la longueur des textes au-dessus. */
+/* ══ LES CARTES DE SERVICE ══ */
 .t-offres{display:grid;grid-template-columns:repeat(var(--t-colonnes),1fr);gap:var(--t-gouttiere);align-items:stretch}
 .t-offre{display:flex;flex-direction:column;min-width:0;background:#fff;border:1px solid #E8DDD0;border-top:3px solid var(--svc);border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(30,24,18,.06);transition:box-shadow .2s,transform .2s}
 .t-offre:hover{box-shadow:0 12px 30px rgba(30,24,18,.11);transform:translateY(-2px)}
-/* Un service qui n'ouvre qu'en decembre est la, mais en retrait. Il reprend ses couleurs au
-   survol, comme la photo de l'accueil reprend sa lumiere. La transition suit le meme
-   principe que .hero-photo-frame img de style.css, et se coupe si l'utilisateur demande
-   moins d'animation. */
-/* Gris complet, et rien d'autre. grayscale() convertit sur la luminance : les rapports de
-   contraste sont conserves, la carte peut donc etre entierement grise sans qu'un seul
-   texte descende sous le seuil. C'est l'opacite, essayee d'abord, qui composait la carte
-   sur le fond et faisait tomber le bouton a 4,0:1. */
+/* Service à venir */
 .t-offre--attente{filter:grayscale(1);transition:filter .25s ease,box-shadow .2s,transform .2s}
 .t-offre--attente:hover,.t-offre--attente:focus-within{filter:none}
 @media (prefers-reduced-motion: reduce){
@@ -126,54 +101,33 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .t-offre{display:grid;grid-row:span 6;grid-template-rows:subgrid;row-gap:0}
 }
 .t-offre-tete{padding:28px var(--t-pad) 4px}
-/* La pastille d'etat reutilise .t-eyebrow, deja pose par la page : meme forme, meme graisse,
-   meme rythme. Seules les couleurs changent, et elles disent l'etat, pas le service : vert
-   sauge pour disponible, brun de la charte pour a venir. Le mot le dit aussi, la couleur ne
-   porte rien toute seule. */
+/* Pastille d'état */
 .t-offre .t-eyebrow{margin-bottom:14px;color:#4A6B58;background:rgba(122,158,142,.2)}
 .t-offre--attente .t-eyebrow{color:#4A3728;background:#F0E8DA}
-/* couches.css impose aux h3 fonte, graisse, interlettrage, couleur et taille, en !important.
-   On ne redeclare rien de tout cela : le nom du service garde le titre du site. */
 .t-offre-nom{margin-bottom:6px}
 .t-offre-pour{font-size:15px;color:#7A6B5E;line-height:1.6}
 .t-offre-prix{padding:16px var(--t-pad) 4px}
 .t-offre-prix .t-price-amount strong{color:var(--svc)}
 .t-offre-unite{margin-top:6px;font-size:15px;color:#4A3728;line-height:1.5}
-/* L'argument de vente du service, a la taille ou on le lit sans se pencher. */
+/* Argument du service */
 .t-offre-argument{padding:12px var(--t-pad) 0;font-size:15px;font-weight:600;color:var(--svc);line-height:1.45}
 .t-offre-corps{display:flex;flex-direction:column;min-width:0}
 .t-offre-inclus{list-style:none;margin:0;padding:20px var(--t-pad) 8px}
 .t-offre-inclus li{position:relative;padding:0 0 11px 25px;font-size:15px;color:#4A3728;line-height:1.6}
 .t-offre-inclus li::before{content:"✓";position:absolute;left:0;top:0;color:var(--svc);font-weight:700}
-/* Un bouton plein par carte, a la couleur de son service, jamais un plein contre un vide. */
+/* Bouton de carte */
 .t-offre-action{padding:20px var(--t-pad) 0}
 .t-offre-action .btn-primary{display:flex;justify-content:center;width:100%;background:var(--svc);box-shadow:0 4px 14px var(--svc-ombre)}
 .t-offre-action .btn-primary:hover{background:var(--svc);filter:brightness(.9);box-shadow:0 8px 22px var(--svc-ombre)}
 .t-offre-plus{padding:8px var(--t-pad) 28px;text-align:center}
 .t-offre-detail{display:inline-block;padding:8px 4px;font-size:15px;color:var(--svc);text-decoration:underline;text-underline-offset:3px}
-/* ══ LES ETIQUETTES DE BLOC ══
-   couches.css impose aux h1-h3 fonte, graisse, interlettrage, couleur et taille, en
-   !important. La regle du projet est de ne pas les redefinir mais de passer par un <span>
-   interieur : une declaration simple sur le span l'emporte sur ce que le h3 lui transmet,
-   sans qu'aucun !important soit necessaire. */
-/* ══ UN GROUPE PAR SERVICE ══
-   Le nom du service est ecrit une fois, en tete de son groupe. Un seul filet de couleur
-   par groupe, celui de son service : la couleur redevient un signal parce qu'elle ne se
-   repete plus a chaque bloc. Le titre garde la fonte et la taille du site, il n'est pas
-   redeclare. */
-/* Les blocs d'un groupe sont espaces par la gouttiere de la page, celle qui separe deja deux
-   blocs poses cote a cote. Empiles, ils se touchaient : deux cadres arrondis colles bord a
-   bord. Un seul jeton tient maintenant les deux sens, et aucune marge ne se decide au cas
-   par cas — pas plus sous le nom du service qu'entre deux cadres. */
+/* ══ LES ETIQUETTES DE BLOC ══ */
+/* ══ UN GROUPE PAR SERVICE ══ */
 .t-groupe{display:grid;gap:var(--t-gouttiere);padding-top:4px}
-/* La charte pose « un petit trait rouille sous le logo » : c'est cette forme-la qui
-   appartient a la marque, courte et aux bouts arrondis. Un filet de 3 px traversant
-   toute la colonne n'en est pas une. */
+/* Trait de marque */
 .t-groupe-nom::before{content:"";display:block;width:44px;height:3px;border-radius:3px;background:var(--svc);margin-bottom:16px}
 .t-groupe + .t-groupe{margin-top:48px}
-/* ══ LA GRILLE DES TARIFS ══
-   Une rangee, un prix par cellule. Les deux lignes sont communes a la bande : un intitule sur
-   deux lignes ne fait pas descendre son seul montant. */
+/* ══ LA GRILLE DES TARIFS ══ */
 .t-cadre-prix{border:1px solid #E8DDD0;border-radius:18px;background:#fff;overflow:hidden;padding:12px 0}
 .t-chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));grid-template-rows:auto auto}
 .t-chiffre{display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px var(--t-pad)}
@@ -181,37 +135,16 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .t-chiffre{display:grid;grid-row:span 2;grid-template-rows:subgrid;row-gap:0;justify-items:center}
 }
 .t-chiffre-quoi{font-size:15px;font-weight:600;color:#1E1812;line-height:1.45}
-/* Trois niveaux de chiffre, du plus fort au plus faible : le prix d'une carte, le detail
-   de la grille, le montant d'une remise ou d'une majoration. */
+/* Niveaux de chiffres */
 .t-chiffre-montant{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,2.6vw,32px);font-weight:700;color:var(--svc);letter-spacing:-.03em;line-height:1;margin-top:14px}
-/* Un service a un seul palier : la colonne n'a plus rien a aligner et laissait une cellule
-   seule au milieu d'un cadre prevu pour quatre. L'intitule et le montant passent alors sur
-   une meme ligne, poses sur la meme ligne de base. */
+/* Palier unique */
 .t-chiffres--seul .t-chiffre{display:flex;flex-direction:row;align-items:baseline;justify-content:center;gap:14px;grid-row:auto;padding:12px var(--t-pad)}
 .t-chiffres--seul .t-chiffre-montant{margin-top:0}
-/* Le titre du bloc et l'intitule d'une remise ne peuvent pas partager la meme police :
-   le titre prend la serif des titres du site, les intitules gardent DM Sans. */
-/* Le titre du bloc prend la couleur de son bloc, celle de son montant : il ne peut plus se
-   confondre avec le nom du service, qui reste noir. Le style, lui, est le meme pour « Les
-   remises » et « Les majorations » — seule la couleur change.
-   Mesure sur blanc, seuil 4,5:1 a cette taille : sauge 5,9:1, rouille 5,8:1, petrole 8,2:1.
-   La terracotta de la charte, elle, tombe a 3,7:1 : elle n'est jamais posee sur un titre. */
+/* Titre de bloc */
 .t-bande-titre{font-size:18px;font-weight:600;color:var(--sens);text-align:center;margin-bottom:18px}
-/* ══ LES REMISES ══
-   Baymard, 25 mai 2022 : une remise placee loin du prix ne compte pas. Elles vivent donc dans
-   le meme cadre que les tarifs, en pied de bande.
-   Une remise n'est pas un prix pour autant : ni la meme taille, ni la meme couleur, ni une
-   deuxieme rangee de gros chiffres. Texte courant, montant en sauge, la couleur que le site
-   donne deja a ce qui est favorable. */
-/* UNE COULEUR PAR GROUPE, UNE SEULE EXCEPTION.
-   Un chiffre prend la couleur de son service : rouille sous « Garde chez vous », petrole sous
-   « Visite de soins ». C'est ce qui fait qu'un groupe se lit d'un bloc. L'exception est la
-   remise, en sauge, decision d'Irina : une remise s'associe a quelque chose de positif, et
-   la sauge est la couleur que le site donne deja a ce qui est favorable.
-   La couleur ne porte jamais l'information seule : le titre du bloc dit « Les remises » ou
-   « Les majorations », et le montant porte son signe. */
-/* Le titre de section rejoint les deux autres, cales a gauche, et respire autant qu'un
-   titre de bande : 32 px sous lui, comme au-dessus de chaque etiquette. */
+/* ══ LES REMISES ══ */
+/* Couleurs par groupe */
+/* Titre de section */
 #prix .t-section-title{margin-bottom:32px}
 .t-bande{background:#fff;border:1px solid #E8DDD0;border-radius:18px;padding:32px var(--t-pad)}
 .t-bande-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));grid-template-rows:auto auto auto;gap:20px 24px}
@@ -219,57 +152,31 @@ body{min-height:100vh;display:flex;flex-direction:column}
 @supports (grid-template-rows:subgrid){
   .t-bande-carte{display:grid;grid-row:span 3;grid-template-rows:subgrid;row-gap:4px;justify-items:center}
 }
-/* Le montant d'une remise fait la moitie de la taille d'un prix, et il est en sauge : on ne
-   peut pas le prendre pour un tarif. */
+/* Montant de remise */
 .t-bande-quand{font-size:15px;font-weight:600;color:#1E1812;line-height:1.4}
 .t-bande-montant{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--sens);letter-spacing:-.02em;line-height:1.1}
-/* La rangee des precisions fait la hauteur de la plus longue. Centrees dedans, celles d'une
-   seule ligne tombaient plus bas que celle de deux : trois textes, trois hauteurs. Elles
-   partent maintenant toutes du haut de la rangee. */
+/* Précisions */
 .t-bande-precision{align-self:start;font-size:13px;color:#7A6B5E;line-height:1.5}
 .t-bande-precision a{white-space:nowrap}
-/* Les associations ne sont pas la suite de la phrase, ce sont les justificatifs acceptes.
-   Un retour a la ligne seul les collait au texte : elles descendent d'un cran, sur le pas de
-   4 px qui rythme deja l'interieur d'une carte. */
-/* Les deux liens mesuraient 17 px de haut, sous le seuil de 24 px, et se touchaient de part
-   et d'autre du point median. Chacun devient un bloc en ligne : la zone cliquable monte a
-   27 px sans que le texte bouge, et le retrait de 4 px les ecarte l'un de l'autre. */
+/* Associations */
+/* Liens */
 .t-bande-assos{display:block;margin-top:11px}
 .t-bande-assos a{display:inline-block;padding:5px 4px}
 /* ══ LES DEUX RENVOIS ══ */
-/* Deux renvois, deux boutons de contour : .btn-secondary est deja le composant que le site
-   pose sur ses liens vers la carte. Aucune fleche, aucun marqueur invente. */
-/* Aucun bouton vide sur cette page : les deux renvois prennent .btn-primary, le bouton plein
-   du site, repris tel quel. Les deux colonnes de la grille se dimensionnent sur le libelle le
-   plus long : ils sont strictement identiques, sans valeur en pixels figee sur le texte du
-   jour. */
 .t-renvois{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;width:fit-content;margin:32px auto 0;gap:14px}
-/* Ces deux liens ne sont pas des actions d'achat : ils ne peuvent pas peser autant que
-   « Reserver une garde ». Ils restent pleins, mais sur le fond secondaire de la charte,
-   #F0E8DA, avec le texte rouille. Ni creux, ni au niveau d'un CTA. */
+/* Renvois */
 .t-renvois .btn-primary{justify-content:center;background:#F0E8DA;color:#A8472A;box-shadow:none}
 .t-renvois .btn-primary:hover{background:#F2CDB0;color:#8B3921;box-shadow:none}
 @media(max-width:600px){
   .t-renvois{grid-auto-flow:row;width:100%}
 }
-/* Convention du site pour un lien pose dans du texte, reprise a l'identique de la couche
-   des liens de couches.css : rouille souligne. La regle vise tout lien ecrit dans un
-   paragraphe ou une liste de la page, et non une liste de composants : un bloc renomme ou
-   supprime ne peut plus la perdre en route et faire revenir le bleu du navigateur. Les
-   boutons et le lien de detail d'une carte ne sont ni dans un p ni dans un li. */
+/* Liens dans le texte */
 .page-wrap p a,.page-wrap li a,.page-wrap dd a{color:#A8472A;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px;transition:color .2s}
 .page-wrap p a:hover,.page-wrap li a:hover,.page-wrap dd a:hover{color:#8B3921}
-/* couches.css pose margin: 14px 0 28px sur .avis-rating, sans !important : une classe
-   supplementaire sur le meme element suffit a la remplacer. */
-/* La ligne d'avis vient de l'accueil, mot pour mot. Son lien se coupait en deux entre 340
-   et 414 px : « Voir sur » restait en fin de ligne et « Google » passait dessous.
-   « justify-content » etait pose ici sur un paragraphe qui n'est pas une boite flexible :
-   la declaration ne s'appliquait a rien. Elle est retiree.
-   Le lien mesurait 106 x 20 px, sous le seuil de 24 px : il devient un bloc en ligne et
-   prend la hauteur qui manque, sans bouger d'un pixel a l'ecran. */
+/* Ligne d'avis */
 .t-avis{margin-top:22px;flex-wrap:wrap}
 .t-avis a{display:inline-block;padding:3px 2px;white-space:nowrap}
-/* Les ancres ne servent que la ou les cartes sont empilees. */
+/* Ancres */
 .t-ancres{display:none;flex-wrap:wrap;gap:8px;margin-top:20px}
 .t-ancres a{padding:8px 14px;border:1px solid #E8DDD0;border-radius:999px;background:#fff;font-size:15px;color:#4A3728;text-decoration:none}
 .t-ancres a:hover,.t-ancres a:focus-visible{border-color:#C8603A;color:#A8472A}

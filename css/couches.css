@@ -1,46 +1,6 @@
-/*
- * Couches d empilement historiques, extraites de style.css.
- *
- * Ces blocs ont ete ecrits pour ecraser les styles propres a chaque page.
- * Tant qu ils etaient charges en tete de cascade, ils ne le pouvaient que
- * par !important. Les separer permet de les charger en dernier, la ou est
- * leur place.
- */
+/* Couches */
 
-/* MIAOUCRATIE-CHIFFRES
- *
- * Cormorant Garamond livre des chiffres elzeviriens : mesure a l'encre, 0 1 2
- * tiennent la hauteur d'x, 3 4 5 7 9 descendent de 5 a 9 px sous la ligne de
- * base, 6 et 8 montent a la hauteur des capitales. Dans une serie — les 15
- * articles des CGV, les 8 titres des mentions legales — les numeros paraissent
- * sautiller, et sur les prix de la page tarifs, ou « 18 » a un 1 petit et un 8
- * haut a 42 px, c'est un defaut de finition sur ce qui se lit en premier.
- *
- * La propriete est posee sur body parce qu'elle est heritee : elle atteint les
- * titres, mais aussi les <b> et <strong> en Cormorant qu'aucune liste de
- * selecteurs n'attraperait — le « 45 » des 45 min sur l'accueil, les « 20 km »
- * et « 45 km » de la carte, les quatre prix de tarifs.
- *
- * Sans effet sur DM Sans, dont les chiffres sont deja alignes : mesure
- * identique au centieme de pixel en 400, 500 et 700.
- *
- * ── PIEGE, a lire avant de redeclarer font-variant-numeric ailleurs ──
- *
- * `font-variant-numeric` est UNE propriete, pas plusieurs. Ecrire
- * `font-variant-numeric: tabular-nums` dans une regle plus specifique ne
- * s'ajoute pas a l'heritage : ca le REMPLACE, le style de chiffres retombe a
- * « normal », et Cormorant reprend ses elzeviers. C'est arrive sur l'acompte
- * et le solde du calculateur, reperes par Irina le 17 aout 2026 — mesure a
- * l'encre : 71,11 px avec le seul tabular-nums, 73,52 px avec les deux.
- *
- * Toute regle qui a besoin de chiffres a chasse fixe doit donc ecrire les
- * DEUX mots-cles, en reprenant le jeton ci-dessous :
- *
- *   font-variant-numeric: var(--chiffres, lining-nums) tabular-nums;
- *
- * Le jeton evite d'avoir a se souvenir de la politique du site a chaque
- * usage : la changer se fait ici, une fois.
- */
+/* MIAOUCRATIE-CHIFFRES */
 :root {
   --chiffres: lining-nums;
 }
@@ -57,17 +17,6 @@ body .cgv-title,
 body .hero-title {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 700;
-  /* Ce -3px ne porte plus que sur le titre de la FAQ : « body .faq-hero
-     .hero-title » est plus specifique que la couche TITLES-V5, qui imposerait
-     sinon 1.08 et -0.02em.
-
-     « body .container > header h1 » etait dans cette liste, et le commentaire
-     affirmait deja qu'elle ne servait qu'a la FAQ. C'etait faux : ce selecteur
-     ne designe qu'une page, le calculateur, dont le titre fait 42px. Un -3px
-     fixe y vaut -0,071em, quand tout le reste du site tient -0,02em — soit
-     -1,04px a 52px, -1,52px a 76px, -1,76px a 88px. Le titre du calculateur
-     etait donc resserre trois fois et demie plus que partout ailleurs. Le
-     selecteur retire, il retombe sur la regle commune. */
   letter-spacing: -3px !important;
   line-height: 1 !important;
   color: var(--deep, #1E1812);
@@ -143,9 +92,7 @@ body .cgv-title,
 body.carte-page .zone-header h2 {
   font-size: clamp(52px, 7vw, 88px) !important;
 }
-/* Le calculateur est une page-outil : sa carte fait 560 px de large, un titre
-   de heros a 88px l'ecraserait. Il garde la fonte et la couleur des autres
-   titres, mais une taille dimensionnee pour l'usage. */
+/* Calculateur */
 body.calculateur-page h1 {
   font-size: clamp(30px, 4vw, 42px) !important;
 }
@@ -153,22 +100,14 @@ body h2,
 body .section-title {
   font-size: clamp(22px, 2.3vw, 30px) !important;
 }
-/* Une question d'accordeon se lit sous le titre de sa section : un cran en dessous. */
+/* Questions d'accordéon */
 body .acc-question {
   font-size: clamp(19px, 1.8vw, 22px) !important;
 }
 body h3 {
   font-size: clamp(18px, 1.8vw, 24px) !important;
 }
-/* Trois composants de l'accueil portaient un titre d'un niveau trop bas, ce qui
-   creait deux sauts dans le document : h1 puis h3 pour la bande des trois
-   promesses, h2 puis h4 pour les encarts de credibilite et pour les cinq
-   etapes. Les niveaux ont ete remontes d'un cran ; leur taille, elle, ne
-   change pas. Ce sont des titres de composant, pas des titres de section, et
-   la regle ci-dessus les ferait passer de 23 a 29px, de 17 a 23px et de 18 a
-   23px — soit une refonte de l'accueil pour une correction de structure.
-   Le « !important » ne fait que repondre a celui des deux regles au-dessus :
-   il ne s'empile sur aucune autre surcharge. */
+/* Titres de composant */
 body .stripe-item h2 { font-size: clamp(18px, 1.8vw, 24px) !important; }
 body .cred-item h3 { font-size: 17px !important; }
 body .step h3 { font-size: 18px !important; }
@@ -269,20 +208,13 @@ body.cgv-page .brand-rule {
 }
 
 
-/* ── TOPBAR ───────────────────────────────────────────
-   Seule definition de la barre sur tout le site. Elle en a compte quatre :
-   les couches TOPBAR-V2 et V4, une feuille topbar.css chargee sur trois
-   pages, et une copie inline sur trois autres. Toute modification de la barre
-   se fait ici, et nulle part ailleurs. */
+/* ── TOPBAR ── */
 .topbar {
   position: sticky; top: 0; z-index: 200;
   background: var(--deep, #1E1812);
   display: flex; align-items: center;
   width: 100%; justify-content: space-between; flex-wrap: wrap;
   gap: 16px 20px;
-  /* Le retrait est declare une fois et sert deux choses : le padding de la
-     barre, et le calage horizontal du panneau du menu, qui doit tomber sous
-     le bouton. Une seule valeur par largeur, consommee par les deux. */
   --topbar-pad: 40px;
   padding: 0 var(--topbar-pad); min-height: 50px;
   animation: none !important;
@@ -312,13 +244,8 @@ body.cgv-page .brand-rule {
 }
 .tmenu-btn:hover { color: var(--peach, #F2CDB0); }
 .tmenu-panel {
-  /* display géré via style inline JS */
+  /* display piloté en JS */
   flex-direction: column; gap: 2px;
-  /* Le panneau sort de la barre, sans interstice. Le decalage de 6px qu'il
-     portait etait invisible tant que la barre avait 12px de padding vertical
-     pour l'absorber ; depuis qu'elle est passee en min-height, il laissait
-     passer le fond de page. Les deux coins hauts restent droits, pour que la
-     jonction avec la barre ne se voie pas. */
   position: absolute; top: 100%; left: var(--topbar-pad);
   min-width: 200px; padding: 8px;
   border-radius: 0 0 12px 12px;
@@ -338,26 +265,18 @@ body.cgv-page .brand-rule {
   transition: background 0.15s, color 0.15s;
 }
 .tmenu-panel a:hover { background: rgba(255,255,255,0.07); color: var(--cream,#FBF7F0); }
-/* Les pictogrammes sont decoratifs : ils portent aria-hidden, l'intitule reste
-   le seul contenu lu. Legerement en retrait au repos pour que le mot garde la
-   priorite, pleins des que la ligne est survolee ou courante. */
+/* Pictogrammes */
 .tmenu-panel a svg { width: 16px; height: 16px; flex-shrink: 0; opacity: .7; transition: opacity .15s; }
 .tmenu-panel a:hover svg,
 .tmenu-panel a.is-current svg { opacity: 1; }
 .tmenu-panel a.is-current { color: var(--peach,#F2CDB0); background: rgba(242,205,176,0.08); }
-/* Reservation ferme le menu et porte la conversion. Un filet et une graisse
-   plus forte la detachent des pages d'information, sans lui prendre la couleur
-   qui signale la page courante. */
+/* Lien Réservation */
 .tmenu-panel a.is-cta {
   font-weight: 600;
   margin-top: 6px;
   padding-top: 12px;
   border-top: 1px solid rgba(255,255,255,0.12);
 }
-/* « flex-wrap » etait pose dans overrides.css seulement. Les quatre pages qui
-   ne chargent pas cette feuille — carte, mentions-legales, reservation,
-   tarifs — gardaient donc une rangee insecable : 352 px de contenu dans une
-   fenetre de 320, et toute la page qui defile en travers. */
 .topbar-links {
   margin-left: auto; display: flex; align-items: center; gap: 16px;
   flex-wrap: wrap;
@@ -369,22 +288,14 @@ body.cgv-page .brand-rule {
 }
 .topbar-links a:hover { color: var(--peach,#F2CDB0); }
 .tsep { width: 1px; height: 16px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
-/* ── PIED DE PAGE ─────────────────────────────────────
-   Repris de topbar.css, supprimee : la barre et le pied y etaient definis une
-   troisieme fois, apres cette feuille, pour trois pages seulement. */
+/* ── PIED DE PAGE ── */
 .footer-bar {
   background: var(--deep, #1E1812);
   padding: 28px 40px;
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 16px; width: 100%;
 }
-/* Le groupe du milieu doit tomber sur l'axe de la barre. « space-between »
-   pose les trois blocs bout a bout : le milieu se decale des que le logo et
-   les liens legaux n'ont pas la meme largeur. Mesure avant correction, sur les
-   quatorze pages : 80,33 px vers la gauche a 1024, 1280 et 1440 px, et jusqu'a
-   196,22 px a 900 px, ou le bloc legal passait a la ligne. Les deux blocs de
-   bord prennent la meme base souple, le milieu garde sa largeur propre, et il
-   tombe au centre quelles que soient leurs largeurs respectives. */
+/* Groupe central */
 .footer-bar > .footer-logo,
 .footer-bar > .footer-legal { flex: 1 1 0; min-width: 0; }
 .footer-bar > .footer-legal { justify-content: flex-end; }
@@ -399,11 +310,6 @@ body.cgv-page .brand-rule {
 }
 .footer-bar .footer-logo em { color: var(--terracotta,#C8603A); font-style: italic; }
 .footer-bar .footer-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
-/* Meme geometrie que « .topbar-links a » : meme corps, meme gouttiere de 6px,
-   memes pictogrammes de 14px. Les deux rangees portent les memes destinations,
-   elles ne peuvent pas se composer differemment. Les pictogrammes sont
-   decoratifs, ils portent aria-hidden ; ils suivent la couleur du lien par
-   « currentColor », donc le survol les emporte avec le mot. */
 .footer-bar .footer-links a {
   color: var(--sand,#B89B80); text-decoration: none; font-size: 13px;
   display: inline-flex; align-items: center; gap: 6px;
@@ -411,9 +317,6 @@ body.cgv-page .brand-rule {
 }
 .footer-bar .footer-links a svg { flex-shrink: 0; }
 .footer-bar .footer-links a:hover { color: var(--peach,#F2CDB0); }
-/* .55 et pas .4 : a .4 les liens legaux rendaient 2,52:1 sur le fond sombre,
-   sous le seuil AA de 4,5:1. Mesure a .55 : 5,68:1. Voir aussi la suppression
-   de l'opacite de .footer-legal dans style.css, qui se cumulait a cet alpha. */
 .footer-bar .footer-legal {
   font-size: 12px; color: rgba(255,255,255,.55); font-family: 'DM Sans', sans-serif;
 }
@@ -421,48 +324,24 @@ body.cgv-page .brand-rule {
   color: rgba(255,255,255,.55); text-decoration: none; transition: color .2s;
 }
 .footer-bar .footer-legal a:hover { color: rgba(255,255,255,.7); }
-/* Les titres des sections sombres etaient forces en blanc pur ici. Une regle
-   posterieure les rendait en creme, et c'est ce qui s'affichait : remonter
-   cette couche en fin de cascade aurait donc change le rendu de l'accueil,
-   seule page portant ces elements. Declaration retiree. */
 /* FAQ CTA */
-/* Porte : sans priorite, le titre du bloc d appel de la FAQ repasse en sombre
-   sur son fond fonce. */
 .faq-cta .cta-title { color: #fff !important; }
-/* Sur ce fond sombre, l'accent doit aller dans l'autre sens : le terracotta
-   n'y donnait que 4,34:1, et le rouille du reste du site serait plus sombre
-   encore. Le peche est l'accent que la barre du haut et le pied de page
-   posent deja sur « --deep ». 11,83:1. */
+/* Accent */
 .faq-cta .cta-title em { color: var(--peach); }
 /* Responsive topbar */
 @media (max-width: 900px) {
-  /* 20px comme topbar.css et comme le bloc inline de chaque page. La valeur
-     de 24px ne subsistait que sur les pages ou cette couche gagnait, d'ou une
-     barre plus large sur carte, reservation et mentions legales. */
   .topbar { --topbar-pad: 20px; }
 }
 @media (max-width: 768px) {
-  /* La barre passe a la ligne a cette largeur : sans cet interstice, elle
-     perd 4px de hauteur et tout ce qu'elle contient remonte. */
   .topbar { gap: 12px 14px; }
   .topbar-links { gap: 12px; }
-  /* Le separateur et l'adresse mail disparaissent ici, comme le faisait
-     topbar.css. Cette feuille les masquait a 600px : selon la page, la barre
-     se degarnissait donc a deux largeurs differentes. */
   .tsep { display: none; }
   .topbar-links a[href^="mailto"] { display: none; }
 }
-/* Le pied de page bascule en colonne avant la barre du haut, et a une largeur
-   mesuree, pas choisie : la rangee tient jusqu'a 920px et se casse a 916px.
-   Elle etait posee a 768px, si bien qu'entre 769 et 916px le bloc legal
-   passait a la ligne en laissant le « · » pendre en fin de premiere ligne.
-   Ce seuil se remesure avec qa/mise-en-page.mjs des que le contenu du pied
-   de page change de largeur. */
+/* Pied de page en colonne */
 @media (max-width: 920px) {
   .footer-bar { flex-direction: column; text-align: center; padding: 24px 20px; }
   .footer-bar .footer-links { justify-content: center; }
-  /* En colonne, la base souple des blocs de bord n'a plus d'objet : elle les
-     etirerait sur la hauteur. Le passage en colonne les centre deja. */
   .footer-bar > .footer-logo,
   .footer-bar > .footer-legal { flex: 0 1 auto; justify-content: center; }
 }
@@ -497,16 +376,13 @@ body.cgv-page .brand-rule {
   transform: translateY(-1px);
 }
 
-  /* ── AVIS (preuve sociale — carrousel, flèches extérieures, tons clairs) ── */
+  /* ── AVIS ── */
   .avis-bg { background: rgba(200,96,58,0.06); border-top: 1.5px solid rgba(200,96,58,0.18); border-bottom: 1.5px solid rgba(200,96,58,0.18); }
   .avis-rating { font-size: 15px; color: var(--mid); margin: 14px 0 28px; }
   .avis-rating .avis-stars { color: var(--rust); letter-spacing: 2px; }
   .avis-rating a { color: var(--rust); text-underline-offset: 2px; }
 
-  /* ── Mention presse du hero ──
-     Elle suit la note Google sur la meme ligne, separee par un point median.
-     Quand la largeur ne suffit plus, elle passe a la ligne SANS le separateur :
-     un point median en debut de ligne se lit comme une coquille. */
+  /* ── Mention presse du hero ── */
   .hero-presse { white-space: nowrap; }
   .hero-presse::before { content: "· "; }
   @media (max-width: 560px) {
@@ -514,10 +390,7 @@ body.cgv-page .brand-rule {
     .hero-presse::before { content: none; }
   }
 
-  /* ── Liens poses dans un paragraphe ──
-     La convention du site est le rouille souligne, deja portee par
-     « .step p a » et « .avis-rating a ». Sans cette regle, un lien ecrit
-     dans un paragraphe de contenu ressort en bleu par defaut du navigateur. */
+  /* ── Liens dans un paragraphe ── */
   .cred-item p a,
   .acc-content p a,
   .acc-content li a,
@@ -554,8 +427,6 @@ body.cgv-page .brand-rule {
   .avis-nav.avis-next:hover { transform: translateX(3px); }
   .avis-nav:focus-visible { outline: none; color: var(--deep); }
   .avis-nav.is-off { opacity: 0; pointer-events: none; }
-  /* La mecanique de defilement appartient a la grille, pas aux cartes :
-     le blog y met les siennes, qui ne sont pas des avis. */
   .avis-grid > * { flex: 0 0 calc((100% - 40px) / 3); min-width: 0; scroll-snap-align: start; }
   .avis-card { background: #fff; border-radius: 20px; padding: 30px; border: 1.5px solid var(--warm); display: flex; flex-direction: column; transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s; }
   .avis-card:hover { box-shadow: 0 16px 48px rgba(30,24,18,0.1); transform: translateY(-4px); border-color: var(--peach); }
@@ -566,16 +437,10 @@ body.cgv-page .brand-rule {
   .avis-meta { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
   @media (max-width: 860px) { .avis-grid > * { flex-basis: calc((100% - 20px) / 2); } }
   @media (max-width: 768px) { .avis-nav { display: none; } }
-  /* Une seule carte tient dans l'ecran, et rien n'indiquait qu'il y en
-     avait d'autres : la piste va donc d'un bord a l'autre, le retrait de la
-     page repasse a l'interieur, et la carte suivante se montre par la
-     droite sur toute la hauteur.
-
-     14 px pris a la carte et 12 px d'ecart : l'apercu vaut 26 px, quelle
-     que soit la largeur de l'ecran, puisque la carte absorbe le reste. */
+  /* Carrousel mobile */
   @media (max-width: 560px) {
     .avis-grid {
-      --gouttiere: 24px; /* le retrait mobile de « .section » */
+      --gouttiere: 24px; /* retrait mobile */
       margin-inline: calc(var(--gouttiere) * -1);
       padding-inline: var(--gouttiere);
       scroll-padding-inline: var(--gouttiere);
@@ -585,19 +450,7 @@ body.cgv-page .brand-rule {
     .avis-card { padding: 24px; }
   }
 
-/* ── BARRE DU HAUT EN MOBILE ──────────────────────────────────────────
-   Hors mobile, « .topbar-links » porte « margin-left: auto » et
-   « justify-content: flex-end » : les liens se posent a droite, sur une
-   seule ligne, et c'est le bon rendu.
-
-   Des que la barre manque de place elle passe a deux lignes — et ces deux
-   memes regles poussent alors la seconde ligne vers la droite, avec un
-   retrait de 34 px qui ne correspond a aucune marge de la page. « Menu »
-   se retrouve seul a gauche, les liens colles au bord oppose, sans rien
-   qui les aligne. Mesure sur iPhone, a 390 px de large.
-
-   En colonne, les deux lignes reprennent le meme bord que le reste du
-   site, et la barre ne depend plus d'un retour a la ligne subi. */
+/* ── BARRE DU HAUT EN MOBILE ── */
 @media (max-width: 560px) {
   .topbar {
     flex-direction: column;

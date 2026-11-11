@@ -162,7 +162,7 @@ export function rangeCollidesWithUnavailable(startDate, endDate, unavailableRang
   });
 }
 
-/* Decale une date ISO d'un nombre de jours, en UTC pour ignorer l'heure d'ete. */
+/* Décalage ISO en UTC */
 function shiftIsoDay(isoDate, step) {
   const date = toDate(isoDate);
 
@@ -174,8 +174,7 @@ function shiftIsoDay(isoDate, step) {
   return isoFromDate(date);
 }
 
-/* Morceaux de la periode demandee qui ne tombent sur aucune indisponibilite,
-   dans l'ordre du calendrier. */
+/* Morceaux couverts */
 export function availableSegments(startDate, endDate, unavailableRanges = []) {
   const start = normalizeDateInput(startDate);
   const end = normalizeDateInput(endDate);
@@ -212,7 +211,7 @@ export function availableSegments(startDate, endDate, unavailableRanges = []) {
   return segments;
 }
 
-/* Nombre de jours couverts, bornes incluses. */
+/* Jours couverts */
 export function countCoveredDays(startDate, endDate, unavailableRanges = []) {
   return availableSegments(startDate, endDate, unavailableRanges).reduce((total, segment) => {
     const from = toDate(segment.startDate);
@@ -320,9 +319,6 @@ export function validateReservationPayload(payload = {}, unavailableRanges = [],
     errors.autreFrequence = "Merci de préciser votre besoin complémentaire.";
   }
 
-  /* Une periode partiellement couverte reste recevable : le relais se decide
-     ensuite, avec la personne. Seule une periode dont aucun jour n'est couvert
-     est refusee, pour ne pas recevoir de demande impossible a honorer. */
   if (
     isIsoDate(sanitized.dateDebut) &&
     isIsoDate(sanitized.dateFin) &&
@@ -380,9 +376,7 @@ export function formatDateFr(value) {
   return `${String(parts.day).padStart(2, "0")}/${String(parts.month).padStart(2, "0")}/${parts.year}`;
 }
 
-/* Adresse postale complete, telle qu'elle part dans le CRM et l'itineraire :
-   « 12 rue des Lilas, 35113 Domagné ». Vide si aucune rue n'est donnee. La
-   commune arrive de l'autocompletion sous la forme « Domagné (35113) ». */
+/* Adresse complète */
 export function adresseComplete({ adresse = "", commune = "", communeCodePostal = "" } = {}) {
   const rue = normalizeWhitespace(adresse);
   if (!rue) {
@@ -399,9 +393,7 @@ export function buildReservationSubject(payload) {
   return `Nouvelle demande de réservation – ${sanitized.prenom} ${sanitized.nom} – ${sanitized.dateDebut} au ${sanitized.dateFin}`;
 }
 
-/* Separe ce qui reste a venir de ce qui est termine a la date du jour, borne
-   de fin incluse. A venir : le plus proche d'abord. Termine : le plus recent
-   d'abord. */
+/* À venir / terminé */
 export function separerPassees(elements = [], aujourdhui = todayIso(), { debut = "startDate", fin = "endDate" } = {}) {
   const aVenir = [];
   const passees = [];
@@ -415,9 +407,7 @@ export function separerPassees(elements = [], aujourdhui = todayIso(), { debut =
   return { aVenir, passees };
 }
 
-/* Demandes recues depuis `jours` jours, la plus recente d'abord. Une date de
-   reception illisible est gardee : mieux vaut une demande de trop qu'une
-   demande manquee. */
+/* Demandes récentes */
 export function demandesRecentes(demandes = [], maintenant = new Date(), jours = 30) {
   const limite = maintenant.getTime() - jours * 86400000;
   const recue = (demande) => dateHeureD1(demande?.soumiseLe).getTime();
@@ -427,7 +417,7 @@ export function demandesRecentes(demandes = [], maintenant = new Date(), jours =
     .sort((a, b) => (recue(b) || 0) - (recue(a) || 0));
 }
 
-/* « 2026-08-17 21:04:33 » tel que le rend D1, en heure UTC. */
+/* Date D1 en UTC */
 export function dateHeureD1(valeur = "") {
   const texte = String(valeur ?? "");
   return new Date(texte.replace(" ", "T") + (texte.endsWith("Z") ? "" : "Z"));
