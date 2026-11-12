@@ -403,14 +403,6 @@
 
   .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
 
-  /* Mention */
-  .mention {
-    text-align: center;
-    font-size: 0.75rem;
-    color: var(--calc-mid);
-    margin-top: 20px;
-  }
-
   .badge-cumul {
     display: inline-block;
     background: var(--green-light);
