@@ -31,7 +31,7 @@
 
   <meta name="twitter:card" content="summary">
   <meta name="miaoucratie-api-base" content="https://miaoucratie-reservation-api.miaoucratie.workers.dev">
-  <meta name="web3forms-access-key" content="ee0abc1e-91ca-4e67-b4b6-ed2f4b3b521c">
+  <meta name="miaoucratie-antirobot" content="0x4AAAAAAGAEMNS21DjoFLH3">
 
 
   <script type="application/ld+json">
@@ -348,7 +348,8 @@
           </section>
 
           <div class="submit-panel">
-            <div class="h-captcha" data-captcha="true"></div>
+            <div id="antirobot"></div>
+            <p class="formulaire-secours" id="antirobot-secours" hidden><span id="antirobot-motif">Le formulaire ne s’est pas chargé. </span>Écrivez-moi sur&nbsp;WhatsApp au&nbsp;<a href="https://wa.me/33644247681" target="_blank" rel="noopener">06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a> ou&nbsp;à&nbsp;<a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>.</p>
             <p style="font-size:14px;color:var(--muted,#7A6B5E);margin:0 0 4px;">Assurée RC Pro · ACACED · <span aria-hidden="true" style="color:#E8A33D;letter-spacing:1px;">★★★★★</span> <strong>5,0</strong> sur 5 sur Google · 19 avis</p>
             <button id="submit-button" class="button button--primary" type="submit" disabled>
               <span class="button__label">Envoyer ma demande</span>
@@ -359,16 +360,9 @@
         </form>
 
         <section id="success-panel" class="success-panel" hidden aria-hidden="true" aria-labelledby="success-title">
-          <p class="success-panel__eyebrow" id="success-eyebrow">Demande envoyée</p>
+          <p class="success-panel__eyebrow">Demande envoyée</p>
           <h2 id="success-title">Votre demande a bien été envoyée.</h2>
-          <p id="success-message">Je vous réponds sous 24 à 48&nbsp;h.</p>
-          <!-- Relance -->
-          <p id="success-relance" class="success-panel__relance" hidden>
-            En revanche, l’e-mail qui me prévient n’est pas parti. Votre demande est
-            enregistrée, mais pour que je la traite tout de suite, prévenez-moi par
-            <a href="https://wa.me/33644247681" target="_blank" rel="noopener">WhatsApp</a>
-            ou au <a href="tel:+33644247681">06 44 24 76 81</a>.
-          </p>
+          <p>Je vous réponds sous 24 à 48&nbsp;h.</p>
         </section>
       </div>
     </section>
@@ -420,7 +414,6 @@
     });
   });
   </script>
-  <script src="https://web3forms.com/client/script.js" async defer></script>
   <script type="module" src="js/reservation.js"></script>
   </body>
 </html>

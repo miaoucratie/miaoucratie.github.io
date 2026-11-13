@@ -123,7 +123,7 @@ describe('selecteursDePremierNiveau', () => {
 
 describe('estTiers et classesDeBibliotheque', () => {
   test('les prefixes connus sont reconnus', () => {
-    for (const n of ['flatpickr-day', 'leaflet-control-zoom-out', 'h-captcha']) {
+    for (const n of ['flatpickr-day', 'leaflet-control-zoom-out']) {
       assert.ok(estTiers(n), `${n} devrait etre reconnu comme tiers`);
     }
     assert.ok(!estTiers('art-trio'), 'une classe du site ne doit pas l\'etre');

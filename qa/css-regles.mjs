@@ -35,7 +35,7 @@ export function nomsDeClasses(texte) {
  * Bibliotheques qui posent leurs propres classes et apportent leur feuille :
  * ni a declarer ni a poser de notre cote.
  */
-const TIERS = [/^h-captcha/, /^hcaptcha/, /^leaflet/, /^flatpickr/];
+const TIERS = [/^leaflet/, /^flatpickr/];
 
 export const estTiers = (nom) => TIERS.some((r) => r.test(nom));
 

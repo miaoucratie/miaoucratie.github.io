@@ -50,6 +50,10 @@ const MIME = {
 /* Adresse de l'API */
 const META_API = /(<meta name="miaoucratie-api-base" content=")[^"]*(")/;
 
+/* Clé anti-robot d'essai */
+const META_ANTIROBOT = /(<meta name="miaoucratie-antirobot" content=")[^"]*(")/;
+const CLE_ANTIROBOT_ESSAI = 'cle-essai';
+
 /* Serveur du site */
 function demarrerServeur(api) {
   const serveur = createServer(async (req, res) => {
@@ -63,7 +67,9 @@ function demarrerServeur(api) {
     try {
       let contenu = await readFile(fichier);
       if (extname(fichier) === '.html') {
-        contenu = contenu.toString('utf8').replace(META_API, `$1${api}$2`);
+        contenu = contenu.toString('utf8')
+          .replace(META_API, `$1${api}$2`)
+          .replace(META_ANTIROBOT, `$1${CLE_ANTIROBOT_ESSAI}$2`);
       }
       res.writeHead(200, { 'Content-Type': MIME[extname(fichier)] ?? 'application/octet-stream' });
       res.end(contenu);
@@ -84,6 +90,10 @@ const indisponibilitesFigees = () => [{ startDate: jourDecale(10), endDate: jour
 /* Administration */
 const MOT_DE_PASSE_ESSAI = 'essai-valide';
 const JETON_ESSAI = 'jeton-essai';
+
+/* Jeton anti-robot refusé */
+const JETON_REFUSE = 'jeton-refuse';
+const MESSAGE_REFUS = "La vérification anti-robot n'a pas abouti. Merci de réessayer.";
 
 function demarrerFauxWorker() {
   const envois = [];
@@ -125,6 +135,7 @@ function demarrerFauxWorker() {
       let donnees = {};
       try { donnees = JSON.parse(corps || '{}'); } catch { /* corps illisible */ }
       if (req.method === 'POST' && chemin === '/public/reservations') {
+        if (donnees.turnstileToken === JETON_REFUSE) return repondre(400, { message: MESSAGE_REFUS });
         return repondre(200, { message: 'Votre demande a bien été enregistrée.', reservationId: randomUUID() });
       }
       if (req.method === 'POST' && /^\/public\/reservations\/[0-9a-f-]{36}\/notification-echouee$/.test(chemin)) {
@@ -163,7 +174,7 @@ function demarrerFauxWorker() {
 /* ─── Filet reseau ───────────────────────────────────────────────────── */
 
 const HOTE_API = /\.workers\.dev$/;
-const HOTES_ANTIROBOT = /(^|\.)hcaptcha\.com$/;
+const HOTES_ANTIROBOT = /^challenges\.cloudflare\.com$/;
 
 export function issueRequete(methode, adresse) {
   let hote;
@@ -193,7 +204,13 @@ async function poserFilet(contexte, reseau) {
     reseau.courriels.push(route.request().postData() || '');
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }) });
   });
+  // Case anti-robot factice
+  await contexte.route('https://challenges.cloudflare.com/turnstile/**', (route) => route.fulfill({
+    status: 200, contentType: 'text/javascript', path: FAUX_ANTIROBOT,
+  }));
 }
+
+const FAUX_ANTIROBOT = join(RACINE, 'qa', 'fixtures', 'turnstile.js');
 
 async function nouveauContexte(navigateur, reseau, options) {
   const contexte = await navigateur.newContext(options);
@@ -697,7 +714,7 @@ async function testerSecours(navigateur, base, reseau, echecs) {
 /* ─── Ressources externes coupees ────────────────────────────────────── */
 
 const COUPURES = [
-  { nom: 'anti-robot et e-mail', motifs: ['https://web3forms.com/**', 'https://*.hcaptcha.com/**'] },
+  { nom: 'anti-robot', motifs: ['https://challenges.cloudflare.com/**'] },
   { nom: 'geocodage', motifs: ['https://geo.api.gouv.fr/**', 'https://data.geopf.fr/**'] },
   { nom: 'calendrier', motifs: ['https://cdn.jsdelivr.net/**'] },
   { nom: 'serveur', motifs: [] },
@@ -765,49 +782,147 @@ async function testerCoupures(navigateur, base, reseau, echecs) {
 
 /* ─── Envoi complet ──────────────────────────────────────────────────── */
 
-async function testerEnvoi(navigateur, base, reseau, echecs) {
+/* Formulaire rempli */
+async function remplirFormulaire(page) {
+  await page.waitForFunction(() => document.querySelectorAll('.flatpickr-input').length === 2, { timeout: 12000 });
+  await page.fill('#nom', 'Durand');
+  await page.fill('#prenom', 'Claire');
+  await page.fill('#telephone', '06 12 34 56 78');
+  await page.fill('#email', 'essai@exemple.fr');
+  await page.fill('#commune', 'Domagné');
+  await page.fill('#nombreChats', '1');
+  await page.selectOption('#frequence', '1 visite par jour');
+  await page.evaluate(([debut, fin]) => {
+    document.getElementById('dateDebut')._flatpickr.setDate(debut, true);
+    document.getElementById('dateFin')._flatpickr.setDate(fin, true);
+  }, [jourDecale(30), jourDecale(32)]);
+}
+
+/* Envois vers le faux Worker */
+const envoisDepuis = (reseau, depart) => reseau.worker.envois.slice(depart);
+
+/* Ni e-mail ni signalement */
+function aucunAncienChemin(reseau, depart, courriels, nom, echecs) {
+  if (reseau.courriels.length !== courriels) {
+    echecs.push(`${nom} : ${reseau.courriels.length - courriels} appel(s) au service d'e-mail, attendu 0`);
+  }
+  const signalements = envoisDepuis(reseau, depart).filter((e) => e.chemin.endsWith('/notification-echouee'));
+  if (signalements.length) echecs.push(`${nom} : ${signalements.length} signalement(s), attendu 0`);
+}
+
+async function pageReservation(navigateur, reseau, preparer) {
   const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: LARGEURS[0], height: 900 } });
   await refuserLaMesure(contexte);
   await intercepterMesure(contexte, []);
   await figerApiAdresse(contexte, new Set());
-  const page = await contexte.newPage();
-  const enregistres = reseau.worker.envois.length;
+  if (preparer) await preparer(contexte);
+  return { contexte, page: await contexte.newPage() };
+}
+
+async function testerEnvoi(navigateur, base, reseau, echecs) {
+  const nom = 'reservation (envoi)';
+  const { contexte, page } = await pageReservation(navigateur, reseau);
+  const depart = reseau.worker.envois.length;
   const courriels = reseau.courriels.length;
   try {
     await page.goto(`${base}/reservation.html`, { waitUntil: 'networkidle' });
-    await page.waitForFunction(() => document.querySelectorAll('.flatpickr-input').length === 2, { timeout: 12000 });
-    await page.fill('#nom', 'Durand');
-    await page.fill('#prenom', 'Claire');
-    await page.fill('#telephone', '06 12 34 56 78');
-    await page.fill('#email', 'essai@exemple.fr');
-    await page.fill('#commune', 'Domagné');
-    await page.fill('#nombreChats', '1');
-    await page.selectOption('#frequence', '1 visite par jour');
-    await page.evaluate(([debut, fin]) => {
-      document.getElementById('dateDebut')._flatpickr.setDate(debut, true);
-      document.getElementById('dateFin')._flatpickr.setDate(fin, true);
-      let jeton = document.querySelector('textarea[name="h-captcha-response"]');
-      if (!jeton) {
-        jeton = document.createElement('textarea');
-        jeton.name = 'h-captcha-response';
-        jeton.hidden = true;
-        document.querySelector('.h-captcha').append(jeton);
-      }
-      jeton.value = 'jeton-essai';
-    }, [jourDecale(30), jourDecale(32)]);
+    await remplirFormulaire(page);
+    await page.waitForFunction(() => window.__antirobot?.rendus === 1, { timeout: 5000 });
+    await attendre(200);
     await page.click('#submit-button');
     await page.locator('#success-panel').waitFor({ state: 'visible', timeout: 8000 });
 
-    const recus = reseau.worker.envois.slice(enregistres).filter((e) => e.chemin === '/public/reservations');
+    const recus = envoisDepuis(reseau, depart).filter((e) => e.chemin === '/public/reservations');
     if (recus.length !== 1 || !recus[0].corps.includes('Durand')) {
-      echecs.push(`reservation (envoi) : ${recus.length} demande(s) recue(s) par le faux Worker, attendu 1`);
+      echecs.push(`${nom} : ${recus.length} demande(s) recue(s) par le faux Worker, attendu 1`);
+    } else if (JSON.parse(recus[0].corps).turnstileToken !== 'jeton-essai-1') {
+      echecs.push(`${nom} : jeton anti-robot absent de la demande`);
     }
-    if (reseau.courriels.length - courriels !== 1) {
-      echecs.push(`reservation (envoi) : ${reseau.courriels.length - courriels} e-mail(s) intercepte(s), attendu 1`);
+    const options = await page.evaluate(() => ({
+      action: window.__antirobot.options?.action, cle: window.__antirobot.options?.sitekey,
+    }));
+    if (options.action !== 'reservation' || options.cle !== CLE_ANTIROBOT_ESSAI) {
+      echecs.push(`${nom} : case anti-robot mal reglee ${JSON.stringify(options)}`);
     }
-    if (new URL(page.url()).search) echecs.push('reservation (envoi) : parametres dans l\'adresse');
+    aucunAncienChemin(reseau, depart, courriels, nom, echecs);
+    if (new URL(page.url()).search) echecs.push(`${nom} : parametres dans l'adresse`);
   } catch (e) {
-    echecs.push(`reservation (envoi) : interrompu — ${e.message.split('\n')[0]}`);
+    echecs.push(`${nom} : interrompu — ${e.message.split('\n')[0]}`);
+  } finally {
+    await contexte.close();
+  }
+}
+
+/* Refus du serveur */
+async function testerRefusAntirobot(navigateur, base, reseau, echecs) {
+  const nom = 'reservation (refus anti-robot)';
+  const { contexte, page } = await pageReservation(navigateur, reseau, (c) => c.addInitScript(
+    (jeton) => { window.__jetonsAntirobot = [jeton]; }, JETON_REFUSE,
+  ));
+  const depart = reseau.worker.envois.length;
+  const courriels = reseau.courriels.length;
+  try {
+    await page.goto(`${base}/reservation.html`, { waitUntil: 'networkidle' });
+    await remplirFormulaire(page);
+    await page.waitForFunction(() => window.__antirobot?.rendus === 1, { timeout: 5000 });
+    await attendre(200);
+    await page.click('#submit-button');
+    await page.locator('#reservation-feedback').filter({ hasText: MESSAGE_REFUS }).waitFor({ timeout: 5000 });
+
+    const vu = await page.evaluate(() => ({
+      secours: !document.getElementById('antirobot-secours').hidden,
+      motif: !document.getElementById('antirobot-motif').hidden,
+      remises: window.__antirobot.remises,
+      succes: !document.getElementById('success-panel').hidden,
+    }));
+    if (!vu.secours) echecs.push(`${nom} : phrase de secours absente`);
+    if (vu.motif) echecs.push(`${nom} : la phrase de secours dit que le formulaire ne s'est pas charge`);
+    if (vu.remises !== 1) echecs.push(`${nom} : case reinitialisee ${vu.remises} fois, attendu 1`);
+    if (vu.succes) echecs.push(`${nom} : confirmation affichee apres un refus`);
+
+    await attendre(200);
+    await page.click('#submit-button');
+    await page.locator('#success-panel').waitFor({ state: 'visible', timeout: 8000 });
+    const jetons = envoisDepuis(reseau, depart).filter((e) => e.chemin === '/public/reservations')
+      .map((e) => JSON.parse(e.corps).turnstileToken);
+    if (jetons.length !== 2 || jetons[0] !== JETON_REFUSE || jetons[1] === JETON_REFUSE) {
+      echecs.push(`${nom} : jetons envoyes ${JSON.stringify(jetons)}, attendu un jeton neuf au second envoi`);
+    }
+    aucunAncienChemin(reseau, depart, courriels, nom, echecs);
+  } catch (e) {
+    echecs.push(`${nom} : interrompu — ${e.message.split('\n')[0]}`);
+  } finally {
+    await contexte.close();
+  }
+}
+
+/* Case qui ne se charge pas */
+async function testerAntirobotAbsent(navigateur, base, reseau, echecs) {
+  const nom = 'reservation (anti-robot absent)';
+  const { contexte, page } = await pageReservation(navigateur, reseau, (c) => c.route(
+    'https://challenges.cloudflare.com/**', (route) => route.abort(),
+  ));
+  const depart = reseau.worker.envois.length;
+  const courriels = reseau.courriels.length;
+  try {
+    await page.goto(`${base}/reservation.html`, { waitUntil: 'networkidle' });
+    await remplirFormulaire(page);
+    if (!(await page.locator('#antirobot-secours').isVisible())) echecs.push(`${nom} : phrase de secours absente au chargement`);
+    await page.click('#submit-button');
+    await attendre(800);
+    const vu = await page.evaluate(() => ({
+      motif: !document.getElementById('antirobot-motif').hidden,
+      alerte: document.getElementById('reservation-feedback').textContent.trim(),
+    }));
+    if (!(await page.locator('#antirobot-secours').isVisible()) || !vu.motif) {
+      echecs.push(`${nom} : phrase de secours incomplete apres l'envoi`);
+    }
+    if (vu.alerte) echecs.push(`${nom} : message d'erreur affiche « ${vu.alerte} »`);
+    const recus = envoisDepuis(reseau, depart).filter((e) => e.chemin === '/public/reservations');
+    if (recus.length) echecs.push(`${nom} : ${recus.length} demande(s) partie(s), attendu 0`);
+    aucunAncienChemin(reseau, depart, courriels, nom, echecs);
+  } catch (e) {
+    echecs.push(`${nom} : interrompu — ${e.message.split('\n')[0]}`);
   } finally {
     await contexte.close();
   }
@@ -1313,6 +1428,8 @@ async function main() {
     await testerSecours(navigateur, base, reseau, echecs);
     await testerCoupures(navigateur, base, reseau, echecs);
     await testerEnvoi(navigateur, base, reseau, echecs);
+    await testerRefusAntirobot(navigateur, base, reseau, echecs);
+    await testerAntirobotAbsent(navigateur, base, reseau, echecs);
     await testerGestion(navigateur, base, reseau, echecs);
 
     // Barre et pied identiques

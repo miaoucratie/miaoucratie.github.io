@@ -1,7 +1,5 @@
 import {
   availableSegments,
-  adresseComplete,
-  buildReservationSubject,
   isIsoDate,
   mergeRanges,
   normalizeDateInput,
@@ -17,17 +15,16 @@ const API_BASE = document
   ?.getAttribute("content")
   ?.trim() || "";
 
-const WEB3FORMS_ACCESS_KEY = document
-  .querySelector('meta[name="web3forms-access-key"]')
+const CLE_ANTIROBOT = document
+  .querySelector('meta[name="miaoucratie-antirobot"]')
   ?.getAttribute("content")
   ?.trim() || "";
 
-const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+const SCRIPT_ANTIROBOT = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 const ENDPOINTS = {
   unavailable: `${API_BASE}/public/unavailabilities`,
   reservation: `${API_BASE}/public/reservations`,
-  notificationEchouee: (id) => `${API_BASE}/public/reservations/${id}/notification-echouee`,
 };
 
 const DRAFT_KEY = "miaoucratie:reservation:draft:v1";
@@ -85,6 +82,12 @@ const adresseInput = document.getElementById("adresse");
 const adresseSuggestions = document.getElementById("adresse-suggestions");
 const startDateInput = document.getElementById("dateDebut");
 const endDateInput = document.getElementById("dateFin");
+const antirobotBloc = document.getElementById("antirobot");
+const antirobotSecours = document.getElementById("antirobot-secours");
+const antirobotMotif = document.getElementById("antirobot-motif");
+
+/* Anti-robot */
+const antirobot = { jeton: "", widget: null, indisponible: false };
 
 init();
 
@@ -124,6 +127,7 @@ function init() {
   restoreDraft();
   attachFieldListeners();
   loadUnavailableRanges();
+  initAntirobot();
 
   newRequestButton?.addEventListener("click", resetForNewRequest);
 
@@ -1059,6 +1063,7 @@ async function handleSubmit(event) {
   event.preventDefault();
   hideAlert();
   clearAllErrors();
+  masquerSecoursRefus();
 
   const payload = getFormPayload();
   const validation = validateReservationPayload(payload, state.unavailableRanges);
@@ -1072,18 +1077,22 @@ async function handleSubmit(event) {
   return;
   }
 
-  const hCaptchaResponse = getHCaptchaResponse();
+  if (!antirobot.jeton) {
+    if (antirobot.indisponible) {
+      mesurer("formulaire_erreurs", { champs: "antirobot_non_charge" });
+      afficherSecoursAntirobot(true);
+      return;
+    }
 
-  if (isHCaptchaExpected() && !hCaptchaResponse) {
-  mesurer("formulaire_erreurs", { champs: "antispam" });
-  showAlert(
-    "error",
-    "Merci de valider la vérification anti-spam avant d’envoyer votre demande."
-  );
-  return;
-}
+    mesurer("formulaire_erreurs", { champs: "antispam" });
+    showAlert(
+      "error",
+      "Merci de valider la vérification anti-spam avant d’envoyer votre demande."
+    );
+    return;
+  }
 
-setButtonLoading(submitButton, true);
+  setButtonLoading(submitButton, true);
 
   try {
     const response = await fetch(ENDPOINTS.reservation, {
@@ -1092,7 +1101,7 @@ setButtonLoading(submitButton, true);
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify(validation.sanitized),
+      body: JSON.stringify({ ...validation.sanitized, turnstileToken: antirobot.jeton }),
     });
 
     const result = await safeJson(response);
@@ -1105,23 +1114,9 @@ setButtonLoading(submitButton, true);
       const message = result?.message || "Une erreur est survenue pendant l’envoi. Merci de réessayer.";
       mesurer("formulaire_erreurs", { champs: `serveur_${response.status}` });
       showAlert("error", message);
+      afficherSecoursAntirobot(false);
       focusFirstError(result?.errors || {});
       return;
-    }
-
-    // Notification
-    let notificationEnvoyee = true;
-
-    try {
-      await sendWeb3FormsNotification(
-        validation.sanitized,
-        result?.reservationId || "",
-        hCaptchaResponse
-      );
-    } catch (notificationError) {
-      notificationEnvoyee = false;
-      console.warn("Demande enregistrée mais notification non partie", notificationError);
-      await signalerNotificationEchouee(result?.reservationId || "");
     }
 
     if (typeof gtag === "function") {
@@ -1132,179 +1127,105 @@ setButtonLoading(submitButton, true);
 
     sessionStorage.removeItem(DRAFT_KEY);
     form.hidden = true;
-    afficherPanneauSucces(notificationEnvoyee);
+    afficherPanneauSucces();
   } catch (error) {
     showAlert(
       "error",
       error?.message ||
         "Une erreur réseau est survenue. Merci de réessayer sans recharger la page."
     );
+    afficherSecoursAntirobot(false);
   } finally {
+    remettreAntirobot();
     setButtonLoading(submitButton, false);
   }
 }
 
-function isHCaptchaExpected() {
-  return Boolean(document.querySelector(".h-captcha"));
+/* Case anti-robot */
+function initAntirobot() {
+  if (!CLE_ANTIROBOT) {
+    antirobotIndisponible();
+    return;
+  }
+
+  const script = document.createElement("script");
+  script.src = SCRIPT_ANTIROBOT;
+  script.async = true;
+  script.addEventListener("load", rendreAntirobot);
+  script.addEventListener("error", antirobotIndisponible);
+  document.head.append(script);
 }
 
-function getHCaptchaResponse() {
-  return document
-    .querySelector('textarea[name="h-captcha-response"]')
-    ?.value
-    ?.trim() || "";
-}
-
-function resetHCaptcha() {
+function rendreAntirobot() {
   try {
-    if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
-      window.hcaptcha.reset();
-    }
-  } catch (error) {
-    console.warn("Unable to reset hCaptcha", error);
+    antirobot.widget = window.turnstile.render(antirobotBloc, {
+      sitekey: CLE_ANTIROBOT,
+      action: "reservation",
+      "response-field": false,
+      callback(jeton) {
+        antirobot.jeton = jeton;
+        if (antirobot.indisponible) {
+          antirobot.indisponible = false;
+          antirobotSecours.hidden = true;
+        }
+      },
+      "expired-callback"() {
+        antirobot.jeton = "";
+      },
+      "timeout-callback"() {
+        antirobot.jeton = "";
+      },
+      "error-callback"() {
+        antirobotIndisponible();
+      },
+      "unsupported-callback"() {
+        antirobotIndisponible();
+      },
+    });
+  } catch {
+    antirobotIndisponible();
   }
 }
 
-/** Écran de confirmation */
-function afficherPanneauSucces(notificationEnvoyee) {
-  const relance = document.getElementById("success-relance");
-  const titre = document.getElementById("success-title");
-  const eyebrow = document.getElementById("success-eyebrow");
-  const message = document.getElementById("success-message");
-
-  if (relance) {
-    relance.hidden = notificationEnvoyee;
-  }
-
-  if (!notificationEnvoyee) {
-    if (eyebrow) eyebrow.textContent = "Demande enregistrée";
-    if (titre) titre.textContent = "Votre demande est bien enregistrée.";
-    if (message) message.textContent = "Elle porte vos dates et vos coordonnées.";
-  }
-
-  successPanel.hidden = false;
-  successPanel.setAttribute("aria-hidden", "false");
-  successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+function antirobotIndisponible() {
+  antirobot.jeton = "";
+  antirobot.indisponible = true;
+  antirobotBloc.hidden = antirobot.widget === null;
+  afficherSecoursAntirobot(true);
 }
 
-/** Marque non notifiée */
-async function signalerNotificationEchouee(reservationId) {
-  if (!reservationId) {
+/* Phrase de secours */
+function afficherSecoursAntirobot(avecMotif) {
+  antirobotMotif.hidden = !avecMotif;
+  antirobotSecours.hidden = false;
+}
+
+function masquerSecoursRefus() {
+  if (!antirobot.indisponible) {
+    antirobotSecours.hidden = true;
+  }
+}
+
+/* Jeton à usage unique */
+function remettreAntirobot() {
+  antirobot.jeton = "";
+
+  if (antirobot.widget === null) {
     return;
   }
 
   try {
-    await fetch(ENDPOINTS.notificationEchouee(reservationId), {
-      method: "POST",
-      headers: { Accept: "application/json" },
-      keepalive: true,
-    });
-  } catch (error) {
-    console.warn("Signalement de la notification échouée impossible", error);
+    window.turnstile.reset(antirobot.widget);
+  } catch {
+    antirobotIndisponible();
   }
 }
 
-async function sendWeb3FormsNotification(payload, reservationId = "", hCaptchaResponse = "") {
-  if (!WEB3FORMS_ACCESS_KEY) {
-    throw new Error("La configuration d’envoi d’e-mail est incomplète. Merci de me contacter directement.");
-  }
-
-  if (isHCaptchaExpected() && !hCaptchaResponse) {
-    throw new Error("La vérification anti-spam est incomplète.");
-  }
-
-  try {
-    const response = await fetch(WEB3FORMS_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(buildWeb3FormsPayload(payload, reservationId, hCaptchaResponse)),
-    });
-
-    const result = await safeJson(response);
-
-    if (!response.ok || result?.success === false) {
-      console.error("Web3Forms notification failed", {
-        status: response.status,
-        result,
-      });
-
-      const detail =
-        result?.message ||
-        result?.body?.message ||
-        "Erreur inconnue côté Web3Forms.";
-
-      throw new Error(
-        `Notification Web3Forms échouée : ${detail}`
-      );
-    }
-
-    return result;
-  } finally {
-    resetHCaptcha();
-  }
-}
-
-function buildWeb3FormsPayload(payload, reservationId = "", hCaptchaResponse = "") {
-  const submittedAt = new Intl.DateTimeFormat("fr-FR", {
-    dateStyle: "full",
-    timeStyle: "short",
-    timeZone: "Europe/Paris",
-  }).format(new Date());
-
-  const frequenceLabel =
-    payload.frequence === "autre"
-      ? `Autre besoin à préciser${payload.autreFrequence ? ` : ${payload.autreFrequence}` : ""}`
-      : payload.frequence;
-
-  const message = [
-    "Nouvelle demande de réservation Miaoucratie",
-    "",
-    `Nom : ${payload.nom}`,
-    `Prénom : ${payload.prenom}`,
-    `Téléphone : ${payload.telephone}`,
-    `WhatsApp : ${payload.whatsapp || "Non renseigné"}`,
-    `E-mail : ${payload.email}`,
-    `Commune : ${payload.commune}`,
-    `Code commune : ${payload.communeCode || "Non renseigné"}`,
-    `Code postal : ${payload.communeCodePostal || "Non renseigné"}`,
-    `Nombre de chats : ${payload.nombreChats}`,
-    `Date de début : ${payload.dateDebut}`,
-    `Date de fin : ${payload.dateFin}`,
-    `Fréquence de visites : ${frequenceLabel}`,
-    `Observations : ${payload.observations || "Aucune"}`,
-    `Date et heure de soumission : ${submittedAt}`,
-    reservationId ? `Référence interne : ${reservationId}` : "",
-    "",
-    "Il s’agit bien d’une demande de réservation, et non d’une confirmation automatique.",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  return {
-    access_key: WEB3FORMS_ACCESS_KEY,
-    "h-captcha-response": hCaptchaResponse,
-    subject: buildReservationSubject(payload),
-    from_name: "Miaoucratie Webform",
-    nom: payload.nom,
-    prenom: payload.prenom,
-    email: payload.email,
-    telephone: payload.telephone,
-    whatsapp: payload.whatsapp || "Non renseigné",
-    commune: payload.commune,
-    commune_code_postal: payload.communeCodePostal || "",
-    nombre_chats: String(payload.nombreChats),
-    date_debut: payload.dateDebut,
-    date_fin: payload.dateFin,
-    frequence: frequenceLabel,
-    observations: payload.observations || "",
-    submitted_at: submittedAt,
-    reservation_id: reservationId,
-    adresse: payload.adresse || "",
-    adresse_complete: adresseComplete(payload),
-   };
+/** Écran de confirmation */
+function afficherPanneauSucces() {
+  successPanel.hidden = false;
+  successPanel.setAttribute("aria-hidden", "false");
+  successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 async function safeJson(response) {
@@ -1514,9 +1435,6 @@ function appliquerBrouillon(draft) {
 
 function resetForNewRequest() {
   successPanel.hidden = true;
-  // Remise à zéro
-  const relance = document.getElementById("success-relance");
-  if (relance) relance.hidden = true;
   form.hidden = false;
   form.reset();
   state.startPicker?.clear();
@@ -1527,6 +1445,7 @@ function resetForNewRequest() {
   toggleOtherFrequency("");
   clearAllErrors();
   hideAlert();
+  masquerSecoursRefus();
   startedAtField.value = String(Date.now());
   communeCodeInput.value = "";
   communeCodePostalInput.value = "";
