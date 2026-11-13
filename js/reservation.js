@@ -77,8 +77,6 @@ const startedAtField = document.getElementById("started_at");
 const frequencyField = document.getElementById("frequence");
 const otherFrequencyWrapper = document.getElementById("autre-frequence-wrapper");
 const otherFrequencyInput = document.getElementById("autreFrequence");
-const menuButton = document.querySelector("[data-menu-toggle]");
-const menu = document.querySelector("[data-menu]");
 const communeInput = document.getElementById("commune");
 const communeCodeInput = document.getElementById("commune_code");
 const communeCodePostalInput = document.getElementById("commune_code_postal");
@@ -118,39 +116,19 @@ function init() {
     return;
   }
 
+  form.addEventListener("submit", handleSubmit);
   startedAtField.value = String(Date.now());
 
-  initMenu();
   initDynamicFields();
   initDatePickers();
   restoreDraft();
   attachFieldListeners();
   loadUnavailableRanges();
 
-  form.addEventListener("submit", handleSubmit);
   newRequestButton?.addEventListener("click", resetForNewRequest);
-}
 
-function initMenu() {
-  if (!menuButton || !menu) {
-    return;
-  }
-
-  menuButton.addEventListener("click", () => {
-    const open = menu.classList.toggle("is-open");
-    menuButton.setAttribute("aria-expanded", String(open));
-  });
-
-  document.addEventListener("click", (event) => {
-    if (!menu.classList.contains("is-open")) {
-      return;
-    }
-    if (menu.contains(event.target) || menuButton.contains(event.target)) {
-      return;
-    }
-    menu.classList.remove("is-open");
-    menuButton.setAttribute("aria-expanded", "false");
-  });
+  submitButton.disabled = !submitNote.hidden;
+  form.setAttribute("data-actif", "");
 }
 
 function initDynamicFields() {
@@ -1467,42 +1445,70 @@ function saveDraft() {
 }
 
 function restoreDraft() {
-  const draft = safeParseJson(sessionStorage.getItem(DRAFT_KEY));
-  if (!draft) {
+  let draft = null;
+
+  try {
+    draft = safeParseJson(sessionStorage.getItem(DRAFT_KEY));
+  } catch (error) {
     return;
   }
 
-  form.querySelector("#nom").value = draft.nom || "";
-  form.querySelector("#prenom").value = draft.prenom || "";
-  form.querySelector("#telephone").value = draft.telephone || "";
-  form.querySelector("#email").value = draft.email || "";
-  form.querySelector("#whatsapp").value = draft.whatsapp || "";
-  communeInput.value = draft.commune || "";
-  communeCodeInput.value = draft.communeCode || "";
-  communeCodePostalInput.value = draft.communeCodePostal || "";
-  form.querySelector("#adresse").value = draft.adresse || "";
-  form.querySelector("#nombreChats").value = Number.isFinite(draft.nombreChats) ? draft.nombreChats : "";
-  frequencyField.value = draft.frequence || "";
-  toggleOtherFrequency(frequencyField.value);
-  otherFrequencyInput.value = draft.autreFrequence || "";
-  form.querySelector("#observations").value = draft.observations || "";
-
-  if (draft.startedAt) {
-    startedAtField.value = String(draft.startedAt);
+  if (!draft || typeof draft !== "object" || Array.isArray(draft)) {
+    return;
   }
 
-  if (draft.dateDebut) {
-    state.startPicker?.setDate(draft.dateDebut, false, "Y-m-d");
-    syncPickerIsoValue(state.startPicker, draft.dateDebut);
-    state.endPicker?.set("minDate", draft.dateDebut);
-  }
-
-  if (draft.dateFin) {
-    state.endPicker?.setDate(draft.dateFin, false, "Y-m-d");
-    syncPickerIsoValue(state.endPicker, draft.dateFin);
+  try {
+    appliquerBrouillon(draft);
+  } catch (error) {
+    console.warn("Brouillon ignoré", error);
   }
 
   validateDatesLive();
+}
+
+/* Brouillon */
+function appliquerBrouillon(draft) {
+  const texte = (valeur) => (typeof valeur === "string" || typeof valeur === "number" ? String(valeur) : "");
+  const remplir = (champ, valeur) => {
+    if (champ) {
+      champ.value = valeur;
+    }
+  };
+
+  remplir(form.querySelector("#nom"), texte(draft.nom));
+  remplir(form.querySelector("#prenom"), texte(draft.prenom));
+  remplir(form.querySelector("#telephone"), texte(draft.telephone));
+  remplir(form.querySelector("#email"), texte(draft.email));
+  remplir(form.querySelector("#whatsapp"), texte(draft.whatsapp));
+  remplir(communeInput, texte(draft.commune));
+  remplir(communeCodeInput, texte(draft.communeCode));
+  remplir(communeCodePostalInput, texte(draft.communeCodePostal));
+  remplir(form.querySelector("#adresse"), texte(draft.adresse));
+  remplir(form.querySelector("#nombreChats"), Number.isFinite(draft.nombreChats) ? String(draft.nombreChats) : "");
+  remplir(frequencyField, texte(draft.frequence));
+  toggleOtherFrequency(frequencyField.value);
+  remplir(otherFrequencyInput, texte(draft.autreFrequence));
+  remplir(form.querySelector("#observations"), texte(draft.observations));
+
+  if (Number.isSafeInteger(draft.startedAt) && draft.startedAt > 0) {
+    startedAtField.value = String(draft.startedAt);
+  }
+
+  const debut = normalizeDateInput(texte(draft.dateDebut));
+  const debutValide = isIsoDate(debut) && debut >= TODAY_ISO;
+
+  if (debutValide) {
+    state.startPicker?.setDate(debut, false, "Y-m-d");
+    syncPickerIsoValue(state.startPicker, debut);
+    state.endPicker?.set("minDate", debut);
+  }
+
+  const fin = normalizeDateInput(texte(draft.dateFin));
+
+  if (isIsoDate(fin) && fin >= (debutValide ? debut : TODAY_ISO)) {
+    state.endPicker?.setDate(fin, false, "Y-m-d");
+    syncPickerIsoValue(state.endPicker, fin);
+  }
 }
 
 

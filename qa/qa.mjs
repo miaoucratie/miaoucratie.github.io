@@ -1,58 +1,10 @@
 /**
- * Harnais de non-regression du site Miaoucratie.
+ * Harnais du site
  *
- * Ce commentaire est la reference des options : le README y renvoie plutot
- * que de les recopier, pour qu'il n'y ait qu'un seul endroit a tenir a jour.
- *
- *   npm run qa                    verifie le site contre la reference
- *   npm run qa -- --detail        liste TOUS les ecarts, pas seulement le premier
- *   npm run qa -- --comportement  ignore l'apparence, ne teste que le comportement
- *   npm run qa:update             regenere la reference, APRES avoir valide a l'oeil
- *                                 que le changement visuel est bien celui qu'on voulait
- *
- * Deux familles de controles :
- *
- *  1. Empreinte visuelle. Pour chaque element de chaque page, on releve ses
- *     dimensions, sa position et ses styles calcules. Toute difference avec la
- *     reference est signalee. C'est ce qui attrape les regressions silencieuses
- *     d'une modification CSS.
- *
- *  2. Comportement. Menu, accordeon, filtres, recherche, moteur de communes,
- *     initialisation du calendrier, calculateur de tarif, anonymat des avis,
- *     consentement a la mesure d'audience. C'est ce qui attrape les
- *     regressions silencieuses d'une modification HTML ou JS — une page peut
- *     avoir des balises parfaitement equilibrees et n'avoir plus aucun
- *     JavaScript.
- *
- *  3. Taux metier annonces. Le tarif kilometrique et le taux d'acompte sont
- *     repetes dans le texte de plusieurs pages : on verifie qu'ils disent tous
- *     ce que dit shared/tarifs.js. Une hausse appliquee partout sauf a un
- *     endroit ne casse rien et ne se voit pas — le site annonce simplement
- *     deux tarifs selon la page ouverte.
- *
- * Pieges connus, traites ici :
- *  - les elements Leaflet sont exclus de l'empreinte : le marqueur de depart
- *    depend d'un appel reseau, sa presence varie d'un chargement a l'autre ;
- *  - les ressources CDN (Flatpickr, hCaptcha) chargent de facon asynchrone :
- *    on attend explicitement leur presence plutot qu'un delai fixe ;
- *  - les polices sont servies par le site depuis le 16 aout 2026. Elles
- *    venaient de fonts.gstatic.com et ce trajet cassait environ une fois sur
- *    sept, ce qui rendait la verification aleatoire. Le controle reste en
- *    place — il attraperait desormais un chemin casse dans polices.css ;
- *  - l'API adresse (geo.api.gouv.fr) est interceptee depuis le 17 aout 2026 et
- *    servie depuis qa/fixtures/geo-api.json. Elle faisait echouer la carte en
- *    bloc — Rennes classee « sur devis », reinitialisation incomplete — puis
- *    repassait au vert au tour suivant sans qu'une ligne ait bouge. Voir
- *    figerApiAdresse plus bas ;
- *  - la mesure d'audience attend un consentement depuis le 17 aout 2026. Les
- *    vues sont mesurees avec un refus deja enregistre, sans quoi le bandeau
- *    s'ajouterait a chaque page et masquerait des liens dans les parcours.
- *    Toute requete vers Google est en outre interceptee et comptee : une page
- *    qui mesurerait malgre le refus est nommee. Voir refuserLaMesure.
- *
- * Le harnais teste ses propres fonctions : `node --test` couvre memeElement,
- * l'oracle qui decide si deux releves sont identiques. Sans ce filet, une
- * tolerance trop large rendrait la QA verte pour de mauvaises raisons.
+ *   node qa/qa.mjs                  empreinte et comportement
+ *   node qa/qa.mjs --detail         tous les ecarts
+ *   node qa/qa.mjs --comportement   comportement seul
+ *   node qa/qa.mjs --update         regenere la reference
  */
 
 import { chromium } from 'playwright';
@@ -61,9 +13,8 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync, readdirSync } from 'node:fs';
 import { extname, join, resolve, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-// Importe pour son effet : le fichier pose son contenu sur globalThis au lieu
-// de l'exporter, pour rester chargeable en script classique depuis file://.
-// Voir son en-tete.
+import { randomUUID } from 'node:crypto';
+// Tarifs partagés
 import '../shared/tarifs.js';
 
 const {
@@ -74,59 +25,19 @@ const RACINE = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const REFERENCE = join(RACINE, 'qa', 'reference.json');
 const MAJ = process.argv.includes('--update');
 
-/**
- * Par defaut un ecart visuel n'affiche que son premier exemple : de quoi
- * signaler une regression, pas de quoi conduire un refactoring. Le mode
- * detaille les liste tous, avec la vue et l'element concernes.
- */
+/* Tous les écarts */
 const DETAIL = process.argv.includes('--detail');
 
-/**
- * L'empreinte visuelle ne franchit pas la frontière entre systèmes.
- *
- * Mesurée sous Windows puis sous Ubuntu, la même page donne des largeurs de
- * texte qui diffèrent de 2 à 3 % : DM Sans est bien chargée des deux côtés,
- * mais la rastérisation et le crénage diffèrent. Ces écarts s'accumulent
- * verticalement — jusqu'à 29 px sur la hauteur d'une page. Aucune tolérance
- * ne règle ça : celle qui absorberait 29 px masquerait aussi la barre passée
- * de 50 à 67 px, régression réelle rencontrée le 11 août.
- *
- * La conclusion d'alors : garder l'empreinte en local et ne mesurer, en
- * intégration continue, que ce qui est portable — comportement, erreurs
- * JavaScript, débordement.
- *
- * Elle ne tient plus. Le constat de départ était juste, le remède était le
- * mauvais : l'empreinte n'est pas un outil local, c'est un outil qui exige un
- * environnement fixe. Liée à une machine, elle meurt au premier changement de
- * poste — et elle est morte ainsi, le 17 septembre 2026, avec 347 écarts dont
- * aucun ne touchait une couleur, une police ou un alignement.
- *
- * Elle mesure donc désormais dans un environnement figé et unique, décrit dans
- * le dépôt : une image de conteneur épinglée par son empreinte, dont le tag
- * fixe aussi bien le système que l'architecture. La référence appartient à cet
- * environnement, plus à personne. Aucun poste de travail n'intervient.
- *
- * `--comportement` reste, pour mesurer uniquement ce qui est portable depuis
- * n'importe où. Ce qui a disparu, c'est la bascule implicite sur la variable
- * CI : elle éteignait silencieusement le contrôle là où il doit justement
- * s'exécuter.
- */
+/* Comportement seul */
 const COMPORTEMENT_SEUL = process.argv.includes('--comportement');
 
-/* Toutes les pages du site, lues dans le dossier comme le font les autres
-   controles : une page ajoutee y entre d'elle-meme. Une page a ne pas
-   mesurer se retire par SANS_EMPREINTE, jamais en l'omettant ici. */
+/* Toutes les pages */
 const PAGES = readdirSync(RACINE)
   .filter((f) => f.endsWith('.html') && !f.startsWith('maquette-'))
   .sort();
 const LARGEURS = [1272, 375];
 
-/**
- * Pages exclues de l'empreinte visuelle, mais pas des controles de
- * comportement : leur rendu depend d'un appel a l'API de reservation, qui
- * n'autorise que l'origine de production. En local, leur hauteur varie donc
- * d'un passage a l'autre sans qu'aucune regression soit en cause.
- */
+/* Hors empreinte */
 const SANS_EMPREINTE = new Set(['admin-indisponibilites.html']);
 
 const MIME = {
@@ -136,8 +47,11 @@ const MIME = {
   '.jpg': 'image/jpeg', '.json': 'application/json', '.xml': 'application/xml',
 };
 
-/** Sert le dossier du site, pour tester au plus pres de la production. */
-function demarrerServeur() {
+/* Adresse de l'API */
+const META_API = /(<meta name="miaoucratie-api-base" content=")[^"]*(")/;
+
+/* Serveur du site */
+function demarrerServeur(api) {
   const serveur = createServer(async (req, res) => {
     const chemin = decodeURIComponent(req.url.split('?')[0]);
     let fichier = join(RACINE, normalize(chemin).replace(/^(\.\.[/\\])+/, ''));
@@ -147,8 +61,12 @@ function demarrerServeur() {
       return;
     }
     try {
+      let contenu = await readFile(fichier);
+      if (extname(fichier) === '.html') {
+        contenu = contenu.toString('utf8').replace(META_API, `$1${api}$2`);
+      }
       res.writeHead(200, { 'Content-Type': MIME[extname(fichier)] ?? 'application/octet-stream' });
-      res.end(await readFile(fichier));
+      res.end(contenu);
     } catch {
       res.writeHead(500).end('erreur');
     }
@@ -156,42 +74,142 @@ function demarrerServeur() {
   return new Promise((ok) => serveur.listen(0, '127.0.0.1', () => ok(serveur)));
 }
 
+/* ─── Faux Worker ────────────────────────────────────────────────────── */
+
+const jourDecale = (jours) => new Date(Date.now() + jours * 86400000).toISOString().slice(0, 10);
+
+/* Indisponibilites figees */
+const indisponibilitesFigees = () => [{ startDate: jourDecale(10), endDate: jourDecale(14) }];
+
+/* Administration */
+const MOT_DE_PASSE_ESSAI = 'essai-valide';
+const JETON_ESSAI = 'jeton-essai';
+
+function demarrerFauxWorker() {
+  const envois = [];
+  const periodes = [{ id: 1, startDate: jourDecale(10), endDate: jourDecale(14), comment: 'Essai' }];
+  let suivant = 2;
+  const serveur = createServer((req, res) => {
+    const origine = req.headers.origin || '';
+    const entetes = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': /^http:\/\/127\.0\.0\.1:\d+$/.test(origine) ? origine : 'null',
+      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+      Vary: 'Origin',
+    };
+    const repondre = (statut, corps) => {
+      res.writeHead(statut, entetes);
+      res.end(corps === undefined ? '' : JSON.stringify(corps));
+    };
+    const chemin = req.url.split('?')[0];
+    const admis = req.headers.authorization === `Bearer ${JETON_ESSAI}`;
+    const periode = chemin.match(/^\/admin\/unavailabilities\/(\d+)$/);
+
+    if (req.method === 'OPTIONS') return repondre(204);
+    if (req.method === 'GET' && chemin === '/public/unavailabilities') {
+      return repondre(200, { ranges: indisponibilitesFigees() });
+    }
+    if (req.method === 'GET' && chemin === '/admin/unavailabilities') {
+      return admis ? repondre(200, { ranges: periodes }) : repondre(401, { message: 'Session expirée.' });
+    }
+    if (req.method === 'GET' && chemin === '/admin/reservations') {
+      return admis ? repondre(200, { demandes: [] }) : repondre(401, { message: 'Session expirée.' });
+    }
+
+    let corps = '';
+    req.on('data', (morceau) => { corps += morceau; });
+    req.on('end', () => {
+      envois.push({ methode: req.method, chemin, corps });
+      let donnees = {};
+      try { donnees = JSON.parse(corps || '{}'); } catch { /* corps illisible */ }
+      if (req.method === 'POST' && chemin === '/public/reservations') {
+        return repondre(200, { message: 'Votre demande a bien été enregistrée.', reservationId: randomUUID() });
+      }
+      if (req.method === 'POST' && /^\/public\/reservations\/[0-9a-f-]{36}\/notification-echouee$/.test(chemin)) {
+        return repondre(200, { ok: true });
+      }
+      if (req.method === 'POST' && chemin === '/admin/login') {
+        return donnees.password === MOT_DE_PASSE_ESSAI
+          ? repondre(200, { token: JETON_ESSAI })
+          : repondre(401, { message: 'Mot de passe invalide.' });
+      }
+      if ((chemin === '/admin/unavailabilities' || periode) && !admis) {
+        return repondre(401, { message: 'Session expirée.' });
+      }
+      if (req.method === 'POST' && chemin === '/admin/unavailabilities') {
+        const ajout = { id: suivant++, startDate: donnees.startDate, endDate: donnees.endDate, comment: donnees.comment || '' };
+        periodes.push(ajout);
+        return repondre(201, { message: 'Indisponibilité ajoutée.', period: ajout });
+      }
+      const rang = periode ? periodes.findIndex((p) => p.id === Number(periode[1])) : -1;
+      if (req.method === 'PUT' && rang >= 0) {
+        Object.assign(periodes[rang], { startDate: donnees.startDate, endDate: donnees.endDate, comment: donnees.comment || '' });
+        return repondre(200, { message: 'Indisponibilité mise à jour.', period: periodes[rang] });
+      }
+      if (req.method === 'DELETE' && rang >= 0) {
+        periodes.splice(rang, 1);
+        return repondre(200, { message: 'Indisponibilité supprimée.' });
+      }
+      return repondre(404, { message: 'Introuvable.' });
+    });
+  });
+  return new Promise((ok) => serveur.listen(0, '127.0.0.1', () => ok({
+    serveur, envois, url: `http://127.0.0.1:${serveur.address().port}`,
+  })));
+}
+
+/* ─── Filet reseau ───────────────────────────────────────────────────── */
+
+const HOTE_API = /\.workers\.dev$/;
+const HOTES_ANTIROBOT = /(^|\.)hcaptcha\.com$/;
+
+export function issueRequete(methode, adresse) {
+  let hote;
+  try {
+    hote = new URL(adresse).hostname;
+  } catch {
+    return 'coupee';
+  }
+  if (hote === '127.0.0.1') return 'permise';
+  if (HOTE_API.test(hote)) return 'coupee';
+  if (methode === 'GET') return 'permise';
+  if (HOTES_ANTIROBOT.test(hote)) return 'antirobot';
+  return 'coupee';
+}
+
+async function poserFilet(contexte, reseau) {
+  await contexte.route('**/*', async (route) => {
+    const requete = route.request();
+    const issue = issueRequete(requete.method(), requete.url());
+    if (issue === 'permise') return route.fallback();
+    const trace = `${requete.method()} ${requete.url().split('?')[0]}`;
+    (issue === 'antirobot' ? reseau.antirobot : reseau.coupees).push(trace);
+    return route.abort();
+  });
+  // Service d'e-mail
+  await contexte.route('https://api.web3forms.com/**', async (route) => {
+    reseau.courriels.push(route.request().postData() || '');
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }) });
+  });
+}
+
+async function nouveauContexte(navigateur, reseau, options) {
+  const contexte = await navigateur.newContext(options);
+  await poserFilet(contexte, reseau);
+  return contexte;
+}
+
 /* ─── API adresse : reponses figees ──────────────────────────────────── */
 
-/**
- * La carte et le formulaire de reservation interrogent geo.api.gouv.fr. Tant
- * que l'appel partait sur le vrai reseau, la QA pouvait echouer en bloc —
- * Rennes classee « sur devis », reinitialisation incomplete — puis repasser au
- * vert au tour suivant sans qu'une ligne ait bouge. Un oracle qui echoue au
- * hasard est pire que pas d'oracle : on finit par ne plus croire ses rouges.
- *
- * Les reponses sont donc servies depuis qa/fixtures/geo-api.json, capture
- * reelle du 17 aout 2026. La logique de classification reste integralement
- * testee — c'est elle qui nous interesse — mais elle l'est sur une entree
- * constante.
- *
- * Ce qui est conserve de la vraie API, parce que la page s'en sert :
- *  - les homonymes (Vitreux pour « Vitré », Rennes-le-Château pour « Rennes »),
- *    qui font travailler pickBestFeature ;
- *  - codeDepartement, sur lequel repose l'exclusion hors Ille-et-Vilaine ;
- *  - les coordonnees exactes des mairies, dont depend le calcul de distance,
- *    donc le classement en zone incluse, sur devis ou hors zone.
- *
- * Ce qui est synthetise : les contours. Ils pesent 53 Ko pour la seule ville
- * de Rennes, et classifyFeature ne les lit jamais — ils ne servent qu'au
- * trace Leaflet, lui-meme exclu de l'empreinte. Un carre autour de la mairie
- * suffit a ce que la carte ait quelque chose a dessiner.
- *
- * Pour rafraichir la capture, rejouer les requetes de la fonction ci-dessous
- * contre la vraie API et remplacer le fichier.
- */
 const FIXTURE_GEO = join(RACINE, 'qa', 'fixtures', 'geo-api.json');
 
-/** Meme normalisation que celle de carte.html : minuscules, sans accents. */
+/* Normalisation des noms */
 const sansAccents = (s = '') =>
   String(s).normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
 
-/** Un carre de ~2 km de cote autour du point, de quoi tracer sans mentir sur la position. */
+/* Contour carré */
 function contourAutourDe(point) {
   const [lon, lat] = point.coordinates;
   const d = 0.01;
@@ -218,8 +236,7 @@ async function figerApiAdresse(contexte, requetesInconnues) {
     const geojson = url.searchParams.get('format') === 'geojson';
     const contour = url.searchParams.get('geometry') === 'contour';
 
-    // /communes/{code} : une commune precise, demandee quand la recherche par
-    // nom n'a pas rendu de contour exploitable.
+    // Commune par code
     const parId = url.pathname.match(/^\/communes\/(\d+)$/);
     let features;
 
@@ -232,9 +249,7 @@ async function figerApiAdresse(contexte, requetesInconnues) {
       if (nom) {
         features = parRequete[sansAccents(nom)];
         if (!features) {
-          // Ni erreur ni silence : la vraie API rendrait une liste vide, on
-          // fait pareil, mais on note la requete pour que l'ajout d'une
-          // commune temoin ne se traduise pas par un echec incomprehensible.
+          // Commune absente
           requetesInconnues.add(nom);
           features = [];
         }
@@ -250,8 +265,7 @@ async function figerApiAdresse(contexte, requetesInconnues) {
       ? { ...f, geometry: contourAutourDe(f.geometry) }
       : f));
 
-    // format=json rend un tableau d'objets plats, format=geojson une
-    // FeatureCollection. L'autocompletion utilise le premier, la carte le second.
+    // Format json ou geojson
     const corps = geojson
       ? { type: 'FeatureCollection', features: avecGeometrie }
       : avecGeometrie.map((f) => f.properties);
@@ -264,26 +278,8 @@ async function figerApiAdresse(contexte, requetesInconnues) {
   });
 }
 
-/* ─── Consentement : mesure d'audience neutralisee ───────────────────── */
+/* ─── Mesure neutralisee ─────────────────────────────────────────────── */
 
-/**
- * Depuis le 17 aout 2026, Google Analytics n'est plus ecrit en dur dans les
- * pages : js/consentement.js ne l'injecte qu'apres un accord du visiteur.
- * Deux precautions en decoulent pour la QA, pour la meme raison de fond —
- * l'oracle ne doit dependre ni d'un reseau ni d'un etat de navigateur.
- *
- * 1. Un refus est ecrit dans localStorage avant toute navigation. Le bandeau
- *    ne s'affiche donc sur aucune vue, et l'empreinte reste celle d'un
- *    visiteur ayant deja repondu. Sans ca, un composant flottant s'ajoutait a
- *    chaque page et masquait des liens dans les parcours.
- * 2. Toute requete vers Google est interceptee et comptee. Une page qui
- *    appellerait la mesure malgre le refus est signalee nommement : c'est la
- *    regression qui compte ici, celle qui remet le suivi en marche sans
- *    consentement, et elle ne se voit sur aucun pixel.
- *
- * Le bandeau lui-meme est teste a part, dans un contexte neuf ou aucun choix
- * n'est enregistre. Voir testerConsentement.
- */
 const CLE_CONSENTEMENT = 'miaoucratie.consentement';
 const HOTES_MESURE = ['https://www.googletagmanager.com/**', 'https://*.google-analytics.com/**'];
 
@@ -291,8 +287,7 @@ async function intercepterMesure(contexte, appels) {
   for (const motif of HOTES_MESURE) {
     await contexte.route(motif, async (route) => {
       appels.push(route.request().url());
-      // Corps vide : gtag.js ne s'execute pas, donc aucune requete de collecte
-      // derriere. L'interception se suffit a elle-meme.
+      // Corps vide
       await route.fulfill({ status: 200, contentType: 'text/javascript', body: '' });
     });
   }
@@ -301,50 +296,13 @@ async function intercepterMesure(contexte, appels) {
 async function refuserLaMesure(contexte) {
   const choix = JSON.stringify({ valeur: 'refuse', version: 1, date: new Date().toISOString() });
   await contexte.addInitScript(([cle, valeur]) => {
-    // about:blank a une origine opaque : localStorage y jette. Sans effet.
     try { window.localStorage.setItem(cle, valeur); } catch (e) { /* stockage indisponible */ }
   }, [CLE_CONSENTEMENT, choix]);
 }
 
 /* ─── 1. Empreinte visuelle ──────────────────────────────────────────── */
 
-/**
- * Vérifie que les polices sont réellement utilisables avant toute mesure.
- * Renvoie la liste des familles déclarées mais indisponibles.
- *
- * Depuis que le site sert ses propres polices, ce contrôle ne devrait plus
- * jamais échouer : il protège d'un chemin cassé dans `css/polices.css`. Ce qui
- * suit vaut pour l'histoire, et pour le jour où l'on serait tenté de revenir à
- * un fournisseur extérieur.
- *
- * Trois attentes successives se sont révélées insuffisantes, et l'ordre dans
- * lequel elles tombent explique le reste :
- *
- * 1. « networkidle » — le navigateur peut avoir fini ses requêtes sans avoir
- *    composé les glyphes.
- * 2. `document.fonts.ready` — il ne résout que les chargements *déjà
- *    engagés* ; une face demandée tardivement lui échappe.
- * 3. Forcer `load()` sur chaque face déclarée — inopérant quand la requête
- *    elle-même échoue : les polices viennent de fonts.gstatic.com, et ce
- *    trajet réseau casse par intermittence.
- *
- * Mesurée dans cet état, la page rend les métriques de la police de secours :
- * la barre de navigation passe de 566 à 540 px et toutes les pages s'écartent
- * en bloc — jusqu'à 503 différences sur la FAQ, pour un CSS pourtant
- * inchangé. Constaté environ une fois sur sept.
- *
- * Recharger ne rattrape pas : mesuré sur les cas observés, quatre tentatives
- * successives échouent toutes. La panne colle au processus du navigateur, ce
- * qui explique aussi pourquoi les neuf pages s'écartent d'un seul coup — la
- * QA partage un contexte entre elles.
- *
- * Un oracle qui échoue au hasard est pire que pas d'oracle : il fait douter
- * de changements corrects, et il finit par se faire ignorer. Faute de pouvoir
- * garantir la police, on refuse de mesurer sans elle : la vue n'est pas
- * comparée, et le manque est signalé pour ce qu'il est au lieu d'être
- * maquillé en régression visuelle. Le remède de fond serait d'héberger les
- * deux familles avec le site, ce qui supprimerait la dépendance réseau.
- */
+/* Polices chargées */
 const FAMILLES = ['DM Sans', 'Cormorant Garamond'];
 
 async function attendrePolices(page) {
@@ -352,8 +310,6 @@ async function attendrePolices(page) {
     await document.fonts.ready;
     await Promise.all([...document.fonts].map((f) => f.load().catch(() => {})));
     await document.fonts.ready;
-    // Une famille absente de la page n'a pas à être exigée : seules comptent
-    // celles que la page déclare vraiment.
     const declarees = new Set([...document.fonts].map((f) => f.family.replace(/^['"]|['"]$/g, '')));
     return familles
       .filter((f) => declarees.has(f))
@@ -363,18 +319,12 @@ async function attendrePolices(page) {
 
 async function empreinte(page) {
   return page.evaluate(() => {
-    // em porte la couleur d'accent de la marque, dans les titres de chaque
-    // page et dans le logo du pied. label et blockquote portent le style des
-    // formulaires et du carrousel d'avis. Aucun n'etait releve : une couleur
-    // pouvait y changer sans que rien ne le signale.
+    // Éléments relevés
     const sel = 'h1,h2,h3,h4,p,a,button,img,li,strong,em,span,div,header,nav,main,footer,label,blockquote,input,select,textarea';
     return [...document.querySelectorAll(sel)]
-      // Leaflet se rend de facon asynchrone : ses elements produisent
-      // des ecarts reproductibles mais sans signification.
+      // Hors Leaflet
       .filter((e) => !String(e.className || '').includes('leaflet'))
-      // Le calendrier depend de la date du jour : la case « aujourd'hui »
-      // se deplace et les jours passes deviennent desactives. Sans cette
-      // exclusion, la reference perimerait chaque nuit.
+      // Hors calendrier
       .filter((e) => !e.closest('.flatpickr-calendar'))
       .map((e) => {
         const b = e.getBoundingClientRect();
@@ -385,30 +335,14 @@ async function empreinte(page) {
           c.color, c.backgroundColor, c.fontSize, c.fontWeight, c.fontStyle,
           c.fontFamily.split(',')[0], c.display, c.borderRadius, c.padding, c.margin,
           c.textAlign, c.opacity, c.visibility,
-          // Interlignage et interlettrage : ils ne deplacent rien par
-          // eux-memes mais changent la hauteur et la largeur du texte. Sans
-          // eux, une regression d'interlignage n'apparaissait qu'en ricochet,
-          // sous la forme de centaines de decalages sans cause lisible.
+          // Interlignage et interlettrage
           c.lineHeight, c.letterSpacing,
         ].join('|');
       });
   });
 }
 
-/**
- * Compare deux relevés d'élément.
- *
- * Les moteurs de rendu n'arrondissent pas les métriques de police de la même
- * façon selon le système : la même page mesurée sous Windows et sous Linux
- * donne 53x43 ici et 52x42 là, une marge de 551.562px devient 551px. Sans
- * tolérance, la référence générée sur un poste ne vaut rien sur un autre, et
- * la CI échoue sur du bruit.
- *
- * La tolérance ne s'applique qu'aux champs géométriques. Couleurs, polices,
- * display, visibilité et alignement restent comparés au caractère près : une
- * régression de style s'y voit toujours, et un décalage réel de mise en page
- * dépasse toujours largement deux pixels.
- */
+/* Tolérance de 2 px */
 const CHAMPS_GEOMETRIQUES = new Set([2, 3, 4, 5, 8, 13, 14, 15, 19, 20]);
 const TOLERANCE_PX = 2;
 
@@ -423,8 +357,7 @@ export function memeElement(a, b) {
     if (ca[i] === cb[i]) continue;
     if (!CHAMPS_GEOMETRIQUES.has(i)) return false;
 
-    // Le squelette non numérique doit être identique : « 4px 8px » et
-    // « 4px » ne sont pas comparables, quelles que soient les valeurs.
+    // Même squelette
     const nombres = (s) => (s.match(/-?[\d.]+/g) ?? []).map(Number);
     const squelette = (s) => s.replace(/-?[\d.]+/g, '#');
     if (squelette(ca[i]) !== squelette(cb[i])) return false;
@@ -462,8 +395,7 @@ async function testerFaq(page, echecs) {
   const n = await page.locator('.acc-item').count();
   if (n < 30) echecs.push(`faq : ${n} questions seulement, attendu au moins 30`);
 
-  // Accordeon : la classe et aria doivent basculer (la hauteur suit une
-  // transition de 400ms, on ne la mesure donc pas).
+  // Accordéon
   const item = page.locator('.acc-item').nth(4);
   const avant = await item.evaluate((e) => e.classList.contains('open'));
   await item.locator('.acc-trigger').click();
@@ -473,7 +405,7 @@ async function testerFaq(page, echecs) {
   const aria = await item.locator('.acc-trigger').getAttribute('aria-expanded');
   if (aria !== String(apres)) echecs.push('faq : aria-expanded desynchronise de la classe');
 
-  // Sommaire : une entree par section, et chacune mene a une ancre qui existe
+  // Sommaire
   const sommaire = await page.evaluate(() => {
     const liens = [...document.querySelectorAll('.faq-sommaire a')];
     return {
@@ -503,14 +435,9 @@ async function testerFaq(page, echecs) {
   if (!vide) echecs.push('faq : aucun message quand la recherche ne trouve rien');
   await page.fill('#faqSearch', '');
 
-  // Les donnees structurees doivent refleter le texte affiche,
-  // sinon Google ignore le resultat enrichi.
+  // Données structurées
   const sync = await page.evaluate(() => {
-    /* La comparaison porte sur le texte, pas sur la nature des espaces :
-           le texte affiche pose une espace insecable avant « ? », le JSON-LD
-           une espace ordinaire. C'est la meme question pour un lecteur comme
-           pour Google, et les comparer octet a octet faisait tomber les
-           trente-sept d'un coup. */
+    /* Texte seul */
         const memeTexte = (s) => s.replace(/\u00A0/g, ' ').replace(/\s+/g, ' ').trim();
         const vues = [...document.querySelectorAll('.acc-question')].map((e) => memeTexte(e.textContent));
     const brut = [...document.querySelectorAll('script[type="application/ld+json"]')]
@@ -552,9 +479,7 @@ async function testerCarte(page, echecs) {
     if (/NaN|undefined|null/.test(texte)) echecs.push(`carte : "${commune}" affiche une valeur invalide`);
   }
 
-  // Le bouton Reinitialiser doit vider l'etat, y compris le CONTENU de la
-  // pastille flottante : la masquer sans la reinitialiser laisse un resultat
-  // perime qui reapparait a la recherche suivante.
+  // Réinitialisation complète
   await page.click('#resetView');
   await attendre(900);
   const apres = await page.evaluate(() => ({
@@ -572,7 +497,7 @@ async function testerCarte(page, echecs) {
 }
 
 async function testerReservation(page, echecs) {
-  // Flatpickr vient d'un CDN : on attend sa presence plutot qu'un delai fixe.
+  // Attente de Flatpickr
   try {
     await page.waitForFunction(() => document.querySelectorAll('.flatpickr-input').length === 2, { timeout: 12000 });
   } catch {
@@ -592,26 +517,290 @@ async function testerReservation(page, echecs) {
   const champs = await page.locator('#reservation-form input, #reservation-form select, #reservation-form textarea').count();
   if (champs < 15) echecs.push(`reservation : ${champs} champs de formulaire, attendu au moins 15`);
 
-  // Le champ conditionnel doit rester masque tant qu'il n'est pas demande.
+  // Champ conditionnel
   const masque = await page.evaluate(() => {
     const e = document.getElementById('autre-frequence-wrapper');
     return e ? getComputedStyle(e).display === 'none' : null;
   });
   if (masque === false) echecs.push('reservation : le champ conditionnel "autre frequence" est visible a tort');
+
+  const depart = await etatFormulaire(page, '#reservation-form', '#submit-button');
+  if (!depart.actif || depart.boutonInactif || !depart.secoursMasque) {
+    echecs.push(`reservation : demarrage incomplet ${JSON.stringify(depart)}`);
+  }
+  const note = await page.locator('#availability-note').textContent();
+  if (!note.includes('dates grisées')) echecs.push(`reservation : indisponibilites non chargees (« ${note.trim()} »)`);
 }
 
-/**
- * Le calculateur, du clic au montant affiche.
- *
- * Deux choses a prouver, et la seconde est la vraie raison de ce test.
- *
- * 1. Les commandes repondent. Le script de la page est passe en module pour
- *    importer shared/tarifs.js, ce qui a fait disparaitre les fonctions
- *    globales qu'appelaient les onclick du balisage. Une regression ici ne
- *    leve aucune erreur : les boutons ne font simplement plus rien.
- * 2. Le montant affiche est celui que calcule shared/tarifs.js. Un tarif faux
- *    ne deplace aucun pixel — l'empreinte visuelle le verrait passer.
- */
+/* Etat d'un formulaire */
+function etatFormulaire(page, formulaire, bouton) {
+  return page.evaluate(([f, b]) => {
+    const form = document.querySelector(f);
+    const secours = form?.querySelector('[data-secours]');
+    return {
+      actif: Boolean(form?.hasAttribute('data-actif')),
+      boutonInactif: Boolean(document.querySelector(b)?.disabled),
+      secoursMasque: !secours || secours.hidden,
+      secoursVisible: Boolean(secours && !secours.hidden && secours.getClientRects().length),
+      methode: form?.getAttribute('method') || '',
+    };
+  }, [formulaire, bouton]);
+}
+
+/* Connexion d'administration */
+async function testerConnexion(page, reseau, echecs) {
+  const depart = await etatFormulaire(page, '#admin-login-form', '#admin-login-button');
+  if (!depart.actif || depart.boutonInactif || !depart.secoursMasque) {
+    echecs.push(`admin : demarrage incomplet ${JSON.stringify(depart)}`);
+    return;
+  }
+  const adresse = page.url();
+  const avant = reseau.worker.envois.length;
+  await page.fill('#admin-password', 'essai');
+  await page.press('#admin-password', 'Enter');
+  await page.locator('#admin-password-error').filter({ hasText: /\S/ }).waitFor({ timeout: 5000 }).catch(() => {});
+  const recus = reseau.worker.envois.slice(avant).filter((e) => e.chemin === '/admin/login');
+  if (recus.length !== 1) echecs.push(`admin : ${recus.length} connexion(s) recue(s) par le faux Worker, attendu 1`);
+  if (page.url() !== adresse) echecs.push(`admin : adresse changee apres Entree (${page.url()})`);
+  const message = (await page.locator('#admin-password-error').textContent()).trim();
+  if (!message) echecs.push('admin : aucun message apres un refus du serveur');
+}
+
+/* Gestion des indisponibilites */
+async function testerGestion(navigateur, base, reseau, echecs) {
+  const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: LARGEURS[0], height: 900 } });
+  const page = await contexte.newPage();
+  const erreurs = [];
+  page.on('pageerror', (e) => erreurs.push(e.message));
+  page.on('dialog', (d) => d.accept());
+  const avant = reseau.worker.envois.length;
+  const recus = (methode) => reseau.worker.envois.slice(avant)
+    .filter((e) => e.methode === methode && e.chemin.startsWith('/admin/unavailabilities')).length;
+  try {
+    await page.goto(`${base}/admin-indisponibilites.html`, { waitUntil: 'load' });
+    const adresse = page.url();
+    await page.fill('#admin-password', MOT_DE_PASSE_ESSAI);
+    await page.press('#admin-password', 'Enter');
+    await page.locator('#management-panel').waitFor({ state: 'visible', timeout: 5000 });
+    await page.locator('#period-list .period-card').first().waitFor({ timeout: 5000 });
+
+    const etat = await etatFormulaire(page, '#unavailability-form', '#save-period-button');
+    if (!etat.actif || etat.boutonInactif || etat.methode !== 'post') {
+      echecs.push(`admin (gestion) : demarrage incomplet ${JSON.stringify(etat)}`);
+    }
+
+    const cartes = () => page.locator('#period-list .period-card').count();
+    const depart = await cartes();
+    await page.fill('#startDate', jourDecale(40));
+    await page.fill('#endDate', jourDecale(42));
+    await page.fill('#comment', 'Ajout');
+    await page.press('#comment', 'Enter');
+    await page.waitForFunction((n) => document.querySelectorAll('#period-list .period-card').length === n + 1, depart, { timeout: 5000 });
+
+    await page.locator('#period-list .period-card', { hasText: 'Ajout' }).getByRole('button', { name: 'Modifier' }).click();
+    await page.fill('#comment', 'Modifiée');
+    await page.click('#save-period-button');
+    await page.locator('#period-list .period-card', { hasText: 'Modifiée' }).waitFor({ timeout: 5000 });
+
+    await page.locator('#period-list .period-card', { hasText: 'Modifiée' }).getByRole('button', { name: 'Supprimer' }).click();
+    await page.waitForFunction((n) => document.querySelectorAll('#period-list .period-card').length === n, depart, { timeout: 5000 });
+
+    const compte = { POST: recus('POST'), PUT: recus('PUT'), DELETE: recus('DELETE') };
+    if (compte.POST !== 1 || compte.PUT !== 1 || compte.DELETE !== 1) {
+      echecs.push(`admin (gestion) : envois recus par le faux Worker ${JSON.stringify(compte)}, attendu un de chaque`);
+    }
+    if (page.url() !== adresse) echecs.push(`admin (gestion) : adresse changee (${page.url()})`);
+    if (erreurs.length) echecs.push(`admin (gestion) : erreur JS — ${erreurs[0]}`);
+  } catch (e) {
+    echecs.push(`admin (gestion) : interrompu — ${e.message.split('\n')[0]}`);
+  } finally {
+    await contexte.close();
+  }
+}
+
+/* ─── Formulaires sans leur module ───────────────────────────────────── */
+
+const FORMULAIRES = [
+  {
+    page: 'reservation.html', formulaire: '#reservation-form', bouton: '#submit-button',
+    champ: '#nom', valeur: 'Durand', module: '**/js/reservation.js',
+  },
+  {
+    page: 'admin-indisponibilites.html', formulaire: '#admin-login-form', bouton: '#admin-login-button',
+    champ: '#admin-password', valeur: 'essai', module: '**/js/admin-indisponibilites.js',
+    autres: [['#unavailability-form', '#save-period-button']],
+  },
+];
+
+async function testerSecours(navigateur, base, reseau, echecs) {
+  for (const f of FORMULAIRES) {
+    for (const sansJs of [false, true]) {
+      const nom = `${f.page} ${sansJs ? 'sans JavaScript' : 'sans module'}`;
+      const contexte = await nouveauContexte(navigateur, reseau, {
+        viewport: { width: LARGEURS[0], height: 900 }, javaScriptEnabled: !sansJs,
+      });
+      await refuserLaMesure(contexte);
+      await intercepterMesure(contexte, []);
+      if (!sansJs) await contexte.route(f.module, (route) => route.abort());
+      const page = await contexte.newPage();
+      try {
+        await page.goto(`${base}/${f.page}`, { waitUntil: 'load' });
+        await attendre(300);
+        const adresse = page.url();
+
+        if (sansJs && !(await page.locator(`${f.formulaire} noscript .formulaire-secours`).isVisible())) {
+          echecs.push(`${nom} : phrase de secours absente`);
+        }
+        for (const formulaire of [f.formulaire, ...(f.autres || []).map(([x]) => x)]) {
+          if ((await page.locator(formulaire).getAttribute('method')) !== 'post') {
+            echecs.push(`${nom} : ${formulaire} sans methode post`);
+          }
+        }
+        await page.fill(f.champ, f.valeur);
+        await page.press(f.champ, 'Enter');
+        await page.click(f.bouton, { force: true }).catch(() => {});
+        await attendre(800);
+        const apres = new URL(page.url());
+        if (apres.search || apres.pathname !== new URL(adresse).pathname) {
+          echecs.push(`${nom} : adresse changee (${page.url()})`);
+        }
+
+        if (!sansJs) {
+          await Promise.all([
+            page.waitForNavigation({ timeout: 5000 }),
+            page.evaluate((s) => document.querySelector(s).submit(), f.formulaire),
+          ]);
+          if (new URL(page.url()).search) echecs.push(`${nom} : parametres dans l'adresse apres envoi`);
+        }
+      } catch (e) {
+        echecs.push(`${nom} : interrompu — ${e.message.split('\n')[0]}`);
+      } finally {
+        await contexte.close();
+      }
+    }
+  }
+}
+
+/* ─── Ressources externes coupees ────────────────────────────────────── */
+
+const COUPURES = [
+  { nom: 'anti-robot et e-mail', motifs: ['https://web3forms.com/**', 'https://*.hcaptcha.com/**'] },
+  { nom: 'geocodage', motifs: ['https://geo.api.gouv.fr/**', 'https://data.geopf.fr/**'] },
+  { nom: 'calendrier', motifs: ['https://cdn.jsdelivr.net/**'] },
+  { nom: 'serveur', motifs: [] },
+];
+
+/* Brouillons anciens */
+const BROUILLONS = [
+  '{"nom":"Durand","dateDebut":"2020-01-01","dateFin":"2020-01-05","nombreChats":"2","frequence":"Autre besoin à préciser","startedAt":"abc"}',
+  '{"nom":{"a":1},"prenom":["x"],"dateDebut":"31/12/1999","dateFin":"pas une date","nombreChats":null}',
+  '{"date_debut":"2030-01-01","nombre_chats":"3","frequence":42}',
+  '[1,2,3]',
+  '"texte"',
+  'null',
+  '{pas du json',
+];
+
+const CLE_BROUILLON = 'miaoucratie:reservation:draft:v1';
+
+/* Bruit reseau */
+const bruitReseau = (t) => t.includes('Failed to load resource') || t.includes('ERR_FAILED')
+  || t.includes('Failed to fetch');
+
+async function demarrageSansErreur(navigateur, base, reseau, nom, preparer, echecs) {
+  const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: LARGEURS[0], height: 900 } });
+  await refuserLaMesure(contexte);
+  await intercepterMesure(contexte, []);
+  await figerApiAdresse(contexte, new Set());
+  await preparer(contexte);
+  const page = await contexte.newPage();
+  const erreurs = [];
+  page.on('pageerror', (e) => erreurs.push(e.message));
+  page.on('console', (m) => { if (m.type() === 'error' && !bruitReseau(m.text())) erreurs.push(m.text()); });
+  try {
+    await page.goto(`${base}/reservation.html`, { waitUntil: 'load' });
+    await attendre(800);
+    const etat = await etatFormulaire(page, '#reservation-form', '#submit-button');
+    if (!etat.actif || etat.boutonInactif || !etat.secoursMasque) {
+      echecs.push(`reservation (${nom}) : demarrage incomplet ${JSON.stringify(etat)}`);
+    }
+    const messages = await page.evaluate(() => [...document.querySelectorAll('#reservation-form .field-error')]
+      .map((e) => e.textContent.trim()).filter(Boolean));
+    if (messages.length) echecs.push(`reservation (${nom}) : message d'erreur affiche « ${messages[0]} »`);
+    if (erreurs.length) echecs.push(`reservation (${nom}) : erreur JS — ${erreurs[0]}`);
+  } catch (e) {
+    echecs.push(`reservation (${nom}) : interrompu — ${e.message.split('\n')[0]}`);
+  } finally {
+    await contexte.close();
+  }
+}
+
+async function testerCoupures(navigateur, base, reseau, echecs) {
+  for (const { nom, motifs } of COUPURES) {
+    await demarrageSansErreur(navigateur, base, reseau, `${nom} coupe`, async (contexte) => {
+      for (const motif of motifs) await contexte.route(motif, (route) => route.abort());
+      if (!motifs.length) await contexte.route(`${reseau.worker.url}/**`, (route) => route.abort());
+    }, echecs);
+  }
+  for (const [i, brut] of BROUILLONS.entries()) {
+    await demarrageSansErreur(navigateur, base, reseau, `brouillon ${i + 1}`, (contexte) => contexte.addInitScript(
+      ([cle, valeur]) => { try { sessionStorage.setItem(cle, valeur); } catch (e) { /* indisponible */ } },
+      [CLE_BROUILLON, brut],
+    ), echecs);
+  }
+}
+
+/* ─── Envoi complet ──────────────────────────────────────────────────── */
+
+async function testerEnvoi(navigateur, base, reseau, echecs) {
+  const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: LARGEURS[0], height: 900 } });
+  await refuserLaMesure(contexte);
+  await intercepterMesure(contexte, []);
+  await figerApiAdresse(contexte, new Set());
+  const page = await contexte.newPage();
+  const enregistres = reseau.worker.envois.length;
+  const courriels = reseau.courriels.length;
+  try {
+    await page.goto(`${base}/reservation.html`, { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => document.querySelectorAll('.flatpickr-input').length === 2, { timeout: 12000 });
+    await page.fill('#nom', 'Durand');
+    await page.fill('#prenom', 'Claire');
+    await page.fill('#telephone', '06 12 34 56 78');
+    await page.fill('#email', 'essai@exemple.fr');
+    await page.fill('#commune', 'Domagné');
+    await page.fill('#nombreChats', '1');
+    await page.selectOption('#frequence', '1 visite par jour');
+    await page.evaluate(([debut, fin]) => {
+      document.getElementById('dateDebut')._flatpickr.setDate(debut, true);
+      document.getElementById('dateFin')._flatpickr.setDate(fin, true);
+      let jeton = document.querySelector('textarea[name="h-captcha-response"]');
+      if (!jeton) {
+        jeton = document.createElement('textarea');
+        jeton.name = 'h-captcha-response';
+        jeton.hidden = true;
+        document.querySelector('.h-captcha').append(jeton);
+      }
+      jeton.value = 'jeton-essai';
+    }, [jourDecale(30), jourDecale(32)]);
+    await page.click('#submit-button');
+    await page.locator('#success-panel').waitFor({ state: 'visible', timeout: 8000 });
+
+    const recus = reseau.worker.envois.slice(enregistres).filter((e) => e.chemin === '/public/reservations');
+    if (recus.length !== 1 || !recus[0].corps.includes('Durand')) {
+      echecs.push(`reservation (envoi) : ${recus.length} demande(s) recue(s) par le faux Worker, attendu 1`);
+    }
+    if (reseau.courriels.length - courriels !== 1) {
+      echecs.push(`reservation (envoi) : ${reseau.courriels.length - courriels} e-mail(s) intercepte(s), attendu 1`);
+    }
+    if (new URL(page.url()).search) echecs.push('reservation (envoi) : parametres dans l\'adresse');
+  } catch (e) {
+    echecs.push(`reservation (envoi) : interrompu — ${e.message.split('\n')[0]}`);
+  } finally {
+    await contexte.close();
+  }
+}
+
+/* Calculateur */
 async function testerCalculateur(page, echecs) {
   const cas = { chats: 3, visites: 7, solidaire: true, km: 5 };
 
@@ -656,14 +845,14 @@ async function testerCalculateur(page, echecs) {
       + `attendu ${formatEuros(attendu.acompte)}`);
   }
 
-  // Tarif de base, remise sejour long, remise solidaire, supplement km.
+  // Quatre lignes de détail
   if (vu.lignes !== 4) {
     echecs.push(`calculateur : ${vu.lignes} ligne(s) de detail, attendu 4 `
       + '(base, remise sejour long, remise solidaire, supplement kilometrique)');
   }
 }
 
-/** Regle non negociable : jamais le nom de famille d'un client sur le site. */
+/* Anonymat des avis */
 async function testerAnonymatDesAvis(page, echecs) {
   const fautifs = await page.evaluate(() => {
     const noms = [...document.querySelectorAll('.avis-name')].map((e) => e.textContent.trim());
@@ -677,21 +866,11 @@ async function testerAnonymatDesAvis(page, echecs) {
   }
 }
 
-/**
- * Le nombre d'avis est ecrit en dur a cinq endroits sur trois pages, plus le
- * nombre de cartes du carrousel qui doit s'y accorder. En oublier un ne casse
- * rien de visible : chaque page reste coherente avec elle-meme, et l'empreinte
- * ne lit pas les chiffres.
- *
- * On releve donc les compteurs sous leurs trois formes, et main() exige une
- * valeur unique sur tout le site.
- */
+/* Compteur d'avis */
 async function relevesCompteurAvis(page) {
   return page.evaluate(() => {
     const releves = [];
-    // Le chiffre affiche se lit dans le texte rendu, pas dans le balisage :
-    // les quatre mentions ont quatre formulations et quatre habillages
-    // differents, et une cinquieme page demain en aurait une autre.
+    // Texte rendu
     for (const m of (document.body.innerText || '').matchAll(/(\d+)\s+avis/g)) {
       releves.push({ type: 'affiche', source: `« ${m[0]} »`, valeur: Number(m[1]) });
     }
@@ -705,25 +884,12 @@ async function relevesCompteurAvis(page) {
   });
 }
 
-/**
- * Le bandeau de consentement, dans un contexte neuf : aucun choix enregistre,
- * donc exactement ce que rencontre un visiteur a sa premiere visite.
- *
- * Quatre proprietes, et chacune se casserait en silence :
- *  - rien ne part chez Google avant un accord. C'est la raison d'etre du
- *    bandeau, et c'est invisible a l'oeil ;
- *  - refuser demande le meme geste qu'accepter — memes dimensions, meme
- *    taille de texte. Un bouton de refus rapetisse serait un dark pattern ;
- *  - le choix survit au rechargement. Un bandeau qui revient a chaque page
- *    est une panne, pas un detail d'affichage ;
- *  - le bandeau ne fait pas deborder la page. Il est en position fixe, donc
- *    l'empreinte des autres vues ne l'attraperait pas.
- */
-async function testerConsentement(navigateur, base, largeur, echecs) {
+/* Bandeau de consentement */
+async function testerConsentement(navigateur, base, largeur, reseau, echecs) {
   const prefixe = `consentement @${largeur}px`;
 
   for (const scenario of ['refuse', 'accepte']) {
-    const contexte = await navigateur.newContext({ viewport: { width: largeur, height: 900 } });
+    const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: largeur, height: 900 } });
     const appels = [];
     await intercepterMesure(contexte, appels);
     const page = await contexte.newPage();
@@ -795,44 +961,22 @@ async function testerConsentement(navigateur, base, largeur, echecs) {
 
 /* ─── 3. Coherence d'affichage ───────────────────────────────────────── */
 
-/**
- * Divergences volontaires entre pages, avec leur raison. Toute autre
- * divergence est signalee. Cette liste doit rester tres courte : chaque
- * entree est une exception a la regle « le site se ressemble partout ».
- */
+/* Divergences admises */
 const DIVERGENCES_ADMISES = new Map([
   ['barre.position', {
     pages: ['reservation.html', 'admin-indisponibilites.html'],
-    raison: 'La barre n\'est pas collante dans le tunnel de reservation. Elle '
-      + 'prendrait 50px de haut sur un formulaire long, et toute la page est '
-      + 'empilee sous elle : calendrier a 90, listes de suggestion a 40 et 50. '
-      + 'La rendre collante demanderait de relever ces quatre couches. Choix '
-      + 'de conversion autant que technique, a rediscuter si besoin.',
+    raison: 'tunnel de réservation',
   }],
 ]);
 
-/**
- * Verifie des regles d'harmonie que le site doit toujours respecter.
- *
- * L'empreinte visuelle compare a une reference : elle detecte un changement,
- * jamais un defaut deja present. Les trois defauts trouves a l'oeil le 16
- * aout 2026 — champs de hauteurs differentes sur la reservation, cartes de
- * largeurs differentes sur la carte, accent invisible sur la FAQ — etaient
- * tous dans la reference, donc verts. Ces controles-ci n'ont pas de
- * reference : ils posent une regle et la verifient.
- *
- * Renvoie aussi la signature de la barre et du pied, comparee ensuite d'une
- * page a l'autre : ces deux blocs doivent etre rigoureusement identiques
- * partout.
- */
+/* Cohérence d'affichage */
 async function relevesCoherence(page) {
   return page.evaluate(() => {
     const defauts = [];
     const arrondi = (n) => Math.round(n);
     const visible = (e) => e.offsetParent !== null || getComputedStyle(e).position === 'fixed';
 
-    // 1. Deux champs de formulaire cote a cote demarrent a la meme hauteur et
-    //    ont la meme taille. C'est ce qui manquait sur la reservation.
+    // 1. Champs alignés
     const parLigne = new Map();
     for (const f of document.querySelectorAll('.field')) {
       if (!visible(f)) continue;
@@ -848,7 +992,7 @@ async function relevesCoherence(page) {
     }
     for (const groupe of parLigne.values()) {
       if (groupe.length < 2) continue;
-      // Une zone de texte est plus haute par nature : on ne la compare pas.
+      // Hors zones de texte
       const simples = groupe.filter((g) => g.balise !== 'textarea');
       if (simples.length < 2) continue;
       const hauts = new Set(simples.map((g) => g.haut));
@@ -857,8 +1001,7 @@ async function relevesCoherence(page) {
       if (hauteurs.size > 1) defauts.push(`champs de hauteurs differentes : ${simples.map((g) => `${g.nom} fait ${g.hauteur}px`).join(', ')}`);
     }
 
-    // 2. Des cartes soeurs, empilees dans la meme colonne, ont la meme
-    //    largeur. C'est ce qui manquait sur la carte.
+    // 2. Cartes de même largeur
     const conteneurs = new Set();
     for (const c of document.querySelectorAll('.card, .zone-card, .rule-card')) {
       if (visible(c) && c.parentElement) conteneurs.add(c.parentElement);
@@ -876,8 +1019,7 @@ async function relevesCoherence(page) {
       }
     }
 
-    // 3. Signature de la barre et du pied, propriete par propriete, pour
-    //    comparaison d'une page a l'autre.
+    // 3. Signature barre et pied
     const signer = (sel, props) => {
       const e = document.querySelector(sel);
       if (!e) return null;
@@ -891,11 +1033,7 @@ async function relevesCoherence(page) {
       mentionLegale: signer('.footer-bar .footer-legal', ['color', 'fontSize']),
     };
 
-    // 4. La navigation est recopiee dans chaque page : neuf exemplaires du
-    //    menu, de la barre et du pied. Les mentions legales avaient ainsi
-    //    diverge en cinq versions, dont deux avaient perdu le bureau
-    //    d'enregistrement du domaine. Tant que le balisage reste duplique,
-    //    c'est ce controle qui empeche l'histoire de se repeter.
+    // 4. Navigation identique
     const liens = (sel) => {
       const trouves = [...document.querySelectorAll(sel)];
       if (!trouves.length) return null;
@@ -915,36 +1053,21 @@ async function relevesCoherence(page) {
   });
 }
 
-/* ─── 3 bis. Taux metier annonces ────────────────────────────────────── */
+/* ─── 3 bis. Taux metier ────────────────────────────────────────────── */
 
-/**
- * Verifie que les taux metier annonces par le texte des pages sont bien ceux
- * de shared/tarifs.js.
- *
- * « 0,70 €/km » etait recopie a sept endroits sur trois pages, « acompte de
- * 30 % » sur cinq pages, et rien ne verifiait qu'ils disaient la meme chose.
- * Aucune divergence n'avait eu lieu — c'est justement le moment d'installer
- * le controle. Le risque n'est pas la faute de frappe : c'est la hausse
- * appliquee a six endroits sur sept, apres laquelle le site annonce deux
- * tarifs selon la page ouverte.
- *
- * On releve `textContent` et non `innerText` : les reponses repliees de la FAQ
- * doivent etre lues elles aussi. Cela embarque le source des scripts inline,
- * et c'est voulu — sur la carte, deux des trois mentions du tarif
- * kilometrique sont construites en JavaScript, donc invisibles au repos.
- */
+/* Texte des pages */
 function relevesTauxMetier(page) {
   return page.evaluate(() => {
     const morceaux = [document.body?.textContent || ''];
     for (const bloc of document.querySelectorAll('script[type="application/ld+json"]')) {
       morceaux.push(bloc.textContent || '');
     }
-    // Espaces insecables et fines : « 30&nbsp;% » doit se lire comme « 30 % ».
+    // Espaces insécables
     return morceaux.join('\n').replace(/[  ]/g, ' ');
   });
 }
 
-/** Les deux taux repetes dans le texte du site, et comment les y reconnaitre. */
+/* Taux métier */
 const TAUX_ANNONCES = [
   {
     nom: 'frais kilometriques',
@@ -983,24 +1106,12 @@ export function controlerTauxMetier(texte) {
 
 /* ─── 4. Parcours utilisateurs ───────────────────────────────────────── */
 
-/**
- * Suit un visiteur d'un bout a l'autre, en cliquant pour de vrai.
- *
- * Les controles de comportement testent chaque page isolement : le menu ici,
- * l'accordeon la, la carte ailleurs. Aucun ne verifiait le chemin qui fait
- * vivre l'entreprise — arriver, se renseigner, aboutir au formulaire.
- *
- * On clique volontairement les appels a l'action du contenu, jamais ceux du
- * menu : le menu est deja teste, et ce n'est pas lui qui convertit. Une page
- * sans lien vers la reservation en dehors de sa navigation est signalee.
- */
+/* Parcours */
 const PARCOURS = [
   {
     nom: 'accueil → carte → reservation',
     etapes: ['index.html', 'carte.html', 'reservation.html'],
-    // Sur la carte, rien ne mene a la reservation tant que le visiteur n'a pas
-    // verifie sa commune : l'appel a l'action n'apparait qu'apres la recherche.
-    // C'est le parcours reel, le test le suit.
+    // Commune d'abord
     avant: {
       'carte.html': async (page) => {
         await page.fill('#searchInput', 'Vitré');
@@ -1013,7 +1124,7 @@ const PARCOURS = [
   { nom: 'faq → reservation', etapes: ['faq.html', 'reservation.html'] },
 ];
 
-/** Ce qui prouve qu'on est bien arrive, et que la page a repris la main. */
+/* Repères d'arrivée */
 const REPERE = {
   'index.html': '.hero-title',
   'carte.html': '#searchInput',
@@ -1031,7 +1142,7 @@ async function testerParcours(contexte, base, echecs) {
 
       for (let i = 1; i < etapes.length; i++) {
         const cible = etapes[i];
-        // Un lien du contenu, ni dans la barre ni dans le menu deroulant.
+        // Lien du contenu
         const lien = page.locator(
           `a[href="${cible}"]:not(.tmenu-panel a):not(.topbar-links a):not(.footer-bar a)`,
         ).filter({ visible: true }).first();
@@ -1045,8 +1156,9 @@ async function testerParcours(contexte, base, echecs) {
         await page.waitForLoadState('networkidle').catch(() => {});
         await attendre(400);
 
-        if (!page.url().endsWith(cible)) {
-          echecs.push(`parcours ${nom} : le lien vers ${cible} a mene a ${page.url().split('/').pop()}`);
+        const chemin = new URL(page.url()).pathname;
+        if (!chemin.endsWith(`/${cible}`)) {
+          echecs.push(`parcours ${nom} : le lien vers ${cible} a mene a ${chemin}`);
           break;
         }
 
@@ -1069,42 +1181,34 @@ async function testerParcours(contexte, base, echecs) {
 /* ─── Execution ──────────────────────────────────────────────────────── */
 
 async function main() {
-  const serveur = await demarrerServeur();
+  const worker = await demarrerFauxWorker();
+  const reseau = { worker, coupees: [], antirobot: [], courriels: [] };
+  const serveur = await demarrerServeur(worker.url);
   const base = `http://127.0.0.1:${serveur.address().port}`;
   const navigateur = await chromium.launch();
   const echecs = [];
   const empreintes = {};
-  // Signature de la barre et du pied par page : ces blocs doivent etre
-  // identiques partout. Plusieurs signatures pour un meme bloc = divergence.
+  // Barre et pied
   const signatures = new Map();
-  // Le nombre d'avis, par valeur relevee : ou on l'a lu, et combien il vaut.
-  // Plusieurs valeurs = un emplacement a ete oublie. Voir relevesCompteurAvis.
+  // Compteurs d'avis
   const compteursAvis = new Map();
-  // Communes demandees a l'API adresse mais absentes de la capture figee.
-  // Sans ce relevé, ajouter une commune temoin a testerCarte donnerait un
-  // echec de classification sans cause lisible.
+  // Communes hors capture
   const requetesGeoInconnues = new Set();
 
   try {
     for (const largeur of LARGEURS) {
-      const contexte = await navigateur.newContext({ viewport: { width: largeur, height: 900 } });
-      // Avant toute navigation : la carte interroge l'API des la premiere
-      // seconde, pour poser le marqueur de Domagne.
+      const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: largeur, height: 900 } });
+      // Avant toute navigation
       await figerApiAdresse(contexte, requetesGeoInconnues);
-      // Le consentement est refuse d'entree : pas de bandeau dans l'empreinte,
-      // et tout appel a Google devient un echec attribuable a une page.
+      // Consentement refusé
       await refuserLaMesure(contexte);
       const appelsMesure = [];
       await intercepterMesure(contexte, appelsMesure);
       for (const nomPage of PAGES) {
         const page = await contexte.newPage();
         const erreursJs = [];
-        // Bruit attendu en local, sans rapport avec une regression :
-        //  - 404 sur le favicon en chemin absolu ;
-        //  - CORS sur l'API de reservation, qui n'autorise que l'origine de
-        //    production. C'est le comportement voulu de l'API, pas un defaut.
+        // Bruit local
         const bruitLocal = (t) => t.includes('404')
-          || (t.includes('CORS') && t.includes('miaoucratie'))
           || t.includes('Failed to fetch')
           || t.includes('ERR_FAILED');
         page.on('pageerror', (e) => { if (!bruitLocal(e.message)) erreursJs.push(e.message); });
@@ -1135,7 +1239,7 @@ async function main() {
         const coherence = await relevesCoherence(page);
         for (const d of coherence.defauts) echecs.push(`${nomPage} @${largeur}px : ${d}`);
 
-        // Les taux ne dependent pas de la largeur : une seule lecture suffit.
+        // Une lecture suffit
         if (largeur === LARGEURS[0]) {
           for (const d of controlerTauxMetier(await relevesTauxMetier(page))) {
             echecs.push(`${nomPage} : ${d}`);
@@ -1166,9 +1270,7 @@ async function main() {
             if (!compteursAvis.has(r.valeur)) compteursAvis.set(r.valeur, []);
             compteursAvis.get(r.valeur).push(`${nomPage} : ${r.source}`);
           }
-          // Un compteur efface ne fait diverger personne : il disparait, et la
-          // comparaison des valeurs reste verte. L'accueil est la seule page a
-          // porter les trois formes, il sert donc de garde-fou a leur presence.
+          // Présence des compteurs
           if (nomPage === 'index.html') {
             for (const [type, quoi] of [
               ['affiche', 'la mention « N avis »'],
@@ -1183,21 +1285,24 @@ async function main() {
         }
 
         if (erreursJs.length) echecs.push(`${nomPage} @${largeur}px : erreur JS — ${erreursJs[0]}`);
+        if (largeur === LARGEURS[0] && nomPage === 'admin-indisponibilites.html') {
+          await testerConnexion(page, reseau, echecs);
+        }
         await page.close();
       }
-      // Le bandeau se teste aux deux largeurs : il change de forme en mobile,
-      // et c'est la qu'il risquerait de deborder.
-      await testerConsentement(navigateur, base, largeur, echecs);
-      // Les parcours se suivent une fois, en desktop : ils testent des liens,
-      // pas une mise en page.
+      // Deux largeurs
+      await testerConsentement(navigateur, base, largeur, reseau, echecs);
+      // Une fois, en bureau
       if (largeur === LARGEURS[0]) await testerParcours(contexte, base, echecs);
       await contexte.close();
     }
 
-    // Barre et pied de page : une seule valeur attendue par propriete, sur
-    // toutes les pages. C'est ce controle qui aurait signale les deux
-    // incoherences du 16 aout — une barre a 20px sur cinq pages et 24 sur
-    // trois, une mention legale illisible sur deux pages seulement.
+    await testerSecours(navigateur, base, reseau, echecs);
+    await testerCoupures(navigateur, base, reseau, echecs);
+    await testerEnvoi(navigateur, base, reseau, echecs);
+    await testerGestion(navigateur, base, reseau, echecs);
+
+    // Barre et pied identiques
     for (const [cle, vues] of signatures) {
       if (vues.size < 2) continue;
       const [blocProp, largeur] = cle.split('@');
@@ -1210,9 +1315,7 @@ async function main() {
       echecs.push(`${blocProp} @${largeur}px : ${vues.size} valeurs differentes selon la page${detail}`);
     }
 
-    // Le nombre d'avis : une seule valeur attendue sur tout le site. La liste
-    // nomme l'emplacement de chaque valeur, donc directement ce qu'il reste a
-    // corriger. Voir relevesCompteurAvis.
+    // Un seul nombre d'avis
     if (compteursAvis.size > 1) {
       const detail = [...compteursAvis.entries()]
         .sort((a, b) => b[1].length - a[1].length)
@@ -1225,10 +1328,7 @@ async function main() {
       console.log("Mode comportement : l'empreinte visuelle n'est pas comparée,\n"
         + 'elle ne serait pas fiable sur un autre système que celui qui l\'a produite.');
     } else if (MAJ) {
-      // Une vue dont la police a manqué n'a pas été relevée. L'écrire quand
-      // même amputerait la référence des vues concernées, et le manque se
-      // lirait ensuite comme « absent de la reference » sur toutes les
-      // exécutions suivantes.
+      // Relevé incomplet
       if (echecs.some((e) => e.includes('police non chargee'))) {
         console.error('\nReference non regeneree : une police a manque, le releve serait incomplet.');
         console.error('Relancez la commande.\n');
@@ -1264,7 +1364,10 @@ async function main() {
   } finally {
     await navigateur.close();
     serveur.close();
+    worker.serveur.close();
   }
+
+  for (const trace of new Set(reseau.coupees)) echecs.push(`requete sortante coupee : ${trace}`);
 
   if (requetesGeoInconnues.size) {
     console.error(
@@ -1289,8 +1392,7 @@ async function main() {
   }
 }
 
-// Ne s'exécute que lancé directement : le fichier reste importable pour
-// tester ses fonctions sans déclencher toute la campagne.
+// Lancement direct
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/').split('/').pop())) {
   main();
 }

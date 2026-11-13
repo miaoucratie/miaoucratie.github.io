@@ -1,15 +1,4 @@
-/**
- * Tests de shared/booking-utils.js.
- *
- * Ce module est le seul garde-fou entre le formulaire de reservation et la
- * boite mail : reservation.html ne valide rien en JavaScript, tout se joue
- * dans le Worker Cloudflare qui importe ce fichier. Une erreur ici se paie en
- * garde double, pas en pixel.
- *
- * Fonctions pures, sans DOM ni reseau : node --test suffit, aucune dependance.
- *
- *   npm test
- */
+/* Règles de réservation */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
@@ -24,9 +13,7 @@ import {
   todayIso,
   dateRangeOverlaps,
   mergeRanges,
-  rangeCollidesWithUnavailable,
   availableSegments,
-  countCoveredDays,
   sanitizeReservationPayload,
   adresseComplete,
   validateReservationPayload,
@@ -37,7 +24,7 @@ import {
   demandesRecentes,
 } from './booking-utils.js';
 
-/** Demande valide de reference : chaque test n'en modifie qu'un aspect. */
+/* Demande de référence */
 const demandeValide = {
   nom: 'Durand',
   prenom: 'Claire',
@@ -186,36 +173,11 @@ describe('fusion des indisponibilites', () => {
   });
 });
 
-describe('collision avec une indisponibilite', () => {
-  const indispo = [{ startDate: '2030-07-14', endDate: '2030-07-16' }];
-
-  test('detecte une demande qui empiete', () => {
-    assert.equal(rangeCollidesWithUnavailable('2030-07-10', '2030-07-15', indispo), true);
-  });
-
-  test('detecte une demande entierement contenue dans l indisponibilite', () => {
-    assert.equal(rangeCollidesWithUnavailable('2030-07-15', '2030-07-15', indispo), true);
-  });
-
-  test('laisse passer une demande qui s arrete la veille', () => {
-    assert.equal(rangeCollidesWithUnavailable('2030-07-10', '2030-07-13', indispo), false);
-  });
-
-  test('laisse passer une demande qui commence le lendemain', () => {
-    assert.equal(rangeCollidesWithUnavailable('2030-07-17', '2030-07-20', indispo), false);
-  });
-
-  test('ne bloque rien si la demande n a pas de dates lisibles', () => {
-    assert.equal(rangeCollidesWithUnavailable('', '', indispo), false);
-  });
-});
-
 describe('jours couverts d une periode', () => {
   const seg = (s, e) => ({ startDate: s, endDate: e });
 
   test('rend la periode entiere quand rien ne la bloque', () => {
     assert.deepEqual(availableSegments('2030-07-10', '2030-07-18', []), [seg('2030-07-10', '2030-07-18')]);
-    assert.equal(countCoveredDays('2030-07-10', '2030-07-18', []), 9);
   });
 
   test('coupe la fin quand l absence commence en cours de sejour', () => {
@@ -231,7 +193,6 @@ describe('jours couverts d une periode', () => {
   test('rend deux morceaux quand l absence tombe au milieu', () => {
     const r = availableSegments('2030-07-10', '2030-07-18', [seg('2030-07-13', '2030-07-15')]);
     assert.deepEqual(r, [seg('2030-07-10', '2030-07-12'), seg('2030-07-16', '2030-07-18')]);
-    assert.equal(countCoveredDays('2030-07-10', '2030-07-18', [seg('2030-07-13', '2030-07-15')]), 6);
   });
 
   test('rend trois morceaux quand deux absences trouent le sejour', () => {
@@ -248,7 +209,6 @@ describe('jours couverts d une periode', () => {
 
   test('ne rend rien quand la periode est entierement bloquee', () => {
     assert.deepEqual(availableSegments('2030-07-10', '2030-07-18', [seg('2030-07-01', '2030-07-31')]), []);
-    assert.equal(countCoveredDays('2030-07-10', '2030-07-18', [seg('2030-07-01', '2030-07-31')]), 0);
   });
 
   test('traite deux absences qui se touchent comme une seule', () => {
@@ -261,7 +221,6 @@ describe('jours couverts d une periode', () => {
 
   test('accepte une garde d un seul jour', () => {
     assert.deepEqual(availableSegments('2030-07-10', '2030-07-10', []), [seg('2030-07-10', '2030-07-10')]);
-    assert.equal(countCoveredDays('2030-07-10', '2030-07-10', []), 1);
   });
 
   test('ne rend rien sur des dates illisibles ou inversees', () => {
@@ -376,7 +335,7 @@ describe('validation de la demande', () => {
     assert.equal(r.isValid, true);
   });
 
-  test('bloque un envoi automatise ayant rempli le champ piege', () => {
+  test('refuse le champ website rempli', () => {
     assert.ok(valider({ website: 'http://spam.example' }).errors.honeypot);
   });
 });

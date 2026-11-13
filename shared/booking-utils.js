@@ -142,26 +142,6 @@ export function mergeRanges(ranges = []) {
   return merged;
 }
 
-export function rangeCollidesWithUnavailable(startDate, endDate, unavailableRanges = []) {
-  const normalizedStart = normalizeDateInput(startDate);
-  const normalizedEnd = normalizeDateInput(endDate);
-
-  if (!isIsoDate(normalizedStart) || !isIsoDate(normalizedEnd)) {
-    return false;
-  }
-
-  return unavailableRanges.some((range) => {
-    const rangeStart = normalizeDateInput(range.startDate);
-    const rangeEnd = normalizeDateInput(range.endDate);
-
-    return (
-      isIsoDate(rangeStart) &&
-      isIsoDate(rangeEnd) &&
-      dateRangeOverlaps(normalizedStart, normalizedEnd, rangeStart, rangeEnd)
-    );
-  });
-}
-
 /* Décalage ISO en UTC */
 function shiftIsoDay(isoDate, step) {
   const date = toDate(isoDate);
@@ -209,20 +189,6 @@ export function availableSegments(startDate, endDate, unavailableRanges = []) {
   }
 
   return segments;
-}
-
-/* Jours couverts */
-export function countCoveredDays(startDate, endDate, unavailableRanges = []) {
-  return availableSegments(startDate, endDate, unavailableRanges).reduce((total, segment) => {
-    const from = toDate(segment.startDate);
-    const to = toDate(segment.endDate);
-
-    if (!from || !to) {
-      return total;
-    }
-
-    return total + Math.round((to.getTime() - from.getTime()) / 86400000) + 1;
-  }, 0);
 }
 
 export function sanitizeReservationPayload(payload = {}) {

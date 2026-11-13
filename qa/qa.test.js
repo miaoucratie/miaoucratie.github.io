@@ -1,28 +1,9 @@
-/**
- * Tests de l'oracle de la QA.
- *
- * `memeElement` decide si deux relevés d'un même élément sont identiques.
- * C'est elle qui dit « regression » ou « rien a signaler » : si elle se met a
- * tout accepter, la QA passe au vert pour de mauvaises raisons et personne ne
- * le voit. Elle etait exportee depuis le debut sans qu'aucun test ne l'importe.
- *
- * Ce qui est verifie ici, c'est le contrat enonce dans qa.mjs :
- *  - les champs geometriques tolerent 2 px, parce que Windows et Linux
- *    n'arrondissent pas les metriques de police pareil ;
- *  - tous les autres sont compares au caractere pres ;
- *  - la tolerance ne s'applique jamais a deux valeurs de formes differentes.
- */
-
+/* Tests de l'oracle */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { controlerTauxMetier, memeElement } from './qa.mjs';
+import { controlerTauxMetier, issueRequete, memeElement } from './qa.mjs';
 
-/**
- * Les relevés sont des chaines de 21 champs separes par des barres. Les ecrire
- * a la main rendrait chaque test illisible et masquerait l'indice teste, qui
- * est justement ce qui compte : c'est la position dans cette liste qui decide
- * si un champ tolere 2 px ou pas.
- */
+/* Champs d'un relevé */
 const CHAMPS = [
   'tagName', 'className',
   'width', 'height', 'left', 'top',
@@ -163,12 +144,6 @@ describe('releves absents ou mal formes', () => {
 });
 
 describe('garde-fou : l oracle doit rester capable de dire non', () => {
-  /**
-   * Le mode de panne qu'on redoute n'est pas qu'un test precis casse, c'est que
-   * `memeElement` se mette a tout accepter — la QA reste verte et ne protege
-   * plus rien. Ce test echouerait en bloc dans ce cas, quelle que soit la
-   * facon dont la fonction aurait ete affaiblie.
-   */
   test('aucune de ces alterations ne passe', () => {
     const alterations = [
       { color: 'rgb(255, 0, 0)' },
@@ -195,12 +170,7 @@ describe('garde-fou : l oracle doit rester capable de dire non', () => {
   });
 });
 
-/**
- * Le controle des taux metier lit le texte des pages et le confronte a
- * shared/tarifs.js. Comme memeElement, c'est un oracle : s'il n'attrape rien,
- * il rend la QA verte sans rien avoir verifie. Les valeurs attendues ici sont
- * celles du site — 0,70 €/km et un acompte de 30 %.
- */
+/* Taux métier */
 describe('taux metier annonces', () => {
   test('le texte en vigueur sur le site ne declenche rien', () => {
     const texte = [
@@ -226,7 +196,6 @@ describe('taux metier annonces', () => {
   });
 
   test('une hausse appliquee partout sauf a un endroit est nommee une seule fois', () => {
-    // Le cas redoute : cinq mentions a jour, une oubliee.
     const texte = Array(5).fill('frais de 0,70 €/km').concat('frais de 0,60 €/km').join(' · ');
     const defauts = controlerTauxMetier(texte);
     assert.equal(defauts.length, 1);
@@ -234,19 +203,49 @@ describe('taux metier annonces', () => {
   });
 
   test('l espace insecable ne masque pas une divergence', () => {
-    // Les pages ecrivent « 30&nbsp;% » : sans normalisation, le motif ne
-    // reconnaitrait pas le pourcentage et le controle serait aveugle.
     assert.equal(controlerTauxMetier('acompte de 45 %').length, 1);
   });
 
   test('« acompte » sans pourcentage ne declenche rien', () => {
-    // Les CGV parlent d'acompte conservé ou remboursé, sans chiffre. Un
-    // controle qui exigerait un pourcentage a chaque mention serait faux.
     const texte = "Moins de 72 h : acompte conservé à titre d'indemnité forfaitaire";
     assert.deepEqual(controlerTauxMetier(texte), []);
   });
 
   test('un pourcentage sans rapport avec l acompte est ignore', () => {
     assert.deepEqual(controlerTauxMetier('une remise de 15 % sur la seconde semaine'), []);
+  });
+});
+
+describe('filet reseau', () => {
+  test('une lecture vers un hote exterieur passe', () => {
+    assert.equal(issueRequete('GET', 'https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js'), 'permise');
+  });
+
+  test('tout passe vers le serveur local', () => {
+    assert.equal(issueRequete('POST', 'http://127.0.0.1:4173/public/reservations'), 'permise');
+    assert.equal(issueRequete('DELETE', 'http://127.0.0.1:4173/admin/unavailabilities/3'), 'permise');
+  });
+
+  test('une ecriture vers un hote exterieur est coupee', () => {
+    assert.equal(issueRequete('POST', 'https://api.web3forms.com/submit'), 'coupee');
+    assert.equal(issueRequete('PUT', 'https://example.org/'), 'coupee');
+  });
+
+  test('le serveur en ligne est coupe, meme en lecture', () => {
+    assert.equal(issueRequete('GET', 'https://miaoucratie-reservation-api.miaoucratie.workers.dev/public/unavailabilities'), 'coupee');
+  });
+
+  test('les ecritures de l anti-robot sont interceptees a part', () => {
+    assert.equal(issueRequete('POST', 'https://api.hcaptcha.com/checksiteconfig'), 'antirobot');
+    assert.equal(issueRequete('POST', 'https://hcaptcha.com/checksiteconfig'), 'antirobot');
+  });
+
+  test('un hote qui ressemble a l anti-robot est coupe', () => {
+    assert.equal(issueRequete('POST', 'https://faux-hcaptcha.com/'), 'coupee');
+    assert.equal(issueRequete('POST', 'https://hcaptcha.com.example.org/'), 'coupee');
+  });
+
+  test('une adresse illisible est coupee', () => {
+    assert.equal(issueRequete('POST', 'pas une adresse'), 'coupee');
   });
 });
