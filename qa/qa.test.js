@@ -236,13 +236,12 @@ describe('filet reseau', () => {
   });
 
   test('les ecritures de l anti-robot sont interceptees a part', () => {
-    assert.equal(issueRequete('POST', 'https://api.hcaptcha.com/checksiteconfig'), 'antirobot');
-    assert.equal(issueRequete('POST', 'https://hcaptcha.com/checksiteconfig'), 'antirobot');
+    assert.equal(issueRequete('POST', 'https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/flow'), 'antirobot');
   });
 
   test('un hote qui ressemble a l anti-robot est coupe', () => {
-    assert.equal(issueRequete('POST', 'https://faux-hcaptcha.com/'), 'coupee');
-    assert.equal(issueRequete('POST', 'https://hcaptcha.com.example.org/'), 'coupee');
+    assert.equal(issueRequete('POST', 'https://faux-challenges.cloudflare.com/'), 'coupee');
+    assert.equal(issueRequete('POST', 'https://challenges.cloudflare.com.example.org/'), 'coupee');
   });
 
   test('une adresse illisible est coupee', () => {

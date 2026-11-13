@@ -31,6 +31,9 @@ const STATUT_RECUE = "received";
 const STATUT_NOTIFICATION_ECHOUEE = "notification_echouee";
 const STATUT_RELAYEE = "relayee";
 
+// Réponse de Make
+const REPONSE_RELAIS = "relayee";
+
 // Turnstile
 const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const JETON_LONGUEUR_MAX = 2048;
@@ -380,7 +383,7 @@ async function relayerDemande(env, reservationId) {
       }),
       signal: AbortSignal.timeout(8000),
     });
-    return reponse.ok;
+    return reponse.ok && (await reponse.text()).trim() === REPONSE_RELAIS;
   } catch {
     return false;
   }

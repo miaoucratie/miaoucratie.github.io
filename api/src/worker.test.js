@@ -819,7 +819,7 @@ describe('demande avec jeton', () => {
       }
       if (url === RELAIS) {
         appels.relais.push(JSON.parse(options.body));
-        return relais ? relais() : new Response('Accepted');
+        return relais ? relais() : new Response('relayee');
       }
       throw new Error(`appel réseau inattendu : ${url}`);
     };
@@ -876,7 +876,7 @@ describe('demande avec jeton', () => {
   test('réponse avant le relais', { timeout: 2000 }, async () => {
     const environnement = envJeton();
     let liberer;
-    const attente = new Promise((r) => { liberer = () => r(new Response('Accepted')); });
+    const attente = new Promise((r) => { liberer = () => r(new Response('relayee')); });
     const { simulation, appels } = reseau({ relais: () => attente });
     const ctx = contexte();
     globalThis.fetch = simulation;
@@ -902,6 +902,7 @@ describe('demande avec jeton', () => {
   test('relais en échec', async () => {
     const cas = [
       ['refus', envJeton(), { relais: async () => new Response('Queue is full.', { status: 400 }) }],
+      ['mis en file', envJeton(), { relais: async () => new Response('Accepted') }],
       ['injoignable', envJeton(), { relais: async () => { throw new Error('délai dépassé'); } }],
       ['non configuré', envJeton({ MAKE_WEBHOOK_URL: undefined }), {}],
     ];
@@ -1012,7 +1013,7 @@ describe('demande avec jeton', () => {
   test('statut modifié pendant le relais', { timeout: 2000 }, async () => {
     const environnement = envJeton();
     let liberer;
-    const attente = new Promise((r) => { liberer = () => r(new Response('Accepted')); });
+    const attente = new Promise((r) => { liberer = () => r(new Response('relayee')); });
     const { simulation } = reseau({ relais: () => attente });
     const ctx = contexte();
     globalThis.fetch = simulation;
