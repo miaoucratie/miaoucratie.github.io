@@ -20,36 +20,25 @@ const JSON_HEADERS = {
   "Cache-Control": "no-store",
 };
 
-/** Envois du formulaire public tolerés par quart d'heure et par IP. */
+// Quotas
 const QUOTA_DEMANDES = 4;
-
-/**
- * Echecs de connexion admin tolérés par quart d'heure et par IP.
- *
- * Plus large que le quota public : se tromper de mot de passe puis se
- * corriger est normal, essayer dix mots de passe en un quart d'heure ne l'est
- * pas. Une connexion réussie ne consomme rien.
- */
 const QUOTA_CONNEXIONS_ADMIN = 10;
 
-/** Demandes remontées à l'administration, de la plus récente à la plus ancienne. */
 const DEMANDES_AFFICHEES = 60;
 
-/**
- * Etats d'une demande de reservation.
- *
- * Le Worker enregistre la demande, mais c'est le navigateur du visiteur qui
- * envoie l'e-mail de notification, et cet envoi peut echouer sans que
- * personne ne le sache. `notification_echouee` est pose par le navigateur
- * quand il constate cet echec : la demande apparait alors en tete de la liste
- * d'administration. Seul l'echec est signalable — un signalement forge ne peut
- * donc que rendre une demande plus visible, jamais la faire disparaitre.
- */
+// Statuts des demandes
 const STATUT_RECUE = "received";
 const STATUT_NOTIFICATION_ECHOUEE = "notification_echouee";
+const STATUT_RELAYEE = "relayee";
+
+// Turnstile
+const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+const JETON_LONGUEUR_MAX = 2048;
+const MESSAGE_VERIFICATION =
+  "La vérification anti-robot n'a pas abouti. Merci de réessayer.";
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     try {
@@ -68,7 +57,7 @@ export default {
       }
 
       if (url.pathname === "/public/reservations" && request.method === "POST") {
-        return await handlePublicReservation(request, env);
+        return await handlePublicReservation(request, env, ctx);
       }
 
       const notificationMatch = url.pathname.match(
@@ -152,8 +141,15 @@ export default {
   },
 };
 
-async function handlePublicReservation(request, env) {
-  const payload = sanitizeReservationPayload(await parseJson(request));
+async function handlePublicReservation(request, env, ctx) {
+  const corps = await parseJson(request);
+  const avecJeton = jetonPresent(corps);
+
+  if (avecJeton) {
+    await verifierJeton(request, env, corps.turnstileToken);
+  }
+
+  const payload = sanitizeReservationPayload(corps);
   const unavailableRanges = await listUnavailabilities(env, { includePast: false, datesSeules: true });
   const validation = validateReservationPayload(payload, unavailableRanges);
 
@@ -206,9 +202,13 @@ async function handlePublicReservation(request, env) {
       validation.sanitized.autreFrequence,
       validation.sanitized.observations,
       ipHash,
-      STATUT_RECUE
+      avecJeton ? STATUT_NOTIFICATION_ECHOUEE : STATUT_RECUE
     )
     .run();
+
+  if (avecJeton) {
+    ctx.waitUntil(relayerDemandeVerifiee(env, reservationId));
+  }
 
   return jsonResponse(
     {
@@ -221,18 +221,95 @@ async function handlePublicReservation(request, env) {
   );
 }
 
-/**
- * Signale que la notification par e-mail d'une demande n'est pas partie.
- *
- * Route publique, volontairement : c'est le navigateur du visiteur qui
- * constate l'echec, et il n'a aucun jeton. Elle ne peut que faire passer une
- * demande de « recue » a « notification echouee », donc la rendre plus
- * visible dans l'administration. Une demande deja traitee n'est pas touchee.
- *
- * Au premier signalement, la demande part aussi vers le relais de secours
- * (MAKE_WEBHOOK_URL), qui cree la fiche du CRM et envoie l'e-mail a sa place.
- * Un second signalement de la meme demande ne la renvoie pas.
- */
+// Turnstile
+function jetonPresent(corps) {
+  const jeton = corps?.turnstileToken;
+  return jeton !== undefined && jeton !== null && jeton !== "";
+}
+
+async function verifierJeton(request, env, jeton) {
+  const resultat = await resultatSiteverify(request, env, jeton);
+
+  console.log(JSON.stringify({
+    turnstile: resultat.succes ? "succes" : "echec",
+    codes: resultat.codes,
+    ...(resultat.hostname !== undefined ? { hostname: resultat.hostname } : {}),
+  }));
+
+  if (!resultat.succes) {
+    throw new HttpError(400, MESSAGE_VERIFICATION);
+  }
+}
+
+async function resultatSiteverify(request, env, jeton) {
+  if (!env.TURNSTILE_SECRET_KEY) {
+    return { succes: false, codes: ["secret-absent"] };
+  }
+  if (!env.TURNSTILE_HOSTNAME) {
+    return { succes: false, codes: ["hostname-absent"] };
+  }
+  if (typeof jeton !== "string" || jeton.length > JETON_LONGUEUR_MAX) {
+    return { succes: false, codes: ["jeton-hors-format"] };
+  }
+
+  const ip = request.headers.get("CF-Connecting-IP");
+  let reponse;
+
+  try {
+    reponse = await fetch(SITEVERIFY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: env.TURNSTILE_SECRET_KEY,
+        response: jeton,
+        ...(ip ? { remoteip: ip } : {}),
+      }),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch {
+    return { succes: false, codes: ["injoignable"] };
+  }
+
+  if (!reponse.ok) {
+    return { succes: false, codes: [`http-${reponse.status}`] };
+  }
+
+  let donnees;
+  try {
+    donnees = await reponse.json();
+  } catch {
+    return { succes: false, codes: ["reponse-illisible"] };
+  }
+
+  const codes = Array.isArray(donnees?.["error-codes"])
+    ? donnees["error-codes"].map((code) => String(code).slice(0, 60)).slice(0, 5)
+    : [];
+
+  if (donnees?.success !== true) {
+    return { succes: false, codes: codes.length ? codes : ["refus"] };
+  }
+
+  if (donnees.hostname !== env.TURNSTILE_HOSTNAME) {
+    return { succes: false, codes: ["hostname"], hostname: String(donnees.hostname).slice(0, 100) };
+  }
+
+  return { succes: true, codes };
+}
+
+// Relais Make
+async function relayerDemandeVerifiee(env, reservationId) {
+  if (!env.MAKE_WEBHOOK_URL || !(await relayerDemande(env, reservationId))) {
+    return;
+  }
+
+  await env.DB.prepare(
+    "UPDATE reservation_requests SET status = ? WHERE id = ? AND status = ?"
+  )
+    .bind(STATUT_RELAYEE, reservationId, STATUT_NOTIFICATION_ECHOUEE)
+    .run();
+}
+
+// Signalement
 async function handleNotificationEchouee(request, env, reservationId) {
   const result = await env.DB.prepare(
     "UPDATE reservation_requests SET status = ? WHERE id = ? AND status = ?"
@@ -247,11 +324,6 @@ async function handleNotificationEchouee(request, env, reservationId) {
   return jsonResponse({ message: "Signalement enregistré." }, 200, request, env);
 }
 
-/**
- * Envoie une demande au relais de secours, avec les memes champs que l'e-mail
- * du formulaire. Sans effet sur la reponse : si le relais ne repond pas, la
- * demande reste signalee dans l'administration.
- */
 async function relayerDemande(env, reservationId) {
   const demande = await env.DB.prepare(
     `
@@ -266,7 +338,7 @@ async function relayerDemande(env, reservationId) {
     .first();
 
   if (!demande) {
-    return;
+    return false;
   }
 
   const frequence =
@@ -281,7 +353,7 @@ async function relayerDemande(env, reservationId) {
   }).format(new Date(`${String(demande.submitted_at).replace(" ", "T")}Z`));
 
   try {
-    await fetch(env.MAKE_WEBHOOK_URL, {
+    const reponse = await fetch(env.MAKE_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -308,8 +380,9 @@ async function relayerDemande(env, reservationId) {
       }),
       signal: AbortSignal.timeout(8000),
     });
+    return reponse.ok;
   } catch {
-    // Le statut « notification echouee » suffit a la retrouver.
+    return false;
   }
 }
 
@@ -321,8 +394,6 @@ async function handleAdminLogin(request, env) {
     throw new HttpError(400, "Merci de renseigner le mot de passe d’administration.");
   }
 
-  // Le quota se lit avant de comparer quoi que ce soit : au-dela, la reponse
-  // ne depend plus du mot de passe propose, elle ne renseigne donc plus.
   const ipHash = await hashIp(request);
 
   if ((await countRecentLoginFailures(env, ipHash)) >= QUOTA_CONNEXIONS_ADMIN) {
@@ -448,7 +519,7 @@ async function handleDeleteUnavailability(request, env, id) {
   );
 }
 
-/** Agenda du jour de l'appli, lu dans l'agenda Google privé. */
+// Agenda de l'appli
 async function handleAgenda(request, env, url) {
   if (!env.AGENDA_ICAL_URL) {
     throw new HttpError(500, "Agenda non configuré.");
@@ -470,7 +541,6 @@ async function handleAgenda(request, env, url) {
   }
 }
 
-/** L'agenda est-il joignable ? Oui ou non, sans rien de son contenu. */
 async function handleEtatAgenda(request, env) {
   if (!env.AGENDA_ICAL_URL) {
     return jsonResponse({ ok: false, raison: "NON_CONFIGURE" }, 200, request, env);
@@ -484,11 +554,7 @@ async function handleEtatAgenda(request, env) {
   }
 }
 
-/**
- * Tournée de l'appli : distance de la boucle dans l'ordre donné (`loop`), ou
- * meilleur ordre de passage (`optimize`). Le point de départ et d'arrivée est
- * fixé côté serveur, jamais envoyé par l'appli.
- */
+// Itinéraire de l'appli
 async function handleItineraire(request, env, calcul) {
   const payload = await parseJson(request);
   const adresses = payload?.addresses;
@@ -517,8 +583,6 @@ async function handleItineraire(request, env, calcul) {
   }
 }
 
-/* Le calendrier du site n'a besoin que des dates : `datesSeules` laisse le
-   commentaire aux routes d'administration, qui sont les seules a l'afficher. */
 async function listUnavailabilities(env, options = {}) {
   const includePast = Boolean(options.includePast);
   const colonnes = options.datesSeules
@@ -532,14 +596,6 @@ async function listUnavailabilities(env, options = {}) {
   return result.results || [];
 }
 
-/**
- * Demandes remontees a l'administration.
- *
- * Jusqu'ici rien ne lisait cette table : une demande enregistree dont l'e-mail
- * de notification n'etait pas parti n'existait nulle part de consultable. Les
- * demandes signalees comme non notifiees passent en tete, ce sont celles qui
- * n'ont peut-etre jamais ete vues.
- */
 async function listReservations(env) {
   const result = await env.DB.prepare(
     `
@@ -563,8 +619,6 @@ async function listReservations(env) {
     return demandes;
   }
 
-  /* Les jours couverts sont recalcules a la lecture, pas figes a l'envoi :
-     une absence ajoutee depuis doit se voir sur les demandes deja recues. */
   const indisponibilites = await listUnavailabilities(env, {
     includePast: true,
     datesSeules: true,
@@ -602,13 +656,8 @@ async function recordLoginFailure(env, ipHash) {
     .run();
 }
 
-/** Empreinte de l'IP appelante : elle sert de cle de quota, jamais d'identite. */
 function hashIp(request) {
-  return hashString(
-    request.headers.get("CF-Connecting-IP")
-      || request.headers.get("x-forwarded-for")
-      || "unknown"
-  );
+  return hashString(request.headers.get("CF-Connecting-IP") || "unknown");
 }
 
 
