@@ -647,6 +647,8 @@ async function testerSecours(navigateur, base, reseau, echecs) {
         await page.goto(`${base}/${f.page}`, { waitUntil: 'load' });
         await attendre(300);
         const adresse = page.url();
+        let navigations = 0;
+        page.on('framenavigated', (cadre) => { if (cadre === page.mainFrame()) navigations += 1; });
 
         if (sansJs && !(await page.locator(`${f.formulaire} noscript .formulaire-secours`).isVisible())) {
           echecs.push(`${nom} : phrase de secours absente`);
@@ -656,6 +658,16 @@ async function testerSecours(navigateur, base, reseau, echecs) {
             echecs.push(`${nom} : ${formulaire} sans methode post`);
           }
         }
+        if (!sansJs && !(await page.locator(`${f.formulaire} [data-secours]`).isVisible())) {
+          echecs.push(`${nom} : phrase de secours absente`);
+        }
+        if (await page.locator(`${f.formulaire} .formulaire-secours:visible`).count() !== 1) {
+          echecs.push(`${nom} : la phrase de secours doit apparaitre une fois`);
+        }
+        for (const bouton of [f.bouton, ...(f.autres || []).map(([, y]) => y)]) {
+          if (!(await page.locator(bouton).isDisabled())) echecs.push(`${nom} : ${bouton} actif`);
+        }
+
         await page.fill(f.champ, f.valeur);
         await page.press(f.champ, 'Enter');
         await page.click(f.bouton, { force: true }).catch(() => {});
@@ -664,6 +676,7 @@ async function testerSecours(navigateur, base, reseau, echecs) {
         if (apres.search || apres.pathname !== new URL(adresse).pathname) {
           echecs.push(`${nom} : adresse changee (${page.url()})`);
         }
+        if (navigations) echecs.push(`${nom} : ${navigations} envoi(s) sans le module`);
 
         if (!sansJs) {
           await Promise.all([
