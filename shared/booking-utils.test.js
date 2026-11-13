@@ -247,6 +247,11 @@ describe('nettoyage de la demande', () => {
     assert.equal(s.email, 'a@b.fr');
   });
 
+  test('observations : 1500 caractères au plus', () => {
+    const s = sanitizeReservationPayload({ observations: 'a'.repeat(1600) });
+    assert.equal(s.observations.length, 1500);
+  });
+
   test('met l adresse en minuscules', () => {
     assert.equal(sanitizeReservationPayload(demandeValide).email, 'claire.durand@example.fr');
   });
