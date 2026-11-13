@@ -27,7 +27,6 @@ const QUOTA_CONNEXIONS_ADMIN = 10;
 const DEMANDES_AFFICHEES = 60;
 
 // Statuts des demandes
-const STATUT_RECUE = "received";
 const STATUT_NOTIFICATION_ECHOUEE = "notification_echouee";
 const STATUT_RELAYEE = "relayee";
 
@@ -37,6 +36,7 @@ const REPONSE_RELAIS = "relayee";
 // Turnstile
 const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const JETON_LONGUEUR_MAX = 2048;
+const ACTION_ATTENDUE = "reservation";
 const MESSAGE_VERIFICATION =
   "La vérification anti-robot n'a pas abouti. Merci de réessayer.";
 
@@ -61,14 +61,6 @@ export default {
 
       if (url.pathname === "/public/reservations" && request.method === "POST") {
         return await handlePublicReservation(request, env, ctx);
-      }
-
-      const notificationMatch = url.pathname.match(
-        /^\/public\/reservations\/([0-9a-f-]{36})\/notification-echouee$/i
-      );
-
-      if (notificationMatch && request.method === "POST") {
-        return await handleNotificationEchouee(request, env, notificationMatch[1]);
       }
 
       if (url.pathname === "/admin/login" && request.method === "POST") {
@@ -146,11 +138,7 @@ export default {
 
 async function handlePublicReservation(request, env, ctx) {
   const corps = await parseJson(request);
-  const avecJeton = jetonPresent(corps);
-
-  if (avecJeton) {
-    await verifierJeton(request, env, corps.turnstileToken);
-  }
+  await verifierJeton(request, env, corps?.turnstileToken);
 
   const payload = sanitizeReservationPayload(corps);
   const unavailableRanges = await listUnavailabilities(env, { includePast: false, datesSeules: true });
@@ -205,13 +193,11 @@ async function handlePublicReservation(request, env, ctx) {
       validation.sanitized.autreFrequence,
       validation.sanitized.observations,
       ipHash,
-      avecJeton ? STATUT_NOTIFICATION_ECHOUEE : STATUT_RECUE
+      STATUT_NOTIFICATION_ECHOUEE
     )
     .run();
 
-  if (avecJeton) {
-    ctx.waitUntil(relayerDemandeVerifiee(env, reservationId));
-  }
+  ctx.waitUntil(relayerDemandeVerifiee(env, reservationId));
 
   return jsonResponse(
     {
@@ -225,11 +211,6 @@ async function handlePublicReservation(request, env, ctx) {
 }
 
 // Turnstile
-function jetonPresent(corps) {
-  const jeton = corps?.turnstileToken;
-  return jeton !== undefined && jeton !== null && jeton !== "";
-}
-
 async function verifierJeton(request, env, jeton) {
   const resultat = await resultatSiteverify(request, env, jeton);
 
@@ -237,6 +218,7 @@ async function verifierJeton(request, env, jeton) {
     turnstile: resultat.succes ? "succes" : "echec",
     codes: resultat.codes,
     ...(resultat.hostname !== undefined ? { hostname: resultat.hostname } : {}),
+    ...(resultat.action !== undefined ? { action: resultat.action } : {}),
   }));
 
   if (!resultat.succes) {
@@ -250,6 +232,9 @@ async function resultatSiteverify(request, env, jeton) {
   }
   if (!env.TURNSTILE_HOSTNAME) {
     return { succes: false, codes: ["hostname-absent"] };
+  }
+  if (jeton === undefined || jeton === null || jeton === "") {
+    return { succes: false, codes: ["jeton-absent"] };
   }
   if (typeof jeton !== "string" || jeton.length > JETON_LONGUEUR_MAX) {
     return { succes: false, codes: ["jeton-hors-format"] };
@@ -296,6 +281,10 @@ async function resultatSiteverify(request, env, jeton) {
     return { succes: false, codes: ["hostname"], hostname: String(donnees.hostname).slice(0, 100) };
   }
 
+  if (donnees.action !== ACTION_ATTENDUE) {
+    return { succes: false, codes: ["action"], action: String(donnees.action).slice(0, 100) };
+  }
+
   return { succes: true, codes };
 }
 
@@ -310,21 +299,6 @@ async function relayerDemandeVerifiee(env, reservationId) {
   )
     .bind(STATUT_RELAYEE, reservationId, STATUT_NOTIFICATION_ECHOUEE)
     .run();
-}
-
-// Signalement
-async function handleNotificationEchouee(request, env, reservationId) {
-  const result = await env.DB.prepare(
-    "UPDATE reservation_requests SET status = ? WHERE id = ? AND status = ?"
-  )
-    .bind(STATUT_NOTIFICATION_ECHOUEE, reservationId, STATUT_RECUE)
-    .run();
-
-  if (Number(result?.meta?.changes) > 0 && env.MAKE_WEBHOOK_URL) {
-    await relayerDemande(env, reservationId);
-  }
-
-  return jsonResponse({ message: "Signalement enregistré." }, 200, request, env);
 }
 
 async function relayerDemande(env, reservationId) {

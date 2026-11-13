@@ -138,9 +138,6 @@ function demarrerFauxWorker() {
         if (donnees.turnstileToken === JETON_REFUSE) return repondre(400, { message: MESSAGE_REFUS });
         return repondre(200, { message: 'Votre demande a bien été enregistrée.', reservationId: randomUUID() });
       }
-      if (req.method === 'POST' && /^\/public\/reservations\/[0-9a-f-]{36}\/notification-echouee$/.test(chemin)) {
-        return repondre(200, { ok: true });
-      }
       if (req.method === 'POST' && chemin === '/admin/login') {
         return donnees.password === MOT_DE_PASSE_ESSAI
           ? repondre(200, { token: JETON_ESSAI })

@@ -1,6 +1,6 @@
 // Tests de l'API
 
-import { test, describe, before, after } from 'node:test';
+import { test, describe, after } from 'node:test';
 import assert from 'node:assert/strict';
 import worker from './worker.js';
 import { baseD1 } from './base-de-test.js';
@@ -10,9 +10,37 @@ const SECRET = 'secret-de-test';
 const MOT_DE_PASSE = 'mot-de-passe-de-test';
 const ID = '11111111-2222-3333-4444-555555555555';
 
+// Clés de test Cloudflare
+const CLE_PASSE = '1x0000000000000000000000000000000AA';
+const CLE_ECHOUE = '2x0000000000000000000000000000000AA';
+const CLE_DEJA_UTILISE = '3x0000000000000000000000000000000AA';
+const JETON = 'XXXX.DUMMY.TOKEN.XXXX';
+const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+const HOTE = 'example.com';
+
+function siteverifySimule(corps) {
+  if (corps.secret === CLE_PASSE) {
+    return {
+      success: true, challenge_ts: '2026-11-13T10:00:00.000Z', hostname: HOTE, action: 'reservation', 'error-codes': [],
+    };
+  }
+  if (corps.secret === CLE_DEJA_UTILISE) return { success: false, 'error-codes': ['timeout-or-duplicate'] };
+  if (corps.secret === CLE_ECHOUE) return { success: false, 'error-codes': ['invalid-input-response'] };
+  return { success: false, 'error-codes': ['invalid-input-secret'] };
+}
+
+// Journal du serveur
+const journal = [];
+const logOrigine = console.log;
+console.log = (...elements) => journal.push(elements.join(' '));
+after(() => { console.log = logOrigine; });
+
 // Aucun appel réseau réel
 const fetchOrigine = globalThis.fetch;
-const reseauInterdit = async (url) => { throw new Error(`appel réseau interdit : ${url}`); };
+const reseauInterdit = async (url, options) => {
+  if (url === SITEVERIFY) return Response.json(siteverifySimule(JSON.parse(options.body)));
+  throw new Error(`appel réseau interdit : ${url}`);
+};
 globalThis.fetch = reseauInterdit;
 after(() => { globalThis.fetch = fetchOrigine; });
 
@@ -30,6 +58,8 @@ const env = (extra = {}) => ({
   ALLOWED_ORIGINS: ORIGINE,
   ADMIN_PASSWORD: MOT_DE_PASSE,
   ADMIN_TOKEN_SECRET: SECRET,
+  TURNSTILE_SECRET_KEY: CLE_PASSE,
+  TURNSTILE_HOSTNAME: HOTE,
   ...extra,
 });
 
@@ -137,6 +167,7 @@ const demandeValide = (extra = {}) => ({
   dateDebut: '2099-06-01', dateFin: '2099-06-10',
   frequence: '1 visite par jour',
   startedAt: Date.now() - 10_000,
+  turnstileToken: JETON,
   ...extra,
 });
 
@@ -413,7 +444,7 @@ describe('envois du formulaire', () => {
       {
         nom: 'Dupont', prenom: 'Marie', telephone: '0612345678', whatsapp: '', email: 'marie@example.com',
         commune: 'Domagné', adresse: '12 rue des Lilas', nombre_chats: 2, date_debut: '2099-06-01',
-        date_fin: '2099-06-10', frequence: 'autre', frequence_autre: 'le samedi', status: 'received',
+        date_fin: '2099-06-10', frequence: 'autre', frequence_autre: 'le samedi', status: 'notification_echouee',
       }
     );
   });
@@ -600,94 +631,16 @@ describe('liste des demandes', () => {
   });
 });
 
-describe('signalement', () => {
-  const statut = (environnement) => lignes(environnement, 'SELECT status FROM reservation_requests')[0].status;
-
-  async function signaler(environnement, simulation = async () => new Response('Accepted')) {
-    const envois = [];
-    const reponse = await avecReseau(
-      async (url, options) => { envois.push({ url, options }); return simulation(); },
-      () => appeler(`/public/reservations/${ID}/notification-echouee`, { methode: 'POST', environnement }),
-    );
-    return { reponse, envois };
-  }
-
-  test('statut mis a jour', async () => {
-    const environnement = env();
+describe('ancienne route de signalement', () => {
+  test('route retirée', async () => {
+    const environnement = env({ MAKE_WEBHOOK_URL: 'https://relais.test/abc' });
     ajouterDemande(environnement);
-    const { reponse } = await signaler(environnement);
-    assert.equal(reponse.status, 200);
-    assert.equal(statut(environnement), 'notification_echouee');
-  });
-
-  test('autres statuts', async () => {
-    for (const autre of ['notification_echouee', 'pending_email', 'traitee']) {
-      const environnement = env({ MAKE_WEBHOOK_URL: 'https://relais.test/abc' });
-      ajouterDemande(environnement, { status: autre });
-      const { reponse, envois } = await signaler(environnement);
-      assert.equal(reponse.status, 200);
-      assert.equal(statut(environnement), autre);
-      assert.equal(envois.length, 0, autre);
+    const avant = demandesEnBase(environnement);
+    for (const methode of ['POST', 'GET']) {
+      const reponse = await appeler(`/public/reservations/${ID}/notification-echouee`, { methode, environnement });
+      assert.equal(reponse.status, 404, methode);
     }
-  });
-
-  test('champs relayes', async () => {
-    const environnement = env({ MAKE_WEBHOOK_URL: 'https://relais.test/abc' });
-    ajouterDemande(environnement, { date_debut: '2026-12-26', date_fin: '2026-12-31' });
-    const { reponse, envois } = await signaler(environnement);
-    assert.equal(reponse.status, 200);
-    assert.equal(envois.length, 1);
-    assert.equal(envois[0].url, 'https://relais.test/abc');
-    assert.deepEqual(JSON.parse(envois[0].options.body), {
-      nom: 'Martin', prenom: 'Claire', email: 'claire@example.fr', telephone: '0612345678',
-      whatsapp: 'Non renseigné', commune: 'Domagné (35113)', commune_code_postal: '35113',
-      nombre_chats: 2, date_debut: '2026-12-26', date_fin: '2026-12-31',
-      frequence: 'Autre besoin à préciser : 2 visites le samedi',
-      observations: 'Deux chats\ntrès câlins',
-      submitted_at: 'lundi 9 novembre 2026 à 18:08',
-      reservation_id: ID,
-      adresse: '12 rue des Lilas',
-      adresse_complete: '12 rue des Lilas, 35113 Domagné',
-    });
-  });
-
-  test('second signalement', async () => {
-    const environnement = env({ MAKE_WEBHOOK_URL: 'https://relais.test/abc' });
-    ajouterDemande(environnement);
-    assert.equal((await signaler(environnement)).envois.length, 1);
-    assert.equal((await signaler(environnement)).envois.length, 0);
-  });
-
-  test('relais non configure', async () => {
-    const environnement = env();
-    ajouterDemande(environnement);
-    const { reponse, envois } = await signaler(environnement);
-    assert.equal(reponse.status, 200);
-    assert.equal(envois.length, 0);
-  });
-
-  test('relais injoignable', async () => {
-    const environnement = env({ MAKE_WEBHOOK_URL: 'https://relais.test/abc' });
-    ajouterDemande(environnement);
-    const { reponse } = await signaler(environnement, async () => { throw new Error('réseau'); });
-    assert.equal(reponse.status, 200);
-    assert.equal(statut(environnement), 'notification_echouee');
-  });
-
-  test('identifiant inconnu', async () => {
-    const environnement = env({ MAKE_WEBHOOK_URL: 'https://relais.test/abc' });
-    const { reponse, envois } = await signaler(environnement);
-    assert.equal(reponse.status, 200);
-    assert.equal(envois.length, 0);
-  });
-
-  test('identifiant mal forme', async () => {
-    const reponse = await appeler('/public/reservations/nawak/notification-echouee', { methode: 'POST' });
-    assert.equal(reponse.status, 404);
-  });
-
-  test('autres methodes', async () => {
-    assert.equal((await appeler(`/public/reservations/${ID}/notification-echouee`)).status, 404);
+    assert.deepEqual(demandesEnBase(environnement), avant);
   });
 });
 
@@ -782,32 +735,10 @@ describe('état public de l agenda', () => {
 });
 
 describe('demande avec jeton', () => {
-  // Clés de test Cloudflare
-  const CLE_PASSE = '1x0000000000000000000000000000000AA';
-  const CLE_ECHOUE = '2x0000000000000000000000000000000AA';
-  const CLE_DEJA_UTILISE = '3x0000000000000000000000000000000AA';
-  const JETON = 'XXXX.DUMMY.TOKEN.XXXX';
-  const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
   const RELAIS = 'https://relais.test/abc';
   const MESSAGE = "La vérification anti-robot n'a pas abouti. Merci de réessayer.";
 
-  const journal = [];
-  const logOrigine = console.log;
-  before(() => { console.log = (...elements) => journal.push(elements.join(' ')); });
-  after(() => { console.log = logOrigine; });
-
-  const envJeton = (extra = {}) => env({
-    TURNSTILE_SECRET_KEY: CLE_PASSE, TURNSTILE_HOSTNAME: 'example.com', MAKE_WEBHOOK_URL: RELAIS, ...extra,
-  });
-
-  function siteverifySimule(corps) {
-    if (corps.secret === CLE_PASSE) {
-      return { success: true, challenge_ts: '2026-11-13T10:00:00.000Z', hostname: 'example.com', 'error-codes': [] };
-    }
-    if (corps.secret === CLE_DEJA_UTILISE) return { success: false, 'error-codes': ['timeout-or-duplicate'] };
-    if (corps.secret === CLE_ECHOUE) return { success: false, 'error-codes': ['invalid-input-response'] };
-    return { success: false, 'error-codes': ['invalid-input-secret'] };
-  }
+  const envJeton = (extra = {}) => env({ MAKE_WEBHOOK_URL: RELAIS, ...extra });
 
   function reseau({ siteverify, relais } = {}) {
     const appels = { siteverify: [], relais: [] };
@@ -839,13 +770,26 @@ describe('demande avec jeton', () => {
   test('sans jeton', async () => {
     for (const jeton of [undefined, null, '']) {
       const environnement = envJeton();
-      const ctx = contexte();
-      const reponse = await appeler('/public/reservations', {
-        methode: 'POST', corps: demandeValide({ turnstileToken: jeton }), environnement, ctx,
-      });
-      assert.equal(reponse.status, 200, String(jeton));
-      assert.deepEqual(statuts(environnement), ['received']);
-      assert.equal(ctx.attentes.length, 0);
+      const corps = demandeValide({ turnstileToken: jeton });
+      if (jeton === undefined) delete corps.turnstileToken;
+      const { reponse, appels } = await envoyer(environnement, corps);
+      assert.equal(reponse.status, 400, String(jeton));
+      assert.equal((await reponse.json()).message, MESSAGE, String(jeton));
+      assert.equal(demandesEnBase(environnement).length, 0, String(jeton));
+      assert.equal(appels.siteverify.length, 0, String(jeton));
+      assert.equal(appels.relais.length, 0, String(jeton));
+    }
+  });
+
+  test('mauvaise action', async () => {
+    for (const action of ['autre', '', undefined]) {
+      const environnement = envJeton();
+      const siteverify = async (corps) => Response.json({ ...siteverifySimule(corps), action });
+      const { reponse, appels } = await envoyer(environnement, demandeValide(), { siteverify });
+      assert.equal(reponse.status, 400, String(action));
+      assert.equal((await reponse.json()).message, MESSAGE, String(action));
+      assert.equal(demandesEnBase(environnement).length, 0, String(action));
+      assert.equal(appels.relais.length, 0, String(action));
     }
   });
 
@@ -980,7 +924,8 @@ describe('demande avec jeton', () => {
     for (let rang = 0; rang < 5; rang += 1) {
       await envoyer(environnement, demandeValide({ turnstileToken: JETON }));
     }
-    const reponse = await appeler('/public/reservations', { methode: 'POST', corps: demandeValide(), environnement });
+    environnement.TURNSTILE_SECRET_KEY = CLE_PASSE;
+    const { reponse } = await envoyer(environnement, demandeValide());
     assert.equal(reponse.status, 200);
   });
 
@@ -991,23 +936,6 @@ describe('demande avec jeton', () => {
     assert.equal(reponse.status, 429);
     assert.equal(demandesEnBase(environnement).length, 4);
     assert.equal(appels.relais.length, 0);
-  });
-
-  test('signalement après relais', async () => {
-    for (const relais of [undefined, async () => new Response('', { status: 500 })]) {
-      const environnement = envJeton();
-      const { reponse } = await envoyer(environnement, demandeValide({ turnstileToken: JETON }), { relais });
-      const { reservationId } = await reponse.json();
-      const avant = statuts(environnement);
-
-      const { appels, simulation } = reseau();
-      const signalement = await avecReseau(simulation, () => appeler(
-        `/public/reservations/${reservationId}/notification-echouee`, { methode: 'POST', environnement },
-      ));
-      assert.equal(signalement.status, 200);
-      assert.equal(appels.relais.length, 0);
-      assert.deepEqual(statuts(environnement), avant);
-    }
   });
 
   test('statut modifié pendant le relais', { timeout: 2000 }, async () => {
@@ -1037,11 +965,17 @@ describe('demande avec jeton', () => {
     await envoyer(envJeton(), demandeValide({ turnstileToken: JETON }), { entetes: { 'CF-Connecting-IP': '203.0.113.42' } });
     await envoyer(envJeton({ TURNSTILE_SECRET_KEY: CLE_ECHOUE }), demandeValide({ turnstileToken: JETON }));
     await envoyer(envJeton({ TURNSTILE_HOSTNAME: 'miaoucratie.fr' }), demandeValide({ turnstileToken: JETON }));
+    await envoyer(envJeton(), demandeValide(), {
+      siteverify: async (corps) => Response.json({ ...siteverifySimule(corps), action: 'autre' }),
+    });
+    await envoyer(envJeton(), demandeValide({ turnstileToken: '' }));
 
     assert.deepEqual(journal.map((ligne) => JSON.parse(ligne)), [
       { turnstile: 'succes', codes: [] },
       { turnstile: 'echec', codes: ['invalid-input-response'] },
       { turnstile: 'echec', codes: ['hostname'], hostname: 'example.com' },
+      { turnstile: 'echec', codes: ['action'], action: 'autre' },
+      { turnstile: 'echec', codes: ['jeton-absent'] },
     ]);
     const tout = journal.join('\n');
     for (const interdit of [JETON, '203.0.113.42', 'Dupont', 'marie@example.com', '0612345678', CLE_PASSE]) {
