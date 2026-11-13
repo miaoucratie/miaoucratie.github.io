@@ -160,6 +160,7 @@
 
             <form id="admin-login-form" class="stack" method="post" novalidate>
               <!-- Secours -->
+              <p class="formulaire-secours" data-secours="admin-login-form" hidden>Le formulaire ne s’est pas chargé. Écrivez-moi sur&nbsp;WhatsApp au&nbsp;<a href="https://wa.me/33644247681" target="_blank" rel="noopener">06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a> ou&nbsp;à&nbsp;<a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>.</p>
               <noscript><p class="formulaire-secours">Le formulaire ne s’est pas chargé. Écrivez-moi sur&nbsp;WhatsApp au&nbsp;<a href="https://wa.me/33644247681" target="_blank" rel="noopener">06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a> ou&nbsp;à&nbsp;<a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>.</p></noscript>
               <div class="field">
                 <label class="visually-hidden" for="admin-password">Mot de passe</label>
@@ -167,7 +168,7 @@
                 <p class="field-error" id="admin-password-error" aria-live="polite"></p>
               </div>
 
-              <button class="button button--primary" type="submit" id="admin-login-button">
+              <button class="button button--primary" type="submit" id="admin-login-button" disabled>
                 <span class="button__label">Se connecter</span>
                 <span class="button__loader" aria-hidden="true"></span>
               </button>
@@ -216,7 +217,7 @@
                   <p class="field-error" id="comment-error" aria-live="polite"></p>
                 </div>
 
-                <button class="button button--primary" type="submit" id="save-period-button">
+                <button class="button button--primary" type="submit" id="save-period-button" disabled>
                   <span class="button__label">Enregistrer</span>
                   <span class="button__loader" aria-hidden="true"></span>
                 </button>
@@ -290,6 +291,14 @@
       }
     });
   })();
+  </script>
+  <script>
+  window.addEventListener('load', function(){
+    document.querySelectorAll('[data-secours]').forEach(function(p){
+      var f = document.getElementById(p.getAttribute('data-secours'));
+      if (f && !f.hasAttribute('data-actif')) p.hidden = false;
+    });
+  });
   </script>
   <script type="module" src="js/admin-indisponibilites.js"></script>
 </body>

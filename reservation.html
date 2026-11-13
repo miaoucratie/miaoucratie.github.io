@@ -165,6 +165,7 @@
 
         <form id="reservation-form" class="reservation-form" method="post" novalidate>
           <!-- Secours -->
+          <p class="formulaire-secours" data-secours="reservation-form" hidden>Le formulaire ne s’est pas chargé. Écrivez-moi sur&nbsp;WhatsApp au&nbsp;<a href="https://wa.me/33644247681" target="_blank" rel="noopener">06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a> ou&nbsp;à&nbsp;<a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>.</p>
           <noscript><p class="formulaire-secours">Le formulaire ne s’est pas chargé. Écrivez-moi sur&nbsp;WhatsApp au&nbsp;<a href="https://wa.me/33644247681" target="_blank" rel="noopener">06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a> ou&nbsp;à&nbsp;<a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>.</p></noscript>
           <input type="hidden" name="started_at" id="started_at">
           <div class="field field--honeypot" aria-hidden="true">
@@ -348,7 +349,7 @@
           <div class="submit-panel">
             <div class="h-captcha" data-captcha="true"></div>
             <p style="font-size:14px;color:var(--muted,#7A6B5E);margin:0 0 4px;">Assurée RC Pro · ACACED · <span aria-hidden="true" style="color:#E8A33D;letter-spacing:1px;">★★★★★</span> <strong>5,0</strong> sur 5 sur Google · 19 avis</p>
-            <button id="submit-button" class="button button--primary" type="submit">
+            <button id="submit-button" class="button button--primary" type="submit" disabled>
               <span class="button__label">Envoyer ma demande</span>
               <span class="button__loader" aria-hidden="true"></span>
             </button>
@@ -410,6 +411,14 @@
   })();
   </script>
 
+  <script>
+  window.addEventListener('load', function(){
+    document.querySelectorAll('[data-secours]').forEach(function(p){
+      var f = document.getElementById(p.getAttribute('data-secours'));
+      if (f && !f.hasAttribute('data-actif')) p.hidden = false;
+    });
+  });
+  </script>
   <script src="https://web3forms.com/client/script.js" async defer></script>
   <script type="module" src="js/reservation.js"></script>
   </body>
