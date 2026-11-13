@@ -66,6 +66,10 @@ init();
 
 function init() {
   bindEvents();
+  for (const [formulaire, bouton] of [[loginForm, loginButton], [unavailabilityForm, savePeriodButton]]) {
+    bouton.disabled = false;
+    formulaire.setAttribute("data-actif", "");
+  }
 
   if (state.token) {
     showManagement();

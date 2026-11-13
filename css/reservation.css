@@ -733,7 +733,8 @@ textarea:disabled {
 }
 
 /* Relance */
-.success-panel__relance {
+.success-panel__relance,
+.formulaire-secours {
   padding: 0.9rem 1.1rem;
   border-radius: 0.85rem;
   border: 1px solid rgba(168, 71, 42, 0.28);
@@ -742,7 +743,8 @@ textarea:disabled {
   text-align: left;
 }
 
-.success-panel__relance a {
+.success-panel__relance a,
+.formulaire-secours a {
   color: #A8472A;
   font-weight: 600;
 }

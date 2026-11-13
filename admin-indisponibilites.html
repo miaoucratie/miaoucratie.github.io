@@ -145,7 +145,7 @@
           <p class="hero__lead">
             Cette page permet de piloter les périodes bloquées du calendrier public de réservation.
             Les modifications faites ici s’appliquent ensuite à la page visible par les clients.
-            Elle récapitule aussi les demandes de réservation reçues, e-mail de notification parti ou non.
+            Elle récapitule aussi les demandes de réservation reçues.
           </p>
         </div>
 
@@ -158,7 +158,9 @@
           <div class="admin-panel" id="login-panel">
 <div id="admin-login-feedback" class="alert" role="status" aria-live="polite" hidden></div>
 
-            <form id="admin-login-form" class="stack" novalidate>
+            <form id="admin-login-form" class="stack" method="post" novalidate>
+              <!-- Secours -->
+              <noscript><p class="formulaire-secours">Le formulaire ne s’est pas chargé. Écrivez-moi sur&nbsp;WhatsApp au&nbsp;<a href="https://wa.me/33644247681" target="_blank" rel="noopener">06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a> ou&nbsp;à&nbsp;<a href="mailto:miaoucratie@gmail.com">miaoucratie@gmail.com</a>.</p></noscript>
               <div class="field">
                 <label class="visually-hidden" for="admin-password">Mot de passe</label>
                 <input id="admin-password" name="password" type="password" autocomplete="current-password" required placeholder="Mot de passe admin">
@@ -192,7 +194,7 @@
                 <button class="button button--ghost" type="button" id="cancel-edit-button" hidden>Annuler la modification</button>
               </div>
 
-              <form id="unavailability-form" class="stack" novalidate>
+              <form id="unavailability-form" class="stack" method="post" novalidate>
                 <input type="hidden" id="period-id" name="id">
                 <div class="grid grid--two">
                   <div class="field">
