@@ -1,17 +1,5 @@
 name: QA
 
-# GitHub Pages publie sur push, indépendamment de ce workflow : sur un push
-# direct vers main, cette action n'empêche rien, elle alerte après coup.
-#
-# C'est pourquoi le travail passe par une pull request. La vérification s'y
-# exécute AVANT la fusion, et comme c'est la fusion qui publie, un échec arrête
-# la mise en ligne. Le README décrit la marche à suivre.
-#
-# Pour rendre la règle contraignante plutôt que volontaire : Settings → Rules →
-# protéger main en exigeant le contrôle « Non-régression ». Le déploiement
-# piloté par workflow (actions/deploy-pages) donnerait le même résultat, au prix
-# d'une infrastructure que ce site vitrine ne justifie pas.
-
 on:
   push:
     branches: [main]
@@ -24,7 +12,10 @@ on:
         type: boolean
         default: false
 
-# Un push qui en suit un autre annule la vérification devenue obsolète.
+permissions:
+  contents: read
+
+# Annule l'exécution obsolète
 concurrency:
   group: qa-${{ github.ref }}
   cancel-in-progress: true
@@ -43,48 +34,36 @@ jobs:
           node-version: '24'
           cache: npm
 
-      # Le navigateur pèse ~115 Mo : sans ce cache, chaque exécution
-      # le retélécharge et le workflow prend deux fois plus de temps.
+      # Cache du navigateur
       - name: Cache du navigateur Playwright
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      # postinstall lance « playwright install chromium ». La commande est
-      # idempotente : si le cache a restauré le navigateur, elle le constate
-      # et rend la main aussitôt. On ne cherche donc pas à la court-circuiter,
-      # ce qui laisserait le workflow sans navigateur si le cache était partiel.
+      # Installation du navigateur
       - name: Installer les dépendances
         run: npm ci
 
       - name: Dépendances système du navigateur
         run: npx playwright install-deps chromium
 
-      # Les regles de reservation sont des fonctions pures : elles se testent
-      # sans navigateur, en une seconde, et rien ne sert de lancer le reste
-      # si elles sont cassees.
+      # Règles de réservation
       - name: Tester les règles de réservation
         run: npm test
 
       - name: Vérifier le site
         run: npm run qa
 
-      # Les controles arrives avec le blog ne tournaient que sur le poste
-      # d'Irina : la CI ne lancait que « npm test » et « npm run qa ». Une page
-      # pouvait donc partir en ligne sans title, sans canonical, ou absente du
-      # sitemap, sans que rien ne l'arrete. Ceux qui passent aujourd'hui sur
-      # l'ensemble du site deviennent bloquants ici. Ils lisent le dossier ou
-      # le registre des articles, jamais une liste recopiee : une page ajoutee
-      # demain y entre d'elle-meme.
+      # Contrôles bloquants
       - name: Contrôler le SEO, la rédaction, les espacements, les renvois et les feuilles
         run: npm run controles:base
 
-      # Mesure la page telle qu'elle s'affiche, du mobile au bureau.
+      # Mise en page
       - name: Contrôler la mise en page rendue
         run: npm run mise-en-page:strict
 
-      # Relevé seulement : n'entre pas dans le verdict.
+      # Relevé seul
       - name: Comparer les articles
         run: npm run articles
 
@@ -119,9 +98,7 @@ jobs:
           echo 'npm run controles:base' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-  # L'apparence se mesure dans un environnement unique et figé, décrit ici :
-  # image épinglée par son empreinte, système et architecture fixés par le tag.
-  # Ce que le relevé compare n'appartient donc à aucun poste de travail.
+  # Environnement figé
   empreinte:
     name: Empreinte visuelle
     runs-on: ubuntu-24.04-arm

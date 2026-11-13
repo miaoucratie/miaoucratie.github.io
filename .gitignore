@@ -1,24 +1,12 @@
-# Le depot est public : tout ce qui y entre est servi et indexe.
-# N'y mettre que ce qui compose le site ou sert a le verifier.
-
-# Outillage local, sans rapport avec le site
-.claude/
-.agents/
+# Outillage local
 skills-lock.json
-
-# Etat local de wrangler : cache de compte, identifiants de session
 api/.wrangler/
-
-# Ancienne version conservee hors ligne
 .old/
-
 node_modules/
 
-# Regles de travail, non publiees
+# Notes de travail
 CLAUDE.md
 CLAUDE.local.md
 
-# Maquette de travail : validation avant integration, jamais publiee.
-# Motif et non liste nominative : une maquette oubliee ici serait servie et
-# indexee, et le controle redactionnel ignore deja « maquette-*.html ».
+# Maquettes
 maquette-*.html
