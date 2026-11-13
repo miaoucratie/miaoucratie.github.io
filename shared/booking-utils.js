@@ -211,7 +211,7 @@ export function sanitizeReservationPayload(payload = {}) {
     dateFin: normalizeDateInput(payload.dateFin ?? payload.date_fin ?? ""),
     frequence: frequency,
     autreFrequence: safeText(payload.autreFrequence ?? payload.frequence_autre ?? "", 160),
-    observations: safeMultilineText(payload.observations ?? "", 2000),
+    observations: safeMultilineText(payload.observations ?? "", 1500),
     startedAt: Number.parseInt(String(payload.startedAt ?? payload.started_at ?? ""), 10),
     honeypot: safeText(payload.website ?? payload.honeypot ?? "", 255),
   };
