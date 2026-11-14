@@ -24,6 +24,9 @@
     5: 29,
   });
 
+  /** Au-delà : sur devis */
+  const MAX_CHATS_TARIF = 5;
+
   /** Seuil séjour long */
   const SEUIL_SEJOUR_LONG = 7;
 
@@ -31,9 +34,12 @@
   const REMISE_PAR_VISITE_EUR = 1;
 
   /** Tarif d'une visite */
+  function nombreDeChats(chats) {
+    return Math.max(1, Math.trunc(Number(chats) || 1));
+  }
+
   function tarifVisite(chats) {
-    const nombre = Math.max(1, Math.trunc(Number(chats) || 1));
-    return TARIF_VISITE_EUR[Math.min(nombre, 5)];
+    return TARIF_VISITE_EUR[nombreDeChats(chats)] ?? null;
   }
 
   /** Arrondi au centime */
@@ -51,10 +57,14 @@
     const nombreVisites = Math.max(1, Math.trunc(Number(visites) || 1));
     const distance = Math.max(0, Number(km) || 0);
 
+    if (nombreDeChats(chats) > MAX_CHATS_TARIF) {
+      return { surDevis: true, chats: nombreDeChats(chats), visites: nombreVisites };
+    }
+
     const base = tarifVisite(chats);
     const remiseSejour = nombreVisites >= SEUIL_SEJOUR_LONG ? REMISE_PAR_VISITE_EUR : 0;
-    const remiseSolidaire = solidaire && !periode ? REMISE_PAR_VISITE_EUR : 0;
-    const cumulBloque = Boolean(solidaire && periode);
+    const cumulBloque = Boolean(solidaire && periode && remiseSejour > 0);
+    const remiseSolidaire = solidaire && !cumulBloque ? REMISE_PAR_VISITE_EUR : 0;
 
     const tarifNet = base - remiseSejour - remiseSolidaire;
     const supplementKm = distance * 2 * FRAIS_KM_EUR * nombreVisites;
@@ -62,6 +72,7 @@
     const acompte = arrondirCentimes(total * TAUX_ACOMPTE);
 
     return {
+      surDevis: false,
       base,
       visites: nombreVisites,
       remiseSejour,
@@ -81,6 +92,7 @@
     RAYON_INCLUS_KM,
     RAYON_DEVIS_KM,
     TARIF_VISITE_EUR,
+    MAX_CHATS_TARIF,
     SEUIL_SEJOUR_LONG,
     REMISE_PAR_VISITE_EUR,
     tarifVisite,

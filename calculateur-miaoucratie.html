@@ -127,10 +127,22 @@
     const { chats, visites } = state;
     const km = Math.max(0, parseFloat(document.getElementById('km-input').value) || 0);
 
+    const estimation = estimerSejour({ ...state, km });
+
+    if (estimation.surDevis) {
+      document.getElementById('result-area').innerHTML = `
+        <div class="result">
+          <p class="result-title">Estimation du coût</p>
+          <p style="font-size:15px;line-height:1.6;margin:0;">Au-delà de 5&nbsp;chats, chaque garde est différente&nbsp;: je vous propose un devis selon leurs besoins.</p>
+        </div>`;
+      document.getElementById('result-area').style.display = 'block';
+      return;
+    }
+
     const {
       base, remiseSejour, remiseSolidaire, cumulBloque,
       supplementKm: supKm, total, acompte, solde,
-    } = estimerSejour({ ...state, km });
+    } = estimation;
 
     // Render
     let lines = `<div class="result-line">
