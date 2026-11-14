@@ -99,7 +99,7 @@
 <a class="reserver" href="reservation.html">Réserver ma garde</a>
 </div>
 </main>
-<!-- Calcul -->
+<!-- Tarifs -->
 <script src="shared/tarifs.js"></script>
 <script>
   const { FRAIS_KM_EUR, SEUIL_SEJOUR_LONG, estimerSejour, formatEuros } = MiaouTarifs;
@@ -144,7 +144,7 @@
       supplementKm: supKm, total, acompte, solde,
     } = estimation;
 
-    // Render
+    // Affichage
     let lines = `<div class="result-line">
       <span class="label">Tarif de base (${chats <= 2 ? '1-2' : chats} chat${chats > 1 ? 's' : ''})</span>
       <span class="amount">${fmt(base)} × ${visites} visite${visites > 1 ? 's' : ''}</span>

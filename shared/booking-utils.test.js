@@ -26,10 +26,10 @@ import {
 
 /* Demande de référence */
 const demandeValide = {
-  nom: 'Durand',
+  nom: 'Essai',
   prenom: 'Claire',
-  telephone: '06 12 34 56 78',
-  email: 'Claire.Durand@Example.FR',
+  telephone: '06 39 98 12 34',
+  email: 'Claire.Essai@Example.FR',
   commune: 'Domagné',
   nombreChats: '2',
   dateDebut: '2030-07-10',
@@ -39,7 +39,7 @@ const demandeValide = {
 
 describe('nettoyage du texte', () => {
   test('replie les espaces multiples et coupe les bords', () => {
-    assert.equal(normalizeWhitespace('  Claire   Durand \n'), 'Claire Durand');
+    assert.equal(normalizeWhitespace('  Claire   Essai \n'), 'Claire Essai');
   });
 
   test('tronque a la longueur demandee', () => {
@@ -253,7 +253,7 @@ describe('nettoyage de la demande', () => {
   });
 
   test('met l adresse en minuscules', () => {
-    assert.equal(sanitizeReservationPayload(demandeValide).email, 'claire.durand@example.fr');
+    assert.equal(sanitizeReservationPayload(demandeValide).email, 'claire.essai@example.fr');
   });
 
   test('traduit l intitule affiche de la frequence « autre »', () => {
@@ -290,7 +290,7 @@ describe('validation de la demande', () => {
   });
 
   test('refuse une adresse e-mail malformee', () => {
-    assert.ok(valider({ email: 'claire.durand' }).errors.email);
+    assert.ok(valider({ email: 'claire.essai' }).errors.email);
     assert.ok(valider({ email: 'claire@' }).errors.email);
   });
 
@@ -364,15 +364,15 @@ describe('validation des indisponibilites', () => {
 describe('adresse complete', () => {
   test('assemble la rue, le code postal et la commune sans parentheses', () => {
     assert.equal(
-      adresseComplete({ adresse: ' 12  rue des Lilas ', commune: 'Domagné (35113)', communeCodePostal: '35113' }),
-      '12 rue des Lilas, 35113 Domagné'
+      adresseComplete({ adresse: ' 1  rue de l\'Exemple ', commune: 'Domagné (35113)', communeCodePostal: '35113' }),
+      '1 rue de l\'Exemple, 35113 Domagné'
     );
   });
 
   test('garde une commune tapee a la main, sans code postal', () => {
     assert.equal(
-      adresseComplete({ adresse: '3 impasse du Moulin', commune: 'st jean sur vilaine', communeCodePostal: '' }),
-      '3 impasse du Moulin, st jean sur vilaine'
+      adresseComplete({ adresse: '2 impasse de l\'Essai', commune: 'st jean sur vilaine', communeCodePostal: '' }),
+      '2 impasse de l\'Essai, st jean sur vilaine'
     );
   });
 
@@ -390,7 +390,7 @@ describe('objet du message', () => {
   test('reprend le prenom, le nom et les deux dates', () => {
     const sujet = buildReservationSubject(demandeValide);
     assert.match(sujet, /Claire/);
-    assert.match(sujet, /Durand/);
+    assert.match(sujet, /Essai/);
     assert.match(sujet, /2030-07-10/);
     assert.match(sujet, /2030-07-18/);
   });

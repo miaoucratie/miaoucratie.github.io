@@ -1,24 +1,5 @@
 #!/bin/sh
-# Lance l'empreinte visuelle dans l'environnement figé.
-#
-#   qa/conteneur.sh              compare le site à la référence
-#   qa/conteneur.sh --update     régénère la référence
-#
-# Pourquoi ce fichier : l'empreinte mesure des largeurs et des hauteurs en
-# pixels. Ces mesures n'appartiennent pas au site, elles appartiennent au
-# couple « site + machine qui dessine » : le même texte, la même police, ne
-# donnent pas la même largeur sous macOS, Windows ou Linux. Comparée à un
-# relevé pris ailleurs, l'empreinte signale des centaines d'écarts qui ne
-# veulent rien dire, et on cesse de la lire.
-#
-# Elle mesure donc toujours dans le même environnement, décrit ici et nulle
-# part ailleurs : une image épinglée par son empreinte, dont le tag fixe le
-# système ET l'architecture. La CI utilise exactement la même, ce qui rend le
-# verdict identique ici et sur GitHub — et insensible à un changement de poste.
-#
-# Le dépôt est recopié dans le conteneur avant l'installation : les
-# dépendances du poste ne sont pas celles de Linux, et les mélanger casserait
-# l'un ou l'autre. Seul le relevé régénéré ressort.
+# Empreinte visuelle
 
 set -e
 

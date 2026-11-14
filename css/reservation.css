@@ -48,7 +48,6 @@ body {
   min-width: 320px;
 }
 
-/* [hidden] */
 [hidden] {
   display: none !important;
 }
@@ -485,7 +484,7 @@ textarea:disabled {
   box-shadow: 0 18px 30px rgba(30, 24, 18, 0.12);
 }
 
-.autocomplete__list/* [hidden] */
+.autocomplete__list
 [hidden] {
   display: none;
 }
@@ -1311,7 +1310,7 @@ body.reservation-page .autocomplete__list {
   box-shadow: 0 18px 30px rgba(30, 24, 18, 0.12);
 }
 
-body.reservation-page .autocomplete__list/* [hidden] */
+body.reservation-page .autocomplete__list
 [hidden] {
   display: none;
 }
@@ -1423,7 +1422,7 @@ body.reservation-page .section-heading {
   margin-bottom: 2.4rem;
 }
 
-/* --- Ajustements UI v3 --- */
+/* --- Ajustements de l'interface --- */
 body.reservation-page .skip-link:not(:focus):not(:active) {
   position: fixed;
   left: -100vw;
@@ -1441,7 +1440,7 @@ body.reservation-page .skip-link:not(:focus):not(:active) {
 }
 
 body.reservation-page .success-panel[hidden],
-body.reservation-page .autocomplete__list/* [hidden] */
+body.reservation-page .autocomplete__list
 [hidden] {
   display: none;
 }
@@ -1545,7 +1544,7 @@ body.reservation-page .hero__media-frame img {
   object-position: center center;
 }
 
-/* --- Calendrier : en-tête et champs --- */
+/* --- En-tête et champs du calendrier --- */
 body.reservation-page .flatpickr-calendar {
   overflow: visible;
   z-index: 90;

@@ -1,4 +1,4 @@
-/** Tarifs et calcul */
+/** Tarifs et estimation d'un séjour */
 
 (function (racine) {
   'use strict';
@@ -24,7 +24,7 @@
     5: 29,
   });
 
-  /** Au-delà : sur devis */
+  /** Nombre maximal de chats tarifés */
   const MAX_CHATS_TARIF = 5;
 
   /** Seuil séjour long */

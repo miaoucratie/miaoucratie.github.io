@@ -1,25 +1,5 @@
 #!/usr/bin/env node
-/**
- * Generateur du blog Miaoucratie.
- *
- *   node scripts/generate-blog.js            valide, genere, relit, controle
- *   node scripts/generate-blog.js --check    valide et compare, n'ecrit rien
- *
- * Outil de build local. Aucune dependance. Il ne tourne jamais dans un
- * navigateur, il n'est reference par aucune page, et le HTML qu'il produit est
- * statique : le maillage, les cartes et les donnees structurees sont dans la
- * source livree, sans JavaScript.
- *
- * Ce qu'il possede, et rien d'autre :
- *   · la grille de coulisses-miaoucratie.html                    GENERATED:BLOG_GRID
- *   · la liste blogPost du JSON-LD de coulisses-miaoucratie.html GENERATED:BLOG_JSONLD
- *   · le bloc « articles lies » de chaque article  GENERATED:RELATED
- *   · les entrees d'article du sitemap          GENERATED:BLOG_URLS
- *
- * Tout le reste est edite a la main et il n'y touche pas. Il VALIDE en
- * revanche les metadonnees de chaque page contre le registre et s'arrete si
- * elles divergent : il ne corrige jamais un contenu editorial en silence.
- */
+/* Générateur du blog */
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -27,9 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/* La racine est celle du depot. « BLOG_RACINE » permet de faire tourner le
-   generateur sur une arborescence de test : les cas negatifs se verifient
-   ainsi sur des fixtures, sans jamais casser les vrais fichiers du site. */
+/* Racine du dépôt */
 const RACINE = process.env.BLOG_RACINE ? path.resolve(process.env.BLOG_RACINE) : path.join(__dirname, '..');
 const REGISTRE = path.join(RACINE, 'blog', 'articles.json');
 const CHECK = process.argv.includes('--check');
@@ -52,7 +30,7 @@ function terminer() {
   process.exit(0);
 }
 
-/* ── Lecture et validation du registre (§8) ─────────────────────────────── */
+/* ── Lecture et validation du registre ── */
 let registre;
 try {
   registre = JSON.parse(fs.readFileSync(REGISTRE, 'utf8'));
@@ -64,9 +42,6 @@ try {
 const OBLIGATOIRES = ['slug', 'url', 'status', 'category', 'h1', 'seoTitle', 'description',
   'ldHeadline', 'cardTitle', 'cardText', 'cardCta', 'datePublished', 'dateModified', 'related', 'image'];
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-/* Une categorie porte un nom court et un emoji, et un seul. Deux categories qui
-   partageraient le meme emoji cesseraient d'etre identifiables d'un coup d'oeil,
-   ce qui est toute la fonction de cet emoji. */
 const validerRubriques = (liste) => {
   if (!Array.isArray(liste) || !liste.length) { faute('blog/articles.json', '« site.rubriques » doit lister les categories'); return; }
   const vus = new Set();
@@ -80,8 +55,7 @@ const validerRubriques = (liste) => {
     vus.add(r.emoji);
   }
 };
-/* Les categories sont declarees une fois, avec leur emoji : c'est un
-   identifiant visuel fixe, pas une decoration choisie article par article. */
+/* Rubriques */
 const RUBRIQUES = (registre.site && registre.site.rubriques) || [];
 const NOMS = RUBRIQUES.map((r) => r.nom);
 const emojiDe = (nom) => (RUBRIQUES.find((r) => r.nom === nom) || {}).emoji || '';
@@ -127,7 +101,7 @@ if (erreurs.length) terminer();
 const parSlug = new Map(tous.map((a) => [a.slug, a]));
 const publies = tous.filter((a) => a.status === 'published');
 
-/* Relations (§8, §12) */
+/* Relations */
 for (const a of tous) {
   const ou = `blog/articles.json (${a.slug})`;
   const vus = new Set();
@@ -143,14 +117,14 @@ for (const a of tous) {
   }
 }
 
-/* Le fichier de chaque article publie doit exister (§8) */
+/* Fichiers des articles publiés */
 const fichierDe = (a) => path.join(RACINE, a.url.replace(/^\//, ''));
 for (const a of publies) {
   if (!fs.existsSync(fichierDe(a))) faute(`blog/articles.json (${a.slug})`, `article publie sans fichier : ${a.url}`);
 }
 if (erreurs.length) terminer();
 
-/* ── Coherence registre / page, sans correction silencieuse (§9) ────────── */
+/* ── Cohérence entre registre et page ── */
 const net = (s) => s.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 const nbsp = (s) => s.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -171,9 +145,7 @@ for (const a of publies) {
   const h1 = [...t.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((m) => net(m[1]));
   if (h1.length !== 1) faute(ou, `${h1.length} balise(s) h1, il en faut exactement une`);
   else compare('h1', a.h1, h1[0]);
-  /* Le sur-titre nomme la rubrique, comme la pastille de la carte : les deux
-     doivent dire la meme chose. Les pages dont le sur-titre est une accroche et
-     non une rubrique portent une autre classe et ne sont pas concernees. */
+  /* Sur-titre */
   const surtitre = un(/<p class="eyebrow">([^<]*)<\/p>/);
   if (surtitre !== null) compare('sur-titre', `${emojiDe(a.category)} ${a.category}`, surtitre);
   compare('canonical', site.origin + a.url, un(/<link rel="canonical" href="([^"]*)"/));
@@ -198,11 +170,6 @@ for (const a of publies) {
 if (erreurs.length) terminer();
 
 /* ── Zones generees ─────────────────────────────────────────────────────── */
-/**
- * Remplace le contenu entre deux marqueurs. Refuse tout ce qui est ambigu :
- * marqueur absent, en double, ou END avant START (§10).
- * Retourne { texte, change } ou leve une erreur decrivant le probleme.
- */
 function remplacerZone(texte, nom, contenu, ou) {
   const debut = `<!-- GENERATED:${nom}:START -->`;
   const fin = `<!-- GENERATED:${nom}:END -->`;
@@ -217,25 +184,14 @@ function remplacerZone(texte, nom, contenu, ou) {
   if (j < i) { faute(ou, `marqueur ${nom} : END apparait avant START`); return null; }
   const avant = texte.slice(0, i + debut.length);
   const apres = texte.slice(j);
-  /* Le bloc adopte la fin de ligne du fichier qui l'accueille. Les pages du
-     depot sont en fin de ligne Windows ; un bloc pose en fin de ligne Unix est
-     un texte identique au caractere pres, mais des octets differents. Sans
-     cela, « --check » signalait les six zones a chaque passage, et « npm run
-     blog » reecrivait six fichiers sans rien changer au rendu. */
+  /* Fin de ligne du fichier */
   const saut = texte.includes('\r\n') ? '\r\n' : '\n';
   const bloc = (contenu.trimEnd() + '\n').replace(/\r?\n/g, saut);
   const nouveau = avant + saut + bloc + apres;
   return { texte: nouveau, change: nouveau !== texte };
 }
 
-/* ── Ordre d'affichage, deterministe (§11) ──────────────────────────────── */
-/* Regle explicite, dans l'ordre : rang de la rubrique, rang de l'article dans
-   sa rubrique, date de publication decroissante, puis slug pour que deux
-   articles du meme jour gardent un ordre stable.
-   Les deux rangs viennent du registre. Sans « rang », deux articles publies le
-   meme jour etaient departages par l'alphabet, et « Croquettes et patee »
-   passait devant « Decoder une etiquette » alors qu'on apprend a lire une
-   etiquette avant de choisir entre les deux formes (§7.1). */
+/* ── Ordre d'affichage ── */
 const rangRubrique = (a) => {
   const i = NOMS.indexOf(a.category);
   return i < 0 ? NOMS.length : i;
@@ -247,10 +203,6 @@ const ordre = publies.slice().sort((a, b) =>
   || a.slug.localeCompare(b.slug));
 
 /* ── Fabrication des blocs ──────────────────────────────────────────────── */
-/* Le titre de la carte est un lien vers l'article, en plus du bouton. Le bouton
-   nomme l'action et ne dit rien du sujet : « Ma selection », « Combien d'eau ».
-   Tant qu'il etait le seul lien, chaque article n'etait atteint que par une
-   ancre sans aucun mot de son contenu. Le titre, lui, decrit l'article. */
 const carte = (a, niveau) => {
   const badge = a.affiliate ? '\n<span class="art-tag">Liens affiliés</span>' : '';
   const textes = a.cardText.map((p) => `<p>${p}</p>`).join('\n');
@@ -276,15 +228,7 @@ const jsonld = () => {
   if (blocs.length !== 1) { faute('coulisses-miaoucratie.html', `${blocs.length} bloc(s) JSON-LD, il en faut un`); return null; }
   let o;
   try { o = JSON.parse(blocs[0][1]); } catch (e) { faute('coulisses-miaoucratie.html', `JSON-LD illisible : ${e.message}`); return null; }
-  /* On ne remplace QUE la liste blogPost : le reste du bloc (auteur,
-     editeur, langue) reste tel qu'il est ecrit a la main (§16). */
-  /* Chaque BlogPosting se suffit a lui-meme : titre, resume, image, auteur,
-     langue. Les quatre champs d'origine ne disaient que « ce titre existe a
-     cette date ». Le resume et l'image sont ceux du registre, deja servis en
-     meta description et en og:image de l'article : une seule source. */
-  /* L'auteur et la langue sont ceux du blog, ecrits a la main dans le bloc.
-     On les recopie sur chaque article plutot que d'en declarer une seconde
-     version : deux sources finissent toujours par diverger. */
+  /* Liste blogPost */
   const auteur = o.author && o.author.name ? { '@type': 'Person', name: o.author.name } : null;
   o.blogPost = ordre.map((a) => {
     const p = {
@@ -304,8 +248,6 @@ const jsonld = () => {
 };
 
 const lies = (a) => {
-  /* Relation editoriale explicite d'abord ; a defaut, meme rubrique, du plus
-     recent au plus ancien, deux au maximum (§12). */
   let cibles = a.related.map((s) => parSlug.get(s)).filter((x) => x && x.status === 'published');
   if (!cibles.length) {
     cibles = ordre.filter((x) => x.slug !== a.slug && x.category === a.category).slice(0, 2);
@@ -319,10 +261,7 @@ ${cibles.map((x) => carte(x, 'h3')).join('\n\n')}
 </aside>`;
 };
 
-/* La page d'entree du blog en tete, puis les articles.
-   Sa date de derniere modification n'est pas inventee : c'est la plus recente
-   des dates de ses articles, puisque son contenu est leur liste. Elle ne bouge
-   donc que si un article bouge (§15). */
+/* Entrées du sitemap */
 const urlsSitemap = () => {
   const entree = { url: site.blogUrl, dateModified: ordre.map((a) => a.dateModified).sort().pop() };
   return [entree, ...ordre].map((a) =>
@@ -350,7 +289,7 @@ for (const a of publies) poser(a.url.replace(/^\//, ''), 'RELATED', lies(a));
 poser('sitemap.xml', 'BLOG_URLS', urlsSitemap());
 if (erreurs.length) terminer();
 
-/* ── Controles sur le resultat calcule, avant toute ecriture (§6.6) ─────── */
+/* ── Contrôles avant écriture ── */
 {
   const bg = aEcrire.get('coulisses-miaoucratie.html') || '';
   for (const a of publies) {
@@ -368,11 +307,6 @@ if (erreurs.length) terminer();
     if (!locs.includes(site.origin + a.url)) faute('sitemap.xml', `l'article publie « ${a.slug} » manque`);
   }
   if (!locs.includes(site.origin + site.blogUrl)) faute('sitemap.xml', "la page d'entree du blog manque");
-  /* L'existence n'est verifiee que sur les URL que le generateur produit :
-     les autres entrees du sitemap appartiennent au reste du site, et une
-     erreur chez elles ne doit pas bloquer la generation du blog. Les
-     doublons, eux, sont controles sur l'ensemble, parce qu'un doublon peut
-     naitre de ce que le generateur ajoute. */
   for (const a of publies) {
     const f = a.url.replace(/^\//, '');
     if (!fs.existsSync(path.join(RACINE, f))) faute('sitemap.xml', `url generee vers un fichier inexistant : ${site.origin}${a.url}`);
@@ -380,7 +314,7 @@ if (erreurs.length) terminer();
   for (const a of tous.filter((x) => x.status !== 'published')) {
     if (locs.includes(site.origin + a.url)) faute('sitemap.xml', `le brouillon « ${a.slug} » est dans le sitemap`);
   }
-  /* Les liens generes doivent etre de vrais <a href> (§13) */
+  /* Liens des zones générées */
   for (const [f, t] of aEcrire) {
     if (!f.endsWith('.html')) continue;
     for (const nom of ['BLOG_GRID', 'RELATED']) {
@@ -394,13 +328,13 @@ if (erreurs.length) terminer();
       }
     }
   }
-  /* Le JSON-LD calcule doit rester valide (§16) */
+  /* JSON-LD généré */
   const b = (aEcrire.get('coulisses-miaoucratie.html') || '').match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
   if (b) { try { JSON.parse(b[1]); } catch (e) { faute('coulisses-miaoucratie.html', `JSON-LD genere invalide : ${e.message}`); } }
 }
 if (erreurs.length) terminer();
 
-/* ── Mode --check : comparer sans ecrire (§7) ───────────────────────────── */
+/* ── Vérification sans écriture ── */
 if (CHECK) {
   if (!changements.length) {
     dire(`${publies.length} article(s) publie(s). Le depot est a jour.`);
@@ -410,7 +344,7 @@ if (CHECK) {
   terminer();
 }
 
-/* ── Ecriture, puis relecture et verification (§6.8 a §6.10) ────────────── */
+/* ── Écriture et relecture ── */
 if (!changements.length) {
   dire(`${publies.length} article(s) publie(s). Rien a changer.`);
   terminer();

@@ -26,7 +26,7 @@
     overflow-x: hidden;
   }
 
-  /* ── TOPBAR ── */
+  /* ── BARRE DU HAUT ── */
   .topbar {
     background: var(--deep);
     padding: 12px 40px;
@@ -256,7 +256,7 @@
   }
   h2 em { font-style: italic; font-weight: 400; color: var(--rust); }
 
-  /* ── STRIPE ── */
+  /* ── BANDE DES PROMESSES ── */
   .stripe { background: var(--deep); }
   .stripe .section {
     display: grid;
@@ -277,7 +277,7 @@
   }
   .stripe-item p { font-size: 14px; color: var(--sand); line-height: 1.75; }
 
-  /* ── CARDS PRESTATIONS ── */
+  /* ── CARTES DES PRESTATIONS ── */
   .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .pcard {
     background: #fff; border-radius: 20px; padding: 36px;
@@ -299,7 +299,7 @@
   .pcard li::before { content: '🐾'; font-size: 10px; position: absolute; left: 0; top: 3px; }
   .pcard .note { font-style: italic; font-size: 13px; color: var(--muted); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--warm); }
 
-  /* ── PROCESS ── */
+  /* ── DÉROULEMENT ── */
   .process-bg { background: var(--warm); }
   .steps-row {
     display: grid; grid-template-columns: repeat(5, 1fr);
@@ -362,7 +362,7 @@
     text-wrap: balance;
   }
   .cred-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-	/* 5e item centré */
+	/* 5e élément centré */
 .cred-item--label {
   grid-column: 1 / -1;
   display: flex;
@@ -418,7 +418,7 @@
   }
   .cta-btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
 
-  /* ── FOOTER ── */
+  /* ── PIED DE PAGE ── */
   .footer-bar {
     background: var(--deep); padding: 32px 40px;
     display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
@@ -430,7 +430,7 @@
   .footer-links a { color: var(--sand); text-decoration: none; font-size: 13px; transition: color 0.2s; }
   .footer-links a:hover { color: var(--peach); }
 
-  /* ── SVG ICONS helper ── */
+  /* ── PICTOGRAMMES SVG ── */
   .ico { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
 
   /* ── RESPONSIVE ── */

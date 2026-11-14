@@ -1,9 +1,4 @@
-/**
- * Tests de l'itinéraire de l'appli Indisponibilités.
- *
- * Les services de cartes sont remplacés par des réponses fixes : aucun appel
- * réseau, aucune attente d'une seconde entre deux adresses.
- */
+/** Tests de l'itinéraire */
 
 import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
@@ -21,7 +16,7 @@ import {
 
 const sansAttente = async () => {};
 
-/** Distance totale d'un ordre donné, pour comparer à la recherche exacte. */
+/** Longueur d'un ordre */
 function longueur(matrice, ordre) {
   const chemin = [0, ...ordre, matrice.length - 1];
   let total = 0;
@@ -38,7 +33,7 @@ function* permutations(liste) {
   }
 }
 
-/** Matrice non symétrique, comme des distances routières réelles. */
+/** Matrice aléatoire non symétrique */
 function matriceAleatoire(points, graine) {
   let x = graine;
   const hasard = () => { x = (x * 16807) % 2147483647; return x / 2147483647; };
@@ -47,10 +42,7 @@ function matriceAleatoire(points, graine) {
   return coords.map((a) => coords.map((b) => Math.hypot(a[0] - b[0], a[1] - b[1]) * (1 + hasard() * 0.3)));
 }
 
-/**
- * Faux services : chaque adresse connue a une position, les distances sont
- * celles d'une grille. Les requêtes reçues sont conservées.
- */
+/** Faux services de cartes */
 function fauxServices({ connues = {}, ban = {}, codesPostaux = {}, refuser = [] }) {
   const requetes = [];
   const lire = async (url) => {
@@ -116,7 +108,7 @@ describe('meilleur ordre de passage', () => {
     const resultat = await meilleurOrdre('Maison', ['Loin, Ville', 'Près, Ville', 'Milieu, Ville'], services);
     assert.equal(resultat.homeAddress, 'Maison');
     assert.equal(resultat.totalDistanceKm, 18);
-    // Aller dans un sens ou dans l'autre fait la même distance : les deux sont justes.
+    // Deux sens possibles
     const sens = ['Près, Ville', 'Milieu, Ville', 'Loin, Ville'];
     assert.ok(
       [sens.join('|'), [...sens].reverse().join('|')].includes(resultat.orderedAddresses.join('|')),
@@ -177,11 +169,11 @@ describe('base adresse nationale', () => {
   test('un numéro trouvé avec le bon code postal est retenu, sans passer par Nominatim', async () => {
     const services = fauxServices({
       connues: MAISON,
-      ban: { '8 Chem. des Lilas, 35000 Rennes': { point: [0, 4], type: 'housenumber', score: 0.68, postcode: '35000' } },
+      ban: { '8 Chem. de l Exemple, 35000 Rennes': { point: [0, 4], type: 'housenumber', score: 0.68, postcode: '35000' } },
     });
-    const resultat = await boucle('Maison', ['8 Chem. des Lilas, 35000 Rennes'], services);
+    const resultat = await boucle('Maison', ['8 Chem. de l Exemple, 35000 Rennes'], services);
     assert.equal(resultat.totalDistanceKm, 8);
-    assert.ok(!services.requetes.some((u) => u.includes('nominatim') && u.includes('Lilas')));
+    assert.ok(!services.requetes.some((u) => u.includes('nominatim') && u.includes('Exemple')));
   });
 
   test('un numéro trouvé dans une autre commune est écarté', async () => {

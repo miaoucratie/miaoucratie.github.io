@@ -15,7 +15,6 @@ on:
 permissions:
   contents: read
 
-# Annule l'exécution obsolète
 concurrency:
   group: qa-${{ github.ref }}
   cancel-in-progress: true
@@ -34,71 +33,37 @@ jobs:
           node-version: '24'
           cache: npm
 
-      # Cache du navigateur
-      - name: Cache du navigateur Playwright
+      - name: Cache du navigateur
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      # Installation du navigateur
       - name: Installer les dépendances
         run: npm ci
 
       - name: Dépendances système du navigateur
         run: npx playwright install-deps chromium
 
-      # Règles de réservation
-      - name: Tester les règles de réservation
+      - name: Tests
         run: npm test
 
-      - name: Vérifier le site
+      - name: Comportement
         run: npm run qa
 
-      # Contrôles bloquants
-      - name: Contrôler le SEO, la rédaction, les espacements, les renvois et les feuilles
+      - name: Contrôles
         run: npm run controles:base
 
-      # Mise en page
-      - name: Contrôler la mise en page rendue
+      - name: Mise en page
         run: npm run mise-en-page:strict
 
-      # Relevé seul
-      - name: Comparer les articles
+      - name: Articles
         run: npm run articles
 
-      - name: Que faire en cas d'échec
+      - name: Résumé
         if: failure()
-        run: |
-          echo "### Une vérification n'est pas passée" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Deux familles de contrôles peuvent arrêter ce job." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Vérifier le site.** La QA ne compare pas l'apparence, seulement le" >> $GITHUB_STEP_SUMMARY
-          echo "**comportement** : menu, accordéon, filtres, recherche, carte, calendrier," >> $GITHUB_STEP_SUMMARY
-          echo "anonymat des avis. Un échec signifie qu'une fonction ne répond plus," >> $GITHUB_STEP_SUMMARY
-          echo "pas qu'un pixel a bougé." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Contrôler le SEO, la rédaction, les espacements et les feuilles.** Une" >> $GITHUB_STEP_SUMMARY
-          echo "page a perdu une balise, une formulation interdite est revenue, un bloc" >> $GITHUB_STEP_SUMMARY
-          echo "s'est décollé, ou le registre du blog ne correspond plus aux pages." >> $GITHUB_STEP_SUMMARY
-          echo "Le journal du job nomme le fichier et la règle." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "Rien n'est en ligne : cette vérification précède la fusion." >> $GITHUB_STEP_SUMMARY
-            echo "Corrigez sur la branche, la publication attendra." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "Le site est **déjà en ligne** : GitHub Pages publie sur push," >> $GITHUB_STEP_SUMMARY
-            echo "sans attendre ce workflow. Vérifiez la production." >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Pour reproduire en local :" >> $GITHUB_STEP_SUMMARY
-          echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo 'npm run qa' >> $GITHUB_STEP_SUMMARY
-          echo 'npm run controles:base' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+        run: echo "### Échec" >> $GITHUB_STEP_SUMMARY
 
-  # Environnement figé
   empreinte:
     name: Empreinte visuelle
     runs-on: ubuntu-24.04-arm

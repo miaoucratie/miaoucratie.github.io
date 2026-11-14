@@ -1,13 +1,4 @@
-/**
- * Table de cas de shared/tarifs.js, construite à partir des règles publiées
- * (tarifs.html, faq.html, calculateur) :
- * - visite : 18 € pour 1 ou 2 chats, 22 € pour 3, 26 € pour 4, 29 € pour 5 ; au-delà, sur devis ;
- * - 1 € de moins par visite dès 7 visites consécutives ;
- * - 1 € de moins par visite pour le tarif solidaire ;
- * - du 21 juillet au 31 août, une seule remise ; le reste de l'année, les deux se cumulent ;
- * - au-delà de 20 km : 0,70 € par km, aller-retour, à chaque visite ;
- * - acompte de 30 %.
- */
+/** Table de cas des tarifs */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import './tarifs.js';

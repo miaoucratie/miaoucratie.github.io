@@ -1,27 +1,4 @@
-/**
- * QA comparative des articles du blog.
- *
- *   node qa/articles.mjs             releve
- *   node qa/articles.mjs --strict    sort en erreur s'il reste une divergence
- *
- * Pourquoi ce fichier : verifier chaque page isolement ne dit rien de
- * l'harmonie de l'ensemble. Deux articles peuvent passer tous les controles
- * un par un et n'avoir ni la meme largeur de colonne, ni la meme epaisseur de
- * filet sur un encart de meme fonction, ni la meme couleur de lien.
- *
- * Le controle met les articles cote a cote et compare, composant par
- * composant, ce qui doit etre identique au pixel pres :
- *
- *   · la largeur de la colonne de lecture ;
- *   · pour chaque composant recurrent : police, corps, graisse, interligne,
- *     couleur, fond, bordures, rayon, retraits ;
- *   · la presence ou l'absence des elements de structure — fil d'Ariane,
- *     sommaire, bandeau final ;
- *   · l'echelle des titres, et le fait qu'elle soit decroissante ;
- *   · la couleur des liens dans le corps du texte, contre la convention du
- *     site, et l'absence de bleu par defaut ;
- *   · le contraste de chaque texte sur son fond reel.
- */
+/* Comparaison des articles du blog */
 
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -34,14 +11,7 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STRICT = process.argv.includes('--strict');
 const LARGEURS = [1280, 768, 375];
 
-/* Les articles du blog. La page d'entree n'en est pas un : elle a sa propre
-   composition en grille, et on ne lui demande pas la colonne de lecture.
-
-   La liste vient du registre, pas d'une recopie : un troisieme article publie
-   serait entre en ligne sans jamais passer par ce controle, et personne ne
-   l'aurait su. Les pages qui ne portent pas le module editorial se declarent
-   ici, une par une, avec leur raison — une exception nommee se relit, une
-   omission silencieuse non. */
+/* Articles comparés */
 const HORS_GABARIT = new Map([
   ['ce-que-jutilise.html', 'composition « cq- » qui lui est propre, sans colonne de lecture'],
 ]);
@@ -51,16 +21,12 @@ const ARTICLES = registre.articles
   .map((a) => a.url.replace(/^\//, ''))
   .filter((f) => !HORS_GABARIT.has(f));
 
-/* Composants dont deux articles doivent rendre exactement la meme chose.
-   La cle est le nom lisible, la valeur le selecteur. */
+/* Composants comparés */
 const COMPOSANTS = {
   'colonne de lecture': '.art-flux',
   'titre de page': 'h1',
   'titre de section': '.art-flux .section > h2',
   'sous-titre': '.art-flux .section > h3',
-  /* Un paragraphe du corps, pas une etiquette de section ni une legende :
-     « .section-label » est un <p> mais se rend en capitales espacees, et le
-     comparer a un paragraphe courant produisait un faux constat. */
   'paragraphe': '.art-flux .section > p:not([class])',
   'encart avertissement': '.art-alerte',
   'encart note': '.cred-item',
@@ -76,15 +42,7 @@ const COMPOSANTS = {
   'fiche produit': '.art-produit',
 };
 
-/* Proprietes comparees : tout ce qui se voit et qui ne depend pas du
-   conteneur. La LARGEUR en est volontairement absente. Un meme composant
-   n'occupe pas la meme largeur selon qu'il est dans la colonne de lecture,
-   dans une fiche ou dans une rangee de deux : comparer « la premiere fiche
-   produit de chaque article » revenait a comparer une fiche pleine largeur
-   avec une carte de rangee, et rendait neuf faux constats.
-   L'invariant de largeur est verifie a part, plus bas, et il est plus fort :
-   tout ce qui est pose directement dans la colonne de lecture doit avoir
-   exactement la meme largeur. */
+/* Propriétés comparées */
 const PROPS = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing',
   'color', 'backgroundColor', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth',
   'borderTopColor', 'borderLeftColor', 'borderTopLeftRadius',
@@ -119,14 +77,14 @@ const RELEVE = ({ composants, props }) => {
     out.composants[nom] = v;
   }
 
-  /* Liens dans le corps du texte : couleur, soulignement, et bleu par defaut. */
+  /* Liens du corps de texte */
   for (const a of document.querySelectorAll('.art-flux p a, .art-flux li a, .art-corps p a')) {
     if (!visible(a) || a.closest('.btn-primary, .art-actions, .art-sommaire, .art-sources')) continue;
     const c = getComputedStyle(a);
     out.liens.push({ texte: a.textContent.trim().slice(0, 28), color: c.color, deco: c.textDecorationLine, poids: c.fontWeight });
   }
 
-  /* Echelle des titres : le corps rendu par niveau. */
+  /* Échelle des titres */
   for (const n of ['h1', 'h2', 'h3', 'h4']) {
     const e = [...document.querySelectorAll(`.art-page ${n}, main ${n}`)].filter(visible)
       .filter((x) => !x.closest('.cta-section, .art-sommaire'));
@@ -136,9 +94,7 @@ const RELEVE = ({ composants, props }) => {
     }
   }
 
-  /* Une seule largeur dans la colonne de lecture. C'est l'invariant fort :
-     paragraphes, titres, figures, tableaux et encadres poses directement dans
-     le flux doivent partager la meme largeur au pixel pres. */
+  /* Largeurs dans la colonne de lecture */
   const flux = document.querySelector('.art-flux');
   if (flux) {
     const largeurs = new Map();
@@ -152,7 +108,7 @@ const RELEVE = ({ composants, props }) => {
       .map(([l, q]) => ({ l, n: q.length, exemples: [...new Set(q)].slice(0, 3) }));
   }
 
-  /* Elements de structure : presents ou absents. */
+  /* Éléments de structure */
   for (const [nom, sel] of Object.entries({
     'fil d’Ariane': '.fil-ariane, .breadcrumb, nav[aria-label*="ariane" i]',
     'sommaire': '.art-sommaire',
@@ -178,11 +134,6 @@ for (const f of ARTICLES) {
     const p = await ctx.newPage();
     await p.goto(`${base}/${f}`, { waitUntil: 'load' });
     await p.evaluate(() => document.fonts.ready);
-    /* « couches.css » anime tout enfant direct de body sur 0,7 s et ne prevoit
-       pas « prefers-reduced-motion » : l'option du navigateur n'y peut rien. On
-       coupe donc animations et transitions apres chargement, sinon la mesure
-       tombe tantot avant, tantot apres le fondu, et deux passes identiques ne
-       donnent pas le meme resultat. */
     await p.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
     await p.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
     releves.set(`${f}@${largeur}`, await p.evaluate(RELEVE, { composants: COMPOSANTS, props: PROPS }));
@@ -223,7 +174,7 @@ for (const largeur of LARGEURS) {
     }
   }
 
-  /* 3. Liens : jamais de bleu par defaut, meme traitement partout */
+  /* 3. Liens */
   for (const f of ARTICLES) {
     const r = releves.get(`${f}@${largeur}`);
     const couleurs = new Set(r.liens.map((l) => l.color));
@@ -240,13 +191,13 @@ for (const largeur of LARGEURS) {
       constats.push({ largeur, genre: 'liens de couleurs differentes', detail: `${f} : ${[...couleurs].join(' / ')}` });
     }
 
-    /* 3 bis. Une seule largeur dans la colonne de lecture */
+    /* 3 bis. Largeur de la colonne */
     if (r.largeurColonne && r.largeurColonne.length > 1) {
       constats.push({ largeur, genre: 'largeurs melangees dans la colonne',
         detail: `${f} : ` + r.largeurColonne.map((x) => `${x.l}px x${x.n} (${x.exemples.join(', ')})`).join('  ·  ') });
     }
 
-    /* 4. Echelle des titres : un seul corps par niveau, et decroissante */
+    /* 4. Échelle des titres */
     const parNiveau = new Map(r.titres.map((t) => [t.n, t.tailles]));
     for (const [n, tailles] of parNiveau) {
       if (tailles.length > 1) constats.push({ largeur, genre: 'titres de meme niveau, corps differents', detail: `${f} : ${n} rendu en ${tailles.join(' / ')} px` });

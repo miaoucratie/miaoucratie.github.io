@@ -28,7 +28,7 @@
     overflow-x: hidden;
   }
 
-  /* Background texture */
+  /* Texture de fond */
   body::before {
     content: '';
     position: fixed;
@@ -88,7 +88,7 @@
     letter-spacing: 0.5px;
   }
 
-  /* Card */
+  /* Carte */
   .card {
     background: white;
     border-radius: 20px;
@@ -107,7 +107,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Section labels */
+  /* Intitulés de section */
   .section-label {
     font-size: 0.7rem;
     font-weight: 500;
@@ -120,7 +120,7 @@
 
   .section-label:first-child { margin-top: 0; }
 
-  /* Field groups */
+  /* Groupes de champs */
   .field {
     margin-bottom: 20px;
   }
@@ -139,7 +139,7 @@
     font-size: 0.8rem;
   }
 
-  /* Stepper for numbers */
+  /* Sélecteur de nombre */
   .stepper {
     display: flex;
     align-items: center;
@@ -179,7 +179,7 @@
     user-select: none;
   }
 
-  /* Toggle checkboxes */
+  /* Cases à cocher */
   .toggle-group {
     display: flex;
     gap: 10px;
@@ -223,7 +223,7 @@
     border-color: var(--calc-terracotta);
   }
 
-  /* Km input */
+  /* Champ des kilomètres */
   .km-input {
     display: flex;
     align-items: center;
@@ -255,7 +255,7 @@
     color: var(--calc-mid);
   }
 
-  /* Divider */
+  /* Séparateur */
   .divider {
     height: 1px;
     background: var(--border);
@@ -280,7 +280,7 @@
 
   .reserver:hover { background: #8b3921; }
 
-  /* Result panel */
+  /* Panneau du résultat */
   .result {
     background: var(--calc-warm);
     border-radius: 16px;
@@ -393,7 +393,7 @@
   .breakdown-item.highlight { background: #fff; }
   .breakdown-item.highlight .b-amount { color: var(--calc-terracotta); }
 
-  /* Empty state */
+  /* État vide */
   .empty-state {
     text-align: center;
     padding: 20px 0;
@@ -435,7 +435,7 @@ body {
 }
 
 /* ── 4. Résultat et pied de page ── */
-/* MIAOUCRATIE-FADE-V4 */
+/* Animation d'apparition */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
@@ -449,7 +449,7 @@ body > *:nth-child(4) { animation-delay: .09s; }
 body > *:nth-child(5) { animation-delay: .12s; }
 body > *:nth-child(6) { animation-delay: .15s; }
 
-/* MIAOUCRATIE-TOPBAR-V4 */
+/* Barre du haut */
 html, body {
   margin: 0;
   padding: 0;
@@ -513,7 +513,7 @@ body {
   }
   }
 
-/* MIAOUCRATIE-TITLES-V5 */
+/* Titres */
 body h1,
 body h2,
 body h3,
@@ -576,7 +576,7 @@ body .cta-eyebrow {
   text-transform: uppercase;
 }
 
-/* MIAOUCRATIE-TARIFS-V4 */
+/* Page tarifs */
 body.tarifs-page {
   background: var(--calc-cream, #FBF7F0);
 }
@@ -749,7 +749,7 @@ body.tarifs-page .tarifs-summary + .tarifs-bg {
   }
 }
 
-/* MIAOUCRATIE-STANDALONE-V4 */
+/* Pages autonomes */
 body.standalone-page,
 body.calculateur-page,
 body.cgv-page,
@@ -823,9 +823,6 @@ body.carte-page .zone-header {
   }
 }
 
-/* ──────── */
-/* topbar */
-/* footer */
 @media(max-width:768px){
 }
 

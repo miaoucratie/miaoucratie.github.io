@@ -797,9 +797,7 @@ function validateDatesLive() {
   return renderAvailability(start, end);
 }
 
-/* ------------------------------------------------------------------ */
-/* Recapitulatif de la periode choisie                                 */
-/* ------------------------------------------------------------------ */
+/* Récapitulatif de la période choisie */
 
 /** Seuil du relais */
 const JOURS_AVANT_RELAIS_EN_TETE = 2;
@@ -945,9 +943,7 @@ function borne(iso) {
   return element;
 }
 
-/* ------------------------------------------------------------------ */
-/* Dates en toutes lettres                                             */
-/* ------------------------------------------------------------------ */
+/* Dates en toutes lettres */
 
 /** Jours hors couverture */
 function complementSegments(start, end, couverts) {

@@ -1,6 +1,6 @@
-/* Commun : index, faq, cgv, calculateur */
+/* Styles communs */
 
-/* MIAOUCRATIE-TOPBAR-V2 */
+/* Barre du haut */
 .topbar {
   width: 100%;
   align-self: stretch;
@@ -55,7 +55,7 @@
   }
 }
 
-/* MIAOUCRATIE-TITLE-V2 */
+/* Titres */
 body .faq-hero .hero-title,
 body .tarifs-hero h1,
 body.carte-page .zone-header h2,
@@ -103,7 +103,7 @@ body.tarifs-page .tarifs-bg h2.tarifs-duplicate-title {
 
 
 
-/* MIAOUCRATIE-STANDALONE-V2 */
+/* Pages autonomes */
 body.standalone-page {
   background: var(--cream, #FBF7F0);
   color: var(--deep, #1E1812);

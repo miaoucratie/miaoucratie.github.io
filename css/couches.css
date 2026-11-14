@@ -1,6 +1,6 @@
 /* Couches */
 
-/* MIAOUCRATIE-CHIFFRES */
+/* Chiffres */
 :root {
   --chiffres: lining-nums;
 }
@@ -9,7 +9,7 @@ body {
   font-variant-numeric: var(--chiffres, lining-nums);
 }
 
-/* MIAOUCRATIE-TITLE-V2 */
+/* Titres */
 body .faq-hero .hero-title,
 body .tarifs-hero h1,
 body.carte-page .zone-header h2,
@@ -47,12 +47,12 @@ body.tarifs-page .tarifs-bg h2.tarifs-duplicate-title {
 
 
 
-/* MIAOUCRATIE-STANDALONE-V2 */
+/* Pages autonomes */
 body.standalone-page {
   background: var(--cream, #FBF7F0);
   color: var(--deep, #1E1812);
 }
-/* MIAOUCRATIE-FADE-V4 */
+/* Animation d'apparition */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
@@ -66,7 +66,7 @@ body > *:nth-child(4) { animation-delay: .09s; }
 body > *:nth-child(5) { animation-delay: .12s; }
 body > *:nth-child(6) { animation-delay: .15s; }
 
-/* MIAOUCRATIE-TITLES-V5 */
+/* Titres */
 body h1,
 body h2,
 body h3,
@@ -155,7 +155,7 @@ body.tarifs-page .tarifs-bg .section-label {
 
 
 
-/* MIAOUCRATIE-STANDALONE-V4 */
+/* Pages autonomes */
 body.standalone-page,
 body.calculateur-page,
 body.cgv-page,
@@ -208,7 +208,7 @@ body.cgv-page .brand-rule {
 }
 
 
-/* ── TOPBAR ── */
+/* ── BARRE DU HAUT ── */
 .topbar {
   position: sticky; top: 0; z-index: 200;
   background: var(--deep, #1E1812);
@@ -244,7 +244,6 @@ body.cgv-page .brand-rule {
 }
 .tmenu-btn:hover { color: var(--peach, #F2CDB0); }
 .tmenu-panel {
-  /* display piloté en JS */
   flex-direction: column; gap: 2px;
   position: absolute; top: 100%; left: var(--topbar-pad);
   min-width: 200px; padding: 8px;
@@ -328,7 +327,7 @@ body.cgv-page .brand-rule {
 .faq-cta .cta-title { color: #fff !important; }
 /* Accent */
 .faq-cta .cta-title em { color: var(--peach); }
-/* Responsive topbar */
+/* Barre du haut sur petit écran */
 @media (max-width: 900px) {
   .topbar { --topbar-pad: 20px; }
 }
@@ -350,7 +349,7 @@ body.cgv-page .brand-rule {
   .topbar-links a span { display: none; }
 }
 
-/* ── FAQ final CTA secondary button ── */
+/* ── Bouton secondaire de fin de FAQ ── */
 .faq-cta-secondary {
   display: inline-flex;
   align-items: center;

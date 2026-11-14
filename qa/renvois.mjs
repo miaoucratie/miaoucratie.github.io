@@ -1,28 +1,4 @@
-/**
- * Controle des renvois : notes, liens, ancres, « A lire ensuite ».
- *
- *   node qa/renvois.mjs             releve
- *   node qa/renvois.mjs --strict    sort en erreur s'il reste une faute
- *
- * Pourquoi ce fichier : rien ne verifiait ou menent les liens. Le controle SEO
- * regarde les balises d'une page, le generateur regarde le registre, la QA
- * regarde le comportement. Entre les trois, quatre pannes passaient sans que
- * rien ne les arrete :
- *
- *   · un appel de note qui ne tombe sur aucune source, ou une source listee
- *     que plus aucun paragraphe ne cite, apres une reecriture ;
- *   · une source numerotee autrement que par son ordre d'apparition dans le
- *     texte, donc un renvoi « 9 » sur la premiere note de l'article ;
- *   · un lien vers une page renommee, ou vers une ancre supprimee ;
- *   · un lien affilie qui a perdu son « sponsored », ou un lien sortant sans
- *     « noopener » ;
- *   · un article que plus aucune page ne cite dans « A lire ensuite », donc
- *     hors d'atteinte pour un lecteur comme pour un moteur.
- *
- * Aucun navigateur : le controle lit les fichiers et rend la main en une
- * seconde. Les pages ne sont pas recopiees ici, elles sont trouvees a la
- * racine, et les articles publies viennent du registre.
- */
+/* Contrôle des renvois */
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -34,15 +10,13 @@ const STRICT = process.argv.includes('--strict');
 const PAGES = readdirSync(RACINE).filter((f) => f.endsWith('.html')).sort();
 const registre = JSON.parse(readFileSync(join(RACINE, 'blog', 'articles.json'), 'utf8'));
 const PUBLIES = registre.articles.filter((a) => a.status === 'published');
-/* Un article declare avec « related » vide n'a pas de bloc « A lire
-   ensuite ». Il doit alors etre atteint par le lien d'une autre page que
-   lui-meme et que la grille du blog. */
+/* Articles sans « À lire ensuite » */
 const SANS_LIES = new Set(PUBLIES.filter((a) => !a.related.length).map((a) => a.url.replace(/^\//, '')));
 
 const lire = (f) => readFileSync(join(RACINE, f), 'utf8');
 const ancresDe = (t) => new Set([...t.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
 
-/* Un fichier lu une seule fois, meme s'il est la cible de dix liens. */
+/* Cache des ancres */
 const cache = new Map();
 const ancresDuFichier = (f) => {
   if (!cache.has(f)) cache.set(f, ancresDe(lire(f)));
@@ -55,27 +29,14 @@ const noter = (page, texte) => {
   parPage.get(page).push(texte);
 };
 
-/* Second canal, volontairement NON BLOQUANT : il signale sans faire echouer
-   « --strict ». La forme d'un lien affilie est une convention Amazon, pas une
-   panne de navigation ; la faire echouer arreterait la fusion sur une page
-   ancienne que personne n'a encore migree. Le relever suffit a ce qu'il soit
-   corrige, et le compteur rend le report visible. */
+/* Signalements */
 const aSignaler = new Map();
 const signaler = (page, texte) => {
   if (!aSignaler.has(page)) aSignaler.set(page, []);
   aSignaler.get(page).push(texte);
 };
 
-/* Les deux formes d'URL Amazon qui ne doivent plus apparaitre.
-   · « www.amazon.fr/dp/ASIN?tag= » est une URL reconstruite a la main : elle
-     porte bien l'identifiant de suivi, mais elle perd le « linkId » de
-     campagne que le SiteStripe ajoute a ses deeplinks.
-   · « /portal/customer-reviews/ » exige un login Amazon : le lien est casse
-     pour un visiteur ordinaire. Le SiteStripe la produit depuis son bloc
-     « Avis », qu'il est facile de confondre avec le bloc « Texte ».
-   Les deux se cherchent dans TOUT le fichier et pas seulement dans les ancres :
-   « ce-que-jutilise.html » en portait vingt dans son bloc JSON-LD, invisibles
-   pour un controle qui ne lirait que les « href ». */
+/* Formes de lien Amazon refusées */
 const FORMES_BANNIES = [
   [/https:\/\/www\.amazon\.fr\/(?:dp|gp\/product)\/[A-Z0-9]{10}/g, 'lien Amazon reconstruit a la main, le deeplink du SiteStripe est attendu'],
   [/portal\/customer-reviews\//g, 'lien vers les avis Amazon : exige un login, casse pour un visiteur'],
@@ -85,18 +46,13 @@ for (const page of PAGES) {
   const t = lire(page);
   const ancres = ancresDe(t);
 
-  /* 1. Les notes. Une page sans bloc de sources n'est pas concernee. */
+  /* 1. Notes */
   const appels = [...new Set([...t.matchAll(/<sup><a href="#(s\d+)">/g)].map((m) => m[1]))];
   const sources = [...t.matchAll(/<li id="(s\d+)"/g)].map((m) => m[1]);
   if (sources.length) {
     for (const a of appels) if (!sources.includes(a)) noter(page, `appel de note vers une source absente : #${a}`);
     for (const s of sources) if (!appels.includes(s)) noter(page, `source listee que rien ne cite : #${s}`);
 
-    /* Une source porte le numero de sa premiere apparition dans le texte, et
-       le garde quand elle revient plus loin. C'est ce que le lecteur suppose
-       en croisant « 1 » avant « 2 ». Le numero affiche en bas de page vient
-       du compteur de la liste ordonnee, donc de la place de l'entree : trois
-       maillons a verifier, un par endroit ou la chaine peut se rompre. */
     const suite = (l) => l.map((_, i) => `s${i + 1}`).join(' ');
     if (sources.join(' ') !== suite(sources)) {
       noter(page, `liste des sources dans le desordre : ${sources.join(' ')} au lieu de ${suite(sources)}`);
@@ -111,11 +67,10 @@ for (const page of PAGES) {
     noter(page, `${appels.length} appel(s) de note sans bloc de sources`);
   }
 
-  /* 2. Les liens vers un fichier du depot, et leur ancre s'ils en ont une. */
+  /* 2. Liens vers un fichier */
   for (const [, cible, ancre] of t.matchAll(/href="([^"#][^"]*?)(#[^"]*)?"/g)) {
     if (/^(https?:|mailto:|tel:|data:|\/\/)/.test(cible)) continue;
     let chemin = cible.split('?')[0].replace(/^\//, '');
-    // Un lien vers un dossier vise son index.html, comme chez l'hebergeur.
     if (chemin === '' || chemin.endsWith('/')) chemin += 'index.html';
     if (!existsSync(join(RACINE, chemin))) { noter(page, `fichier absent : ${cible}`); continue; }
     if (ancre && chemin.endsWith('.html') && !ancresDuFichier(chemin).has(ancre.slice(1))) {
@@ -123,13 +78,12 @@ for (const page of PAGES) {
     }
   }
 
-  /* 3. Les liens internes a la page. */
+  /* 3. Ancres de la page */
   for (const [, a] of t.matchAll(/href="#([^"]+)"/g)) {
     if (a && !ancres.has(a)) noter(page, `ancre absente dans la page : #${a}`);
   }
 
-  /* 4. Ce qui sort du site s'ouvre a cote, sans donner la main a la page
-        ouverte, et un lien remunere le dit. */
+  /* 4. Liens sortants */
   for (const [balise] of t.matchAll(/<a\s[^>]*href="https?:[^"]*"[^>]*>/g)) {
     const url = balise.match(/href="([^"]+)"/)[1];
     if (!/target="_blank"/.test(balise)) noter(page, `lien sortant sans nouvelle fenetre : ${url}`);
@@ -139,14 +93,13 @@ for (const page of PAGES) {
     }
   }
 
-  /* 4 bis. La forme des liens affilies. Signale, jamais bloquant. */
+  /* 4 bis. Forme des liens affiliés */
   for (const [rx, quoi] of FORMES_BANNIES) {
     const n = (t.match(rx) || []).length;
     if (n) signaler(page, `${n} × ${quoi}`);
   }
 
-  /* 5. « A lire ensuite » : la rangee tient trois colonnes, une page ne se
-        cite pas elle-meme, et chaque carte mene quelque part. */
+  /* 5. « À lire ensuite » */
   const bloc = t.match(/<!-- GENERATED:RELATED:START -->([\s\S]*?)<!-- GENERATED:RELATED:END -->/);
   if (bloc && !(SANS_LIES.has(page) && !bloc[1].trim())) {
     const cartes = [...bloc[1].matchAll(/<a class="btn-primary" href="([^"]+)"/g)].map((m) => m[1]);
@@ -156,7 +109,7 @@ for (const page of PAGES) {
   }
 }
 
-/* 6. Personne ne reste hors d'atteinte. */
+/* 6. Articles hors d'atteinte */
 const cibles = new Set(PUBLIES.flatMap((a) => a.related));
 const grille = registre.site.blogUrl.replace(/^\//, '');
 for (const a of PUBLIES) {

@@ -115,9 +115,9 @@ function ajouterIndisponibilite(environnement, startDate, endDate, comment = '')
 }
 
 const LIGNE_DEMANDE = {
-  id: ID, nom: 'Exemple', prenom: 'Claire', telephone: '0612345678', whatsapp: '',
+  id: ID, nom: 'Exemple', prenom: 'Claire', telephone: '0639981234', whatsapp: '',
   email: 'claire@example.fr', commune: 'Domagné (35113)', commune_code: '35099',
-  commune_code_postal: '35113', adresse: '12 rue des Lilas', nombre_chats: 2,
+  commune_code_postal: '35113', adresse: '1 rue de l\'Exemple', nombre_chats: 2,
   date_debut: '2099-06-01', date_fin: '2099-06-10', frequence: 'autre',
   frequence_autre: '2 visites le samedi', observations: 'Deux chats\ntrès câlins',
   ip_hash: 'empreinte', status: 'received', submitted_at: '2026-11-09 17:08:15',
@@ -164,7 +164,7 @@ async function signerJeton(charge, secret = SECRET) {
 }
 
 const demandeValide = (extra = {}) => ({
-  nom: 'Essai', prenom: 'Marie', telephone: '0612345678',
+  nom: 'Essai', prenom: 'Marie', telephone: '0639981234',
   email: 'marie@example.com', commune: 'Domagné', nombreChats: 2,
   dateDebut: '2099-06-01', dateFin: '2099-06-10',
   frequence: '1 visite par jour',
@@ -481,7 +481,7 @@ describe('envois du formulaire', () => {
     const environnement = env();
     const reponse = await appeler('/public/reservations', {
       methode: 'POST',
-      corps: demandeValide({ adresse: '12 rue des Lilas', frequence: 'Autre besoin à préciser', autreFrequence: 'le samedi' }),
+      corps: demandeValide({ adresse: '1 rue de l\'Exemple', frequence: 'Autre besoin à préciser', autreFrequence: 'le samedi' }),
       environnement,
     });
     const { reservationId } = await reponse.json();
@@ -495,8 +495,8 @@ describe('envois du formulaire', () => {
         frequence_autre: ligne.frequence_autre, status: ligne.status,
       },
       {
-        nom: 'Essai', prenom: 'Marie', telephone: '0612345678', whatsapp: '', email: 'marie@example.com',
-        commune: 'Domagné', adresse: '12 rue des Lilas', nombre_chats: 2, date_debut: '2099-06-01',
+        nom: 'Essai', prenom: 'Marie', telephone: '0639981234', whatsapp: '', email: 'marie@example.com',
+        commune: 'Domagné', adresse: '1 rue de l\'Exemple', nombre_chats: 2, date_debut: '2099-06-01',
         date_fin: '2099-06-10', frequence: 'autre', frequence_autre: 'le samedi', status: 'notification_echouee',
       }
     );
@@ -695,8 +695,8 @@ describe('liste des demandes', () => {
     ajouterDemande(environnement);
     assert.deepEqual(await lire(environnement), [{
       id: ID, soumiseLe: '2026-11-09 17:08:15', statut: 'received',
-      nom: 'Exemple', prenom: 'Claire', telephone: '0612345678', whatsapp: '', email: 'claire@example.fr',
-      commune: 'Domagné (35113)', communeCodePostal: '35113', adresse: '12 rue des Lilas', nombreChats: 2,
+      nom: 'Exemple', prenom: 'Claire', telephone: '0639981234', whatsapp: '', email: 'claire@example.fr',
+      commune: 'Domagné (35113)', communeCodePostal: '35113', adresse: '1 rue de l\'Exemple', nombreChats: 2,
       dateDebut: '2099-06-01', dateFin: '2099-06-10', frequence: 'autre', frequenceAutre: '2 visites le samedi',
       observations: 'Deux chats\ntrès câlins',
       joursCouverts: [{ startDate: '2099-06-01', endDate: '2099-06-10' }],
@@ -892,7 +892,7 @@ describe('demande avec jeton', () => {
     const environnement = envJeton();
     const { reponse, appels } = await envoyer(
       environnement,
-      demandeValide({ turnstileToken: JETON, adresse: '12 rue des Lilas' }),
+      demandeValide({ turnstileToken: JETON, adresse: '1 rue de l\'Exemple' }),
       { entetes: { 'CF-Connecting-IP': '203.0.113.42' } },
     );
     assert.equal(reponse.status, 200);
@@ -908,7 +908,7 @@ describe('demande avec jeton', () => {
     assert.equal(relai.reservation_id, reservationId);
     assert.deepEqual(
       [relai.nom, relai.prenom, relai.email, relai.telephone, relai.commune, relai.adresse, relai.frequence],
-      ['Essai', 'Marie', 'marie@example.com', '0612345678', 'Domagné', '12 rue des Lilas', '1 visite par jour'],
+      ['Essai', 'Marie', 'marie@example.com', '0639981234', 'Domagné', '1 rue de l\'Exemple', '1 visite par jour'],
     );
   });
 
@@ -1073,7 +1073,7 @@ describe('demande avec jeton', () => {
       { turnstile: 'echec', codes: ['jeton-absent'] },
     ]);
     const tout = journal.join('\n');
-    for (const interdit of [JETON, '203.0.113.42', 'Essai', 'marie@example.com', '0612345678', CLE_PASSE]) {
+    for (const interdit of [JETON, '203.0.113.42', 'Essai', 'marie@example.com', '0639981234', CLE_PASSE]) {
       assert.ok(!tout.includes(interdit), interdit);
     }
   });

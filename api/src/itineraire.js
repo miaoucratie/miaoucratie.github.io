@@ -1,14 +1,4 @@
-/**
- * Itinéraire de la tournée de l'appli Indisponibilités.
- *
- * Distances routières réelles uniquement : si une adresse n'est pas trouvée ou
- * si le trajet ne peut pas être calculé, on renvoie une erreur claire, jamais
- * une distance estimée à vol d'oiseau.
- *
- * Services gratuits et sans clé : la Base adresse nationale (IGN) pour situer
- * les adresses, Nominatim (OpenStreetMap) en secours, OSRM pour les trajets
- * en voiture.
- */
+/** Itinéraire de la tournée */
 
 const BAN = "https://data.geopf.fr/geocodage/search";
 const NOMINATIM = "https://nominatim.openstreetmap.org";
@@ -19,7 +9,7 @@ const ENTETES = {
   Accept: "application/json",
 };
 const DELAI_MS = 12000;
-// Nominatim accepte au plus une requête par seconde.
+// Intervalle entre deux requêtes Nominatim
 const INTERVALLE_NOMINATIM_MS = 1000;
 const FRAICHEUR_ADRESSE_MS = 24 * 60 * 60 * 1000;
 const ADRESSES_EN_CACHE = 500;
@@ -44,16 +34,13 @@ export class ErreurTrajet extends Error {
 const positions = new Map();
 let derniereRequeteNominatim = 0;
 
-/** Vide le cache des adresses : réservé aux tests. */
+/** Vidage du cache des adresses */
 export function viderCacheItineraire() {
   positions.clear();
   derniereRequeteNominatim = 0;
 }
 
-/**
- * Vérifie la liste d'étapes reçue. Renvoie un message d'erreur, ou null si
- * la liste est utilisable.
- */
+/** Contrôle de la liste d'étapes */
 export function erreurEtapes(adresses) {
   if (!Array.isArray(adresses) || adresses.length === 0) {
     return "Au moins une étape est requise.";
@@ -67,14 +54,14 @@ export function erreurEtapes(adresses) {
   return null;
 }
 
-/** Distance et durée de la boucle départ → étapes dans l'ordre donné → départ. */
+/** Boucle dans l'ordre donné */
 export async function boucle(depart, adresses, outils = {}) {
   const points = await situerTout([depart, ...adresses, depart], outils);
   const trajet = await trajetRoutier(points, outils);
   return { totalDistanceKm: trajet.distanceKm, totalDurationMin: trajet.dureeMin };
 }
 
-/** Ordre de passage qui rend la boucle la plus courte, par recherche exacte. */
+/** Ordre de passage le plus court */
 export async function meilleurOrdre(depart, adresses, outils = {}) {
   const points = await situerTout([depart, ...adresses, depart], outils);
   const matrice = await matriceRoutiere(points, outils);
@@ -86,11 +73,7 @@ export async function meilleurOrdre(depart, adresses, outils = {}) {
   };
 }
 
-/**
- * Plus court chemin qui part du point 0, passe une fois par chaque étape
- * (1 à n-2) et finit au point n-1. Programmation dynamique sur les
- * sous-ensembles d'étapes.
- */
+/** Recherche exacte du plus court chemin */
 export function plusCourteBoucle(matrice) {
   const n = matrice.length - 2;
   if (n < 1) {
@@ -151,12 +134,10 @@ export function plusCourteBoucle(matrice) {
   return { ordre, distance: meilleur };
 }
 
-/* ------------------------------------------------------------------------ */
-/* Adresses                                                                  */
-/* ------------------------------------------------------------------------ */
+/* Adresses */
 
 async function situerTout(adresses, outils) {
-  // Une à une : Nominatim n'accepte qu'une requête par seconde.
+  // Adresses une à une
   const points = [];
   for (const adresse of adresses) {
     points.push(await situer(adresse, outils));
@@ -168,7 +149,7 @@ function cleAdresse(adresse) {
   return adresse.trim().replace(/\s+/g, " ").toLocaleLowerCase("fr-FR");
 }
 
-/** Réécritures de la même adresse, de la plus précise à la moins précise. */
+/** Variantes d'une adresse */
 export function variantesAdresse(adresse) {
   const variantes = [adresse];
   const sansNumero = adresse.replace(
@@ -227,7 +208,7 @@ function codePostalDe(adresse) {
   return adresse.match(/\b(\d{5})\b/)?.[1] ?? null;
 }
 
-/** Mots d'une adresse, sans accents ni mots de liaison ou de type de voie. */
+/** Mots vides d'une adresse */
 const MOTS_VIDES = new Set([
   "rue", "allee", "all", "chemin", "chem", "avenue", "av", "boulevard", "bd",
   "place", "pl", "route", "rte", "impasse", "imp", "residence", "res", "hameau",
@@ -243,12 +224,7 @@ function motsSignificatifs(texte) {
     .filter((mot) => mot && !MOTS_VIDES.has(mot) && !/^\d+[a-z]?$/.test(mot));
 }
 
-/**
- * Base adresse nationale. Une réponse n'est gardée que si elle correspond à
- * l'adresse demandée :
- * - un numéro trouvé doit avoir le même code postal ;
- * - une rue trouvée doit avoir tous ses mots dans l'adresse demandée.
- */
+/** Base adresse nationale */
 async function interrogerBan(adresse, lire) {
   const url = new URL(BAN);
   url.searchParams.set("q", adresse);
@@ -320,9 +296,7 @@ function pause(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/* ------------------------------------------------------------------------ */
-/* Trajets                                                                   */
-/* ------------------------------------------------------------------------ */
+/* Trajets */
 
 async function interrogerOsrm(chemin, lire, messageVide) {
   let reponse;
@@ -349,7 +323,7 @@ function coordonnees(points) {
   return points.map((p) => `${p.lon},${p.lat}`).join(";");
 }
 
-/** Un seul trajet continu qui passe par tous les points, dans l'ordre. */
+/** Trajet continu par tous les points */
 async function trajetRoutier(points, { lire = fetch } = {}) {
   const donnees = await interrogerOsrm(
     `/route/v1/driving/${coordonnees(points)}?overview=false`,
@@ -363,7 +337,7 @@ async function trajetRoutier(points, { lire = fetch } = {}) {
   return { distanceKm: trajet.distance / 1000, dureeMin: trajet.duration / 60 };
 }
 
-/** Distances routières entre chaque paire de points, en kilomètres. */
+/** Matrice des distances routières */
 async function matriceRoutiere(points, { lire = fetch } = {}) {
   const donnees = await interrogerOsrm(
     `/table/v1/driving/${coordonnees(points)}?annotations=distance`,

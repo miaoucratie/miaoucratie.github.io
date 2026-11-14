@@ -10,7 +10,7 @@
   var script = document.currentScript;
   var ID_MESURE = script ? script.getAttribute('data-mesure') : null;
 
-  /* ── Choix enregistre ───────────────────────────────────────────────── */
+  /* ── Choix enregistré ───────────────────────────────────────────────── */
 
   function lireChoix() {
     try {
@@ -56,12 +56,12 @@
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
     window.gtag('config', ID_MESURE, {
-      // Accueil : racine
+      // Adresse de la page
       page_location: window.location.href.replace(/\/index\.html(?=$|[?#])/, '/'),
       // Sans ciblage
       allow_google_signals: false,
       allow_ad_personalization_signals: false,
-      // Cookie : 2 mois
+      // Durée du cookie
       cookie_expires: 5184000,
       cookie_flags: 'SameSite=Lax;Secure',
     });
@@ -212,14 +212,14 @@
     return b;
   }
 
-  /* ── Mise en oeuvre du choix ────────────────────────────────────────── */
+  /* ── Mise en œuvre du choix ─────────────────────────────────────────── */
 
   function appliquer(valeur) {
     if (valeur === 'accepte') chargerMesure();
     else effacerCookiesMesure();
   }
 
-  /* ── Demarrage ──────────────────────────────────────────────────────── */
+  /* ── Démarrage ──────────────────────────────────────────────────────── */
 
   // Global Privacy Control
   var oppositionNavigateur = window.navigator.globalPrivacyControl === true;

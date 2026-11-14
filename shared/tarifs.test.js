@@ -1,12 +1,8 @@
-/**
- * Tests de shared/tarifs.js.
- *
- * Fonctions pures, sans DOM ni reseau.
- */
+/** Tests des tarifs */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-// Contenu pose sur globalThis
+// Chargement des tarifs
 import './tarifs.js';
 
 const {
@@ -66,7 +62,7 @@ describe('remises', () => {
   test('la remise sejour long retire un euro par visite', () => {
     const sans = estimerSejour({ visites: 6 }).total;
     const avec = estimerSejour({ visites: 7 }).total;
-    // Six visites a 18, sept a 17 : le sejour plus long coute 11 de plus.
+    // Séjours de six et sept visites
     assert.equal(sans, 108);
     assert.equal(avec, 119);
   });
@@ -147,7 +143,7 @@ describe('acompte et solde', () => {
   });
 
   test('l acompte est rendu au centime, pas en flottant brut', () => {
-    // 18 × 0,3 vaut 5.3999999999999995 en virgule flottante.
+    // Arrondi en virgule flottante
     const e = estimerSejour();
     assert.equal(e.total, 18);
     assert.equal(e.acompte, 5.4);
@@ -155,7 +151,7 @@ describe('acompte et solde', () => {
   });
 
   test('le solde aussi est rendu au centime', () => {
-    // 19,40 − 5,82 vaut 13.579999999999998 en virgule flottante.
+    // Arrondi en virgule flottante
     const e = estimerSejour({ km: 1 });
     assert.equal(e.total, 19.4);
     assert.equal(e.acompte, 5.82);
@@ -176,7 +172,7 @@ describe('acompte et solde', () => {
   });
 
   test('l acompte est calcule sur le total affiche, au centime pres', () => {
-    // 2,5 km : supplement sur une demi-decimale
+    // Supplément pour 2,5 km
     const e = estimerSejour({ visites: 1, km: 2.5 });
     assert.equal(e.total, 21.5);
     assert.equal(e.acompte, 6.45);

@@ -336,7 +336,7 @@ function creerCarteDemande(demande) {
   return card;
 }
 
-/* largeur : large | double */
+/* Information d'une demande */
 function ajouterInfo(liste, intitule, valeur, largeur = "") {
   const vide = valeur instanceof Node ? !valeur.childNodes.length : !valeur;
   if (vide) {

@@ -1,9 +1,4 @@
-/**
- * Controle redactionnel.
- *
- *   node qa/redaction.mjs            liste les constats
- *   node qa/redaction.mjs --strict   sort en erreur s'il reste un interdit
- */
+/* Contrôle rédactionnel */
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -11,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 /* Pages exclues */
-const EXCLUES = new Set(['admin-indisponibilites.html', 'cgv.html', 'mentions-legales.html']);
+const EXCLUES = new Set(['administration.html', 'cgv.html', 'mentions-legales.html']);
 
 /* ── Formulations bannies ── */
 export const INTERDIT = [
@@ -58,7 +53,6 @@ const CTA_INJONCTION = /^(command|achet|acquer|profit)/i;
 const PAGES_BLOG = new Set(['coulisses-miaoucratie.html', 'etiquette-nourriture-chat.html', 'croquettes-et-patee.html', 'ce-que-jutilise.html']);
 const INSECABLES = [
   [/(\d) (%)/g, 'Insecable manquante'],
-  /* Numero d'etape exclu */
   [/(\d) (g|kg|mg|ml|cl|L|kcal|cm|mm|km|h|min|€|\$)(?![\wéèêà'’])/g, 'Insecable manquante'],
   [/(\d) (ans?|mois|jours?|semaines?|heures?|minutes?|secondes?|fois|chats?|chatons?|tubes?|croquettes?|adultes?|animaux)\b/g, 'Insecable manquante'],
   [/« /g, 'Insecable manquante'],
@@ -112,7 +106,6 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '
         noter(page, 'INTERDIT', m[0].trim(), '…' + txt.slice(d, m.index + m[0].length + 40).trim() + '…', raison);
       }
     }
-    /* Bloquant sur le blog */
     for (const [re, raison] of INSECABLES) {
       for (const m of txt.matchAll(re)) {
         const d = Math.max(0, m.index - 40);

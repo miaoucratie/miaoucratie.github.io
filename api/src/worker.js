@@ -659,7 +659,7 @@ async function purgerEmpreintes(env) {
       .bind(CONSERVATION_EMPREINTES)
       .run();
   } catch {
-    // Nouvelle tentative à la requête suivante
+    // Échec de la purge
   }
 }
 
