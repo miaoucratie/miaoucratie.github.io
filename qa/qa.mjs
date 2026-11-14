@@ -975,6 +975,26 @@ async function testerCalculateur(page, echecs) {
     echecs.push(`calculateur : ${vu.lignes} ligne(s) de detail, attendu 4 `
       + '(base, remise sejour long, remise solidaire, supplement kilometrique)');
   }
+
+  // Au-delà de 5 chats : sur devis, aucun montant
+  await clic('[data-ajuster="chats"][data-pas="1"]', 6 - cas.chats);
+  await attendre(200);
+  const devis = await page.evaluate(() => ({
+    chats: document.getElementById('val-chats')?.textContent.trim(),
+    total: document.querySelector('.result-total'),
+    euros: /€/.test(document.getElementById('result-area')?.textContent ?? ''),
+    texte: document.getElementById('result-area')?.textContent ?? '',
+  }));
+  if (devis.chats !== '6' || devis.total || devis.euros || !/devis/.test(devis.texte)) {
+    echecs.push(`calculateur : a ${devis.chats} chats, un montant s'affiche au lieu du devis`);
+  }
+
+  await clic('[data-ajuster="chats"][data-pas="-1"]');
+  await attendre(200);
+  const retour = await page.evaluate(() => document.querySelector('.result-total .amount')?.textContent.trim());
+  if (!retour) {
+    echecs.push('calculateur : revenu a 5 chats, le montant ne revient pas');
+  }
 }
 
 /* Anonymat des avis */

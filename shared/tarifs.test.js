@@ -39,10 +39,10 @@ describe('tarif d une visite', () => {
     assert.equal(tarifVisite(4), 26);
   });
 
-  test('le tarif plafonne a cinq chats et ne bouge plus au-dela', () => {
+  test('cinq chats ont leur palier, au-dela aucun tarif', () => {
     assert.equal(tarifVisite(5), 29);
-    assert.equal(tarifVisite(6), 29);
-    assert.equal(tarifVisite(10), 29);
+    assert.equal(tarifVisite(6), null);
+    assert.equal(tarifVisite(10), null);
   });
 
   test('une saisie absurde retombe sur le premier palier plutot que sur NaN', () => {

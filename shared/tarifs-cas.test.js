@@ -1,7 +1,7 @@
 /**
  * Table de cas de shared/tarifs.js, construite à partir des règles publiées
  * (tarifs.html, faq.html, calculateur) :
- * - visite : 18 € pour 1 ou 2 chats, 22 € pour 3, 26 € pour 4, 29 € pour 5 ;
+ * - visite : 18 € pour 1 ou 2 chats, 22 € pour 3, 26 € pour 4, 29 € pour 5 ; au-delà, sur devis ;
  * - 1 € de moins par visite dès 7 visites consécutives ;
  * - 1 € de moins par visite pour le tarif solidaire ;
  * - du 21 juillet au 31 août, une seule remise ; le reste de l'année, les deux se cumulent ;
@@ -91,13 +91,23 @@ describe('saisies hors normes', () => {
     }
   });
 
-  test('un nombre de visites décimal est arrondi à l’entier inférieur', () => {
+  test("un nombre de visites décimal est arrondi à l'entier inférieur", () => {
     assert.equal(estimerSejour({ visites: 6.9 }).visites, 6);
     assert.equal(estimerSejour({ visites: 6.9 }).remiseSejour, 0);
   });
 
-  test('au-delà de 5 chats, le prix de 5 chats s’applique', () => {
-    assert.equal(estimerSejour({ chats: 6 }).base, 29);
-    assert.equal(estimerSejour({ chats: 9 }).base, 29);
+  test('au-delà de 5 chats, tout est sur devis, sans aucun montant', () => {
+    for (const chats of [6, 7, 10, 25]) {
+      for (const options of [{}, { visites: 10, solidaire: true, periode: true, km: 5 }]) {
+        const e = estimerSejour({ chats, ...options });
+        assert.equal(e.surDevis, true);
+        assert.equal(e.total, undefined);
+        assert.equal(e.base, undefined);
+      }
+    }
+  });
+
+  test("jusqu'à 5 chats, jamais sur devis", () => {
+    for (const chats of [1, 2, 3, 4, 5]) assert.equal(estimerSejour({ chats }).surDevis, false);
   });
 });
