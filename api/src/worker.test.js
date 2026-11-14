@@ -98,7 +98,8 @@ async function hmac(valeur, secret) {
   return b64url(await crypto.subtle.sign('HMAC', cle, encoder.encode(valeur)));
 }
 
-const empreinte = (ip, secret = SECRET) => hmac(`ip|${ip}`, secret);
+// Empreinte d'une clé d'adresse
+const empreinte = (cle, secret = SECRET) => hmac(`ip|${cle}`, secret);
 
 const EMPREINTE_SANS_IP = await empreinte('unknown');
 
@@ -821,11 +822,42 @@ describe('agenda et itinéraire de l appli', () => {
   });
 });
 
-describe('état public de l agenda', () => {
+describe('état de l agenda', () => {
+  const environnementAgenda = () => env({ AGENDA_ICAL_URL: 'https://agenda.test/prive.ics' });
+
   test('agenda non configuré', async () => {
-    const reponse = await appeler('/public/agenda-etat');
+    const environnement = env();
+    const jeton = await jetonValide(environnement);
+    const reponse = await appeler('/public/agenda-etat', {
+      environnement, entetes: { Authorization: `Bearer ${jeton}` },
+    });
     assert.equal(reponse.status, 200);
     assert.deepEqual(await reponse.json(), { ok: false, raison: 'NON_CONFIGURE' });
+  });
+
+  test('sans jeton', async () => {
+    const reponse = await appeler('/public/agenda-etat', { environnement: environnementAgenda() });
+    assert.equal(reponse.status, 401);
+    assert.equal((await reponse.json()).message, 'Authentification requise.');
+  });
+
+  test('jeton expiré', async () => {
+    const jeton = await signerJeton({ scope: 'admin', exp: Date.now() - 1000 });
+    const reponse = await appeler('/public/agenda-etat', {
+      environnement: environnementAgenda(), entetes: { Authorization: `Bearer ${jeton}` },
+    });
+    assert.equal(reponse.status, 401);
+    assert.match((await reponse.json()).message, /Session expirée/);
+  });
+
+  test('autre portée', async () => {
+    for (const scope of ['public', 'Admin', '', null, ['admin']]) {
+      const jeton = await signerJeton({ scope, exp: Date.now() + 60_000 });
+      const reponse = await appeler('/public/agenda-etat', {
+        environnement: environnementAgenda(), entetes: { Authorization: `Bearer ${jeton}` },
+      });
+      assert.equal(reponse.status, 401, JSON.stringify(scope));
+    }
   });
 });
 
@@ -1160,5 +1192,85 @@ describe('adresse du visiteur', () => {
       entetes: { 'X-Forwarded-For': '198.51.100.9' },
     });
     assert.equal(reponse.status, 429);
+  });
+});
+
+describe('adresses IPv6', () => {
+  async function empreinteEnregistree(entete) {
+    const environnement = env();
+    await appeler('/admin/login', {
+      methode: 'POST', corps: { password: 'pas-le-bon' }, environnement,
+      entetes: entete === undefined ? {} : { 'CF-Connecting-IP': entete },
+    });
+    const [ligne] = lignes(environnement, 'SELECT ip_hash FROM admin_login_attempts');
+    return ligne.ip_hash;
+  }
+
+  const formes = [
+    ['IPv4', '203.0.113.42', '203.0.113.42'],
+    ['IPv6 développée', '2001:0db8:0001:0002:0000:0000:0000:0001', '2001:db8:1:2::/64'],
+    ['IPv6 complète', '2001:db8:1:2:3:4:5:6', '2001:db8:1:2::/64'],
+    ['IPv6 compressée', '2001:db8:1:2::1', '2001:db8:1:2::/64'],
+    ['IPv6 en majuscules', '2001:DB8:1:2::ABCD', '2001:db8:1:2::/64'],
+    ['compression dans le bloc', '2001:db8::1', '2001:db8:0:0::/64'],
+    ['compression en fin', '2001:db8:0:0:1::', '2001:db8:0:0::/64'],
+    ['adresse de bouclage', '::1', '0:0:0:0::/64'],
+    ['adresse nulle', '::', '0:0:0:0::/64'],
+    ['IPv4 dans IPv6', '::ffff:203.0.113.42', '203.0.113.42'],
+    ['IPv4 dans IPv6, majuscules', '::FFFF:203.0.113.42', '203.0.113.42'],
+    ['IPv4 dans IPv6, développée', '0:0:0:0:0:ffff:203.0.113.42', '203.0.113.42'],
+    ['IPv4 dans IPv6, hexadécimale', '::ffff:cb00:712a', '203.0.113.42'],
+    ['autre préfixe', '64:ff9b::203.0.113.42', '64:ff9b:0:0::/64'],
+    ['en-tête absent', undefined, 'unknown'],
+    ['en-tête vide', '', 'unknown'],
+    ['unknown', 'unknown', 'unknown'],
+    ['forme illisible', '2001:db8::1::2', '2001:db8::1::2'],
+  ];
+
+  for (const [nom, entete, cle] of formes) {
+    test(nom, async () => {
+      assert.equal(await empreinteEnregistree(entete), await empreinte(cle));
+    });
+  }
+
+  test('même bloc /64', async () => {
+    const empreintes = await Promise.all([
+      '2001:db8:1:2::1', '2001:db8:1:2:ffff:ffff:ffff:ffff', '2001:0DB8:0001:0002:abcd::',
+    ].map(empreinteEnregistree));
+    assert.equal(new Set(empreintes).size, 1);
+  });
+
+  test('blocs /64 différents', async () => {
+    const empreintes = await Promise.all([
+      '2001:db8:1:2::1', '2001:db8:1:3::1', '2001:db8:2:2::1', '2001:db9:1:2::1',
+    ].map(empreinteEnregistree));
+    assert.equal(new Set(empreintes).size, 4);
+  });
+
+  test('IPv4 et IPv4 dans IPv6', async () => {
+    assert.equal(await empreinteEnregistree('::ffff:198.51.100.1'), await empreinteEnregistree('198.51.100.1'));
+    assert.notEqual(await empreinteEnregistree('::ffff:198.51.100.1'), await empreinteEnregistree('198.51.100.2'));
+  });
+
+  test('demandes, limite par bloc', async () => {
+    for (const [ip, statut] of [['2001:db8:1:2:aaaa::9', 429], ['2001:db8:1:3::9', 200]]) {
+      const environnement = env();
+      ajouterEnvoisRecents(environnement, 4, await empreinte('2001:db8:1:2::/64'));
+      const reponse = await appeler('/public/reservations', {
+        methode: 'POST', corps: demandeValide(), environnement, entetes: { 'CF-Connecting-IP': ip },
+      });
+      assert.equal(reponse.status, statut, ip);
+    }
+  });
+
+  test('connexions, limite par bloc', async () => {
+    for (const [ip, statut] of [['2001:db8:1:2:aaaa::9', 429], ['2001:db8:1:3::9', 200]]) {
+      const environnement = env();
+      ajouterEchecsConnexion(environnement, 10, await empreinte('2001:db8:1:2::/64'));
+      const reponse = await appeler('/admin/login', {
+        methode: 'POST', corps: { password: MOT_DE_PASSE }, environnement, entetes: { 'CF-Connecting-IP': ip },
+      });
+      assert.equal(reponse.status, statut, ip);
+    }
   });
 });

@@ -106,6 +106,7 @@ export default {
       }
 
       if (url.pathname === "/public/agenda-etat" && request.method === "GET") {
+        await assertAdmin(request, env);
         return await handleEtatAgenda(request, env);
       }
 
@@ -643,8 +644,71 @@ async function recordLoginFailure(env, ipHash) {
 }
 
 function hashIp(request, env) {
-  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const ip = cleIp(request.headers.get("CF-Connecting-IP"));
   return hmacSign(`ip|${ip}`, env.ADMIN_TOKEN_SECRET);
+}
+
+// Clé d'adresse
+function cleIp(entete) {
+  const ip = entete || "unknown";
+  if (!ip.includes(":")) {
+    return ip;
+  }
+
+  const groupes = groupesIpv6(ip.toLowerCase());
+  if (!groupes) {
+    return ip;
+  }
+
+  const [g0, g1, g2, g3, g4, g5, g6, g7] = groupes;
+  if (g0 === 0 && g1 === 0 && g2 === 0 && g3 === 0 && g4 === 0 && g5 === 0xffff) {
+    return [g6 >> 8, g6 & 0xff, g7 >> 8, g7 & 0xff].join(".");
+  }
+  return `${[g0, g1, g2, g3].map((g) => g.toString(16)).join(":")}::/64`;
+}
+
+// Groupes IPv6
+function groupesIpv6(ip) {
+  const parties = ip.split("::");
+  if (parties.length > 2) {
+    return null;
+  }
+
+  const tete = lireGroupes(parties[0], parties.length === 1);
+  const queue = parties.length === 2 ? lireGroupes(parties[1], true) : [];
+  if (!tete || !queue) {
+    return null;
+  }
+
+  const manquants = 8 - tete.length - queue.length;
+  if (parties.length === 1) {
+    return manquants === 0 ? tete : null;
+  }
+  return manquants >= 1 ? [...tete, ...Array(manquants).fill(0), ...queue] : null;
+}
+
+function lireGroupes(texte, finale) {
+  if (!texte) {
+    return [];
+  }
+
+  const morceaux = texte.split(":");
+  const groupes = [];
+  for (const [rang, morceau] of morceaux.entries()) {
+    if (finale && rang === morceaux.length - 1 && morceau.includes(".")) {
+      const octets = morceau.split(".");
+      if (octets.length !== 4 || !octets.every((o) => /^\d{1,3}$/.test(o) && Number(o) <= 255)) {
+        return null;
+      }
+      const [a, b, c, d] = octets.map(Number);
+      groupes.push(a * 256 + b, c * 256 + d);
+    } else if (/^[0-9a-f]{1,4}$/.test(morceau)) {
+      groupes.push(parseInt(morceau, 16));
+    } else {
+      return null;
+    }
+  }
+  return groupes;
 }
 
 // Purge des empreintes
