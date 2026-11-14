@@ -143,7 +143,7 @@ export function mergeRanges(ranges = []) {
 }
 
 /* Décalage ISO en UTC */
-function shiftIsoDay(isoDate, step) {
+export function shiftIsoDay(isoDate, step) {
   const date = toDate(isoDate);
 
   if (!date) {
@@ -152,6 +152,45 @@ function shiftIsoDay(isoDate, step) {
 
   date.setUTCDate(date.getUTCDate() + step);
   return isoFromDate(date);
+}
+
+/* Parties d'une date ISO */
+export function partsIso(iso) {
+  const [annee, mois, jour] = iso.split("-").map(Number);
+  return { annee, mois, jour };
+}
+
+/* Jours d'une période */
+export function nombreDeJours(start, end) {
+  const a = partsIso(start);
+  const b = partsIso(end);
+  const depart = Date.UTC(a.annee, a.mois - 1, a.jour);
+  const arrivee = Date.UTC(b.annee, b.mois - 1, b.jour);
+  return Math.round((arrivee - depart) / 86400000) + 1;
+}
+
+/* Jours de plusieurs morceaux */
+export function compterJours(segments) {
+  return segments.reduce((total, segment) => total + nombreDeJours(segment.startDate, segment.endDate), 0);
+}
+
+/* Jours hors couverture */
+export function complementSegments(start, end, couverts) {
+  const trous = [];
+  let curseur = start;
+
+  for (const segment of couverts) {
+    if (segment.startDate > curseur) {
+      trous.push({ startDate: curseur, endDate: shiftIsoDay(segment.startDate, -1) });
+    }
+    curseur = shiftIsoDay(segment.endDate, 1);
+  }
+
+  if (curseur && curseur <= end) {
+    trous.push({ startDate: curseur, endDate: end });
+  }
+
+  return trous;
 }
 
 /* Morceaux couverts */
@@ -226,10 +265,43 @@ export function sanitizeUnavailabilityPayload(payload = {}) {
   };
 }
 
+/* Messages des dates */
+const MESSAGES_DATES = Object.freeze({
+  debutInvalide: "Merci de choisir une date de début valide.",
+  debutPassee: "Les dates passées ne sont pas disponibles.",
+  finInvalide: "Merci de choisir une date de fin valide.",
+  finAvantDebut: "La date de fin doit être postérieure ou égale à la date de début.",
+});
+
+/* Premier jour réservable */
+function dateMinimale(options = {}) {
+  return options.minDate || todayIso(options.now ? new Date(options.now) : new Date());
+}
+
+/* Dates en cours de saisie */
+export function validerDatesEnCours(dateDebut = "", dateFin = "", options = {}) {
+  const errors = {};
+  const saisi = (valeur) => Boolean(safeText(valeur ?? "", 32));
+  const debut = normalizeDateInput(dateDebut ?? "");
+  const fin = normalizeDateInput(dateFin ?? "");
+
+  if (saisi(dateDebut) && !debut) {
+    errors.dateDebut = MESSAGES_DATES.debutInvalide;
+  } else if (debut && debut < dateMinimale(options)) {
+    errors.dateDebut = MESSAGES_DATES.debutPassee;
+  } else if (saisi(dateFin) && !fin) {
+    errors.dateFin = MESSAGES_DATES.finInvalide;
+  } else if (debut && fin && fin < debut) {
+    errors.dateFin = MESSAGES_DATES.finAvantDebut;
+  }
+
+  return { isValid: Object.keys(errors).length === 0, errors };
+}
+
 export function validateReservationPayload(payload = {}, unavailableRanges = [], options = {}) {
   const errors = {};
   const sanitized = sanitizeReservationPayload(payload);
-  const minDate = options.minDate || todayIso(options.now ? new Date(options.now) : new Date());
+  const minDate = dateMinimale(options);
 
   if (!sanitized.nom) {
     errors.nom = "Merci de renseigner votre nom.";
@@ -264,17 +336,17 @@ export function validateReservationPayload(payload = {}, unavailableRanges = [],
   }
 
   if (!isIsoDate(sanitized.dateDebut)) {
-    errors.dateDebut = "Merci de choisir une date de début valide.";
+    errors.dateDebut = MESSAGES_DATES.debutInvalide;
   } else if (sanitized.dateDebut < minDate) {
-    errors.dateDebut = "Les dates passées ne sont pas disponibles.";
+    errors.dateDebut = MESSAGES_DATES.debutPassee;
   }
 
   if (!isIsoDate(sanitized.dateFin)) {
-    errors.dateFin = "Merci de choisir une date de fin valide.";
+    errors.dateFin = MESSAGES_DATES.finInvalide;
   }
 
   if (isIsoDate(sanitized.dateDebut) && isIsoDate(sanitized.dateFin) && sanitized.dateFin < sanitized.dateDebut) {
-    errors.dateFin = "La date de fin doit être postérieure ou égale à la date de début.";
+    errors.dateFin = MESSAGES_DATES.finAvantDebut;
   }
 
   if (!FREQUENCE_OPTIONS.includes(sanitized.frequence)) {
@@ -310,15 +382,15 @@ export function validateUnavailabilityPayload(payload = {}) {
   const sanitized = sanitizeUnavailabilityPayload(payload);
 
   if (!isIsoDate(sanitized.startDate)) {
-    errors.startDate = "Merci de choisir une date de début valide.";
+    errors.startDate = MESSAGES_DATES.debutInvalide;
   }
 
   if (!isIsoDate(sanitized.endDate)) {
-    errors.endDate = "Merci de choisir une date de fin valide.";
+    errors.endDate = MESSAGES_DATES.finInvalide;
   }
 
   if (isIsoDate(sanitized.startDate) && isIsoDate(sanitized.endDate) && sanitized.endDate < sanitized.startDate) {
-    errors.endDate = "La date de fin doit être postérieure ou égale à la date de début.";
+    errors.endDate = MESSAGES_DATES.finAvantDebut;
   }
 
   return {
@@ -352,11 +424,6 @@ export function adresseComplete({ adresse = "", commune = "", communeCodePostal 
   const nomCommune = normalizeWhitespace(String(commune).replace(/\s*\(\d{5}\)\s*$/, ""));
   const lieu = [normalizeWhitespace(communeCodePostal), nomCommune].filter(Boolean).join(" ");
   return lieu ? `${rue}, ${lieu}` : rue;
-}
-
-export function buildReservationSubject(payload) {
-  const sanitized = sanitizeReservationPayload(payload);
-  return `Nouvelle demande de réservation – ${sanitized.prenom} ${sanitized.nom} – ${sanitized.dateDebut} au ${sanitized.dateFin}`;
 }
 
 /* À venir / terminé */

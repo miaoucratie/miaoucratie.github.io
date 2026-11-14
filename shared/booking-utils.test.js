@@ -19,9 +19,14 @@ import {
   validateReservationPayload,
   validateUnavailabilityPayload,
   formatDateFr,
-  buildReservationSubject,
   separerPassees,
   demandesRecentes,
+  validerDatesEnCours,
+  shiftIsoDay,
+  partsIso,
+  nombreDeJours,
+  compterJours,
+  complementSegments,
 } from './booking-utils.js';
 
 /* Demande de référence */
@@ -386,13 +391,124 @@ describe('adresse complete', () => {
   });
 });
 
-describe('objet du message', () => {
-  test('reprend le prenom, le nom et les deux dates', () => {
-    const sujet = buildReservationSubject(demandeValide);
-    assert.match(sujet, /Claire/);
-    assert.match(sujet, /Essai/);
-    assert.match(sujet, /2030-07-10/);
-    assert.match(sujet, /2030-07-18/);
+describe('dates en cours de saisie', () => {
+  const jour = { minDate: '2030-01-10' };
+  const DEBUT_INVALIDE = 'Merci de choisir une date de début valide.';
+  const PASSEE = 'Les dates passées ne sont pas disponibles.';
+  const FIN_INVALIDE = 'Merci de choisir une date de fin valide.';
+  const INVERSEES = 'La date de fin doit être postérieure ou égale à la date de début.';
+
+  const cas = [
+    ['rien de saisi', '', '', {}],
+    ['debut seul', '2030-01-12', '', {}],
+    ['fin seule', '', '2030-01-12', {}],
+    ['fin seule, deja passee', '', '2030-01-02', {}],
+    ['fin seule, illisible', '', 'bientot', { dateFin: FIN_INVALIDE }],
+    ['debut illisible', 'demain', '2030-01-12', { dateDebut: DEBUT_INVALIDE }],
+    ['debut impossible', '2030-02-30', '', { dateDebut: DEBUT_INVALIDE }],
+    ['debut passe, fin vide', '2030-01-09', '', { dateDebut: PASSEE }],
+    ['debut passe et dates inversees', '2030-01-09', '2030-01-01', { dateDebut: PASSEE }],
+    ['debut aujourd hui', '2030-01-10', '2030-01-10', {}],
+    ['garde d un seul jour', '2030-01-15', '2030-01-15', {}],
+    ['fin la veille du debut', '2030-01-15', '2030-01-14', { dateFin: INVERSEES }],
+    ['fin illisible', '2030-01-15', 'pas une date', { dateFin: FIN_INVALIDE }],
+    ['periode longue', '2030-01-15', '2031-01-15', {}],
+    ['format francais', '15/01/2030', '20/01/2030', {}],
+    ['format francais inverse', '15/01/2030', '14/01/2030', { dateFin: INVERSEES }],
+    ['valeurs nulles', null, null, {}],
+  ];
+
+  for (const [nom, debut, fin, attendu] of cas) {
+    test(nom, () => {
+      const r = validerDatesEnCours(debut, fin, jour);
+      assert.deepEqual(r.errors, attendu);
+      assert.equal(r.isValid, Object.keys(attendu).length === 0);
+    });
+  }
+
+  test('s arrete a la premiere erreur', () => {
+    assert.equal(Object.keys(validerDatesEnCours('demain', 'bientot', jour).errors).length, 1);
+  });
+
+  test('prend la date du jour au moment de l appel', () => {
+    assert.deepEqual(validerDatesEnCours('2030-01-09', '', { now: new Date(2030, 0, 9, 12) }).errors, {});
+    assert.deepEqual(validerDatesEnCours('2030-01-09', '', { now: new Date(2030, 0, 10, 0, 5) }).errors, { dateDebut: PASSEE });
+  });
+
+  test('memes messages que la regle d envoi', () => {
+    const envoi = (modif) => validateReservationPayload({ ...demandeValide, ...modif }, [], jour).errors;
+    assert.equal(validerDatesEnCours('2030-01-09', '', jour).errors.dateDebut, envoi({ dateDebut: '2030-01-09' }).dateDebut);
+    assert.equal(validerDatesEnCours('x', '', jour).errors.dateDebut, envoi({ dateDebut: 'x' }).dateDebut);
+    assert.equal(validerDatesEnCours('', 'x', jour).errors.dateFin, envoi({ dateFin: 'x' }).dateFin);
+    assert.equal(validerDatesEnCours('2030-07-18', '2030-07-10', jour).errors.dateFin, envoi({ dateFin: '2030-07-01' }).dateFin);
+  });
+});
+
+describe('jours d une periode', () => {
+  const seg = (s, e) => ({ startDate: s, endDate: e });
+
+  test('decale d un jour en avant et en arriere', () => {
+    assert.equal(shiftIsoDay('2030-07-10', 1), '2030-07-11');
+    assert.equal(shiftIsoDay('2030-07-10', -1), '2030-07-09');
+    assert.equal(shiftIsoDay('2030-07-10', 7), '2030-07-17');
+  });
+
+  test('franchit les fins de mois, d annee et le 29 fevrier', () => {
+    assert.equal(shiftIsoDay('2030-01-31', 1), '2030-02-01');
+    assert.equal(shiftIsoDay('2030-12-31', 1), '2031-01-01');
+    assert.equal(shiftIsoDay('2028-03-01', -1), '2028-02-29');
+    assert.equal(shiftIsoDay('2030-03-01', -1), '2030-02-28');
+  });
+
+  test('rend une chaine vide sur une date illisible', () => {
+    assert.equal(shiftIsoDay('bientot', 1), '');
+  });
+
+  test('lit l annee, le mois et le jour', () => {
+    assert.deepEqual(partsIso('2030-07-01'), { annee: 2030, mois: 7, jour: 1 });
+  });
+
+  test('compte les jours bornes comprises', () => {
+    assert.equal(nombreDeJours('2030-07-10', '2030-07-10'), 1);
+    assert.equal(nombreDeJours('2030-07-10', '2030-07-18'), 9);
+    assert.equal(nombreDeJours('2030-12-30', '2031-01-02'), 4);
+    assert.equal(nombreDeJours('2028-02-28', '2028-03-01'), 3);
+  });
+
+  test('ignore le changement d heure', () => {
+    assert.equal(nombreDeJours('2030-03-30', '2030-04-01'), 3);
+    assert.equal(nombreDeJours('2030-10-26', '2030-10-28'), 3);
+  });
+
+  test('additionne les jours de plusieurs morceaux', () => {
+    assert.equal(compterJours([]), 0);
+    assert.equal(compterJours([seg('2030-07-10', '2030-07-12'), seg('2030-07-16', '2030-07-18')]), 6);
+  });
+
+  test('rend les trous entre les morceaux couverts', () => {
+    const r = complementSegments('2030-07-10', '2030-07-18', [seg('2030-07-10', '2030-07-12'), seg('2030-07-16', '2030-07-18')]);
+    assert.deepEqual(r, [seg('2030-07-13', '2030-07-15')]);
+  });
+
+  test('rend le debut et la fin non couverts', () => {
+    const r = complementSegments('2030-07-10', '2030-07-18', [seg('2030-07-13', '2030-07-15')]);
+    assert.deepEqual(r, [seg('2030-07-10', '2030-07-12'), seg('2030-07-16', '2030-07-18')]);
+  });
+
+  test('rend toute la periode sans morceau couvert', () => {
+    assert.deepEqual(complementSegments('2030-07-10', '2030-07-14', []), [seg('2030-07-10', '2030-07-14')]);
+  });
+
+  test('ne rend rien quand tout est couvert', () => {
+    assert.deepEqual(complementSegments('2030-07-10', '2030-07-14', [seg('2030-07-10', '2030-07-14')]), []);
+  });
+
+  test('complete exactement les jours couverts', () => {
+    const indispo = [seg('2030-07-30', '2030-08-02'), seg('2030-08-06', '2030-08-06')];
+    const couverts = availableSegments('2030-07-28', '2030-08-08', indispo);
+    const trous = complementSegments('2030-07-28', '2030-08-08', couverts);
+    assert.deepEqual(trous, indispo);
+    assert.equal(compterJours(couverts) + compterJours(trous), nombreDeJours('2030-07-28', '2030-08-08'));
   });
 });
 
