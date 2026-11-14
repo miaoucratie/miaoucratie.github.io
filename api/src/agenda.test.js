@@ -1,8 +1,4 @@
-/**
- * Tests de l'agenda du jour de l'appli Indisponibilités.
- *
- * Flux iCal fourni en dur, sans appel réseau.
- */
+/** Tests de l'agenda du jour */
 
 import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
@@ -20,7 +16,7 @@ const FLUX = [
   'RRULE:FREQ=DAILY;UNTIL=20261105',
   'EXDATE;VALUE=DATE:20261029',
   'UID:garde@google.com',
-  'LOCATION:3 rue des Lilas\\, 35500 Vitré\\, France',
+  'LOCATION:1 rue de l\'Exemple\\, 35500 Vitré\\, France',
   'DESCRIPTION:Deux chats\\nClé chez la voisine',
   'SUMMARY:Garde chat A',
   'BEGIN:VALARM',
@@ -33,7 +29,7 @@ const FLUX = [
   'DTEND;VALUE=DATE:20261026',
   'RECURRENCE-ID;VALUE=DATE:20261025',
   'UID:garde@google.com',
-  'LOCATION:3 rue des Lilas\\, 35500 Vitré\\, France',
+  'LOCATION:1 rue de l\'Exemple\\, 35500 Vitré\\, France',
   'SUMMARY:Garde chat A (deux passages)',
   'END:VEVENT',
   'BEGIN:VEVENT',
@@ -136,7 +132,7 @@ const FLUX = [
   'DTEND;TZID=Europe/Paris:20261012T091500',
   'UID:appel@google.com',
   'SUMMARY:Appel cliente',
-  'LOCATION:+33 6 12 34 56 78',
+  'LOCATION:+33 6 39 98 12 34',
   'END:VEVENT',
   'BEGIN:VEVENT',
   'DTSTART;TZID=Europe/Paris:20261012T150000',
@@ -186,7 +182,7 @@ async function jour(date, options = {}) {
   return evenementsDuJour('https://agenda.test/prive.ics', date, { lire, ...options });
 }
 
-/** Événements de la journée dont le titre commence par `debut`. */
+/** Événements filtrés par titre */
 async function seulement(debut, date, options) {
   return (await jour(date, options)).filter((e) => e.summary.startsWith(debut));
 }
@@ -202,7 +198,7 @@ describe('gardes en journée entière répétées chaque jour', () => {
       start: '2026-10-23',
       end: '2026-10-24',
       allDay: true,
-      location: '3 rue des Lilas, 35500 Vitré, France',
+      location: '1 rue de l\'Exemple, 35500 Vitré, France',
     }]);
   });
 
@@ -312,11 +308,11 @@ describe('seuls les déplacements apparaissent', () => {
   });
 
   test('ce qui compte comme une adresse physique', () => {
-    for (const lieu of ['Vitré', '1 Rue des Lilas, 35000 Rennes, France', '15 Rés des Tilleuls']) {
+    for (const lieu of ['Vitré', '1 Rue de l\'Exemple, 35000 Rennes, France', '15 Rés des Tilleuls']) {
       assert.equal(adressePhysique(lieu), true, lieu);
     }
     for (const lieu of [undefined, '', '  ', 'https://zoom.us/j/1', 'Réunion Microsoft Teams',
-      'Google Meet (instructions dans la description)', 'Visio', 'En ligne', '0600000000', '+33600000000']) {
+      'Google Meet (instructions dans la description)', 'Visio', 'En ligne', '0639980000', '+33639980000']) {
       assert.equal(adressePhysique(lieu), false, String(lieu));
     }
   });

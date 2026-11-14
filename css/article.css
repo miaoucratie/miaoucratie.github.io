@@ -1361,23 +1361,23 @@
   color: var(--muted); margin: 0 0 10px;
 }
 
-/* 1, 3 et 5 */
+/* Chiffre clé */
 .sd-cle { display: grid; grid-template-columns: auto auto auto; justify-content: center; align-items: center; column-gap: 44px; }
 .sd-cle .sd-chiffre { font-size: 80px; }
 .sd-cle .sd-texte { font-size: 18px; color: var(--deep); max-width: 30ch; }
 
-/* Silhouettes (1, 2 et 3) */
+/* Silhouettes */
 .sd-silhouettes { display: flex; gap: 12px; }
 .sd-silhouettes svg { width: 46px; height: 69px; display: block; }
 .sd-on { fill: var(--rust); }
 .sd-off { fill: var(--light); }
 
-/* Anneau (5) */
+/* Anneau */
 .sd-anneau { width: 96px; height: 96px; display: block; }
 .sd-anneau .piste { fill: none; stroke: var(--warm); stroke-width: 12; }
 .sd-anneau .part { fill: none; stroke: var(--rust); stroke-width: 12; stroke-linecap: butt; }
 
-/* 2 et 8 : deux panneaux côte à côte */
+/* Deux panneaux côte à côte */
 .sd-duo { display: grid; grid-template-columns: 1fr 1fr; }
 .sd-duo > div { padding: 0 28px; display: flex; flex-direction: column; align-items: flex-start; }
 .sd-duo > div:first-child { padding-left: 0; }
@@ -1386,16 +1386,16 @@
 .sd-duo .sd-texte { margin-bottom: 20px; max-width: 28ch; }
 .sd-duo .sd-silhouettes, .sd-duo .sd-points, .sd-duo .sd-jauge { margin-top: auto; }
 
-/* Points (2) : 12 colonnes x 5 rangées = 60 */
+/* Grille de points */
 .sd-points { display: grid; grid-template-columns: repeat(12, 10px); gap: 7px; }
 .sd-points i { width: 10px; height: 10px; border-radius: 50%; background: var(--light); display: block; }
 .sd-points i.on { background: var(--rust); box-shadow: 0 0 0 3px rgba(168, 71, 42, 0.18); }
 
-/* Jauge (8) : piste pleine = 100 % */
+/* Jauge */
 .sd-jauge { width: 100%; height: 12px; border-radius: 999px; background: var(--warm); overflow: hidden; }
 .sd-jauge span { display: block; height: 100%; border-radius: 999px; background: var(--rust); }
 
-/* 4 : deux colonnes */
+/* Deux colonnes face à face */
 .sd-face { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); }
 .sd-face > div {
   padding: 0 28px; display: grid; grid-row: span 4; grid-template-rows: subgrid;
@@ -1414,7 +1414,7 @@
 .sd-compte .sd-chiffre { font-size: 44px; }
 .sd-face > div:last-child .sd-compte .sd-chiffre { color: var(--mid); }
 
-/* 7 : deux chiffres */
+/* Deux chiffres */
 .sd-fleche { display: grid; grid-template-columns: auto 1px auto; justify-content: center; }
 .sd-fleche > div { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .sd-fleche > div:first-child { padding-right: 52px; }

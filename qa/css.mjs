@@ -1,17 +1,4 @@
-/**
- * Controle des feuilles de style.
- *
- *   node qa/css.mjs            liste les constats
- *   node qa/css.mjs --strict   sort en erreur s'il en reste
- *
- * Pourquoi ce fichier : une accolade ou un commentaire mal ferme ne fait pas
- * echouer un navigateur, il jette silencieusement la suite de la feuille. Le
- * defaut est alors visuel, diffus, et se cherche a la main. Ce controle le
- * rend immediat. Il verifie aussi que le blog n'a pas reintroduit de dette :
- * regles dupliquees, selecteurs jamais utilises, !important ajoutes.
- *
- * Aucune dependance : analyse textuelle, le site est en HTML statique.
- */
+/* Contrôle des feuilles de style */
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -35,7 +22,7 @@ const pages = readdirSync(RACINE).filter((f) => f.endsWith('.html'));
 const constats = [];
 const noter = (f, quoi) => constats.push(`  ${f.padEnd(18)} ${quoi}`);
 
-/* ── Integrite : accolades et commentaires ── */
+/* ── Intégrité des accolades et commentaires ── */
 const declarees = new Map();
 for (const f of feuilles) {
   const brut = readFileSync(join(RACINE, 'css', f), 'utf8');
@@ -61,27 +48,7 @@ for (const f of feuilles) {
   if (bang) noter(f, `${bang} !important`);
 }
 
-/* ── Trois relevés, puis le recoupement dans les deux sens ─────────────────
- *
- * Les deux sens — « declaree jamais posee » et « posee jamais declaree » —
- * partent des MEMES ensembles. Ils partaient auparavant de deux relevés
- * differents, et se contredisaient donc sur les memes classes.
- *
- * PERIMETRE, etabli en lisant chaque fichier en entier.
- *
- *   posees      les 18 pages de la racine, sans exception : une classe morte
- *               dans les mentions legales ou l'administration est de la dette
- *               comme ailleurs. redaction.mjs en ecarte trois, mais pour une
- *               autre raison — il juge la redaction editoriale, pas le CSS.
- *   declarees   css/*.css et les <style> en ligne des pages. 724 regles vivent
- *               dans les pages contre 1 118 dans css/ : les ignorer ferait
- *               passer 39 % du CSS du site pour absent.
- *   accroches   js/*.js et les <script> en ligne des pages — 42 blocs, 2 228
- *               lignes, qui etaient ignores. shared/booking-utils.js et
- *               shared/tarifs.js sont ecartes : lus en entier, ce sont des
- *               fonctions pures, sans DOM ni classe. Les *.test.js, qa/ et
- *               api/ ne sont jamais servis au visiteur.
- */
+/* ── Trois relevés ── */
 const posees = new Set();
 for (const p of pages) {
   const html = readFileSync(join(RACINE, p), 'utf8');
@@ -113,7 +80,7 @@ for (const p of pages) {
 
 const seulementAvecTiers = classesDeBibliotheque([...declarees.values()].flat());
 
-/* ── Sens 1 : classe declaree dans une feuille, posee nulle part ── */
+/* ── Classes déclarées non posées ── */
 for (const [f, sels] of declarees) {
   const orphelines = new Set();
   for (const s of sels) {
@@ -126,14 +93,7 @@ for (const [f, sels] of declarees) {
   if (orphelines.size) noter(f, `${orphelines.size} classe(s) declaree(s) et jamais posee(s) : ${[...orphelines].sort().join(' ')}`);
 }
 
-/* ── Sens 2 : classe posee dans le balisage, declaree nulle part ───────────
- *
- * Une page neuve part presque toujours d'une page existante. Elle recopie donc
- * ses classes, y compris celles qui ne stylent plus rien. Le defaut est
- * invisible, le rendu n'est pas casse : c'est du balisage mort qui se propage a
- * chaque nouvelle page, et un modificateur dont on croit qu'il agit.
- * « art-trio--lies » etait dans ce cas sur six articles.
- */
+/* ── Classes posées non déclarées ── */
 
 for (const p of pages) {
   const html = readFileSync(join(RACINE, p), 'utf8');
@@ -147,7 +107,7 @@ for (const p of pages) {
   if (mortes.size) noter(p, `${mortes.size} classe(s) posee(s) et declaree(s) nulle part : ${[...mortes].sort().join(' ')}`);
 }
 
-/* ── Selecteur declare deux fois dans la meme feuille ── */
+/* ── Sélecteur déclaré deux fois ── */
 for (const [f, sels] of declarees) {
   const vus = new Map();
   for (const s of sels) {

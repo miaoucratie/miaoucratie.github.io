@@ -1,25 +1,13 @@
-/**
- * Agenda du jour de l'appli Indisponibilités.
- *
- * Lit le flux iCal privé de l'agenda Google et renvoie les événements d'une
- * journée, à l'heure de Paris. Gère les événements sur la journée entière, sur
- * plusieurs jours, et les répétitions : les gardes sont saisies comme des
- * événements « journée entière » répétés chaque jour, il faut donc dérouler la
- * répétition pour les voir au milieu de la garde, pas seulement le premier jour.
- *
- * Seuls sortent les événements qui demandent de se déplacer : créés par la
- * propriétaire de l'agenda et avec une adresse physique. Les invitations
- * reçues, les formations en ligne et les appels n'apparaissent pas.
- */
+/** Agenda du jour */
 
 const FUSEAU = "Europe/Paris";
 const JOUR_MS = 24 * 60 * 60 * 1000;
 const PROPRIETAIRE = "miaoucratie@gmail.com";
 
-/** Durée pendant laquelle un flux lu reste servi sans être relu. */
+/** Fraîcheur du flux */
 const FRAICHEUR_MS = 5 * 60 * 1000;
 
-/** Répétitions déroulées au plus pour atteindre une date. */
+/** Plafond de répétitions */
 const ITERATIONS_MAX = 20000;
 
 let cache = null;
@@ -32,15 +20,12 @@ export class ErreurAgenda extends Error {
   }
 }
 
-/** Date du jour à Paris, au format AAAA-MM-JJ. */
+/** Date du jour à Paris */
 export function aujourdhuiAParis(maintenant = new Date()) {
   return cleJourParis(maintenant);
 }
 
-/**
- * Événements de la journée `date` (AAAA-MM-JJ, heure de Paris).
- * `lire` est injectable pour les tests ; par défaut, `fetch`.
- */
+/** Événements d'une journée */
 export async function evenementsDuJour(urlIcal, date, { lire = fetch, maintenant = Date.now() } = {}) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !dateValide(date)) {
     throw new ErreurAgenda("DATE_INVALIDE");
@@ -50,7 +35,7 @@ export async function evenementsDuJour(urlIcal, date, { lire = fetch, maintenant
   return evenementsDeLaJournee(evenements, date);
 }
 
-/** État de la lecture de l'agenda, sans donnée personnelle. */
+/** État de l'agenda */
 export async function etatAgenda(urlIcal, { lire = fetch, maintenant = Date.now() } = {}) {
   const evenements = await evenementsEnCache(urlIcal, lire, maintenant);
   return {
@@ -59,7 +44,7 @@ export async function etatAgenda(urlIcal, { lire = fetch, maintenant = Date.now(
   };
 }
 
-/** Vide le cache : réservé aux tests. */
+/** Vidage du cache */
 export function viderCacheAgenda() {
   cache = null;
 }
@@ -105,14 +90,9 @@ async function lireFlux(urlIcal, lire) {
   return analyserIcal(texte);
 }
 
-/* ------------------------------------------------------------------------ */
-/* Lecture du format iCal                                                    */
-/* ------------------------------------------------------------------------ */
+/* Lecture du format iCal */
 
-/**
- * Transforme le texte iCal en événements. Les modifications d'une occurrence
- * (RECURRENCE-ID) sont rattachées à l'événement répété qu'elles remplacent.
- */
+/** Analyse du texte iCal */
 export function analyserIcal(texte) {
   const lignes = texte.replace(/\r\n[ \t]/g, "").replace(/\n[ \t]/g, "").split(/\r?\n/);
   const bruts = [];
@@ -131,7 +111,7 @@ export function analyserIcal(texte) {
       courant = null;
       continue;
     }
-    // Les rappels (VALARM) sont imbriqués dans l'événement : on les saute.
+    // Rappels imbriqués
     if (ligne.startsWith("BEGIN:")) {
       profondeur += 1;
       continue;
@@ -164,8 +144,7 @@ export function analyserIcal(texte) {
     if (parent) {
       parent.modifications.set(modification.remplace, modification);
     } else {
-      // Occurrence modifiée dont l'événement d'origine n'est pas dans le flux :
-      // elle reste un événement à part entière.
+      // Occurrence modifiée orpheline
       parUid.set(`${modification.uid}#${modification.remplace}`, { ...modification, remplace: null });
     }
   }
@@ -173,7 +152,7 @@ export function analyserIcal(texte) {
   return [...parUid.values()];
 }
 
-/** Seules propriétés utiles à l'appli : les autres lignes ne sont pas analysées. */
+/** Propriétés lues */
 const PROPRIETES_UTILES = new Set([
   "UID", "SUMMARY", "LOCATION", "ORGANIZER",
   "DTSTART", "DTEND", "DURATION", "RRULE", "EXDATE", "RECURRENCE-ID",
@@ -183,7 +162,7 @@ function lirePropriete(ligne) {
   const finNom = ligne.search(/[;:]/);
   if (finNom < 1 || !PROPRIETES_UTILES.has(ligne.slice(0, finNom).toUpperCase())) return null;
 
-  // Le nom et les paramètres s'arrêtent au premier « : » hors guillemets.
+  // Séparateur hors guillemets
   let guillemets = false;
   let separateur = -1;
   for (let i = 0; i < ligne.length; i += 1) {
@@ -261,7 +240,7 @@ function construireEvenement(proprietes) {
 
   const remplaceBrut = une("RECURRENCE-ID");
   let remplace = remplaceBrut ? lireDate(remplaceBrut) : null;
-  // Remplacement daté de 1970 : jour de la visite
+  // Référence datée de 1970
   if (remplace && (remplace.journee ? remplace.jour < "1980" : dateMur(remplace.mur || murDansFuseau(remplace.instant, FUSEAU)) < "1980")) {
     remplace = debut;
   }
@@ -281,10 +260,7 @@ function construireEvenement(proprietes) {
   };
 }
 
-/**
- * Une date iCal : journée entière (AAAAMMJJ), instant UTC (…Z), heure locale
- * d'un fuseau (TZID), ou heure « flottante », lue à l'heure de Paris.
- */
+/** Lecture d'une date iCal */
 function lireDate({ parametres = {}, valeur }) {
   const v = String(valeur).trim();
   const jour = v.match(/^(\d{4})(\d{2})(\d{2})$/);
@@ -310,7 +286,7 @@ function lireDate({ parametres = {}, valeur }) {
   return heureLocale(mur, fuseau);
 }
 
-/** Heure murale d'un fuseau, instant calculé à la première lecture. */
+/** Heure locale d'un fuseau */
 function heureLocale(mur, fuseau) {
   let instant = null;
   return {
@@ -332,14 +308,12 @@ function dureeEnMs(valeur) {
   return signe * ((((semaines * 7 + jours) * 24 + heures) * 60 + minutes) * 60 + secondes) * 1000;
 }
 
-/** Clé d'une occurrence : la date pour une journée entière, le jour à Paris sinon. */
+/** Clé d'une occurrence */
 function cleOccurrence(date) {
   return date.journee ? date.jour : cleJourParis(new Date(date.instant));
 }
 
-/* ------------------------------------------------------------------------ */
-/* Répétitions (RRULE)                                                       */
-/* ------------------------------------------------------------------------ */
+/* Répétitions (RRULE) */
 
 const JOURS_SEMAINE = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
@@ -393,12 +367,9 @@ function lireRegle(texte) {
   };
 }
 
-/**
- * Jours (AAAA-MM-JJ, dans le calendrier de l'événement) où une répétition
- * commence, du premier jour jusqu'à `limite` incluse.
- */
+/** Jours de début des répétitions */
 function joursDeRepetition(regle, premierJour, limite, plancher) {
-  // Le premier jour compte toujours
+  // Premier jour inclus
   const resultats = premierJour <= limite ? [premierJour] : [];
   let compte = 1;
   let iterations = 0;
@@ -414,8 +385,7 @@ function joursDeRepetition(regle, premierJour, limite, plancher) {
 
   const [an0, mois0] = premierJour.split("-").map(Number);
 
-  // Sans nombre d'occurrences à compter, inutile de dérouler depuis le début :
-  // on repart de la période qui précède le plancher.
+  // Reprise avant le plancher
   let depart = 0;
   if (regle.nombre == null && plancher > premierJour) {
     const [anP, moisP] = plancher.split("-").map(Number);
@@ -461,7 +431,7 @@ function candidatsDeLaPeriode(regle, premierJour, an0, mois0, periode) {
   }
 
   if (regle.frequence === "WEEKLY") {
-    // Semaine commençant le lundi qui contient le premier jour.
+    // Lundi de la première semaine
     const lundi = ajouterJours(premierJour, -((jourSemaine(premierJour) + 6) % 7));
     const debut = ajouterJours(lundi, periode * 7);
     const voulus = regle.jours ? regle.jours.map((j) => j.jour) : [jourSemaine(premierJour)];
@@ -482,7 +452,7 @@ function candidatsDeLaPeriode(regle, premierJour, an0, mois0, periode) {
     return { debutPeriode: debut, jours: joursDuMoisVoulus(regle, an, mois, premierJour) };
   }
 
-  // YEARLY
+  // Répétition annuelle
   const an = an0 + periode;
   const debut = `${an}-01-01`;
   const moisVoulus = regle.mois || [mois0];
@@ -538,9 +508,7 @@ function regleTerminee(regle, occurrence) {
   return instant > regle.jusqua.instant;
 }
 
-/* ------------------------------------------------------------------------ */
-/* Sélection de la journée                                                   */
-/* ------------------------------------------------------------------------ */
+/* Sélection de la journée */
 
 function evenementsDeLaJournee(evenements, date) {
   const debutJour = minuitParis(date);
@@ -550,8 +518,7 @@ function evenementsDeLaJournee(evenements, date) {
 
   for (const evenement of evenements) {
     for (const occurrence of occurrencesAutourDe(evenement, date, bornes)) {
-      // L'appli ne sert qu'aux déplacements : un événement sans adresse
-      // physique (formation en ligne, appel, visio) n'y apparaît pas.
+      // Événements avec adresse physique
       if (!evenement.proprietaire || !adressePhysique(occurrence.source.lieu)) continue;
       if (occurrence.debut.journee) {
         if (date >= occurrence.debut.jour && date < occurrence.fin.jour) {
@@ -574,10 +541,7 @@ function evenementsDeLaJournee(evenements, date) {
 
 const EN_LIGNE = /https?:\/\/|www\.|zoom|teams|google meet|meet\.google|visio|en ligne|webinaire|webinar|distanciel|skype|whatsapp/i;
 
-/**
- * Le lieu est-il un endroit où se rendre ? Ni un lien de visio, ni un numéro
- * de téléphone, ni une mention « en ligne ».
- */
+/** Lieu où se rendre */
 export function adressePhysique(lieu) {
   if (!lieu || !lieu.trim()) return false;
   if (EN_LIGNE.test(lieu)) return false;
@@ -585,17 +549,12 @@ export function adressePhysique(lieu) {
   return /\p{L}/u.test(lieu);
 }
 
-/**
- * Occurrences d'un événement qui peuvent toucher la journée : l'événement
- * lui-même s'il n'est pas répété, sinon les répétitions qui commencent assez
- * tôt pour la chevaucher, exclusions retirées et modifications appliquées.
- */
+/** Occurrences proches de la journée */
 function occurrencesAutourDe(evenement, date, bornes) {
   const { debut, fin } = evenement;
 
   if (!evenement.regle) {
-    // Tri rapide sur la date murale, sans conversion : un événement qui
-    // commence plus d'un jour après la journée ne peut pas la toucher.
+    // Filtre rapide sur la date murale
     if (!debut.journee && debut.mur && dateMur(debut.mur) > bornes.lendemain) return [];
     if (!fin.journee && fin.mur && dateMur(fin.mur) < bornes.veille) return [];
     return [{ debut, fin, source: evenement, suffixe: "" }];
@@ -649,7 +608,7 @@ function occurrencesAutourDe(evenement, date, bornes) {
     }
   }
 
-  // Une occurrence déplacée sur un autre jour apparaît à sa nouvelle date.
+  // Occurrences déplacées
   for (const [cle, modification] of evenement.modifications) {
     if (vus.has(cle) || evenement.exclusions.has(cle)) continue;
     resultats.push({ debut: modification.debut, fin: modification.fin, source: modification, suffixe: `-${cle}` });
@@ -688,9 +647,7 @@ function versSortie(occurrence, evenement) {
   };
 }
 
-/* ------------------------------------------------------------------------ */
-/* Dates et fuseaux                                                          */
-/* ------------------------------------------------------------------------ */
+/* Dates et fuseaux */
 
 const formateurs = new Map();
 
@@ -723,11 +680,7 @@ function fuseauConnu(fuseau) {
   }
 }
 
-/**
- * Décalage de Paris sur l'heure universelle, par la règle européenne : heure
- * d'été du dernier dimanche de mars au dernier dimanche d'octobre, changement
- * à 1 h en temps universel.
- */
+/** Décalage horaire de Paris */
 function decalageParisMs(instant) {
   const an = new Date(instant).getUTCFullYear();
   const debutEte = Date.UTC(an, 2, 31 - new Date(Date.UTC(an, 2, 31)).getUTCDay(), 1);
@@ -759,7 +712,7 @@ function decalageMs(instant, fuseau) {
   return Date.UTC(m[0], m[1] - 1, m[2], m[3], m[4], m[5]) - instant;
 }
 
-/** Instant réel où l'heure murale donnée a lieu dans le fuseau. */
+/** Instant d'une heure locale */
 function instantDepuisHeureLocale(mur, fuseau) {
   const estimation = Date.UTC(mur[0], mur[1] - 1, mur[2], mur[3], mur[4], mur[5]);
   const premier = estimation - decalageMs(estimation, fuseau);

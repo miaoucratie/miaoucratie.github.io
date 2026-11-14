@@ -1,11 +1,4 @@
-/**
- * Harnais du site
- *
- *   node qa/qa.mjs                  empreinte et comportement
- *   node qa/qa.mjs --detail         tous les ecarts
- *   node qa/qa.mjs --comportement   comportement seul
- *   node qa/qa.mjs --update         regenere la reference
- */
+/* Harnais du site */
 
 import { chromium } from 'playwright';
 import { createServer } from 'node:http';
@@ -215,7 +208,7 @@ async function nouveauContexte(navigateur, reseau, options) {
   return contexte;
 }
 
-/* ─── API adresse : reponses figees ──────────────────────────────────── */
+/* ─── Réponses figées de l'API adresse ─── */
 
 const FIXTURE_GEO = join(RACINE, 'qa', 'fixtures', 'geo-api.json');
 
@@ -356,7 +349,7 @@ async function empreinte(page) {
   });
 }
 
-/* Tolérance de 2 px */
+/* Tolérance géométrique */
 const CHAMPS_GEOMETRIQUES = new Set([2, 3, 4, 5, 8, 13, 14, 15, 19, 20]);
 const TOLERANCE_PX = 2;
 
@@ -637,7 +630,7 @@ async function testerGestion(navigateur, base, reseau, echecs) {
 const FORMULAIRES = [
   {
     page: 'reservation.html', formulaire: '#reservation-form', bouton: '#submit-button',
-    champ: '#nom', valeur: 'Durand', module: '**/js/reservation.js',
+    champ: '#nom', valeur: 'Exemple', module: '**/js/reservation.js',
   },
   {
     page: 'administration.html', formulaire: '#admin-login-form', bouton: '#admin-login-button',
@@ -717,9 +710,9 @@ const COUPURES = [
   { nom: 'serveur', motifs: [] },
 ];
 
-/* Brouillons anciens */
+/* Brouillons d'essai */
 const BROUILLONS = [
-  '{"nom":"Durand","dateDebut":"2020-01-01","dateFin":"2020-01-05","nombreChats":"2","frequence":"Autre besoin à préciser","startedAt":"abc"}',
+  '{"nom":"Exemple","dateDebut":"2020-01-01","dateFin":"2020-01-05","nombreChats":"2","frequence":"Autre besoin à préciser","startedAt":"abc"}',
   '{"nom":{"a":1},"prenom":["x"],"dateDebut":"31/12/1999","dateFin":"pas une date","nombreChats":null}',
   '{"date_debut":"2030-01-01","nombre_chats":"3","frequence":42}',
   '[1,2,3]',
@@ -782,9 +775,9 @@ async function testerCoupures(navigateur, base, reseau, echecs) {
 /* Formulaire rempli */
 async function remplirFormulaire(page) {
   await page.waitForFunction(() => document.querySelectorAll('.flatpickr-input').length === 2, { timeout: 12000 });
-  await page.fill('#nom', 'Durand');
+  await page.fill('#nom', 'Exemple');
   await page.fill('#prenom', 'Claire');
-  await page.fill('#telephone', '06 12 34 56 78');
+  await page.fill('#telephone', '06 39 98 12 34');
   await page.fill('#email', 'essai@exemple.fr');
   await page.fill('#commune', 'Domagné');
   await page.fill('#nombreChats', '1');
@@ -830,7 +823,7 @@ async function testerEnvoi(navigateur, base, reseau, echecs) {
     await page.locator('#success-panel').waitFor({ state: 'visible', timeout: 8000 });
 
     const recus = envoisDepuis(reseau, depart).filter((e) => e.chemin === '/public/reservations');
-    if (recus.length !== 1 || !recus[0].corps.includes('Durand')) {
+    if (recus.length !== 1 || !recus[0].corps.includes('Exemple')) {
       echecs.push(`${nom} : ${recus.length} demande(s) recue(s) par le faux Worker, attendu 1`);
     } else if (JSON.parse(recus[0].corps).turnstileToken !== 'jeton-essai-1') {
       echecs.push(`${nom} : jeton anti-robot absent de la demande`);
@@ -976,7 +969,7 @@ async function testerCalculateur(page, echecs) {
       + '(base, remise sejour long, remise solidaire, supplement kilometrique)');
   }
 
-  // Au-delà de 5 chats : sur devis, aucun montant
+  // Cas du devis
   await clic('[data-ajuster="chats"][data-pas="1"]', 6 - cas.chats);
   await attendre(200);
   const devis = await page.evaluate(() => ({
@@ -1256,7 +1249,6 @@ const PARCOURS = [
   {
     nom: 'accueil → carte → reservation',
     etapes: ['index.html', 'carte.html', 'reservation.html'],
-    // Commune d'abord
     avant: {
       'carte.html': async (page) => {
         await page.fill('#searchInput', 'Vitré');
@@ -1343,7 +1335,6 @@ async function main() {
   try {
     for (const largeur of LARGEURS) {
       const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: largeur, height: 900 } });
-      // Avant toute navigation
       await figerApiAdresse(contexte, requetesGeoInconnues);
       // Consentement refusé
       await refuserLaMesure(contexte);
@@ -1384,7 +1375,6 @@ async function main() {
         const coherence = await relevesCoherence(page);
         for (const d of coherence.defauts) echecs.push(`${nomPage} @${largeur}px : ${d}`);
 
-        // Une lecture suffit
         if (largeur === LARGEURS[0]) {
           for (const d of controlerTauxMetier(await relevesTauxMetier(page))) {
             echecs.push(`${nomPage} : ${d}`);
@@ -1435,9 +1425,7 @@ async function main() {
         }
         await page.close();
       }
-      // Deux largeurs
       await testerConsentement(navigateur, base, largeur, reseau, echecs);
-      // Une fois, en bureau
       if (largeur === LARGEURS[0]) await testerParcours(contexte, base, echecs);
       await contexte.close();
     }

@@ -1,19 +1,4 @@
-/**
- * Audit SEO on-page du site Miaoucratie.
- *
- *   node qa/seo.mjs            controle et affiche le score
- *   node qa/seo.mjs --strict   sort en erreur si le score passe sous le seuil
- *
- * Pourquoi un script et pas une relecture a la main : le SEO on-page est un
- * critere de qualite a chaque pull request, au meme titre que la non-regression.
- * Une relecture humaine oublie une balise ; un controle qui rend un chiffre, non.
- *
- * Le score est un pourcentage de controles reussis. Une ERREUR compte pour un
- * echec, une ALERTE pour un demi. Le seuil de reussite est SEUIL_SCORE.
- *
- * Aucune dependance : le site est en HTML statique, un analyseur maison suffit
- * et evite d'ajouter un paquet pour douze pages.
- */
+/* Audit SEO des pages */
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
@@ -23,15 +8,10 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEUIL_SCORE = 89;
 const SITE = 'https://miaoucratie.fr/';
 
-/* Pages exclues du controle : l'ecran d'administration n'est pas une page
-   publique, il porte deja noindex,nofollow et n'a pas a etre reference. */
-/* « maquette-*.html » : pages de travail, ignorees par Git, jamais publiees.
-   Elles n'ont pas a etre auditees comme des pages du site. */
+/* Pages exclues */
 const EXCLUES = new Set(['administration.html']);
 
-/* Longueurs retenues : au-dela, les moteurs tronquent l'affichage. Ce sont des
-   bornes d'affichage, pas des regles de classement, d'ou l'alerte et non
-   l'erreur. */
+/* Longueurs retenues */
 const TITRE_MIN = 25, TITRE_MAX = 65;
 const DESC_MIN = 70, DESC_MAX = 160;
 
@@ -56,7 +36,7 @@ const pages = readdirSync(RACINE)
 const sitemap = readFileSync(join(RACINE, 'sitemap.xml'), 'utf8');
 const urlsSitemap = new Set([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]));
 
-const constats = [];      // { page, gravite, regle, detail }
+const constats = [];
 let controles = 0, echecs = 0;
 
 const verifier = (page, regle, ok, detail, gravite = 'ERREUR') => {
@@ -116,8 +96,7 @@ for (const page of pages) {
     verifier(page, `balise ${prop}`, new RegExp(`property="${prop}"`).test(tete), 'absente', 'ALERTE');
   }
 
-  /* ── Hierarchie des titres ──
-     Un seul h1, et aucun saut de niveau : un h3 ne peut pas suivre un h1. */
+  /* ── Hiérarchie des titres ── */
   const niveaux = [...html.matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gi)]
     .map((m) => ({ n: +m[1], texte: texteBrut(m[2]) }))
     .filter((h) => h.texte);
@@ -145,7 +124,6 @@ for (const page of pages) {
     if (!href || /^(https?:|mailto:|tel:|#)/.test(href)) continue;
     const cible = href.split('#')[0].split('?')[0];
     if (!cible) continue;
-    // Un lien vers un dossier vise son index.html, comme chez l'hebergeur.
     const fichier = cible.endsWith('/') ? cible + 'index.html' : cible;
     let existe = true;
     try { readFileSync(join(RACINE, fichier)); } catch { existe = false; }
@@ -171,14 +149,12 @@ for (const page of pages) {
       ? 'page en noindex mais presente dans le sitemap'
       : 'page indexable mais absente du sitemap');
 
-  /* ── Contenu ──
-     Une page trop courte ne se positionne sur rien. Seuil bas et volontairement
-     indulgent : la carte et le calculateur sont des outils, pas des articles. */
+  /* ── Contenu ── */
   const mots = texteBrut(corps).split(/\s+/).length;
   verifier(page, 'volume de contenu', mots >= 250, `${mots} mots dans le corps`, 'ALERTE');
 }
 
-/* ── Le sitemap ne doit pas pointer vers des pages absentes ── */
+/* ── Pages du sitemap ── */
 for (const url of urlsSitemap) {
   const fichier = url === SITE ? 'index.html' : url.replace(SITE, '');
   let existe = true;

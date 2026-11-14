@@ -1,21 +1,11 @@
-/**
- * Tests des regles de lecture du CSS.
- *
- * Ces quatre fonctions decident si un constat est reel ou non. Quand elles se
- * trompent, le harnais ne casse pas : il se met a mentir. Un faux positif
- * permanent apprend a ignorer les avertissements ; un faux negatif laisse
- * passer du balisage mort.
- *
- * Chaque cas ci-dessous fige une erreur que ces regles ont reellement produite
- * sur ce site, avec la forme exacte du code qui l'a declenchee. Un test qui
- * n'est pas tire d'une panne observee ne prouve rien.
- */
+/* Tests des règles CSS */
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   classesDeBibliotheque,
   classesManipulees,
+  commentairesCSS,
   commentairesNonFermes,
   estTiers,
   nomsDeClasses,
@@ -24,9 +14,6 @@ import {
 
 describe('commentairesNonFermes', () => {
   test('une banniere non terminee suivie d\'un commentaire ne compte pas deux ouvertures', () => {
-    /* La forme exacte trouvee trois fois dans article.css : une banniere de
-       section sans fermeture, puis un commentaire ordinaire qui la ferme. Le
-       comptage textuel y voyait deux ouvertures pour une fermeture. */
     const css = [
       '/* ══ DEUX GROUPES QUI SE CROISENT ══════════════════════════',
       '/* Les bandes ne partent pas de zero : elles couvrent la moyenne',
@@ -50,10 +37,18 @@ describe('commentairesNonFermes', () => {
   });
 });
 
+describe('commentairesCSS', () => {
+  test('chaque commentaire est rendu avec sa ligne et son texte', () => {
+    const css = '.a { content: "/* non */"; }\n/* Carte */\n.b {}\n/* ouvert';
+    assert.deepEqual(commentairesCSS(css).map((c) => [c.ligne, c.texte, c.ferme]), [
+      [2, '/* Carte */', true],
+      [4, '/* ouvert', false],
+    ]);
+  });
+});
+
 describe('nomsDeClasses', () => {
   test('une decimale dans une media query ne declare pas de classe', () => {
-    /* « @media (max-width: 63.99rem) » faisait apparaitre une classe « 99rem »
-       dans la liste des orphelines de reservation.css. */
     assert.deepEqual(nomsDeClasses('@media (max-width: 63.99rem)'), []);
     assert.deepEqual(nomsDeClasses('.marge { padding: 0.5rem; }'), ['marge']);
   });
@@ -63,15 +58,12 @@ describe('nomsDeClasses', () => {
   });
 
   test('un prefixe ne vaut pas une declaration', () => {
-    /* « .art-schema-boite » ne declare pas « art-schema ». */
     assert.deepEqual(nomsDeClasses('.art-schema-boite'), ['art-schema-boite']);
   });
 });
 
 describe('classesManipulees', () => {
   test('un nom de variable n\'est pas une classe', () => {
-    /* carrousel.js nomme une variable « grille ». Relever tous les mots du
-       fichier suffisait a dedouaner la classe morte « grille » d'une page. */
     const js = "var grille = car.querySelector('.avis-grid');";
     const vues = classesManipulees(js);
     assert.ok(vues.has('avis-grid'), 'le selecteur doit etre releve');
@@ -79,8 +71,6 @@ describe('classesManipulees', () => {
   });
 
   test('un className pose par un ternaire compte pour ses deux branches', () => {
-    /* reservation.js : les deux classes etaient declarees orphelines alors
-       qu'elles sont posees a chaque rendu de la barre de periode. */
     const js = 'part.className = morceau.couvert ? "periode__seg--oui" : "periode__seg--non";';
     const vues = classesManipulees(js);
     assert.ok(vues.has('periode__seg--oui'));
@@ -103,7 +93,6 @@ describe('classesManipulees', () => {
   });
 
   test('un fichier sans DOM ne releve rien', () => {
-    /* shared/tarifs.js et shared/booking-utils.js sont dans ce cas. */
     const js = 'export function arrondirCentimes(m) { return Math.round(m * 100) / 100; }';
     assert.equal(classesManipulees(js).size, 0);
   });
@@ -130,8 +119,6 @@ describe('estTiers et classesDeBibliotheque', () => {
   });
 
   test('une classe toujours collee a une classe tierce appartient a la bibliotheque', () => {
-    /* Flatpickr pose « .selected », « .startRange », « .numInputWrapper » sans
-       aucun prefixe. Ils sortaient en orphelines de reservation.css. */
     const sels = [
       '.flatpickr-day.selected',
       '.flatpickr-day.startRange.inRange',

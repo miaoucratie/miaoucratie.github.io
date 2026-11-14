@@ -1,20 +1,4 @@
-/**
- * Controle de mise en page rendue.
- *
- *   node qa/mise-en-page.mjs             toutes les pages, toutes les largeurs
- *   node qa/mise-en-page.mjs coulisses-miaoucratie.html   une page
- *   node qa/mise-en-page.mjs --strict    sort en erreur s'il reste un echec
- *
- * Pourquoi ce fichier : qa.mjs compare des empreintes a une reference, ce qui
- * detecte un CHANGEMENT mais pas un DEFAUT — une page peut etre stable et mal
- * fichue. Les constats releves ici sont ceux qu'on trouvait jusqu'a present a
- * l'oeil : debordement, ligne orpheline, bouton casse en deux, contraste sous
- * le seuil, cible trop petite, saut de niveau de titre, ancre morte.
- *
- * Tout est mesure sur la page RENDUE, polices chargees. Mesurer avant que les
- * polices soient appliquees donne les metriques de la police de secours, et
- * deux releves successifs ne rendent alors pas le meme chiffre.
- */
+/* Contrôle de mise en page */
 
 import { createServer } from 'node:http';
 import { readFile, readdir } from 'node:fs/promises';
@@ -27,15 +11,10 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STRICT = process.argv.includes('--strict');
 const DEMANDEES = process.argv.slice(2).filter((a) => a.endsWith('.html'));
 
-/* Pages hors perimetre : outils internes ou pages a formulaire, deja couvertes
-   par qa.mjs et dont la mise en page ne depend pas de ce chantier. */
+/* Pages exclues */
 const EXCLUES = new Set(['administration.html']);
-/* Les fichiers « maquette-*.html » sont ecartes a la lecture du dossier plus
-   bas : ce sont des pages de travail, ignorees par Git, jamais publiees. */
 
-/* Largeurs de controle. 320 est le minimum exige par le critere 1.4.10 ;
-   375 est l'iPhone courant ; 768 la bascule des media queries ; 1280 le
-   bureau de reference. */
+/* Largeurs de contrôle */
 const LARGEURS = [1280, 768, 375, 320];
 
 const MIME = {
@@ -61,13 +40,13 @@ function demarrerServeur() {
   return new Promise((ok) => serveur.listen(0, '127.0.0.1', () => ok(serveur)));
 }
 
-/* ══ Le releve, execute dans la page ══════════════════════════════════════ */
+/* ══ Relevé dans la page ══ */
 const RELEVE = () => {
   const d = document, D = d.documentElement;
 
   const nom = (e) => e.tagName.toLowerCase() + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/)[0] : '');
 
-  /* Lignes reellement rendues d'un element, groupees par ordonnee. */
+  /* Lignes rendues */
   const lignes = (el) => {
     const R = d.createRange(), par = new Map();
     const w = d.createTreeWalker(el, NodeFilter.SHOW_TEXT);
@@ -93,15 +72,10 @@ const RELEVE = () => {
     return true;
   };
 
-  /* ── Contraste, avec composition des fonds translucides ── */
+  /* ── Contraste ── */
   const lum = (c) => { const [r, g, b] = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
   const rgba = (s) => { const m = (s.match(/[\d.]+/g) || []).map(Number); return m.length === 3 ? [...m, 1] : m; };
-  /* Rend le fond compose, ou null si une image de fond intervient : un
-     degrade ou une photo ne se ramene pas a une couleur unique, et publier
-     un chiffre calcule sur la couleur de fond « transparente » qui reste
-     donnerait un faux constat — le bouton d'envoi de la reservation, blanc
-     sur un degrade rouille, ressortait ainsi a 1,07:1 alors qu'il est a
-     5,83:1. Ces cas sont comptes a part, pas mesures. */
+  /* Fond composé */
   const fond = (e) => {
     const pile = [];
     for (let x = e; x; x = x.parentElement) {
@@ -121,7 +95,7 @@ const RELEVE = () => {
   const echecs = [];
   const ajouter = (genre, detail) => echecs.push({ genre, detail });
 
-  /* 1. Debordement horizontal (1.4.10) */
+  /* 1. Débordement horizontal */
   if (D.scrollWidth > D.clientWidth + 1) {
     const coupables = [...d.querySelectorAll('body *')]
       .filter((e) => visible(e) && e.getBoundingClientRect().right > D.clientWidth + 1)
@@ -129,15 +103,7 @@ const RELEVE = () => {
     ajouter('debordement', `${D.scrollWidth}px pour ${D.clientWidth}px : ${coupables.join(', ') || 'origine non isolee'}`);
   }
 
-  /* 2. Derniere ligne d'un seul mot.
-        Mesure « text-wrap » neutralise. Le moteur plafonne le temps qu'il
-        consacre a « balance » et « pretty » : au-dela d'un certain nombre de
-        lignes il renonce, et le seuil bouge d'un chargement a l'autre — deux
-        passes identiques rendaient 27 puis 18 constats, et l'intersection de
-        deux passes restait instable. Sans ces proprietes, le decoupage est
-        deterministe. On mesure donc le pire cas : les blocs qui finiraient
-        sur un mot seul si le navigateur n'aidait pas. C'est un avertissement,
-        pas un echec — la regle du site les rattrape la plupart du temps. */
+  /* 2. Dernière ligne d'un seul mot */
   const neutre = d.createElement('style');
   neutre.textContent = '*{text-wrap:wrap !important}';
   d.head.appendChild(neutre);
@@ -159,11 +125,7 @@ const RELEVE = () => {
     if (visible(a) && lignes(a).length > 1) ajouter('bouton casse', `« ${a.textContent.trim()} » sur ${lignes(a).length} lignes`);
   }
 
-  /* 4. Contraste (1.4.3).
-        Les sous-arbres en aria-hidden sont ecartes : le critere exempte la
-        decoration pure, et un glyphe masque aux technologies d'assistance
-        double toujours une information donnee en toutes lettres a cote —
-        les etoiles d'une note suivie de « 5,0 · 14 avis », par exemple. */
+  /* 4. Contraste */
   const vus = new Set();
   const nonMesurables = new Set();
   for (const e of d.querySelectorAll('body *')) {
@@ -186,20 +148,7 @@ const RELEVE = () => {
     echecs.push({ genre: 'contraste non mesurable', detail: `texte sur image ou degrade, a controler a l'oeil : ${[...nonMesurables].sort().join(', ')}`, avertissement: true });
   }
 
-  /* 4 bis. Italique gras, et lien bleu par defaut.
-     Deux regles de charte, verifiees sur le texte REELLEMENT affiche : on
-     descend jusqu'a l'element qui porte le texte, parce que le site place
-     souvent un <span> en graisse 400 dans un titre que la couche TITLES-V5
-     force a 700. Mesurer le conteneur donnerait un faux positif sur chaque
-     titre de « presse.html » et de « ce-que-jutilise.html ».
-
-     L'italique gras : aucun, sauf le <em> du logo, qui est la marque.
-     « .cgv-brand » porte la meme marque « Miaoucratie. » en tete des pages
-     legales, dans le meme traitement que le pied de page — italique sur la
-     seconde moitie du mot. Elle manquait a la liste, et les deux pages
-     legales tombaient sur une regle qui ne les visait pas.
-     Le lien bleu : aucun. Un <a> sans regle de couleur retombe sur le bleu du
-     navigateur, et c'est ainsi qu'il revient a chaque fois. */
+  /* 4 bis. Italique gras, lien bleu */
   {
     const marcheur = d.createTreeWalker(d.body, NodeFilter.SHOW_TEXT);
     const portes = new Set();
@@ -237,10 +186,6 @@ const RELEVE = () => {
   for (const a of d.querySelectorAll('a')) {
     if (!visible(a)) continue;
     if (!a.textContent.trim() && !a.getAttribute('aria-label') && !a.querySelector('img[alt]:not([alt=""])')) ajouter('lien sans nom', a.getAttribute('href') || '(sans href)');
-    /* 2.5.3 : le nom accessible doit contenir le texte visible.
-       Les espaces insecables du texte visible sont ramenees a des espaces
-       ordinaires avant comparaison : un lecteur d'ecran ne fait pas la
-       difference, et l'exiger produirait des constats sans objet. */
     const normal = (s) => s.replace(/[   ]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
     const al = a.getAttribute('aria-label'), tv = a.textContent.trim();
     if (al && tv && !normal(al).includes(normal(tv))) ajouter('etiquette dans le nom', `visible « ${tv} », nom « ${al.slice(0, 60)} »`);
@@ -249,17 +194,7 @@ const RELEVE = () => {
   /* 7. Images */
   for (const i of d.querySelectorAll('img:not([alt])')) ajouter('image sans alt', i.getAttribute('src') || '');
 
-  /* 8. Cibles tactiles (2.5.8).
-        Deux exceptions du critere sont appliquees telles qu'il les enonce :
-        la barre du haut et le pied sont des zones de navigation dense qui
-        relevent de l'exception d'espacement, et un lien pose DANS une phrase
-        est exempte — sa hauteur est contrainte par l'interligne du texte qui
-        l'entoure, pas par un choix de dimension. */
-  /* Un lien est « dans une phrase » des lors que le bloc de texte qui le
-     contient porte autre chose que lui. On remonte jusqu'au bloc, et pas
-     seulement au parent immediat : un lien enveloppe dans un <span> reste
-     un lien de texte, et sa hauteur est celle de l'interligne du paragraphe,
-     pas une dimension choisie. */
+  /* 8. Cibles tactiles */
   const dansUnePhrase = (a) => {
     if (getComputedStyle(a).display !== 'inline') return false;
     let bloc = a.parentElement;
@@ -278,15 +213,7 @@ const RELEVE = () => {
   return echecs;
 };
 
-/* ══ Passe statique : le balisage est-il bien forme ? ═════════════════════
-   Le navigateur repare tout : une balise fermante en trop, une ouvrante
-   manquante, il les rattrape et sert une page qui a l'air correcte. La
-   verification doit donc se faire sur le fichier, avant tout rendu.
-
-   Ce controle vient d'un incident reel : un script de nettoyage a supprime
-   une ligne « <link …><style> », la feuille suivante s'est retrouvee sans
-   ouverture, et son contenu s'affichait en clair tout en haut de la page
-   d'accueil. Le rendu ne signalait rien, le DOM non plus. */
+/* ══ Passe statique du balisage ══ */
 const AUTOFERMANTES = new Set(['br', 'hr', 'img', 'input', 'link', 'meta', 'source', 'area', 'base', 'col', 'embed', 'track', 'wbr', 'path', 'circle', 'rect', 'line', 'polygon', 'polyline', 'ellipse', 'use', 'stop']);
 const UNIQUES = ['main', 'h1'];
 
@@ -340,20 +267,11 @@ for (const fichier of pages) {
     total++;
   }
   for (const largeur of LARGEURS) {
-    /* Le fondu d'entree n'est pas couvert par « prefers-reduced-motion » dans la
-       feuille du site : c'est la coupure d'animations posee apres chargement,
-       plus bas, qui rend la mesure deterministe. L'option ci-dessous ne couvre
-       que les animations qui, elles, respectent la preference. */
     const contexte = await navigateur.newContext({ viewport: { width: largeur, height: 900 }, reducedMotion: 'reduce' });
     const page = await contexte.newPage();
 
     await page.goto(`${base}/${fichier}`, { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
-    /* « couches.css » anime tout enfant direct de body sur 0,7 s et ne prevoit
-       pas « prefers-reduced-motion » : l'option du navigateur n'y peut rien. On
-       coupe donc animations et transitions apres chargement, sinon la mesure
-       tombe tantot avant, tantot apres le fondu, et deux passes identiques ne
-       donnent pas le meme resultat. */
     await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
     await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
     const echecs = await page.evaluate(RELEVE);
