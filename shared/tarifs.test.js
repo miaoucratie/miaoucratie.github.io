@@ -94,11 +94,31 @@ describe('remises', () => {
     assert.equal(e.cumulBloque, false);
   });
 
-  test('en periode de forte demande la remise solidaire tombe, et le dit', () => {
+  test('en periode de forte demande un sejour court garde la remise solidaire', () => {
     const e = estimerSejour({ visites: 4, solidaire: true, periode: true });
-    assert.equal(e.remiseSolidaire, 0);
-    assert.equal(e.cumulBloque, true);
-    assert.equal(e.total, 72);
+    assert.equal(e.remiseSolidaire, 1);
+    assert.equal(e.cumulBloque, false);
+    assert.equal(e.total, 68);
+  });
+
+  test('en periode de forte demande six visites gardent la remise solidaire', () => {
+    for (const chats of [1, 2]) {
+      const e = estimerSejour({ chats, visites: 6, solidaire: true, periode: true });
+      assert.equal(e.remiseSejour, 0);
+      assert.equal(e.remiseSolidaire, 1);
+      assert.equal(e.cumulBloque, false);
+      assert.equal(e.total, 102);
+    }
+  });
+
+  test('en periode de forte demande sept visites n ont qu une remise, et le disent', () => {
+    for (const chats of [1, 2]) {
+      const e = estimerSejour({ chats, visites: 7, solidaire: true, periode: true });
+      assert.equal(e.remiseSejour, 1);
+      assert.equal(e.remiseSolidaire, 0);
+      assert.equal(e.cumulBloque, true);
+      assert.equal(e.total, 119);
+    }
   });
 
   test('la periode de forte demande seule ne change rien', () => {

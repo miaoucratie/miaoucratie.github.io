@@ -53,8 +53,8 @@
 
     const base = tarifVisite(chats);
     const remiseSejour = nombreVisites >= SEUIL_SEJOUR_LONG ? REMISE_PAR_VISITE_EUR : 0;
-    const remiseSolidaire = solidaire && !periode ? REMISE_PAR_VISITE_EUR : 0;
-    const cumulBloque = Boolean(solidaire && periode);
+    const cumulBloque = Boolean(solidaire && periode && remiseSejour > 0);
+    const remiseSolidaire = solidaire && !cumulBloque ? REMISE_PAR_VISITE_EUR : 0;
 
     const tarifNet = base - remiseSejour - remiseSolidaire;
     const supplementKm = distance * 2 * FRAIS_KM_EUR * nombreVisites;
