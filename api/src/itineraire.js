@@ -13,8 +13,7 @@
 const BAN = "https://data.geopf.fr/geocodage/search";
 const NOMINATIM = "https://nominatim.openstreetmap.org";
 const OSRM = "https://router.project-osrm.org";
-// Nominatim et OSRM refusent une requête sans identifiant d'application ;
-// Cloudflare n'en envoie aucun par défaut.
+// Identifiant d'application pour Nominatim et OSRM
 const ENTETES = {
   "User-Agent": "MiaoucratieIndisponibilites/1.0 (contact via miaoucratie.fr)",
   Accept: "application/json",
@@ -75,11 +74,7 @@ export async function boucle(depart, adresses, outils = {}) {
   return { totalDistanceKm: trajet.distanceKm, totalDurationMin: trajet.dureeMin };
 }
 
-/**
- * Ordre de passage qui rend la boucle la plus courte. Recherche exacte, pas
- * une approximation : avec dix étapes au plus, toutes les possibilités sont
- * comparées.
- */
+/** Ordre de passage qui rend la boucle la plus courte, par recherche exacte. */
 export async function meilleurOrdre(depart, adresses, outils = {}) {
   const points = await situerTout([depart, ...adresses, depart], outils);
   const matrice = await matriceRoutiere(points, outils);
@@ -94,8 +89,7 @@ export async function meilleurOrdre(depart, adresses, outils = {}) {
 /**
  * Plus court chemin qui part du point 0, passe une fois par chaque étape
  * (1 à n-2) et finit au point n-1. Programmation dynamique sur les
- * sous-ensembles d'étapes : résultat exact, en quelques milliers d'opérations
- * pour dix étapes.
+ * sous-ensembles d'étapes.
  */
 export function plusCourteBoucle(matrice) {
   const n = matrice.length - 2;
@@ -174,12 +168,7 @@ function cleAdresse(adresse) {
   return adresse.trim().replace(/\s+/g, " ").toLocaleLowerCase("fr-FR");
 }
 
-/**
- * Réécritures de la même adresse, de la plus précise à la moins précise.
- * Nominatim trouve mal certaines adresses françaises avec un numéro suivi de
- * « Rés », « Bât »… Chaque essai interroge le vrai service : ce n'est pas une
- * estimation de distance.
- */
+/** Réécritures de la même adresse, de la plus précise à la moins précise. */
 export function variantesAdresse(adresse) {
   const variantes = [adresse];
   const sansNumero = adresse.replace(
@@ -255,12 +244,10 @@ function motsSignificatifs(texte) {
 }
 
 /**
- * Base adresse nationale : précise au numéro près sur les adresses françaises,
- * là où Nominatim retombe souvent sur le centre du bourg. Une réponse n'est
- * gardée que si elle correspond vraiment à l'adresse demandée :
+ * Base adresse nationale. Une réponse n'est gardée que si elle correspond à
+ * l'adresse demandée :
  * - un numéro trouvé doit avoir le même code postal ;
- * - une rue trouvée doit avoir tous ses mots dans l'adresse demandée, sinon la
- *   base propose volontiers une rue voisine au nom approchant.
+ * - une rue trouvée doit avoir tous ses mots dans l'adresse demandée.
  */
 async function interrogerBan(adresse, lire) {
   const url = new URL(BAN);
@@ -316,8 +303,7 @@ async function interrogerNominatim(requete, codePostal, lire, attendre) {
 
     const resultats = await reponse.json();
     if (!Array.isArray(resultats) || resultats.length === 0) return null;
-    // Une commune homonyme dans un autre département est écartée : le code
-    // postal trouvé doit être celui demandé.
+    // Code postal identique à celui demandé
     const trouve = resultats[0].address?.postcode;
     if (codePostal && trouve && trouve !== codePostal) return null;
 

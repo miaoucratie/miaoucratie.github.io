@@ -26,6 +26,12 @@ const QUOTA_CONNEXIONS_ADMIN = 10;
 
 const DEMANDES_AFFICHEES = 60;
 
+// Jeton d'administration
+const DUREE_JETON_SECONDES = 60 * 60;
+
+// Conservation des empreintes
+const CONSERVATION_EMPREINTES = "-1 day";
+
 // Statuts des demandes
 const STATUT_NOTIFICATION_ECHOUEE = "notification_echouee";
 const STATUT_RELAYEE = "relayee";
@@ -53,6 +59,9 @@ export default {
       }
 
       assertOriginAllowed(request, env);
+      if (request.method === "POST") {
+        ctx.waitUntil(purgerEmpreintes(env));
+      }
 
       if (url.pathname === "/public/unavailabilities" && request.method === "GET") {
         const ranges = await listUnavailabilities(env, { datesSeules: true });
@@ -155,7 +164,7 @@ async function handlePublicReservation(request, env, ctx) {
     );
   }
 
-  const ipHash = await hashIp(request);
+  const ipHash = await hashIp(request, env);
   const submissionsCount = await countRecentSubmissions(env, ipHash);
 
   if (submissionsCount >= QUOTA_DEMANDES) {
@@ -371,7 +380,7 @@ async function handleAdminLogin(request, env) {
     throw new HttpError(400, "Merci de renseigner le mot de passe d’administration.");
   }
 
-  const ipHash = await hashIp(request);
+  const ipHash = await hashIp(request, env);
 
   if ((await countRecentLoginFailures(env, ipHash)) >= QUOTA_CONNEXIONS_ADMIN) {
     throw new HttpError(
@@ -389,7 +398,7 @@ async function handleAdminLogin(request, env) {
   return jsonResponse(
     {
       token,
-      expiresInSeconds: 60 * 60 * 12,
+      expiresInSeconds: DUREE_JETON_SECONDES,
     },
     200,
     request,
@@ -633,10 +642,26 @@ async function recordLoginFailure(env, ipHash) {
     .run();
 }
 
-function hashIp(request) {
-  return hashString(request.headers.get("CF-Connecting-IP") || "unknown");
+function hashIp(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  return hmacSign(`ip|${ip}`, env.ADMIN_TOKEN_SECRET);
 }
 
+// Purge des empreintes
+async function purgerEmpreintes(env) {
+  try {
+    await env.DB.prepare("DELETE FROM admin_login_attempts WHERE attempted_at < datetime('now', ?)")
+      .bind(CONSERVATION_EMPREINTES)
+      .run();
+    await env.DB.prepare(
+      "UPDATE reservation_requests SET ip_hash = '' WHERE ip_hash != '' AND submitted_at < datetime('now', ?)"
+    )
+      .bind(CONSERVATION_EMPREINTES)
+      .run();
+  } catch {
+    // Nouvelle tentative à la requête suivante
+  }
+}
 
 async function parseJson(request) {
   try {
@@ -707,7 +732,7 @@ class HttpError extends Error {
 async function signAdminToken(env) {
   const payload = {
     scope: "admin",
-    exp: Date.now() + 1000 * 60 * 60 * 12,
+    exp: Date.now() + DUREE_JETON_SECONDES * 1000,
   };
   const payloadPart = base64UrlEncode(JSON.stringify(payload));
   const signature = await hmacSign(payloadPart, env.ADMIN_TOKEN_SECRET);
@@ -734,6 +759,10 @@ async function assertAdmin(request, env) {
 
   const payload = JSON.parse(base64UrlDecode(payloadPart));
 
+  if (payload?.scope !== "admin") {
+    throw new HttpError(401, "Jeton invalide.");
+  }
+
   if (!payload?.exp || Number(payload.exp) < Date.now()) {
     throw new HttpError(401, "Session expirée. Merci de vous reconnecter.");
   }
@@ -755,11 +784,6 @@ async function hmacSign(value, secret) {
 async function hmacVerify(value, signature, secret) {
   const expected = await hmacSign(value, secret);
   return timingSafeEqual(expected, signature);
-}
-
-async function hashString(value) {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function timingSafeEqual(a = "", b = "") {
