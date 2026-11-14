@@ -1,21 +1,12 @@
 /**
  * Tests de shared/tarifs.js.
  *
- * Le calculateur est la seule des cinq pages sans parcours qui porte un
- * calcul. Un tarif faux n'y deplace aucun pixel et ne casse aucun clic : il
- * passait donc la QA sans un mot, et se serait vu en devis.
- *
- * Fonctions pures, sans DOM ni reseau : node --test suffit.
- *
- *   npm test
+ * Fonctions pures, sans DOM ni reseau.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-// Le module pose son contenu sur globalThis plutot que de l'exporter, pour
-// rester chargeable en script classique depuis file://. Voir l'en-tete de
-// tarifs.js : c'est ce qui evite que le calculateur cesse de repondre quand la
-// page est ouverte en double-cliquant dessus.
+// Contenu pose sur globalThis
 import './tarifs.js';
 
 const {
@@ -136,10 +127,7 @@ describe('acompte et solde', () => {
   });
 
   test('l acompte est rendu au centime, pas en flottant brut', () => {
-    // 18 × 0,3 vaut 5.3999999999999995 en virgule flottante. L'affichage le
-    // masque, mais la valeur circule : elle sert au solde, et servira a tout
-    // ce qui lira ce montant. Ce cas est le plus courant du site — un chat,
-    // une visite — et c'est lui qui pince l'arrondi.
+    // 18 × 0,3 vaut 5.3999999999999995 en virgule flottante.
     const e = estimerSejour();
     assert.equal(e.total, 18);
     assert.equal(e.acompte, 5.4);
@@ -168,8 +156,7 @@ describe('acompte et solde', () => {
   });
 
   test('l acompte est calcule sur le total affiche, au centime pres', () => {
-    // 2,5 km : le supplement tombe sur une demi-decimale, cas ou un calcul
-    // mene sur le total non arrondi et l'affichage divergeraient d'un centime.
+    // 2,5 km : supplement sur une demi-decimale
     const e = estimerSejour({ visites: 1, km: 2.5 });
     assert.equal(e.total, 21.5);
     assert.equal(e.acompte, 6.45);

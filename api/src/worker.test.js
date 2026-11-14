@@ -2,6 +2,7 @@
 
 import { test, describe, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import worker from './worker.js';
 import { baseD1 } from './base-de-test.js';
 
@@ -86,10 +87,18 @@ const appeler = async (chemin, options = {}) => {
   return reponse;
 };
 
-async function empreinte(valeur) {
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(valeur));
-  return [...new Uint8Array(digest)].map((octet) => octet.toString(16).padStart(2, '0')).join('');
+const b64url = (buffer) => Buffer.from(buffer).toString('base64')
+  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+
+async function hmac(valeur, secret) {
+  const encoder = new TextEncoder();
+  const cle = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'],
+  );
+  return b64url(await crypto.subtle.sign('HMAC', cle, encoder.encode(valeur)));
 }
+
+const empreinte = (ip, secret = SECRET) => hmac(`ip|${ip}`, secret);
 
 const EMPREINTE_SANS_IP = await empreinte('unknown');
 
@@ -106,7 +115,7 @@ function ajouterIndisponibilite(environnement, startDate, endDate, comment = '')
 }
 
 const LIGNE_DEMANDE = {
-  id: ID, nom: 'Martin', prenom: 'Claire', telephone: '0612345678', whatsapp: '',
+  id: ID, nom: 'Exemple', prenom: 'Claire', telephone: '0612345678', whatsapp: '',
   email: 'claire@example.fr', commune: 'Domagné (35113)', commune_code: '35099',
   commune_code_postal: '35113', adresse: '12 rue des Lilas', nombre_chats: 2,
   date_debut: '2099-06-01', date_fin: '2099-06-10', frequence: 'autre',
@@ -150,19 +159,12 @@ async function jetonValide(environnement = env()) {
 }
 
 async function signerJeton(charge, secret = SECRET) {
-  const encoder = new TextEncoder();
-  const b64url = (buffer) => Buffer.from(buffer).toString('base64')
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-  const partieCharge = b64url(encoder.encode(JSON.stringify(charge)));
-  const cle = await crypto.subtle.importKey(
-    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'],
-  );
-  const signature = await crypto.subtle.sign('HMAC', cle, encoder.encode(partieCharge));
-  return `${partieCharge}.${b64url(signature)}`;
+  const partieCharge = b64url(new TextEncoder().encode(JSON.stringify(charge)));
+  return `${partieCharge}.${await hmac(partieCharge, secret)}`;
 }
 
 const demandeValide = (extra = {}) => ({
-  nom: 'Dupont', prenom: 'Marie', telephone: '0612345678',
+  nom: 'Essai', prenom: 'Marie', telephone: '0612345678',
   email: 'marie@example.com', commune: 'Domagné', nombreChats: 2,
   dateDebut: '2099-06-01', dateFin: '2099-06-10',
   frequence: '1 visite par jour',
@@ -372,6 +374,37 @@ describe('jeton administrateur', () => {
     assert.equal(reponse.status, 401);
   });
 
+  test('jeton valide', async () => {
+    const jeton = await signerJeton({ scope: 'admin', exp: Date.now() + 60_000 });
+    const reponse = await appeler('/admin/unavailabilities', { entetes: { Authorization: `Bearer ${jeton}` } });
+    assert.equal(reponse.status, 200);
+  });
+
+  test('portee absente', async () => {
+    const jeton = await signerJeton({ exp: Date.now() + 60_000 });
+    const reponse = await appeler('/admin/unavailabilities', { entetes: { Authorization: `Bearer ${jeton}` } });
+    assert.equal(reponse.status, 401);
+  });
+
+  test('autre portee', async () => {
+    for (const scope of ['public', 'Admin', '', null, ['admin']]) {
+      const jeton = await signerJeton({ scope, exp: Date.now() + 60_000 });
+      const reponse = await appeler('/admin/unavailabilities', { entetes: { Authorization: `Bearer ${jeton}` } });
+      assert.equal(reponse.status, 401, JSON.stringify(scope));
+    }
+  });
+
+  test('duree d une heure', async () => {
+    const avant = Date.now();
+    const reponse = await appeler('/admin/login', { methode: 'POST', corps: { password: MOT_DE_PASSE } });
+    const apres = Date.now();
+    const { token, expiresInSeconds } = await reponse.json();
+    assert.equal(expiresInSeconds, 3600);
+    const charge = JSON.parse(Buffer.from(token.split('.')[0], 'base64url').toString());
+    assert.equal(charge.scope, 'admin');
+    assert.ok(charge.exp >= avant + 3600_000 && charge.exp <= apres + 3600_000, String(charge.exp - avant));
+  });
+
   test('charge modifiee', async () => {
     const jetonLong = await signerJeton({ scope: 'admin', exp: Date.now() + 10_000_000 });
     const [charge, signature] = jetonLong.split('.');
@@ -424,6 +457,26 @@ describe('envois du formulaire', () => {
     assert.equal(reponse.status, 200);
   });
 
+  test('limite atteinte, meme adresse', async () => {
+    const environnement = env();
+    ajouterEnvoisRecents(environnement, 4, await empreinte('203.0.113.42'));
+    const reponse = await appeler('/public/reservations', {
+      methode: 'POST', corps: demandeValide(), environnement,
+      entetes: { 'CF-Connecting-IP': '203.0.113.42' },
+    });
+    assert.equal(reponse.status, 429);
+    assert.equal(demandesEnBase(environnement).length, 4);
+  });
+
+  test('sans en-tete', async () => {
+    const environnement = env();
+    ajouterEnvoisRecents(environnement, 4, await empreinte('203.0.113.42'));
+    const reponse = await appeler('/public/reservations', {
+      methode: 'POST', corps: demandeValide(), environnement,
+    });
+    assert.equal(reponse.status, 200);
+  });
+
   test('enregistrement de la demande', async () => {
     const environnement = env();
     const reponse = await appeler('/public/reservations', {
@@ -442,7 +495,7 @@ describe('envois du formulaire', () => {
         frequence_autre: ligne.frequence_autre, status: ligne.status,
       },
       {
-        nom: 'Dupont', prenom: 'Marie', telephone: '0612345678', whatsapp: '', email: 'marie@example.com',
+        nom: 'Essai', prenom: 'Marie', telephone: '0612345678', whatsapp: '', email: 'marie@example.com',
         commune: 'Domagné', adresse: '12 rue des Lilas', nombre_chats: 2, date_debut: '2099-06-01',
         date_fin: '2099-06-10', frequence: 'autre', frequence_autre: 'le samedi', status: 'notification_echouee',
       }
@@ -458,6 +511,19 @@ describe('envois du formulaire', () => {
     const [ligne] = demandesEnBase(environnement);
     assert.ok(!Object.values(ligne).map(String).includes('203.0.113.42'));
     assert.equal(ligne.ip_hash, await empreinte('203.0.113.42'));
+  });
+
+  test('empreinte liee au secret', async () => {
+    const ip = '203.0.113.42';
+    const environnement = env({ ADMIN_TOKEN_SECRET: 'autre-secret' });
+    await appeler('/public/reservations', {
+      methode: 'POST', corps: demandeValide(), environnement, entetes: { 'CF-Connecting-IP': ip },
+    });
+    const [ligne] = demandesEnBase(environnement);
+    const sha256 = Buffer.from(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip))).toString('hex');
+    assert.equal(ligne.ip_hash, await empreinte(ip, 'autre-secret'));
+    assert.notEqual(ligne.ip_hash, await empreinte(ip));
+    assert.notEqual(ligne.ip_hash, sha256);
   });
 });
 
@@ -583,6 +649,35 @@ describe('echecs de connexion', () => {
     });
     assert.deepEqual(tentatives(environnement), [{ ip_hash: await empreinte('203.0.113.7') }]);
   });
+
+  test('limite atteinte, meme adresse', async () => {
+    const environnement = env();
+    ajouterEchecsConnexion(environnement, 10, await empreinte('203.0.113.7'));
+    const reponse = await appeler('/admin/login', {
+      methode: 'POST', corps: { password: MOT_DE_PASSE }, environnement,
+      entetes: { 'CF-Connecting-IP': '203.0.113.7' },
+    });
+    assert.equal(reponse.status, 429);
+  });
+
+  test('autre adresse', async () => {
+    const environnement = env();
+    ajouterEchecsConnexion(environnement, 10, await empreinte('203.0.113.7'));
+    const reponse = await appeler('/admin/login', {
+      methode: 'POST', corps: { password: MOT_DE_PASSE }, environnement,
+      entetes: { 'CF-Connecting-IP': '198.51.100.1' },
+    });
+    assert.equal(reponse.status, 200);
+  });
+
+  test('sans en-tete', async () => {
+    const environnement = env();
+    ajouterEchecsConnexion(environnement, 10, await empreinte('203.0.113.7'));
+    const reponse = await appeler('/admin/login', {
+      methode: 'POST', corps: { password: MOT_DE_PASSE }, environnement,
+    });
+    assert.equal(reponse.status, 200);
+  });
 });
 
 describe('liste des demandes', () => {
@@ -600,7 +695,7 @@ describe('liste des demandes', () => {
     ajouterDemande(environnement);
     assert.deepEqual(await lire(environnement), [{
       id: ID, soumiseLe: '2026-11-09 17:08:15', statut: 'received',
-      nom: 'Martin', prenom: 'Claire', telephone: '0612345678', whatsapp: '', email: 'claire@example.fr',
+      nom: 'Exemple', prenom: 'Claire', telephone: '0612345678', whatsapp: '', email: 'claire@example.fr',
       commune: 'Domagné (35113)', communeCodePostal: '35113', adresse: '12 rue des Lilas', nombreChats: 2,
       dateDebut: '2099-06-01', dateFin: '2099-06-10', frequence: 'autre', frequenceAutre: '2 visites le samedi',
       observations: 'Deux chats\ntrès câlins',
@@ -631,10 +726,10 @@ describe('liste des demandes', () => {
   });
 });
 
-describe('ancienne route de signalement', () => {
-  test('route retirée', async () => {
+describe('signalement par le navigateur', () => {
+  test('route absente', async () => {
     const environnement = env({ MAKE_WEBHOOK_URL: 'https://relais.test/abc' });
-    ajouterDemande(environnement);
+    ajouterDemande(environnement, { ip_hash: '' });
     const avant = demandesEnBase(environnement);
     for (const methode of ['POST', 'GET']) {
       const reponse = await appeler(`/public/reservations/${ID}/notification-echouee`, { methode, environnement });
@@ -813,7 +908,7 @@ describe('demande avec jeton', () => {
     assert.equal(relai.reservation_id, reservationId);
     assert.deepEqual(
       [relai.nom, relai.prenom, relai.email, relai.telephone, relai.commune, relai.adresse, relai.frequence],
-      ['Dupont', 'Marie', 'marie@example.com', '0612345678', 'Domagné', '12 rue des Lilas', '1 visite par jour'],
+      ['Essai', 'Marie', 'marie@example.com', '0612345678', 'Domagné', '12 rue des Lilas', '1 visite par jour'],
     );
   });
 
@@ -831,7 +926,7 @@ describe('demande avec jeton', () => {
       });
       const reponse = await worker.fetch(request, environnement, ctx);
       assert.equal(reponse.status, 200);
-      assert.equal(ctx.attentes.length, 1);
+      assert.equal(ctx.attentes.length, 2);
       assert.deepEqual(statuts(environnement), ['notification_echouee']);
 
       liberer();
@@ -978,9 +1073,81 @@ describe('demande avec jeton', () => {
       { turnstile: 'echec', codes: ['jeton-absent'] },
     ]);
     const tout = journal.join('\n');
-    for (const interdit of [JETON, '203.0.113.42', 'Dupont', 'marie@example.com', '0612345678', CLE_PASSE]) {
+    for (const interdit of [JETON, '203.0.113.42', 'Essai', 'marie@example.com', '0612345678', CLE_PASSE]) {
       assert.ok(!tout.includes(interdit), interdit);
     }
+  });
+});
+
+describe('purge des empreintes', () => {
+  test('au fil des requetes', async () => {
+    const environnement = env();
+    ajouterEchecsConnexion(environnement, 2, 'ancienne', '-25 hours');
+    ajouterEchecsConnexion(environnement, 1, 'recente', '-23 hours');
+    ajouterDemande(environnement, { id: 'ancienne', ip_hash: 'h1', submitted_at: '2026-01-01 10:00:00' });
+    environnement.DB.sqlite
+      .prepare(`INSERT INTO reservation_requests (id, nom, prenom, commune, nombre_chats, date_debut, date_fin,
+        frequence, ip_hash, submitted_at) VALUES ('recente', 'N', 'P', 'Vitré', 1, '2099-01-01', '2099-01-02',
+        '1 visite par jour', 'h2', datetime('now', '-23 hours'))`)
+      .run();
+    const avant = demandesEnBase(environnement);
+
+    const lecture = contexte();
+    await appeler('/public/unavailabilities', { environnement, ctx: lecture });
+    assert.equal(lecture.attentes.length, 0);
+    assert.deepEqual(demandesEnBase(environnement), avant);
+
+    const ctx = contexte();
+    await appeler('/route-absente', { methode: 'POST', corps: {}, environnement, ctx });
+    assert.equal(ctx.attentes.length, 1);
+
+    assert.deepEqual(lignes(environnement, 'SELECT ip_hash FROM admin_login_attempts'), [{ ip_hash: 'recente' }]);
+    assert.deepEqual(
+      demandesEnBase(environnement),
+      avant.map((ligne) => (ligne.id === 'ancienne' ? { ...ligne, ip_hash: '' } : ligne)),
+    );
+  });
+
+  test('base en erreur', async () => {
+    const environnement = env();
+    const prepare = environnement.DB.prepare.bind(environnement.DB);
+    environnement.DB.prepare = (sql) => {
+      if (/^(DELETE FROM admin_login_attempts|UPDATE reservation_requests SET ip_hash)/.test(sql)) {
+        throw new Error('base indisponible');
+      }
+      return prepare(sql);
+    };
+    const reponse = await appeler('/public/unavailabilities', { environnement });
+    assert.equal(reponse.status, 200);
+    const ecriture = contexte();
+    const refus = await appeler('/route-absente', { methode: 'POST', corps: {}, environnement, ctx: ecriture });
+    assert.equal(ecriture.attentes.length, 1);
+    assert.equal(refus.status, 404);
+  });
+
+  test('purge unique', async () => {
+    const sql = readFileSync(new URL('../operations/purge-empreintes.sql', import.meta.url), 'utf8');
+    const environnement = env();
+    const ip = '203.0.113.42';
+    const sha256 = Buffer.from(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip))).toString('hex');
+    const actuelle = await empreinte(ip);
+    ajouterEchecsConnexion(environnement, 2, sha256);
+    ajouterEchecsConnexion(environnement, 1, actuelle);
+    ajouterDemande(environnement, { id: 'a', ip_hash: sha256 });
+    ajouterDemande(environnement, { id: 'b', ip_hash: actuelle });
+    ajouterDemande(environnement, { id: 'c', ip_hash: '' });
+    const avant = demandesEnBase(environnement);
+
+    environnement.DB.sqlite.exec(sql);
+
+    assert.deepEqual(lignes(environnement, 'SELECT ip_hash FROM admin_login_attempts'), [{ ip_hash: actuelle }]);
+    assert.deepEqual(
+      demandesEnBase(environnement),
+      avant.map((ligne) => (ligne.id === 'a' ? { ...ligne, ip_hash: '' } : ligne)),
+    );
+
+    environnement.DB.sqlite.exec(sql);
+    assert.equal(lignes(environnement, 'SELECT id FROM admin_login_attempts').length, 1);
   });
 });
 

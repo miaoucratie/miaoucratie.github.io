@@ -1,10 +1,7 @@
 /**
  * Tests de l'agenda du jour de l'appli Indisponibilités.
  *
- * Le flux iCal est fourni en dur : aucun appel réseau. Les cas reprennent la
- * forme réelle de l'agenda Google : gardes en journée entière répétées chaque
- * jour, jour exclu, occurrence modifiée, événements à heure fixe autour du
- * changement d'heure, invitations envoyées par d'autres, formations en ligne.
+ * Flux iCal fourni en dur, sans appel réseau.
  */
 
 import { test, describe, beforeEach } from 'node:test';
@@ -25,7 +22,7 @@ const FLUX = [
   'UID:garde@google.com',
   'LOCATION:3 rue des Lilas\\, 35500 Vitré\\, France',
   'DESCRIPTION:Deux chats\\nClé chez la voisine',
-  'SUMMARY:Garde Minou',
+  'SUMMARY:Garde chat A',
   'BEGIN:VALARM',
   'ACTION:DISPLAY',
   'DESCRIPTION:Rappel',
@@ -37,7 +34,7 @@ const FLUX = [
   'RECURRENCE-ID;VALUE=DATE:20261025',
   'UID:garde@google.com',
   'LOCATION:3 rue des Lilas\\, 35500 Vitré\\, France',
-  'SUMMARY:Garde Minou (deux passages)',
+  'SUMMARY:Garde chat A (deux passages)',
   'END:VEVENT',
   'BEGIN:VEVENT',
   'DTSTART;TZID=Europe/Paris:20260902T183000',
@@ -145,7 +142,7 @@ const FLUX = [
   'DTSTART;TZID=Europe/Paris:20261012T150000',
   'DTEND;TZID=Europe/Paris:20261012T160000',
   'UID:pv@google.com',
-  'SUMMARY:PV Caramel',
+  'SUMMARY:PV chat C',
   'LOCATION:Vitré',
   'END:VEVENT',
   'BEGIN:VEVENT',
@@ -153,7 +150,7 @@ const FLUX = [
   'DTEND;VALUE=DATE:20260402',
   'RRULE:FREQ=DAILY;UNTIL=20260404',
   'UID:garde-visites@google.com',
-  'SUMMARY:Garde Biscotte',
+  'SUMMARY:Garde chat B',
   'LOCATION:Rennes',
   'END:VEVENT',
   'BEGIN:VEVENT',
@@ -161,7 +158,7 @@ const FLUX = [
   'DTEND;TZID=Europe/Paris:20260402T174000',
   'RECURRENCE-ID;TZID=Europe/Paris:19700101T010000',
   'UID:garde-visites@google.com',
-  'SUMMARY:Garde Biscotte',
+  'SUMMARY:Garde chat B',
   'LOCATION:Rennes',
   'END:VEVENT',
   'BEGIN:VEVENT',
@@ -169,7 +166,7 @@ const FLUX = [
   'DTEND;TZID=Europe/Paris:20260403T200000',
   'RECURRENCE-ID;TZID=Europe/Paris:19700101T010000',
   'UID:garde-visites@google.com',
-  'SUMMARY:Garde Biscotte',
+  'SUMMARY:Garde chat B',
   'LOCATION:Rennes',
   'END:VEVENT',
   'BEGIN:VEVENT',
@@ -201,7 +198,7 @@ describe('gardes en journée entière répétées chaque jour', () => {
     const evenements = await seulement('Garde', '2026-10-23');
     assert.deepEqual(evenements, [{
       id: 'garde@google.com-2026-10-23',
-      summary: 'Garde Minou',
+      summary: 'Garde chat A',
       start: '2026-10-23',
       end: '2026-10-24',
       allDay: true,
@@ -220,7 +217,7 @@ describe('gardes en journée entière répétées chaque jour', () => {
 
   test('une occurrence modifiée remplace celle du jour', async () => {
     const [garde] = await jour('2026-10-25');
-    assert.equal(garde.summary, 'Garde Minou (deux passages)');
+    assert.equal(garde.summary, 'Garde chat A (deux passages)');
   });
 
   test('la description n est jamais renvoyée : l appli ne l affiche pas', async () => {
@@ -231,7 +228,7 @@ describe('gardes en journée entière répétées chaque jour', () => {
 
 describe('jours de garde passés en visite à heure fixe', () => {
   test('Google date le jour remplacé au 1er janvier 1970 : la visite prend la place de la garde ce jour-là', async () => {
-    const resume = async (d) => (await seulement('Garde Biscotte', d)).map((e) => (e.allDay ? 'journée' : e.startTime));
+    const resume = async (d) => (await seulement('Garde chat B', d)).map((e) => (e.allDay ? 'journée' : e.startTime));
     assert.deepEqual(await resume('2026-04-01'), ['journée']);
     assert.deepEqual(await resume('2026-04-02'), ['17:00']);
     assert.deepEqual(await resume('2026-04-03'), ['19:00']);
@@ -311,7 +308,7 @@ describe('seuls les déplacements apparaissent', () => {
   });
 
   test('formation sans lieu, visio et appel sont écartés, la visite reste', async () => {
-    assert.deepEqual((await jour('2026-10-12')).map((e) => e.summary), ['PV Caramel']);
+    assert.deepEqual((await jour('2026-10-12')).map((e) => e.summary), ['PV chat C']);
   });
 
   test('ce qui compte comme une adresse physique', () => {
@@ -319,7 +316,7 @@ describe('seuls les déplacements apparaissent', () => {
       assert.equal(adressePhysique(lieu), true, lieu);
     }
     for (const lieu of [undefined, '', '  ', 'https://zoom.us/j/1', 'Réunion Microsoft Teams',
-      'Google Meet (instructions dans la description)', 'Visio', 'En ligne', '0644247681', '+33669158930']) {
+      'Google Meet (instructions dans la description)', 'Visio', 'En ligne', '0600000000', '+33600000000']) {
       assert.equal(adressePhysique(lieu), false, String(lieu));
     }
   });

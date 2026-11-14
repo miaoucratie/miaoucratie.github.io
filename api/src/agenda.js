@@ -19,7 +19,7 @@ const PROPRIETAIRE = "miaoucratie@gmail.com";
 /** Durée pendant laquelle un flux lu reste servi sans être relu. */
 const FRAICHEUR_MS = 5 * 60 * 1000;
 
-/** Répétitions déroulées au plus pour atteindre une date : borne de sécurité. */
+/** Répétitions déroulées au plus pour atteindre une date. */
 const ITERATIONS_MAX = 20000;
 
 let cache = null;
@@ -50,12 +50,7 @@ export async function evenementsDuJour(urlIcal, date, { lire = fetch, maintenant
   return evenementsDeLaJournee(evenements, date);
 }
 
-/**
- * État de la lecture de l'agenda, sans aucune donnée personnelle : sert à
- * vérifier que le serveur atteint bien l'agenda Google après une mise en ligne.
- * `reglesNonComprises` compte les répétitions que l'agenda du jour ne sait pas
- * dérouler ; elles n'apparaissent alors que leur premier jour.
- */
+/** État de la lecture de l'agenda, sans donnée personnelle. */
 export async function etatAgenda(urlIcal, { lire = fetch, maintenant = Date.now() } = {}) {
   const evenements = await evenementsEnCache(urlIcal, lire, maintenant);
   return {
@@ -74,15 +69,12 @@ async function evenementsEnCache(urlIcal, lire, maintenant) {
     return cache.evenements;
   }
 
-  // Chaque requête lit elle-même : sur Cloudflare, une requête ne peut pas
-  // attendre un appel réseau lancé par une autre.
   try {
     const evenements = await lireFlux(urlIcal, lire);
     cache = { url: urlIcal, luLe: maintenant, evenements };
     return evenements;
   } catch (erreur) {
-    // Google refuse parfois quelques minutes : on sert la dernière lecture
-    // réussie plutôt qu'une erreur.
+    // Dernière lecture réussie
     if (cache && cache.url === urlIcal) {
       return cache.evenements;
     }
@@ -269,10 +261,7 @@ function construireEvenement(proprietes) {
 
   const remplaceBrut = une("RECURRENCE-ID");
   let remplace = remplaceBrut ? lireDate(remplaceBrut) : null;
-  // Quand on passe un jour d'une garde « journée entière » en visite à heure
-  // fixe, Google écrit la date du 1er janvier 1970 au lieu du jour remplacé.
-  // Google affiche alors la visite à la place de la garde, le jour même :
-  // c'est donc le jour de la visite qui est remplacé.
+  // Remplacement daté de 1970 : jour de la visite
   if (remplace && (remplace.journee ? remplace.jour < "1980" : dateMur(remplace.mur || murDansFuseau(remplace.instant, FUSEAU)) < "1980")) {
     remplace = debut;
   }
@@ -321,11 +310,7 @@ function lireDate({ parametres = {}, valeur }) {
   return heureLocale(mur, fuseau);
 }
 
-/**
- * Heure murale d'un fuseau. L'instant réel n'est calculé qu'à la première
- * lecture : la conversion coûte, et la plupart des événements d'un agenda ne
- * concernent jamais la journée demandée.
- */
+/** Heure murale d'un fuseau, instant calculé à la première lecture. */
 function heureLocale(mur, fuseau) {
   let instant = null;
   return {
@@ -370,8 +355,7 @@ function lireRegle(texte) {
     return { nonGeree: true };
   }
 
-  // Seules ces parties sont comprises ; une autre (BYSETPOS, BYHOUR…) changerait
-  // les occurrences : la règle est alors signalée plutôt que mal déroulée.
+  // Parties de règle prises en charge
   const comprises = new Set(["FREQ", "INTERVAL", "COUNT", "UNTIL", "BYDAY", "BYMONTHDAY", "BYMONTH", "WKST"]);
   if (Object.keys(regle).some((cle) => !comprises.has(cle))) {
     return { nonGeree: true };
@@ -414,8 +398,7 @@ function lireRegle(texte) {
  * commence, du premier jour jusqu'à `limite` incluse.
  */
 function joursDeRepetition(regle, premierJour, limite, plancher) {
-  // Le premier jour compte toujours, même s'il ne suit pas la règle : c'est
-  // ce que prévoit le format iCal, et ce qu'affiche Google.
+  // Le premier jour compte toujours
   const resultats = premierJour <= limite ? [premierJour] : [];
   let compte = 1;
   let iterations = 0;
@@ -580,8 +563,7 @@ function evenementsDeLaJournee(evenements, date) {
     }
   }
 
-  // Dates au format ISO : la comparaison simple suffit, et évite de préparer
-  // le tri selon la langue, coûteux au premier appel.
+  // Tri sur les dates ISO
   sortie.sort((a, b) => {
     if (a.allDay !== b.allDay) return a.allDay ? -1 : 1;
     return a.start < b.start ? -1 : a.start > b.start ? 1 : 0;
@@ -744,8 +726,7 @@ function fuseauConnu(fuseau) {
 /**
  * Décalage de Paris sur l'heure universelle, par la règle européenne : heure
  * d'été du dernier dimanche de mars au dernier dimanche d'octobre, changement
- * à 1 h en temps universel. Évite de préparer un convertisseur de fuseau, qui
- * coûte à lui seul plus que tout le reste de la requête.
+ * à 1 h en temps universel.
  */
 function decalageParisMs(instant) {
   const an = new Date(instant).getUTCFullYear();
