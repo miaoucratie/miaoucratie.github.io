@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 /* Pages exclues */
-const EXCLUES = new Set(['admin-indisponibilites.html', 'cgv.html', 'mentions-legales.html']);
+const EXCLUES = new Set(['administration.html', 'cgv.html', 'mentions-legales.html']);
 
 /* ── Formulations bannies ── */
 export const INTERDIT = [

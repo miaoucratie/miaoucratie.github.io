@@ -27,7 +27,7 @@ const SITE = 'https://miaoucratie.fr/';
    publique, il porte deja noindex,nofollow et n'a pas a etre reference. */
 /* « maquette-*.html » : pages de travail, ignorees par Git, jamais publiees.
    Elles n'ont pas a etre auditees comme des pages du site. */
-const EXCLUES = new Set(['admin-indisponibilites.html']);
+const EXCLUES = new Set(['administration.html']);
 
 /* Longueurs retenues : au-dela, les moteurs tronquent l'affichage. Ce sont des
    bornes d'affichage, pas des regles de classement, d'ou l'alerte et non

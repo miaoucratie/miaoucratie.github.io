@@ -38,7 +38,7 @@ const PAGES = readdirSync(RACINE)
 const LARGEURS = [1272, 375];
 
 /* Hors empreinte */
-const SANS_EMPREINTE = new Set(['admin-indisponibilites.html']);
+const SANS_EMPREINTE = new Set(['administration.html']);
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -591,7 +591,7 @@ async function testerGestion(navigateur, base, reseau, echecs) {
   const recus = (methode) => reseau.worker.envois.slice(avant)
     .filter((e) => e.methode === methode && e.chemin.startsWith('/admin/unavailabilities')).length;
   try {
-    await page.goto(`${base}/admin-indisponibilites.html`, { waitUntil: 'load' });
+    await page.goto(`${base}/administration.html`, { waitUntil: 'load' });
     const adresse = page.url();
     await page.fill('#admin-password', MOT_DE_PASSE_ESSAI);
     await page.press('#admin-password', 'Enter');
@@ -640,7 +640,7 @@ const FORMULAIRES = [
     champ: '#nom', valeur: 'Durand', module: '**/js/reservation.js',
   },
   {
-    page: 'admin-indisponibilites.html', formulaire: '#admin-login-form', bouton: '#admin-login-button',
+    page: 'administration.html', formulaire: '#admin-login-form', bouton: '#admin-login-button',
     champ: '#admin-password', valeur: 'essai', module: '**/js/admin-indisponibilites.js',
     autres: [['#unavailability-form', '#save-period-button']],
   },
@@ -1109,7 +1109,7 @@ async function testerConsentement(navigateur, base, largeur, reseau, echecs) {
 /* Divergences admises */
 const DIVERGENCES_ADMISES = new Map([
   ['barre.position', {
-    pages: ['reservation.html', 'admin-indisponibilites.html'],
+    pages: ['reservation.html', 'administration.html'],
     raison: 'tunnel de réservation',
   }],
 ]);
@@ -1430,7 +1430,7 @@ async function main() {
         }
 
         if (erreursJs.length) echecs.push(`${nomPage} @${largeur}px : erreur JS — ${erreursJs[0]}`);
-        if (largeur === LARGEURS[0] && nomPage === 'admin-indisponibilites.html') {
+        if (largeur === LARGEURS[0] && nomPage === 'administration.html') {
           await testerConnexion(page, reseau, echecs);
         }
         await page.close();

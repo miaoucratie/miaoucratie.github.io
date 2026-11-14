@@ -29,7 +29,7 @@ const DEMANDEES = process.argv.slice(2).filter((a) => a.endsWith('.html'));
 
 /* Pages hors perimetre : outils internes ou pages a formulaire, deja couvertes
    par qa.mjs et dont la mise en page ne depend pas de ce chantier. */
-const EXCLUES = new Set(['admin-indisponibilites.html']);
+const EXCLUES = new Set(['administration.html']);
 /* Les fichiers « maquette-*.html » sont ecartes a la lecture du dossier plus
    bas : ce sont des pages de travail, ignorees par Git, jamais publiees. */
 
