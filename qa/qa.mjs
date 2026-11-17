@@ -1088,48 +1088,99 @@ async function testerAntirobotAbsent(navigateur, base, reseau, echecs) {
   }
 }
 
-/* Dates en toutes lettres */
-const MOIS_LONGS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-  'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-const MOIS_ABREGES = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin',
-  'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
-const partiesJour = (iso) => iso.split('-').map(Number);
-const quantiemeJour = (iso) => (partiesJour(iso)[2] === 1 ? '1er' : String(partiesJour(iso)[2]));
-const jourLong = (iso) => {
-  const [annee, mois] = partiesJour(iso);
-  return `${quantiemeJour(iso)} ${MOIS_LONGS[mois - 1]}${annee === new Date().getFullYear() ? '' : ` ${annee}`}`;
-};
-const jourAbrege = (iso) => `${quantiemeJour(iso)} ${MOIS_ABREGES[partiesJour(iso)[1] - 1]}`;
-const plageLongue = (debut, fin) => `du ${debut.slice(0, 7) === fin.slice(0, 7) ? quantiemeJour(debut) : jourLong(debut)} au ${jourLong(fin)}`;
-
 /* Période indisponible simulée */
+const JOUR_FIGE = new Date('2026-12-20T10:00:00');
+const INDISPONIBILITES_DATEES = [
+  { startDate: '2026-12-24', endDate: '2026-12-26' },
+  { startDate: '2027-01-01', endDate: '2027-01-03' },
+];
+const RELAIS_COURT = 'Pour une garde d’un seul tenant, contactez Éva. Elle a toute ma confiance. '
+  + 'Si vous préférez que je prenne ces jours-là, envoyez-moi votre demande, on se relaiera.';
+const CONTACTS_RELAIS = ['mailto:lamaisonkoala@gmail.com', 'tel:+33646152894'];
+const RELAIS_TROUS = 'Pour les jours que je ne couvre pas, Éva peut prendre le relais. Elle a toute ma confiance.';
+const RECAPITULATIFS = [
+  {
+    quoi: 'toute la période', debut: '2026-12-21', fin: '2026-12-23',
+    phrase: 'Je suis disponible du 21 au 23 décembre, sur toute la période.',
+    relais: null, barre: [['oui', 3]], bornes: ['21 déc.', '23 déc.'], legende: false, envoiFerme: false,
+  },
+  {
+    quoi: 'un seul jour', debut: '2026-12-21', fin: '2026-12-21',
+    phrase: 'Je suis disponible le 21 décembre, sur toute la période.',
+    relais: null, barre: [['oui', 1]], bornes: ['21 déc.', '21 déc.'], legende: false, envoiFerme: false,
+  },
+  {
+    quoi: 'deux jours couverts', debut: '2026-12-22', fin: '2026-12-26',
+    phrase: 'Sur cette période, je ne peux assurer que les 22 et 23 décembre. À partir du 24 décembre, je ne suis pas disponible.',
+    relais: RELAIS_COURT, barre: [['oui', 2], ['non', 3]], bornes: ['22 déc.', '26 déc.'], legende: true, envoiFerme: false,
+  },
+  {
+    quoi: 'trois jours couverts', debut: '2026-12-21', fin: '2026-12-24',
+    phrase: 'Je peux assurer du 21 au 23 décembre inclus. À partir du 24 décembre, je ne suis pas disponible.',
+    relais: 'Pour les jours suivants, Éva peut prendre le relais. Elle a toute ma confiance.',
+    barre: [['oui', 3], ['non', 1]], bornes: ['21 déc.', '24 déc.'], legende: true, envoiFerme: false,
+  },
+  {
+    quoi: 'un jour, un trou, un jour', debut: '2026-12-23', fin: '2026-12-27',
+    phrase: 'Sur cette période, je ne peux assurer que le 23 décembre, puis le 27 décembre. Du 24 au 26 décembre, je ne suis pas disponible.',
+    relais: RELAIS_COURT, barre: [['oui', 1], ['non', 3], ['oui', 1]], bornes: ['23 déc.', '27 déc.'], legende: true, envoiFerme: false,
+  },
+  {
+    quoi: 'trou au début', debut: '2026-12-25', fin: '2026-12-30',
+    phrase: 'Je peux assurer du 27 au 30 décembre inclus. Jusqu’au 26 décembre, je ne suis pas disponible.',
+    relais: RELAIS_TROUS, barre: [['non', 2], ['oui', 4]], bornes: ['25 déc.', '30 déc.'], legende: true, envoiFerme: false,
+  },
+  {
+    quoi: 'trou à la fin', debut: '2026-12-27', fin: '2027-01-02',
+    phrase: 'Je peux assurer du 27 au 31 décembre inclus. À partir du 1er janvier 2027, je ne suis pas disponible.',
+    relais: 'Pour les jours suivants, Éva peut prendre le relais. Elle a toute ma confiance.',
+    barre: [['oui', 5], ['non', 2]], bornes: ['27 déc.', '2 janv.'], legende: true, envoiFerme: false,
+  },
+  {
+    quoi: 'trou au milieu', debut: '2026-12-28', fin: '2027-01-05',
+    phrase: 'Je peux assurer du 28 au 31 décembre, puis les 4 et 5 janvier 2027. Du 1er au 3 janvier 2027, je ne suis pas disponible.',
+    relais: RELAIS_TROUS, barre: [['oui', 4], ['non', 3], ['oui', 2]], bornes: ['28 déc.', '5 janv.'], legende: true, envoiFerme: false,
+  },
+  {
+    quoi: 'deux trous', debut: '2026-12-23', fin: '2027-01-02',
+    phrase: 'Je peux assurer le 23 décembre, puis du 27 au 31 décembre. Du 24 au 26 décembre, puis les 1er et 2 janvier 2027, je ne suis pas disponible.',
+    relais: RELAIS_TROUS, barre: [['oui', 1], ['non', 3], ['oui', 5], ['non', 2]], bornes: ['23 déc.', '2 janv.'], legende: true, envoiFerme: false,
+  },
+  {
+    quoi: 'deux mois', debut: '2027-01-30', fin: '2027-02-02',
+    phrase: 'Je suis disponible du 30 janvier 2027 au 2 février 2027, sur toute la période.',
+    relais: null, barre: [['oui', 4]], bornes: ['30 janv.', '2 févr.'], legende: false, envoiFerme: false,
+  },
+  {
+    quoi: 'aucun jour', debut: '2027-01-01', fin: '2027-01-03',
+    phrase: 'Je ne prends pas de réservation du 1er au 3 janvier 2027.',
+    relais: 'Pour ces dates, contactez Éva. Elle a toute ma confiance.',
+    barre: [['non', 3]], bornes: ['1er janv.', '3 janv.'], legende: false, envoiFerme: true,
+  },
+  {
+    quoi: 'retour à une période libre', debut: '2026-12-21', fin: '2026-12-23',
+    phrase: 'Je suis disponible du 21 au 23 décembre, sur toute la période.',
+    relais: null, barre: [['oui', 3]], bornes: ['21 déc.', '23 déc.'], legende: false, envoiFerme: false,
+  },
+];
+
 async function testerPeriodeIndisponible(navigateur, base, reseau, echecs) {
   const nom = 'reservation (periode indisponible)';
-  const { contexte, page } = await pageReservation(navigateur, reseau);
+  const { contexte, page } = await pageReservation(navigateur, reseau, (c) => c.route('**/public/unavailabilities', (route) => route.fulfill({
+    status: 200,
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    contentType: 'application/json',
+    body: JSON.stringify({ ranges: INDISPONIBILITES_DATEES }),
+  })));
   const erreurs = [];
   page.on('pageerror', (e) => erreurs.push(e.message));
-  const cas = [
-    {
-      quoi: 'couverture partielle', debut: jourDecale(7), fin: jourDecale(12),
-      phrase: `Je peux assurer ${plageLongue(jourDecale(7), jourDecale(9))} inclus. À partir du ${jourLong(jourDecale(10))}, je ne suis pas disponible.`,
-      relais: 'Pour les jours suivants, Éva peut prendre le relais. Elle a toute ma confiance.',
-      barre: [['periode__seg--oui', '3'], ['periode__seg--non', '3']],
-      legende: true, envoiFerme: false,
-    },
-    {
-      quoi: 'couverture nulle', debut: jourDecale(10), fin: jourDecale(14),
-      phrase: `Je ne prends pas de réservation ${plageLongue(jourDecale(10), jourDecale(14))}.`,
-      relais: 'Pour ces dates, contactez Éva. Elle a toute ma confiance.',
-      barre: [['periode__seg--non', '5']],
-      legende: false, envoiFerme: true,
-    },
-  ];
   try {
+    await page.clock.setFixedTime(JOUR_FIGE);
     await page.goto(`${base}/reservation.html`, { waitUntil: 'networkidle' });
     await page.waitForFunction(() => document.querySelectorAll('.flatpickr-input').length === 2, { timeout: 12000 });
     await page.locator('#availability-note', { hasText: 'dates grisées' }).waitFor({ timeout: 5000 });
 
-    for (const attendu of cas) {
+    for (const attendu of RECAPITULATIFS) {
       await page.evaluate(([debut, fin]) => {
         document.getElementById('dateDebut')._flatpickr.setDate(debut, true);
         document.getElementById('dateFin')._flatpickr.setDate(fin, true);
@@ -1137,14 +1188,18 @@ async function testerPeriodeIndisponible(navigateur, base, reseau, echecs) {
       await attendre(200);
 
       const vu = await page.evaluate(() => {
-        const texte = (id) => document.getElementById(id).textContent.replace(/[  ]/g, ' ').trim();
+        const brut = (id) => document.getElementById(id).textContent.trim();
+        const texte = (id) => brut(id).replace(/[\u00a0\u202f]/g, ' ');
         return {
           recap: !document.getElementById('periode-recap').hidden,
           phrase: texte('periode-phrase'),
+          dernierMotLie: / \S+$/.test(brut('periode-phrase')),
           relaisVisible: !document.getElementById('relais').hidden,
           relais: texte('relais-texte'),
-          barre: [...document.getElementById('periode-barre').children].map((e) => [e.className, e.style.flexGrow]),
-          bornes: [...document.getElementById('periode-bornes').children].map((e) => e.textContent.replace(/ /g, ' ')),
+          contacts: [...document.querySelectorAll('#relais a')].map((a) => a.getAttribute('href')),
+          barre: [...document.getElementById('periode-barre').children]
+            .map((e) => [e.className.replace('periode__seg--', ''), Number(e.style.flexGrow)]),
+          bornes: [...document.getElementById('periode-bornes').children].map((e) => e.textContent.replace(/[\u00a0\u202f]/g, ' ')),
           legende: !document.getElementById('periode-legende').hidden,
           envoiFerme: document.getElementById('submit-button').disabled,
           noteVisible: !document.getElementById('submit-note').hidden,
@@ -1156,10 +1211,12 @@ async function testerPeriodeIndisponible(navigateur, base, reseau, echecs) {
       const ecart = (quoi, obtenu, voulu) => echecs.push(`${nom}, ${attendu.quoi} : ${quoi} « ${obtenu} », attendu « ${voulu} »`);
       if (!vu.recap) ecart('recapitulatif masque', vu.recap, true);
       if (vu.phrase !== attendu.phrase) ecart('phrase', vu.phrase, attendu.phrase);
-      if (!vu.relaisVisible || vu.relais !== attendu.relais) ecart('relais', vu.relaisVisible ? vu.relais : '(masque)', attendu.relais);
+      if (!vu.dernierMotLie) ecart('dernier mot seul en fin de ligne possible', vu.phrase, 'insecable avant le dernier mot');
+      const relais = vu.relaisVisible ? vu.relais : null;
+      if (relais !== attendu.relais) ecart('relais', relais ?? '(masque)', attendu.relais ?? '(masque)');
+      if (relais && JSON.stringify(vu.contacts) !== JSON.stringify(CONTACTS_RELAIS)) ecart('contacts du relais', vu.contacts.join(' / '), CONTACTS_RELAIS.join(' / '));
       if (JSON.stringify(vu.barre) !== JSON.stringify(attendu.barre)) ecart('barre', JSON.stringify(vu.barre), JSON.stringify(attendu.barre));
-      const bornes = [jourAbrege(attendu.debut), jourAbrege(attendu.fin)];
-      if (JSON.stringify(vu.bornes) !== JSON.stringify(bornes)) ecart('bornes', vu.bornes.join(' / '), bornes.join(' / '));
+      if (JSON.stringify(vu.bornes) !== JSON.stringify(attendu.bornes)) ecart('bornes', vu.bornes.join(' / '), attendu.bornes.join(' / '));
       if (vu.legende !== attendu.legende) ecart('legende visible', vu.legende, attendu.legende);
       if (vu.envoiFerme !== attendu.envoiFerme || vu.noteVisible !== attendu.envoiFerme) {
         ecart('envoi ferme et note', `${vu.envoiFerme}, ${vu.noteVisible}`, `${attendu.envoiFerme}, ${attendu.envoiFerme}`);
