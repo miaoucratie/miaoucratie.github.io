@@ -183,33 +183,33 @@
               <div class="grid grid--two">
                 <div class="field" data-field="nom">
                   <label for="nom">Nom <span aria-hidden="true">*</span></label>
-                  <input id="nom" name="nom" type="text" required autocomplete="family-name" placeholder="Votre nom de famille">
+                  <input id="nom" name="nom" type="text" maxlength="100" required autocomplete="family-name" placeholder="Votre nom de famille">
                   <p class="field-error" id="nom-error" aria-live="polite"></p>
                 </div>
 
                 <div class="field" data-field="prenom">
                   <label for="prenom">Prénom <span aria-hidden="true">*</span></label>
-                  <input id="prenom" name="prenom" type="text" required autocomplete="given-name" placeholder="Votre prénom">
+                  <input id="prenom" name="prenom" type="text" maxlength="100" required autocomplete="given-name" placeholder="Votre prénom">
                   <p class="field-error" id="prenom-error" aria-live="polite"></p>
                 </div>
 
                 <div class="field" data-field="telephone">
                   <label for="telephone">Téléphone de contact <span aria-hidden="true">*</span></label>
-                  <input id="telephone" name="telephone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="06 39 98 12 34">
+                  <input id="telephone" name="telephone" type="tel" maxlength="30" required autocomplete="tel" inputmode="tel" placeholder="06 39 98 12 34">
                   <p class="field-help">Utilisé pour vous recontacter au sujet de votre demande.</p>
                   <p class="field-error" id="telephone-error" aria-live="polite"></p>
                 </div>
 
                 <div class="field" data-field="email">
                   <label for="email">E-mail de contact <span aria-hidden="true">*</span></label>
-                  <input id="email" name="email" type="email" required autocomplete="email" inputmode="email" placeholder="vous@exemple.fr">
+                  <input id="email" name="email" type="email" maxlength="160" required autocomplete="email" inputmode="email" placeholder="vous@exemple.fr">
                   <p class="field-help">Utilisé pour vous recontacter et vous envoyer la suite de l’échange.</p>
                   <p class="field-error" id="email-error" aria-live="polite"></p>
                 </div>
 
                 <div class="field field--full" data-field="whatsapp">
                   <label for="whatsapp">WhatsApp <span class="field-optional">facultatif</span></label>
-                  <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="Votre numéro WhatsApp si différent">
+                  <input id="whatsapp" name="whatsapp" type="tel" maxlength="30" autocomplete="tel-national" inputmode="tel" placeholder="Votre numéro WhatsApp si différent">
                   <p class="field-help">Laissez vide si vous préférez être recontacté autrement.</p>
                   <p class="field-error" id="whatsapp-error" aria-live="polite"></p>
                 </div>
@@ -221,6 +221,7 @@
                       id="commune"
                       name="commune"
                       type="text"
+                      maxlength="150"
                       required
                       autocomplete="off"
                       spellcheck="false"
@@ -242,6 +243,7 @@
                       id="adresse"
                       name="adresse"
                       type="text"
+                      maxlength="200"
                       autocomplete="off"
                       spellcheck="false"
                       aria-autocomplete="list"
@@ -284,7 +286,7 @@
 
                 <div class="field field--full" data-field="autreFrequence" id="autre-frequence-wrapper" hidden>
                   <label for="autreFrequence">Précisez votre autre besoin <span aria-hidden="true">*</span></label>
-                  <input id="autreFrequence" name="frequence_autre" type="text" placeholder="Ex. horaires spécifiques, alternance particulière...">
+                  <input id="autreFrequence" name="frequence_autre" type="text" maxlength="160" placeholder="Ex. horaires spécifiques, alternance particulière...">
                   <p class="field-error" id="autreFrequence-error" aria-live="polite"></p>
                 </div>
 

@@ -1,12 +1,17 @@
 import {
   availableSegments,
+  complementSegments,
+  compterJours,
   isIsoDate,
   mergeRanges,
+  nombreDeJours,
   normalizeDateInput,
   normalizeWhitespace,
+  partsIso,
   sanitizeReservationPayload,
   todayIso,
   validateReservationPayload,
+  validerDatesEnCours,
 } from "../shared/booking-utils.js";
 
 
@@ -759,37 +764,10 @@ function validateDatesLive() {
 
   const start = getDateFieldValue("dateDebut", "date_debut");
   const end = getDateFieldValue("dateFin", "date_fin");
+  const { isValid, errors } = validerDatesEnCours(start, end);
 
-  if (!start && !end) {
-    renderAvailability("", "");
-    return true;
-  }
-
-  if (start && !isIsoDate(start)) {
-    setFieldError("dateDebut", "Merci de choisir une date de début valide.");
-    renderAvailability("", "");
-    return false;
-  }
-
-  if (start && start < TODAY_ISO) {
-    setFieldError("dateDebut", "Les dates passées ne sont pas disponibles.");
-    renderAvailability("", "");
-    return false;
-  }
-
-  if (!end) {
-    renderAvailability("", "");
-    return true;
-  }
-
-  if (!isIsoDate(end)) {
-    setFieldError("dateFin", "Merci de choisir une date de fin valide.");
-    renderAvailability("", "");
-    return false;
-  }
-
-  if (start && end < start) {
-    setFieldError("dateFin", "La date de fin doit être postérieure ou égale à la date de début.");
+  if (!isValid) {
+    applyErrors(errors);
     renderAvailability("", "");
     return false;
   }
@@ -944,50 +922,6 @@ function borne(iso) {
 }
 
 /* Dates en toutes lettres */
-
-/** Jours hors couverture */
-function complementSegments(start, end, couverts) {
-  const trous = [];
-  let curseur = start;
-
-  for (const segment of couverts) {
-    if (segment.startDate > curseur) {
-      trous.push({ startDate: curseur, endDate: decalerJour(segment.startDate, -1) });
-    }
-    curseur = decalerJour(segment.endDate, 1);
-  }
-
-  if (curseur && curseur <= end) {
-    trous.push({ startDate: curseur, endDate: end });
-  }
-
-  return trous;
-}
-
-function partsIso(iso) {
-  const [annee, mois, jour] = iso.split("-").map(Number);
-  return { annee, mois, jour };
-}
-
-function decalerJour(iso, pas) {
-  const { annee, mois, jour } = partsIso(iso);
-  const date = new Date(Date.UTC(annee, mois - 1, jour + pas));
-  const m = `${date.getUTCMonth() + 1}`.padStart(2, "0");
-  const j = `${date.getUTCDate()}`.padStart(2, "0");
-  return `${date.getUTCFullYear()}-${m}-${j}`;
-}
-
-function nombreDeJours(start, end) {
-  const a = partsIso(start);
-  const b = partsIso(end);
-  const depart = Date.UTC(a.annee, a.mois - 1, a.jour);
-  const arrivee = Date.UTC(b.annee, b.mois - 1, b.jour);
-  return Math.round((arrivee - depart) / 86400000) + 1;
-}
-
-function compterJours(segments) {
-  return segments.reduce((total, segment) => total + nombreDeJours(segment.startDate, segment.endDate), 0);
-}
 
 /** Quantième */
 function quantieme(iso) {
