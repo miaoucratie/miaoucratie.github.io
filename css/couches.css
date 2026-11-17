@@ -11,8 +11,6 @@ body {
 
 /* Titres */
 body .faq-hero .hero-title,
-body .tarifs-hero h1,
-body.carte-page .zone-header h2,
 body .cgv-title,
 body .hero-title {
   font-family: 'Cormorant Garamond', serif;
@@ -22,30 +20,19 @@ body .hero-title {
   color: var(--deep, #1E1812);
 }
 body .faq-hero .hero-title,
-body .tarifs-hero h1,
 body .container > header h1,
 body .hero-title {
   font-size: clamp(52px, 7vw, 88px);
 }
-body.carte-page .zone-header h2,
 body .cgv-title {
   font-size: clamp(32px, 5vw, 64px);
 }
-body .faq-hero .hero-sub,
-body .tarifs-hero-sub,
-body.carte-page .zone-desc,
 body .cgv-header p,
 body .container .subtitle {
   font-family: 'DM Sans', sans-serif;
   color: var(--muted, #7A6B5E);
   line-height: 1.8;
 }
-body.tarifs-page .tarifs-bg > .section > h2,
-body.tarifs-page .tarifs-bg h2.tarifs-duplicate-title {
-  display: none;
-}
-
-
 
 /* Pages autonomes */
 body.standalone-page {
@@ -74,9 +61,7 @@ body .hero-title,
 body .section-title,
 body .acc-question,
 body .cgv-title,
-body.carte-page .zone-header h2,
-body.calculateur-page h1,
-body .tarifs-hero h1 {
+body.calculateur-page h1 {
   font-family: 'Cormorant Garamond', serif !important;
   font-weight: 700 !important;
   letter-spacing: -0.02em !important;
@@ -87,9 +72,7 @@ body .tarifs-hero h1 {
   font-synthesis: none;
 }
 body .hero-title,
-body .tarifs-hero h1,
-body .cgv-title,
-body.carte-page .zone-header h2 {
+body .cgv-title {
   font-size: clamp(52px, 7vw, 88px) !important;
 }
 /* Calculateur */
@@ -112,19 +95,14 @@ body .stripe-item h2 { font-size: clamp(18px, 1.8vw, 24px) !important; }
 body .cred-item h3 { font-size: 17px !important; }
 body .step h3 { font-size: 18px !important; }
 body .hero-title em,
-body .tarifs-hero h1 em,
 body .cgv-title em,
-body.carte-page .zone-header h2 em,
 body.calculateur-page h1 em {
   color: var(--T, #A8472A);
   font-style: italic;
   font-weight: 400;
 }
-body .hero-sub,
-body .tarifs-hero-sub,
 body .subtitle,
 body .cgv-header p,
-body.carte-page .zone-desc,
 body.calculateur-page .subtitle {
   font-family: 'DM Sans', sans-serif;
   color: var(--muted, #7A6B5E);
@@ -138,43 +116,20 @@ body .cta-eyebrow {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-body.tarifs-page .tarifs-hero-cta .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-}
-body.tarifs-page .tarifs-hero-cta .btn-secondary {
-  display: none;
-}
-body.tarifs-page .tarifs-bg > .section > h2,
-body.tarifs-page .tarifs-bg .section-label {
-  display: none;
-}
-
-
 
 /* Pages autonomes */
 body.standalone-page,
 body.calculateur-page,
-body.cgv-page,
-body.carte-page {
+body.cgv-page {
   background: var(--cream, #FBF7F0);
   color: var(--deep, #1E1812);
-}
-body.standalone-page,
-body.calculateur-page,
-body.cgv-page,
-body.carte-page {
   margin: 0;
   padding: 0;
   display: block;
 }
 body.standalone-page .topbar,
 body.calculateur-page .topbar,
-body.cgv-page .topbar,
-body.carte-page .topbar {
+body.cgv-page .topbar {
   position: sticky;
   top: 0;
 }
@@ -207,7 +162,6 @@ body.cgv-page .brand-rule {
   margin-right: auto;
 }
 
-
 /* ── BARRE DU HAUT ── */
 .topbar {
   position: sticky; top: 0; z-index: 200;
@@ -227,7 +181,6 @@ body.cgv-page .brand-rule {
   transition: color 0.2s ease, opacity 0.2s ease;
 }
 .topbar a:hover { color: var(--peach, #F2CDB0); }
-.topbar .sep { width: 1px; height: 16px; background: rgba(255,255,255,0.15); }
 .topbar a:focus-visible,
 .tmenu-panel a:focus-visible {
   outline: 2px solid rgba(242,205,176,0.8);

@@ -1,6 +1,7 @@
 import {
   dateHeureD1,
   demandesRecentes,
+  lienWhatsapp,
   formatDateFr,
   isoFromDate,
   normalizeDateInput,
@@ -355,7 +356,7 @@ function liensContact(demande) {
 
   [
     demande.telephone && { texte: demande.telephone, href: `tel:${demande.telephone.replace(/\s+/g, "")}` },
-    demande.whatsapp && { texte: `WhatsApp ${demande.whatsapp}`, href: `https://wa.me/${demande.whatsapp.replace(/\D/g, "")}` },
+    demande.whatsapp && { texte: `WhatsApp ${demande.whatsapp}`, href: lienWhatsapp(demande.whatsapp) },
     demande.email && { texte: demande.email, href: `mailto:${demande.email}` },
   ].filter(Boolean).forEach((lien) => {
     const a = element("a", "", lien.texte);

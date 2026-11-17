@@ -9,12 +9,6 @@
   /** Acompte */
   const TAUX_ACOMPTE = 0.3;
 
-  /** Rayon sans frais */
-  const RAYON_INCLUS_KM = 20;
-
-  /** Rayon sur devis */
-  const RAYON_DEVIS_KM = 45;
-
   /** Tarif par nombre de chats */
   const TARIF_VISITE_EUR = Object.freeze({
     1: 18,
@@ -89,8 +83,6 @@
   racine.MiaouTarifs = Object.freeze({
     FRAIS_KM_EUR,
     TAUX_ACOMPTE,
-    RAYON_INCLUS_KM,
-    RAYON_DEVIS_KM,
     TARIF_VISITE_EUR,
     MAX_CHATS_TARIF,
     SEUIL_SEJOUR_LONG,

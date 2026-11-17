@@ -21,6 +21,7 @@ import {
   formatDateFr,
   separerPassees,
   demandesRecentes,
+  lienWhatsapp,
   validerDatesEnCours,
   shiftIsoDay,
   partsIso,
@@ -557,5 +558,14 @@ describe('tri de l ecran d administration', () => {
 
   test('une date de reception illisible est gardee', () => {
     assert.equal(demandesRecentes([recue('sans-date', '')], maintenant).length, 1);
+  });
+});
+
+describe('lien WhatsApp', () => {
+  test('numéro français, avec ou sans indicatif', () => {
+    for (const [saisi, attendu] of [
+      ['06 39 98 56 78', '33639985678'], ['07.39.98.56.78', '33739985678'], ['0639985678', '33639985678'],
+      ['+33 6 39 98 56 78', '33639985678'], ['0033 6 39 98 56 78', '33639985678'], ['33639985678', '33639985678'],
+    ]) assert.equal(lienWhatsapp(saisi), `https://wa.me/${attendu}`, saisi);
   });
 });

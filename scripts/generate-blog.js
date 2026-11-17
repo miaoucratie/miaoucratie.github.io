@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { remplacerZone } from './zones.js';
+import { blocFaq } from './faq.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -336,6 +337,9 @@ poser('sitemap.xml', 'BLOG_URLS', urlsSitemap());
 for (const [f, courante] of Object.entries(PAGES)) {
   poser(f, 'TOPBAR', barre(courante));
   poser(f, 'FOOTER', pied);
+}
+if (fs.existsSync(path.join(RACINE, 'faq.html'))) {
+  poser('faq.html', 'FAQ_JSONLD', blocFaq(aEcrire.get('faq.html') ?? fs.readFileSync(path.join(RACINE, 'faq.html'), 'utf8')));
 }
 if (erreurs.length) terminer();
 

@@ -237,6 +237,7 @@
 }
   </style>
 <link rel="stylesheet" href="css/couches.css">
+  <script src="shared/zone.js"></script>
 </head>
 <body>
 <!-- GENERATED:TOPBAR:START -->
@@ -362,7 +363,8 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-  const FALLBACK_ORIGIN = [48.0572, -1.3365];
+  const ZONE = MiaouZone;
+  const FALLBACK_ORIGIN = ZONE.REGLES.standard.origineSecours;
   let originLatLng = FALLBACK_ORIGIN;
   const map = L.map('map', { scrollWheelZoom: false, zoomControl: false }).setView(FALLBACK_ORIGIN, 10.2);
   /* Commandes de zoom */
@@ -423,14 +425,6 @@
     return String(value || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/['’.-]/g,' ').replace(/\s+/g,' ').trim();
   }
 
-  function haversineKm(lat1, lon1, lat2, lon2){
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
-    return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  }
-
   function clearCommuneDisplay(){
     if(searchMarker){ map.removeLayer(searchMarker); searchMarker = null; }
     if(communeLayer){ map.removeLayer(communeLayer); communeLayer = null; }
@@ -464,13 +458,6 @@
     if(Array.isArray(codes) && codes.length) return String(codes[0] || '');
     const single = getProp(feature, 'postcode');
     return String(single || '');
-  }
-
-  function isIlleEtVilaine(feature){
-    const code = String(getCode(feature) || '');
-    const dep = String(getDepartementCode(feature) || '');
-    const postal = getPostalCode(feature);
-    return dep === '35' || code.startsWith('35') || postal.startsWith('35');
   }
 
   function getPointFromGeometry(feature){
@@ -862,15 +849,16 @@
     const latlng = getPointFromGeometry(feature);
 
     if(!hasGeometry(feature)) return { kind:'unknown', label: `${label || 'Résultat'} : coordonnées indisponibles`, text: 'Impossible de récupérer une position fiable.' };
-    if(!isIlleEtVilaine(feature)) return { kind:'out', label: `${label} : exclue`, text: 'Les communes hors Ille-et-Vilaine sont exclues.' };
-    if(normalized.includes('rennes') || code === '35000' || postal === '35000') return { kind:'out', label: 'Rennes : exclue', text: "Rennes ne fait pas partie de ma zone d'intervention." };
+    if(!ZONE.dansDepartement({ departement: String(getDepartementCode(feature) || ''), code, postal })) return { kind:'out', label: `${label} : exclue`, text: 'Les communes hors Ille-et-Vilaine sont exclues.' };
+    if(ZONE.communeExclue({ nomNormalise: normalized, code, postal })) return { kind:'out', label: 'Rennes : exclue', text: "Rennes ne fait pas partie de ma zone d'intervention." };
 
-    const routeKm = haversineKm(originLatLng[0], originLatLng[1], latlng[0], latlng[1]) * 1.35;
-    if(routeKm <= 21.5){
-      const isLimit = routeKm > 20;
+    const routeKm = ZONE.distanceRouteKm(originLatLng, latlng);
+    const verdict = ZONE.verdictDistance(routeKm);
+    if(verdict === 'inclus' || verdict === 'souplesse'){
+      const isLimit = verdict === 'souplesse';
       return { kind:'free', label: `${label}${isLimit ? ' (limite)' : ''}`, text: `Déplacement inclus${isLimit ? ' en zone de souplesse' : ''}. Distance routière estimée : ${routeKm.toFixed(1)} km.` };
     }
-    if(routeKm <= 45) return { kind:'paid', label: `${label} : sur devis`, text: `Je peux venir sur devis. Distance estimée par la route : ${routeKm.toFixed(1)} km, avec des frais de 0,70 €/km.` };
+    if(verdict === 'devis') return { kind:'paid', label: `${label} : sur devis`, text: `Je peux venir sur devis. Distance estimée par la route : ${routeKm.toFixed(1)} km, avec des frais de 0,70 €/km.` };
     return { kind:'out', label: `${label} : hors secteur`, text: `Au-delà de 45 km par la route : je ne peux pas intervenir.` };
   }
 

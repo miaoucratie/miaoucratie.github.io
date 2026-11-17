@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test",
     "qa": "node qa/qa.mjs --comportement",
+    "styles": "node qa/styles.mjs",
     "qa:update": "node qa/qa.mjs --update",
     "seo": "node qa/seo.mjs",
     "seo:strict": "node qa/seo.mjs --strict",
