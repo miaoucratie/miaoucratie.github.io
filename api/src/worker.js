@@ -300,7 +300,7 @@ async function resultatSiteverify(request, env, jeton) {
 
 // Relais Make
 async function relayerDemandeVerifiee(env, reservationId) {
-  if (!env.MAKE_WEBHOOK_URL || !(await relayerDemande(env, reservationId))) {
+  if (!env.MAKE_WEBHOOK_URL || !env.MAKE_WEBHOOK_SECRET || !(await relayerDemande(env, reservationId))) {
     return;
   }
 
@@ -342,7 +342,7 @@ async function relayerDemande(env, reservationId) {
   try {
     const reponse = await fetch(env.MAKE_WEBHOOK_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-make-apikey": env.MAKE_WEBHOOK_SECRET },
       body: JSON.stringify({
         nom: demande.nom,
         prenom: demande.prenom,
