@@ -918,6 +918,92 @@ async function testerAntirobotAbsent(navigateur, base, reseau, echecs) {
   }
 }
 
+/* Dates en toutes lettres */
+const MOIS_LONGS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+  'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const MOIS_ABREGES = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin',
+  'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+const partiesJour = (iso) => iso.split('-').map(Number);
+const quantiemeJour = (iso) => (partiesJour(iso)[2] === 1 ? '1er' : String(partiesJour(iso)[2]));
+const jourLong = (iso) => {
+  const [annee, mois] = partiesJour(iso);
+  return `${quantiemeJour(iso)} ${MOIS_LONGS[mois - 1]}${annee === new Date().getFullYear() ? '' : ` ${annee}`}`;
+};
+const jourAbrege = (iso) => `${quantiemeJour(iso)} ${MOIS_ABREGES[partiesJour(iso)[1] - 1]}`;
+const plageLongue = (debut, fin) => `du ${debut.slice(0, 7) === fin.slice(0, 7) ? quantiemeJour(debut) : jourLong(debut)} au ${jourLong(fin)}`;
+
+/* Période indisponible simulée */
+async function testerPeriodeIndisponible(navigateur, base, reseau, echecs) {
+  const nom = 'reservation (periode indisponible)';
+  const { contexte, page } = await pageReservation(navigateur, reseau);
+  const erreurs = [];
+  page.on('pageerror', (e) => erreurs.push(e.message));
+  const cas = [
+    {
+      quoi: 'couverture partielle', debut: jourDecale(7), fin: jourDecale(12),
+      phrase: `Je peux assurer ${plageLongue(jourDecale(7), jourDecale(9))} inclus. À partir du ${jourLong(jourDecale(10))}, je ne suis pas disponible.`,
+      relais: 'Pour les jours suivants, Éva peut prendre le relais. Elle a toute ma confiance.',
+      barre: [['periode__seg--oui', '3'], ['periode__seg--non', '3']],
+      legende: true, envoiFerme: false,
+    },
+    {
+      quoi: 'couverture nulle', debut: jourDecale(10), fin: jourDecale(14),
+      phrase: `Je ne prends pas de réservation ${plageLongue(jourDecale(10), jourDecale(14))}.`,
+      relais: 'Pour ces dates, contactez Éva. Elle a toute ma confiance.',
+      barre: [['periode__seg--non', '5']],
+      legende: false, envoiFerme: true,
+    },
+  ];
+  try {
+    await page.goto(`${base}/reservation.html`, { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => document.querySelectorAll('.flatpickr-input').length === 2, { timeout: 12000 });
+    await page.locator('#availability-note', { hasText: 'dates grisées' }).waitFor({ timeout: 5000 });
+
+    for (const attendu of cas) {
+      await page.evaluate(([debut, fin]) => {
+        document.getElementById('dateDebut')._flatpickr.setDate(debut, true);
+        document.getElementById('dateFin')._flatpickr.setDate(fin, true);
+      }, [attendu.debut, attendu.fin]);
+      await attendre(200);
+
+      const vu = await page.evaluate(() => {
+        const texte = (id) => document.getElementById(id).textContent.replace(/[  ]/g, ' ').trim();
+        return {
+          recap: !document.getElementById('periode-recap').hidden,
+          phrase: texte('periode-phrase'),
+          relaisVisible: !document.getElementById('relais').hidden,
+          relais: texte('relais-texte'),
+          barre: [...document.getElementById('periode-barre').children].map((e) => [e.className, e.style.flexGrow]),
+          bornes: [...document.getElementById('periode-bornes').children].map((e) => e.textContent.replace(/ /g, ' ')),
+          legende: !document.getElementById('periode-legende').hidden,
+          envoiFerme: document.getElementById('submit-button').disabled,
+          noteVisible: !document.getElementById('submit-note').hidden,
+          messages: [...document.querySelectorAll('#reservation-form .field-error')]
+            .map((e) => e.textContent.trim()).filter(Boolean),
+        };
+      });
+
+      const ecart = (quoi, obtenu, voulu) => echecs.push(`${nom}, ${attendu.quoi} : ${quoi} « ${obtenu} », attendu « ${voulu} »`);
+      if (!vu.recap) ecart('recapitulatif masque', vu.recap, true);
+      if (vu.phrase !== attendu.phrase) ecart('phrase', vu.phrase, attendu.phrase);
+      if (!vu.relaisVisible || vu.relais !== attendu.relais) ecart('relais', vu.relaisVisible ? vu.relais : '(masque)', attendu.relais);
+      if (JSON.stringify(vu.barre) !== JSON.stringify(attendu.barre)) ecart('barre', JSON.stringify(vu.barre), JSON.stringify(attendu.barre));
+      const bornes = [jourAbrege(attendu.debut), jourAbrege(attendu.fin)];
+      if (JSON.stringify(vu.bornes) !== JSON.stringify(bornes)) ecart('bornes', vu.bornes.join(' / '), bornes.join(' / '));
+      if (vu.legende !== attendu.legende) ecart('legende visible', vu.legende, attendu.legende);
+      if (vu.envoiFerme !== attendu.envoiFerme || vu.noteVisible !== attendu.envoiFerme) {
+        ecart('envoi ferme et note', `${vu.envoiFerme}, ${vu.noteVisible}`, `${attendu.envoiFerme}, ${attendu.envoiFerme}`);
+      }
+      if (vu.messages.length) ecart('message d erreur', vu.messages[0], '(aucun)');
+    }
+    if (erreurs.length) echecs.push(`${nom} : erreur JS — ${erreurs[0]}`);
+  } catch (e) {
+    echecs.push(`${nom} : interrompu — ${e.message.split('\n')[0]}`);
+  } finally {
+    await contexte.close();
+  }
+}
+
 /* Calculateur */
 async function testerCalculateur(page, echecs) {
   const cas = { chats: 3, visites: 7, solidaire: true, km: 5 };
@@ -1435,6 +1521,7 @@ async function main() {
     await testerEnvoi(navigateur, base, reseau, echecs);
     await testerRefusAntirobot(navigateur, base, reseau, echecs);
     await testerAntirobotAbsent(navigateur, base, reseau, echecs);
+    await testerPeriodeIndisponible(navigateur, base, reseau, echecs);
     await testerGestion(navigateur, base, reseau, echecs);
 
     // Barre et pied identiques
