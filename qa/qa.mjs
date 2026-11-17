@@ -230,9 +230,9 @@ function contourAutourDe(point) {
   };
 }
 
-async function figerApiAdresse(contexte, requetesInconnues) {
+async function figerApiAdresse(contexte, requetesInconnues, enPlus = {}) {
   const fixture = JSON.parse(await readFile(FIXTURE_GEO, 'utf8'));
-  const parRequete = fixture.requetes;
+  const parRequete = { ...fixture.requetes, ...enPlus };
   const parCode = new Map();
   for (const features of Object.values(parRequete)) {
     for (const f of features) parCode.set(String(f.properties.code), f);
@@ -501,6 +501,153 @@ async function testerCarte(page, echecs) {
   if (!apres.masquee) echecs.push('carte : la pastille reste visible apres reinitialisation');
   if (apres.titre !== 'Vérifiez votre commune') echecs.push(`carte : la pastille garde "${apres.titre}" apres reinitialisation`);
   if (apres.marqueurs > 1) echecs.push(`carte : ${apres.marqueurs} marqueurs subsistent apres reinitialisation`);
+}
+
+/* Bornes de la carte */
+const RAYON_TERRE_KM = 6371;
+const FACTEUR_ROUTE = 1.35;
+const DEPART_SECOURS = [48.0572, -1.3365];
+const EPSILON_KM = 0.1;
+
+const distanceKm = ([lat1, lon1], [lat2, lon2]) => {
+  const r = Math.PI / 180;
+  const a = Math.sin(((lat2 - lat1) * r) / 2) ** 2
+    + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(((lon2 - lon1) * r) / 2) ** 2;
+  return 2 * RAYON_TERRE_KM * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+/* Point à distance et cap donnés */
+function pointARoute([lat, lon], routeKm, capDegres) {
+  const r = Math.PI / 180;
+  const delta = routeKm / FACTEUR_ROUTE / RAYON_TERRE_KM;
+  const phi = lat * r;
+  const cap = capDegres * r;
+  const lat2 = Math.asin(Math.sin(phi) * Math.cos(delta) + Math.cos(phi) * Math.sin(delta) * Math.cos(cap));
+  const lon2 = lon * r + Math.atan2(Math.sin(cap) * Math.sin(delta) * Math.cos(phi), Math.cos(delta) - Math.sin(phi) * Math.sin(lat2));
+  return [lat2 / r, lon2 / r];
+}
+
+const CLASSES = {
+  free: { titre: 'Commune incluse', pin: '7A9E8E' },
+  paid: { titre: 'Commune sur devis', pin: 'C8603A' },
+  out: { titre: 'Hors zone', pin: 'D64545' },
+};
+
+const BORNES = [
+  { km: 20 - EPSILON_KM, classe: 'free', libelle: (n) => n },
+  { km: 20 + EPSILON_KM, classe: 'free', libelle: (n) => `${n} (limite)` },
+  { km: 21.5 - EPSILON_KM, classe: 'free', libelle: (n) => `${n} (limite)` },
+  { km: 21.5 + EPSILON_KM, classe: 'paid', libelle: (n) => `${n} : sur devis` },
+  { km: 45 - EPSILON_KM, classe: 'paid', libelle: (n) => `${n} : sur devis` },
+  { km: 45 + EPSILON_KM, classe: 'out', libelle: (n) => `${n} : hors secteur` },
+  { km: 10, classe: 'out', libelle: (n) => `${n} : exclue`, departement: '53' },
+  { km: 10, classe: 'out', libelle: () => 'Rennes : exclue', postal: '35000' },
+];
+
+function communesFabriquees(depart, prefixe) {
+  return BORNES.map((b, i) => {
+    const departement = b.departement ?? '35';
+    const nom = `${prefixe} ${i + 1}`;
+    const code = `${departement}9${String(i).padStart(2, '0')}`;
+    const [lat, lon] = pointARoute(depart, b.km, i * 45);
+    return {
+      ...b, nom, point: [lat, lon],
+      feature: {
+        type: 'Feature',
+        properties: { code, nom, codeDepartement: departement, codesPostaux: [b.postal ?? code] },
+        geometry: { type: 'Point', coordinates: [lon, lat] },
+      },
+    };
+  });
+}
+
+async function chercherCommune(page, nom) {
+  await page.click('#resetView');
+  await page.fill('#searchInput', nom);
+  await page.click('#searchBtn');
+  await page.waitForFunction(() => {
+    const e = document.getElementById('resultLabel');
+    return e && !e.hidden && e.textContent.trim() !== '';
+  }, null, { timeout: 5000 });
+  return page.evaluate(() => ({
+    titre: document.querySelector('#desktopStickyCta .title').textContent.trim(),
+    libelle: document.getElementById('resultLabel').textContent.trim(),
+    texte: document.getElementById('resultText').textContent,
+    pastille: document.getElementById('desktopStickyCta').textContent,
+    pins: [...document.querySelectorAll('.leaflet-marker-icon')].map((i) => decodeURIComponent(i.getAttribute('src') || '')),
+  }));
+}
+
+function verifierClassement(vu, attendu, nom, echecs) {
+  const classe = CLASSES[attendu.classe];
+  const libelle = attendu.libelle(attendu.nom);
+  if (vu.titre !== classe.titre) echecs.push(`${nom} : titre « ${vu.titre} », attendu « ${classe.titre} »`);
+  if (vu.libelle !== libelle) echecs.push(`${nom} : libelle « ${vu.libelle} », attendu « ${libelle} »`);
+  if (!vu.pins.some((s) => s.includes(classe.pin))) echecs.push(`${nom} : aucun marqueur ${classe.pin}`);
+  if (/21[.,]5/.test(vu.texte + vu.pastille)) echecs.push(`${nom} : la marge de 21,5 km est affichee`);
+  if (attendu.classe !== 'out') {
+    const lu = vu.texte.match(/(\d+[.,]\d) km/);
+    const voulu = attendu.km.toFixed(1);
+    if (!lu || lu[1].replace(',', '.') !== voulu) echecs.push(`${nom} : distance « ${lu?.[1] ?? '(aucune)'} », attendu ${voulu}`);
+  }
+}
+
+async function testerBornesCarte(navigateur, base, reseau, echecs) {
+  const fixture = JSON.parse(await readFile(FIXTURE_GEO, 'utf8'));
+  const [lonDomagne, latDomagne] = fixture.requetes.domagne[0].geometry.coordinates;
+  const scenarios = [
+    { quoi: 'depart geocode', depart: [latDomagne, lonDomagne], couper: null },
+    { quoi: 'depart de secours', depart: DEPART_SECOURS, couper: (nom) => sansAccents(nom) === 'domagne' },
+  ];
+
+  for (const { quoi, depart, couper } of scenarios) {
+    const communes = communesFabriquees(depart, 'Borne');
+    const enPlus = Object.fromEntries(communes.map((c) => [sansAccents(c.nom), [c.feature]]));
+    const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: LARGEURS[0], height: 900 } });
+    await refuserLaMesure(contexte);
+    await intercepterMesure(contexte, []);
+    await figerApiAdresse(contexte, new Set(), enPlus);
+    if (couper) {
+      await contexte.route('**://geo.api.gouv.fr/**', (route) => (
+        couper(new URL(route.request().url()).searchParams.get('nom') || '') ? route.abort() : route.fallback()));
+    }
+    const page = await contexte.newPage();
+    try {
+      await page.goto(`${base}/carte.html`, { waitUntil: 'networkidle' });
+      for (const c of communes) {
+        const ecart = Math.abs(distanceKm(depart, c.point) * FACTEUR_ROUTE - c.km);
+        if (ecart > 1e-6) echecs.push(`carte (bornes, ${quoi}) : point fabrique a ${ecart} km de sa cible`);
+        const vu = await chercherCommune(page, c.nom);
+        verifierClassement(vu, c, `carte (bornes, ${quoi}) : ${c.km.toFixed(1)} km`, echecs);
+      }
+    } catch (e) {
+      echecs.push(`carte (bornes, ${quoi}) : interrompu — ${e.message.split('\n')[0]}`);
+    } finally {
+      await contexte.close();
+    }
+  }
+
+  // Géocodage injoignable
+  const locales = [
+    { nom: 'Vitré', km: distanceKm(DEPART_SECOURS, [48.1242, -1.2089]) * FACTEUR_ROUTE, classe: 'free', libelle: (n) => n },
+    { nom: 'Bruz', km: distanceKm(DEPART_SECOURS, [47.9831, -1.7439]) * FACTEUR_ROUTE, classe: 'paid', libelle: (n) => `${n} : sur devis` },
+    { nom: 'Rennes', km: 0, classe: 'out', libelle: () => 'Rennes : exclue' },
+  ];
+  const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: LARGEURS[0], height: 900 } });
+  await refuserLaMesure(contexte);
+  await intercepterMesure(contexte, []);
+  await contexte.route('**://geo.api.gouv.fr/**', (route) => route.abort());
+  const page = await contexte.newPage();
+  try {
+    await page.goto(`${base}/carte.html`, { waitUntil: 'networkidle' });
+    for (const c of locales) {
+      verifierClassement(await chercherCommune(page, c.nom), c, `carte (geocodage coupe) : ${c.nom}`, echecs);
+    }
+  } catch (e) {
+    echecs.push(`carte (geocodage coupe) : interrompu — ${e.message.split('\n')[0]}`);
+  } finally {
+    await contexte.close();
+  }
 }
 
 async function testerReservation(page, echecs) {
@@ -1523,6 +1670,7 @@ async function main() {
     await testerAntirobotAbsent(navigateur, base, reseau, echecs);
     await testerPeriodeIndisponible(navigateur, base, reseau, echecs);
     await testerGestion(navigateur, base, reseau, echecs);
+    await testerBornesCarte(navigateur, base, reseau, echecs);
 
     // Barre et pied identiques
     for (const [cle, vues] of signatures) {
