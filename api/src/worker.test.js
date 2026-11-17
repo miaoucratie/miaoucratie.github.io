@@ -865,10 +865,11 @@ describe('demande avec jeton', () => {
   const RELAIS = 'https://relais.test/abc';
   const MESSAGE = "La vérification anti-robot n'a pas abouti. Merci de réessayer.";
 
-  const envJeton = (extra = {}) => env({ MAKE_WEBHOOK_URL: RELAIS, ...extra });
+  const SECRET_RELAIS = 'secret-de-test';
+  const envJeton = (extra = {}) => env({ MAKE_WEBHOOK_URL: RELAIS, MAKE_WEBHOOK_SECRET: SECRET_RELAIS, ...extra });
 
   function reseau({ siteverify, relais } = {}) {
-    const appels = { siteverify: [], relais: [] };
+    const appels = { siteverify: [], relais: [], entetesRelais: [] };
     const simulation = async (url, options) => {
       if (url === SITEVERIFY) {
         const corps = JSON.parse(options.body);
@@ -877,6 +878,7 @@ describe('demande avec jeton', () => {
       }
       if (url === RELAIS) {
         appels.relais.push(JSON.parse(options.body));
+        appels.entetesRelais.push(new Headers(options.headers));
         return relais ? relais() : new Response('relayee');
       }
       throw new Error(`appel réseau inattendu : ${url}`);
@@ -936,6 +938,7 @@ describe('demande avec jeton', () => {
     assert.ok(appels.siteverify[0].options.signal instanceof AbortSignal);
 
     assert.equal(appels.relais.length, 1);
+    assert.equal(appels.entetesRelais[0].get('x-make-apikey'), SECRET_RELAIS);
     const relai = appels.relais[0];
     assert.equal(relai.reservation_id, reservationId);
     assert.deepEqual(
@@ -976,6 +979,9 @@ describe('demande avec jeton', () => {
       ['mis en file', envJeton(), { relais: async () => new Response('Accepted') }],
       ['injoignable', envJeton(), { relais: async () => { throw new Error('délai dépassé'); } }],
       ['non configuré', envJeton({ MAKE_WEBHOOK_URL: undefined }), {}],
+      ['sans secret', envJeton({ MAKE_WEBHOOK_SECRET: undefined }), {}],
+      ['secret vide', envJeton({ MAKE_WEBHOOK_SECRET: '' }), {}],
+      ['clé refusée', envJeton(), { relais: async () => new Response('Unauthorized', { status: 401 }) }],
     ];
     for (const [nom, environnement, options] of cas) {
       const { reponse } = await envoyer(environnement, demandeValide({ turnstileToken: JETON }), options);
