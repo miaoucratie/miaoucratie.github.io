@@ -323,7 +323,7 @@ test('la barre du haut et le pied de page sont generes sur chaque page de la tab
     const t = lire(r, f);
     assert.strictEqual(compter(t, '<header class="topbar">'), 1, `barre du haut absente ou en double dans ${f}`);
     assert.strictEqual(compter(t, '<footer class="footer-bar">'), 1, `pied de page absent ou en double dans ${f}`);
-    assert.match(t, / 06&nbsp;44&nbsp;24&nbsp;76&nbsp;81<\/a>/, `numero sans insecables dans ${f}`);
+    assert.match(t, /<span>06&nbsp;44&nbsp;24&nbsp;76&nbsp;81<\/span><\/a>/, `numero sans insecables dans ${f}`);
     assert.match(t, /&#9776; Menu<\/button>/);
     pieds.add(t.slice(t.indexOf('<footer'), t.indexOf('</footer>')));
   }

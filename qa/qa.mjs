@@ -398,6 +398,29 @@ async function testerMenu(page, echecs, nom) {
   if (refeme !== ferme) echecs.push(`${nom} : le menu burger ne se referme pas`);
 }
 
+async function testerBarreTactile(page, echecs, nom) {
+  for (const largeur of [375, 320]) {
+    await page.setViewportSize({ width: largeur, height: 900 });
+    const icones = await page.evaluate(() => [...document.querySelectorAll('.topbar-links a')].map((a) => {
+      const r = a.getBoundingClientRect();
+      const masque = [...a.querySelectorAll('span')].some((s) => getComputedStyle(s).display === 'none');
+      return { x: r.left, y: r.top, largeur: r.width, hauteur: r.height, nom: masque ? '' : a.textContent.trim() };
+    }));
+    const lieu = `${nom} @${largeur}px : barre du haut`;
+    if (icones.length !== 4) {
+      echecs.push(`${lieu}, ${icones.length} icônes au lieu de 4`);
+      continue;
+    }
+    icones.forEach((i, rang) => {
+      if (i.largeur < 44 || i.hauteur < 44) echecs.push(`${lieu}, icône ${rang + 1} plus petite que 44 × 44 px`);
+      if (!i.nom) echecs.push(`${lieu}, icône ${rang + 1} sans nom pour les lecteurs d'écran`);
+      if (Math.abs(i.y - icones[0].y) > 1) echecs.push(`${lieu}, icône ${rang + 1} sur une autre ligne`);
+      const precedente = icones[rang - 1];
+      if (precedente && i.x < precedente.x + precedente.largeur + 4) echecs.push(`${lieu}, icônes ${rang} et ${rang + 1} trop proches`);
+    });
+  }
+}
+
 async function testerFaq(page, echecs) {
   const n = await page.locator('.acc-item').count();
   if (n < 30) echecs.push(`faq : ${n} questions seulement, attendu au moins 30`);
@@ -1652,6 +1675,7 @@ async function main() {
           }
         }
 
+        if (largeur === LARGEURS[1]) await testerBarreTactile(page, echecs, nomPage);
         if (erreursJs.length) echecs.push(`${nomPage} @${largeur}px : erreur JS — ${erreursJs[0]}`);
         if (largeur === LARGEURS[0] && nomPage === 'administration.html') {
           await testerConnexion(page, reseau, echecs);
