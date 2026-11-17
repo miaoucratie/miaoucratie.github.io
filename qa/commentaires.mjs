@@ -18,7 +18,7 @@ const LANGAGES = {
 };
 
 /* Repères du générateur du blog */
-export const REPERE = /^<!-- GENERATED:(BLOG_GRID|BLOG_JSONLD|RELATED|BLOG_URLS|TOPBAR|FOOTER):(START|END) -->$/;
+export const REPERE = /^<!-- GENERATED:(BLOG_GRID|BLOG_JSONLD|RELATED|BLOG_URLS|TOPBAR|FOOTER|FAQ_JSONLD):(START|END) -->$/;
 
 /* Lexeur JavaScript */
 const MOTS_AVANT_REGEX = new Set(['return', 'typeof', 'instanceof', 'in', 'of', 'new', 'delete',

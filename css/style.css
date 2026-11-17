@@ -183,6 +183,11 @@
   }
   .hero-photo-frame img {
     transition: transform 0.25s ease, filter 0.25s ease;
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 2rem;
+    box-shadow: 0 14px 30px rgba(38,22,10,0.14);
   }
   .hero-photo-frame:hover img {
     transform: scale(1.015);
@@ -191,13 +196,6 @@
   @media (prefers-reduced-motion: reduce) {
     .hero-photo-frame img { transition: none; }
     .hero-photo-frame:hover img { transform: none; }
-  }
-  .hero-photo-frame img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 2rem;
-    box-shadow: 0 14px 30px rgba(38,22,10,0.14);
   }
   .hero-card {
     background: #fff;
@@ -306,9 +304,6 @@
   .step h3 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--deep); margin-bottom: 6px; }
   .step p { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
   .step p a { color: var(--rust); text-decoration: underline; text-underline-offset: 2px; }
-.tarifs-bg .section-label { color: var(--peach); }
-
-
 
   /* ── CRÉDIBILITÉ ── */
   .cred-bg { background: var(--warm); }
@@ -371,7 +366,6 @@
   }
   .cred-item h3 { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: var(--deep); margin-bottom: 6px; }
   .cred-item p { font-size: 13px; color: var(--mid); line-height: 1.6; }
-  .cred-item.full { grid-column: span 2; }
 
   /* ── CTA ── */
   .cta-section { background: var(--terracotta); text-align: center; padding: 80px 40px; position: relative; overflow: hidden; }
@@ -437,7 +431,6 @@
 
     .cred-layout { grid-template-columns: 1fr; gap: 36px; }
     .cred-grid { grid-template-columns: 1fr; }
-    .cred-item.full { grid-column: span 1; }
 
     .footer-bar { flex-direction: column; text-align: center; padding: 24px 20px; }
     .footer-links { justify-content: center; }
@@ -462,18 +455,6 @@
 
 .footer-legal a { color: var(--sand); text-decoration: none; font-size: 13px; transition: color 0.2s; }
 .footer-legal a:hover { color: var(--peach); }
-.tarifs-page .tarifs-hero-cta .btn-primary,
-.tarifs-page .tarifs-hero-cta .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-}
-.tarifs-page .tarifs-bg h2,
-.tarifs-page .tarifs-bg .section-label {
-  color: var(--deep, #1E1812);
-}
 
 /* Cible tactile */
 .lien-cible {

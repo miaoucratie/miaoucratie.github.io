@@ -455,3 +455,11 @@ export function dateHeureD1(valeur = "") {
   const texte = String(valeur ?? "");
   return new Date(texte.replace(" ", "T") + (texte.endsWith("Z") ? "" : "Z"));
 }
+
+/* Lien WhatsApp */
+export function lienWhatsapp(numero = "") {
+  let chiffres = String(numero).replace(/\D/g, "");
+  if (chiffres.startsWith("00")) chiffres = chiffres.slice(2);
+  if (/^0[1-9]\d{8}$/.test(chiffres)) chiffres = `33${chiffres.slice(1)}`;
+  return `https://wa.me/${chiffres}`;
+}

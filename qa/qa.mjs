@@ -91,6 +91,7 @@ const MESSAGE_REFUS = "La vérification anti-robot n'a pas abouti. Merci de rée
 function demarrerFauxWorker() {
   const envois = [];
   const periodes = [{ id: 1, startDate: jourDecale(10), endDate: jourDecale(14), comment: 'Essai' }];
+  const reglages = { demandes: [], statutDemandes: 200 };
   let suivant = 2;
   const serveur = createServer((req, res) => {
     const origine = req.headers.origin || '';
@@ -118,7 +119,8 @@ function demarrerFauxWorker() {
       return admis ? repondre(200, { ranges: periodes }) : repondre(401, { message: 'Session expirée.' });
     }
     if (req.method === 'GET' && chemin === '/admin/reservations') {
-      return admis ? repondre(200, { demandes: [] }) : repondre(401, { message: 'Session expirée.' });
+      if (!admis || reglages.statutDemandes === 401) return repondre(401, { message: 'Session expirée.' });
+      return repondre(200, { demandes: reglages.demandes });
     }
 
     let corps = '';
@@ -157,7 +159,7 @@ function demarrerFauxWorker() {
     });
   });
   return new Promise((ok) => serveur.listen(0, '127.0.0.1', () => ok({
-    serveur, envois, url: `http://127.0.0.1:${serveur.address().port}`,
+    serveur, envois, reglages, url: `http://127.0.0.1:${serveur.address().port}`,
   })));
 }
 
@@ -791,6 +793,68 @@ async function testerGestion(navigateur, base, reseau, echecs) {
   } catch (e) {
     echecs.push(`admin (gestion) : interrompu — ${e.message.split('\n')[0]}`);
   } finally {
+    await contexte.close();
+  }
+}
+
+
+/* Liste des demandes */
+const soumiseIlYa = (jours) => new Date(Date.now() - jours * 86400000).toISOString().slice(0, 19).replace('T', ' ');
+const DEMANDES_ESSAI = () => [
+  { prenom: 'Marie', nom: 'Essai', soumiseLe: soumiseIlYa(2), statut: 'relayee', dateDebut: jourDecale(20), dateFin: jourDecale(24),
+    commune: 'Domagné', nombreChats: 2, frequence: '1 visite par jour', telephone: '06 39 98 12 34', email: 'marie@example.com', observations: 'Chat craintif' },
+  { prenom: 'Paul', nom: 'Test', soumiseLe: soumiseIlYa(1), statut: 'notification_echouee', dateDebut: jourDecale(30), dateFin: jourDecale(31),
+    commune: 'Vitré', nombreChats: 1, frequence: 'autre', frequenceAutre: 'Deux visites le dimanche', whatsapp: '06 39 98 56 78' },
+  { prenom: 'Ancienne', nom: 'Demande', soumiseLe: soumiseIlYa(40), statut: 'relayee', dateDebut: jourDecale(-30), dateFin: jourDecale(-28),
+    commune: 'Châteaubourg', nombreChats: 1, frequence: '1 visite par jour', email: 'ancienne@example.com' },
+];
+
+async function testerDemandes(navigateur, base, reseau, echecs) {
+  const nom = 'admin (demandes)';
+  const contexte = await nouveauContexte(navigateur, reseau, { viewport: { width: LARGEURS[0], height: 900 } });
+  const page = await contexte.newPage();
+  const erreurs = [];
+  page.on('pageerror', (e) => erreurs.push(e.message));
+  reseau.worker.reglages.demandes = DEMANDES_ESSAI();
+  try {
+    await page.goto(`${base}/administration.html`, { waitUntil: 'load' });
+    await page.fill('#admin-password', MOT_DE_PASSE_ESSAI);
+    await page.press('#admin-password', 'Enter');
+    await page.locator('#demande-list .demande-card').first().waitFor({ timeout: 5000 });
+    const vu = await page.evaluate(() => {
+      const net = (t) => t.replace(/[ ⁠]/g, (c) => (c === ' ' ? ' ' : '')).trim();
+      return {
+        compte: net(document.getElementById('demande-count').textContent),
+        cartes: [...document.querySelectorAll('#demande-list .demande-card')].map((c) => ({
+          nom: net(c.querySelector('.demande-card__nom').textContent),
+          alerte: !!c.querySelector('.demande-card__alerte'),
+          intitules: [...c.querySelectorAll('dt')].map((d) => d.textContent),
+          visites: net(c.querySelector('.demande-card__info--double dd')?.textContent || ''),
+          liens: [...c.querySelectorAll('.demande-card__contact a')].map((a) => a.getAttribute('href')),
+        })),
+      };
+    });
+    const voulu = {
+      compte: '2 demandes reçues en 30 jours · 1 sans e-mail de notification',
+      cartes: [
+        { nom: 'Paul Test', alerte: true, intitules: ['Commune', 'Chats', 'Visites', 'Contact'], visites: 'Deux visites le dimanche',
+          liens: ['https://wa.me/33639985678'] },
+        { nom: 'Marie Essai', alerte: false, intitules: ['Commune', 'Chats', 'Visites', 'Contact', 'Observations'], visites: '1 visite par jour',
+          liens: ['tel:0639981234', 'mailto:marie@example.com'] },
+      ],
+    };
+    if (JSON.stringify(vu) !== JSON.stringify(voulu)) echecs.push(`${nom} : liste « ${JSON.stringify(vu)} », attendu « ${JSON.stringify(voulu)} »`);
+
+    reseau.worker.reglages.statutDemandes = 401;
+    await page.reload({ waitUntil: 'load' });
+    await page.locator('#management-panel').waitFor({ state: 'hidden', timeout: 5000 })
+      .catch(() => echecs.push(`${nom} : session expirée, le panneau de gestion reste affiché`));
+    if (erreurs.length) echecs.push(`${nom} : erreur JS — ${erreurs[0]}`);
+  } catch (e) {
+    echecs.push(`${nom} : interrompu — ${e.message.split('\n')[0]}`);
+  } finally {
+    reseau.worker.reglages.demandes = [];
+    reseau.worker.reglages.statutDemandes = 200;
     await contexte.close();
   }
 }
@@ -1751,6 +1815,7 @@ async function main() {
     await testerAntirobotAbsent(navigateur, base, reseau, echecs);
     await testerPeriodeIndisponible(navigateur, base, reseau, echecs);
     await testerGestion(navigateur, base, reseau, echecs);
+    await testerDemandes(navigateur, base, reseau, echecs);
     await testerBornesCarte(navigateur, base, reseau, echecs);
 
     // Barre et pied identiques
