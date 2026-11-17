@@ -459,6 +459,7 @@
 .art-part { display: block; height: 100%; background: var(--rust); border-radius: 999px; }
 .art-part--clair { background: var(--sand); }
 .art-part--sauge { background: #4A6B58; }
+.art-part--brun { background: var(--mid); }
 
 /* Deux produits comparés */
 .art-barres--duel { gap: 0; }
