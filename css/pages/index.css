@@ -64,16 +64,6 @@ body .section-label {
   100% { transform: scale(1) rotate(0deg); }
 }
 
-/* État initial masqué */
-.stripe-item {
-  opacity: 0;
-  will-change: transform, opacity;
-  transition:
-    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.32s ease,
-    background 0.32s ease;
-}
-
 /* État visible */
 .stripe-item.is-visible {
   animation: stripeSlideUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -121,7 +111,15 @@ body .section-label {
 
 /* Bande des promesses */
 .stripe { background: rgba(200,96,58,0.06); border-top: 1.5px solid rgba(200,96,58,0.18); border-bottom: 1.5px solid rgba(200,96,58,0.18); }
-.stripe-item { border-right-color: rgba(200,96,58,0.12); }
+.stripe-item {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s ease,
+    background 0.32s ease;
+  border-right-color: rgba(200,96,58,0.12);
+}
 .stripe-item h2 { color: var(--deep) !important; }
 .stripe-item p { color: var(--mid); }
 

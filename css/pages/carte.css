@@ -41,9 +41,6 @@
     .hero-copy strong{font-size:15px;letter-spacing:.01em}
     .hero-copy span{font-size:14px;color:var(--muted)}
 
-    .hero-right .stat{padding:18px;border-radius:16px;border:1px solid var(--line);background:#fff}
-    .hero-right .stat strong{display:block;font-family:'Cormorant Garamond',serif;font-size:42px;line-height:1;color:var(--terracotta);letter-spacing:-.04em;margin-bottom:6px}
-    .hero-right .stat span{color:var(--muted);font-size:13px}
 
     .zone-card{padding:32px;border-radius:18px;border:1px solid var(--line);background:#fff;margin-bottom:24px}
     .zone-card h2,.rule-card h2,.legend h2,.info-card h2,.map-title strong{font-family:'Cormorant Garamond',serif;letter-spacing:-.03em}
@@ -131,20 +128,13 @@
     body:has(.desktop-sticky-cta.show){padding-bottom:var(--place-note)}
     /* Pastille */
     .desktop-sticky-cta .eyebrow{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--rust,#A8472A);background:none;padding:0;border-radius:0;margin-bottom:10px}
-    .desktop-sticky-cta .title{color:var(--deep,#1E1812)}
-    .desktop-sticky-cta .title{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.1;letter-spacing:-.02em;margin:0 0 6px}
+    .desktop-sticky-cta .title{color:var(--deep,#1E1812);font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.1;letter-spacing:-.02em;margin:0 0 6px}
     .desktop-sticky-cta .desc{font-size:13px;color:var(--muted);margin:0 0 12px}
     .desktop-sticky-cta .actions{display:flex;gap:10px;flex-wrap:wrap}
     .desktop-sticky-cta .actions a{flex:1 1 130px;display:inline-flex;justify-content:center;align-items:center;text-align:center;text-decoration:none;padding:11px 12px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);background:#fff;color:var(--deep)}
     .desktop-sticky-cta .actions a.primary{background:var(--rust,#A8472A);border-color:var(--rust,#A8472A);color:#fff}
     .desktop-sticky-cta .foot{margin-top:8px;font-size:11px;color:var(--muted)}
 
-    .marker-pin{width:30px;height:42px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 8px 16px rgba(0,0,0,.18))}
-    .marker-pin svg{width:100%;height:100%;display:block}
-    .marker-pin.free{color:var(--sage)}
-    .marker-pin.paid{color:var(--terracotta)}
-    .marker-pin.out{color:#D64545}
-    .marker-pin.start{color:#3D5A80;width:34px;height:48px}
 
     @media (max-width:980px){
       .grid-hero,.grid-main{grid-template-columns:1fr}

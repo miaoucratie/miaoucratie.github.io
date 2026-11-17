@@ -235,7 +235,7 @@ const lies = (a) => {
   if (!cibles.length) return '';
   return `<aside class="art-lies" aria-labelledby="art-lies-titre">
 <h2 id="art-lies-titre" class="art-lies-titre">À lire ensuite</h2>
-<div class="art-trio art-trio--lies">
+<div class="art-trio">
 ${cibles.map((x) => carte(x, 'h3')).join('\n\n')}
 </div>
 </aside>`;

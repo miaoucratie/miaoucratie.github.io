@@ -256,7 +256,6 @@
     .acc-item.open .acc-icon {
       background: var(--T);
     }
-    .acc-item.open .acc-icon svg { display: none; }
     .acc-item.open .acc-icon::after {
       content: "";
       width: 14px;
@@ -270,7 +269,7 @@
       stroke: var(--muted);
       transition: stroke 0.25s;
     }
-    .acc-item.open .acc-icon svg { stroke: var(--W); }
+    .acc-item.open .acc-icon svg { display: none; stroke: var(--W); }
 
     .acc-body {
       max-height: 0;

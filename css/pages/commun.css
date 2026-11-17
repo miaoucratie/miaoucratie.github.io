@@ -23,13 +23,13 @@ body > *:nth-child(3) { animation-delay: .06s; }
 body > *:nth-child(4) { animation-delay: .09s; }
 body > *:nth-child(5) { animation-delay: .12s; }
 body > *:nth-child(6) { animation-delay: .15s; }
-.topbar { animation: none; }
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
 }
 .topbar {
+  animation: none;
   width: 100%;
   position: sticky;
   top: 0;

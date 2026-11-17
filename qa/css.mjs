@@ -4,35 +4,57 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  NOM_CLASSE,
   classesDeBibliotheque,
   classesManipulees,
+  estAccrochee,
   commentairesNonFermes,
   estTiers,
   nomsDeClasses,
-  selecteursDePremierNiveau,
+  reglesCSS,
 } from './css-regles.mjs';
 
 const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STRICT = process.argv.includes('--strict');
 
-const feuilles = readdirSync(join(RACINE, 'css')).filter((f) => f.endsWith('.css')).sort();
-const pages = readdirSync(RACINE).filter((f) => f.endsWith('.html'));
+/* Exceptions */
+const EXCEPTIONS = new Map([
+  ['calculateur-miaoucratie.html', 'page appelée à disparaître'],
+  ['calculateur.css', 'feuille de cette seule page'],
+]);
+
+const lister = (dossier, prefixe = '') => readdirSync(join(RACINE, dossier), { withFileTypes: true })
+  .flatMap((e) => (e.isDirectory()
+    ? lister(join(dossier, e.name), `${prefixe}${e.name}/`)
+    : e.name.endsWith('.css') ? [`${prefixe}${e.name}`] : []))
+  .sort();
+
+const feuilles = lister('css');
+const pages = readdirSync(RACINE).filter((f) => f.endsWith('.html')).sort();
+const html = new Map(pages.map((p) => [p, readFileSync(join(RACINE, p), 'utf8')]));
+
+/* Sources de style */
+const sources = new Map();
+for (const f of feuilles) if (!EXCEPTIONS.has(f)) sources.set(f, readFileSync(join(RACINE, 'css', f), 'utf8'));
+let blocs = 0;
+for (const [p, h] of html) {
+  if (EXCEPTIONS.has(p)) continue;
+  (h.match(/<style[^>]*>[\s\S]*?<\/style>/g) || []).forEach((bloc, i) => {
+    sources.set(`${p} <style> ${i + 1}`, bloc.replace(/^<style[^>]*>|<\/style>$/g, ''));
+    blocs++;
+  });
+}
 
 const constats = [];
 const noter = (f, quoi) => constats.push(`  ${f.padEnd(18)} ${quoi}`);
 
-/* ── Intégrité des accolades et commentaires ── */
-const declarees = new Map();
-for (const f of feuilles) {
-  const brut = readFileSync(join(RACINE, 'css', f), 'utf8');
-
+/* ── Intégrité, !important ── */
+const regles = new Map();
+for (const [f, brut] of sources) {
   const nonFermes = commentairesNonFermes(brut);
   if (nonFermes.length) {
     noter(f, `${nonFermes.length} commentaire(s) jamais ferme(s), ouvert(s) ligne(s) ${nonFermes.join(', ')}`
       + ' — tout ce qui suit est avale jusqu\'au prochain */');
   }
-
   const css = brut.replace(/\/\*[\s\S]*?\*\//g, '');
   let profondeur = 0, mini = 0;
   for (const c of css) {
@@ -42,50 +64,48 @@ for (const f of feuilles) {
   if (profondeur !== 0) noter(f, `accolades desequilibrees : ${profondeur > 0 ? profondeur + ' non fermee(s)' : -profondeur + ' en trop'}`);
   if (mini < 0) noter(f, 'une accolade fermante precede son ouvrante');
 
-  declarees.set(f, selecteursDePremierNiveau(brut));
+  regles.set(f, reglesCSS(brut));
 
   const bang = (css.match(/!important/g) || []).length;
   if (bang) noter(f, `${bang} !important`);
 }
+for (const [p, h] of html) {
+  if (EXCEPTIONS.has(p)) continue;
+  const bang = [...h.matchAll(/style="([^"]*)"/g)].filter((m) => m[1].includes('!important')).length;
+  if (bang) noter(p, `${bang} attribut(s) style avec !important`);
+}
 
 /* ── Trois relevés ── */
+const selecteurs = (f) => regles.get(f).filter((r) => !r.arobase).map((r) => r.selecteur);
+
 const posees = new Set();
-for (const p of pages) {
-  const html = readFileSync(join(RACINE, p), 'utf8');
-  for (const m of html.matchAll(/class="([^"]+)"/g)) for (const c of m[1].trim().split(/\s+/)) if (c) posees.add(c);
+for (const h of html.values()) {
+  for (const m of h.matchAll(/class="([^"]+)"/g)) for (const c of m[1].trim().split(/\s+/)) if (c) posees.add(c);
 }
 
 const declareesPartout = new Set();
-for (const sels of declarees.values()) {
-  for (const s of sels) for (const n of nomsDeClasses(s)) declareesPartout.add(n);
+for (const f of regles.keys()) for (const s of selecteurs(f)) for (const n of nomsDeClasses(s)) declareesPartout.add(n);
+
+const accroches = new Set();
+for (const d of ['js', 'shared', 'qa']) {
+  for (const j of readdirSync(join(RACINE, d)).filter((f) => /\.m?js$/.test(f) && !/\.test\.m?js$/.test(f))) {
+    for (const c of classesManipulees(readFileSync(join(RACINE, d, j), 'utf8'))) accroches.add(c);
+  }
 }
-for (const p of pages) {
-  const html = readFileSync(join(RACINE, p), 'utf8');
-  for (const bloc of html.match(/<style[^>]*>[\s\S]*?<\/style>/g) || []) {
-    for (const n of nomsDeClasses(bloc.replace(/\/\*[\s\S]*?\*\//g, ''))) declareesPartout.add(n);
+for (const h of html.values()) {
+  for (const bloc of h.match(/<script(?![^>]*\ssrc=)[^>]*>[\s\S]*?<\/script>/g) || []) {
+    for (const c of classesManipulees(bloc)) accroches.add(c);
   }
 }
 
-const accroches = new Set();
-const releverAccroches = (source) => {
-  for (const c of classesManipulees(source)) accroches.add(c);
-};
-for (const j of readdirSync(join(RACINE, 'js')).filter((f) => f.endsWith('.js'))) {
-  releverAccroches(readFileSync(join(RACINE, 'js', j), 'utf8'));
-}
-for (const p of pages) {
-  const html = readFileSync(join(RACINE, p), 'utf8');
-  for (const bloc of html.match(/<script(?![^>]*\ssrc=)[^>]*>[\s\S]*?<\/script>/g) || []) releverAccroches(bloc);
-}
-
-const seulementAvecTiers = classesDeBibliotheque([...declarees.values()].flat());
+const seulementAvecTiers = classesDeBibliotheque([...regles.keys()].flatMap(selecteurs));
 
 /* ── Classes déclarées non posées ── */
-for (const [f, sels] of declarees) {
+for (const f of regles.keys()) {
   const orphelines = new Set();
-  for (const s of sels) {
+  for (const s of selecteurs(f)) {
     for (const n of nomsDeClasses(s)) {
-      if (posees.has(n) || accroches.has(n)) continue;
+      if (posees.has(n) || estAccrochee(n, accroches)) continue;
       if (estTiers(n) || seulementAvecTiers.has(n)) continue;
       orphelines.add(n);
     }
@@ -94,36 +114,34 @@ for (const [f, sels] of declarees) {
 }
 
 /* ── Classes posées non déclarées ── */
-
-for (const p of pages) {
-  const html = readFileSync(join(RACINE, p), 'utf8');
+for (const [p, h] of html) {
+  if (EXCEPTIONS.has(p)) continue;
   const mortes = new Set();
-  for (const m of html.matchAll(/class="([^"]+)"/g)) {
+  for (const m of h.matchAll(/class="([^"]+)"/g)) {
     for (const c of m[1].trim().split(/\s+/)) {
-      if (!c || declareesPartout.has(c) || accroches.has(c) || estTiers(c)) continue;
+      if (!c || declareesPartout.has(c) || estAccrochee(c, accroches) || estTiers(c)) continue;
       mortes.add(c);
     }
   }
   if (mortes.size) noter(p, `${mortes.size} classe(s) posee(s) et declaree(s) nulle part : ${[...mortes].sort().join(' ')}`);
 }
 
-/* ── Sélecteur déclaré deux fois ── */
-for (const [f, sels] of declarees) {
+/* ── Règle déclarée deux fois ── */
+for (const [f, liste] of regles) {
   const vus = new Map();
-  for (const s of sels) {
-    const cle = s.replace(/\s+/g, ' ').trim();
-    if (!cle) continue;
+  for (const r of liste) {
+    if (r.arobase && !r.selecteur.startsWith('@keyframes')) continue;
+    const cle = `${r.contexte ? r.contexte + ' { ' : ''}${r.selecteur.replace(/\s+/g, ' ').trim()}`;
     vus.set(cle, (vus.get(cle) || 0) + 1);
   }
   const doubles = [...vus].filter(([, n]) => n > 1);
-  if (doubles.length) noter(f, `${doubles.length} selecteur(s) declare(s) plusieurs fois : ${doubles.slice(0, 4).map(([s, n]) => `${s} ×${n}`).join(' · ')}`);
+  if (doubles.length) noter(f, `${doubles.length} regle(s) declaree(s) plusieurs fois : ${doubles.map(([s, n]) => `${s} ×${n}`).join(' · ')}`);
 }
 
 /* ── Ordre de chargement, page par page ── */
 const ordres = new Map();
-for (const p of pages) {
-  const html = readFileSync(join(RACINE, p), 'utf8');
-  const suite = [...html.matchAll(/href="css\/([^"]+)"/g)].map((m) => m[1]);
+for (const [p, h] of html) {
+  const suite = [...h.matchAll(/href="css\/([^"]+)"/g)].map((m) => m[1]);
   if (!suite.length) continue;
   const cle = suite.join(' > ');
   if (!ordres.has(cle)) ordres.set(cle, []);
@@ -136,8 +154,9 @@ for (const p of pages) {
   }
 }
 
-console.log(`\nFeuilles de style — ${feuilles.length} feuilles, ${pages.length} pages\n`);
+console.log(`\nFeuilles de style — ${feuilles.length} feuilles, ${pages.length} pages, ${blocs} bloc(s) <style> dans les pages\n`);
 console.log(constats.length ? constats.join('\n') : '  Aucun constat.');
+console.log(`\n  ── exceptions ──\n${[...EXCEPTIONS].map(([n, r]) => `  ${n} : ${r}`).join('\n')}`);
 console.log('\n  ── ordre de chargement ──');
 for (const [suite, liste] of [...ordres].sort((a, b) => b[1].length - a[1].length)) {
   console.log(`  ${String(liste.length).padStart(2)} page(s)  ${suite}`);

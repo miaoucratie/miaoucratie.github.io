@@ -405,10 +405,6 @@
   .ico { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
 
   /* ── RESPONSIVE ── */
-  @media (max-width: 1024px) {
-    .tarifs-layout { grid-template-columns: 1fr; }
-  }
-
   @media (max-width: 768px) {
     .hero { grid-template-columns: 1fr; min-height: auto; }
     .hero-left { padding: 48px 24px 32px; }

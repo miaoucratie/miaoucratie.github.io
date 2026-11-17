@@ -53,9 +53,6 @@ body.standalone-page,
 body.cgv-page {
   background: var(--cream, #FBF7F0);
   color: var(--deep, #1E1812);
-}
-body.standalone-page,
-body.cgv-page {
   margin: 0;
   padding: 0;
   display: block;

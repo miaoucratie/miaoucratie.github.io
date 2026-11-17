@@ -52,6 +52,35 @@ export function selecteursDePremierNiveau(feuille) {
   return sels;
 }
 
+/* Règles à toute profondeur */
+export function reglesCSS(feuille) {
+  const css = String(feuille).replace(/\/\*[\s\S]*?\*\//g, '');
+  const regles = [];
+  const pile = [];
+  let tampon = '', i = 0;
+  while (i < css.length) {
+    const c = css[i];
+    if (c === '"' || c === "'") {
+      const fin = css.indexOf(c, i + 1);
+      tampon += css.slice(i, fin < 0 ? css.length : fin + 1);
+      i = fin < 0 ? css.length : fin + 1;
+      continue;
+    }
+    if (c === '{') {
+      const tete = tampon.trim();
+      const contexte = pile.filter((p) => p.startsWith('@')).join(' > ');
+      if (!pile.some((p) => p.startsWith('@keyframes') || p.startsWith('@font-face'))) {
+        regles.push({ contexte, selecteur: tete, arobase: tete.startsWith('@') });
+      }
+      pile.push(tete);
+      tampon = '';
+    } else if (c === '}') { pile.pop(); tampon = ''; } else if (c === ';') tampon = '';
+    else tampon += c;
+    i++;
+  }
+  return regles;
+}
+
 /* Classes manipulées par un script */
 export function classesManipulees(source) {
   const src = String(source);
@@ -74,10 +103,25 @@ export function classesManipulees(source) {
     for (const nom of nomsDeClasses(m[1])) trouvees.add(nom);
   }
 
+  /* Liste de classes passée en argument */
+  for (const m of src.matchAll(/[(,]\s*['"`]([-\w]+(?: [-\w]+)*)['"`](?=\s*[),])/g)) {
+    if (/[-_]/.test(m[1])) ajouter(m[1]);
+  }
+
+  /* Nom fabriqué à partir d'un préfixe */
+  for (const p of src.matchAll(/(?<![-\w$])([a-zA-Z][-\w]*[-_][-\w]*)\$\{/g)) trouvees.add(`${p[1]}*`);
+
   /* HTML fabriqué */
   for (const m of src.matchAll(/class=\\?["']([^"'\\]+)\\?["']/g)) ajouter(m[1]);
 
   return trouvees;
+}
+
+/* Classe accrochée, préfixe compris */
+export function estAccrochee(nom, accroches) {
+  if (accroches.has(nom)) return true;
+  for (const a of accroches) if (a.endsWith('*') && nom.startsWith(a.slice(0, -1))) return true;
+  return false;
 }
 
 /* Classes propres à une bibliothèque */

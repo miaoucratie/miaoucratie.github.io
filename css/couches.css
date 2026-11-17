@@ -444,10 +444,8 @@ body.cgv-page .brand-rule {
 .defile:focus-visible { color: var(--deep, #1E1812); outline: 2px solid var(--rust, #A8472A); outline-offset: -4px; border-radius: 50%; }
 .defile--avant { left: 0; }
 .defile--apres { right: 0; }
-[data-defilement].suite-avant { margin-left: 44px; }
-[data-defilement].suite-apres { margin-right: 44px; }
-[data-defilement].suite-apres { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
-[data-defilement].suite-avant { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); }
+[data-defilement].suite-apres { margin-right: 44px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
+[data-defilement].suite-avant { margin-left: 44px; -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); }
 [data-defilement].suite-avant.suite-apres { -webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
 
 /* Couleurs */
