@@ -449,3 +449,24 @@ body.cgv-page .brand-rule {
 [data-defilement].suite-apres { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
 [data-defilement].suite-avant { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); }
 [data-defilement].suite-avant.suite-apres { -webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
+
+/* Couleurs */
+.etoiles { color: #E8A33D; letter-spacing: 1px; }
+.c-fond-art-eau { background: var(--art-eau); }
+.c-fond-art-eau-encre { background: var(--art-eau-encre); }
+.c-fond-art-mythe { background: var(--art-mythe); }
+.c-fond-cream { background: var(--cream); }
+.c-fond-deep { background: var(--deep); }
+.c-fond-light { background: var(--light); }
+.c-fond-mid { background: var(--mid); }
+.c-fond-rust { background: var(--rust); }
+.c-fond-sage { background: var(--sage); }
+.c-fond-sand { background: var(--sand); }
+.c-fond-terracotta { background: var(--terracotta); }
+.c-fond-warm { background: var(--warm); }
+.c-texte-cream { color: var(--cream); }
+.c-texte-deep { color: var(--deep); }
+.c-texte-mid { color: var(--mid); }
+.c-texte-peach { color: var(--peach); }
+.c-texte-rust { color: var(--rust); }
+.c-texte-terracotta { color: var(--terracotta); }

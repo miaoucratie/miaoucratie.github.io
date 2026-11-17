@@ -1595,3 +1595,6 @@ body.reservation-page input.flatpickr-input[aria-invalid="true"] {
   border-color: rgba(157, 59, 35, 0.45);
   background: #fff7f6;
 }
+
+/* Preuves sous le formulaire */
+.submit-panel .submit-preuves { color: var(--muted, #7A6B5E); }

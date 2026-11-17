@@ -118,3 +118,16 @@ body .section-label {
 /* Page tarifs */
 
 /* Pages autonomes */
+
+/* Bande des promesses */
+.stripe { background: rgba(200,96,58,0.06); border-top: 1.5px solid rgba(200,96,58,0.18); border-bottom: 1.5px solid rgba(200,96,58,0.18); }
+.stripe-item { border-right-color: rgba(200,96,58,0.12); }
+.stripe-item h2 { color: var(--deep) !important; }
+.stripe-item p { color: var(--mid); }
+
+/* Appel final */
+.cta-section .cta-surtitre { color: var(--peach); }
+.cta-section .cta-intro { color: rgba(251, 247, 240, 0.7); }
+.cta-section .cta-garanties { color: rgba(251, 247, 240, 0.5); }
+.cta-section .cta-tarif { color: rgba(251, 247, 240, 0.65); }
+.cta-section .cta-btn-outline { border-color: rgba(251, 247, 240, 0.35); }
