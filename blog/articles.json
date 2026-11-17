@@ -31,7 +31,33 @@
         "nom": "Hydratation",
         "emoji": "💧"
       }
-    ]
+    ],
+    "pages": {
+      "404.html": null,
+      "administration.html": "reservation.html",
+      "calculateur-miaoucratie.html": null,
+      "carte.html": "carte.html",
+      "ce-que-jutilise.html": null,
+      "cgv.html": null,
+      "coulisses-miaoucratie.html": "coulisses-miaoucratie.html",
+      "croquettes-et-patee.html": "coulisses-miaoucratie.html",
+      "enfants-et-chats.html": "coulisses-miaoucratie.html",
+      "espece-de-deuil.html": "espece-de-deuil.html",
+      "etiquette-nourriture-chat.html": "coulisses-miaoucratie.html",
+      "faq.html": "faq.html",
+      "hydratation-du-chat.html": "coulisses-miaoucratie.html",
+      "index.html": "/",
+      "jeu-chat.html": "coulisses-miaoucratie.html",
+      "lechage-chat.html": "coulisses-miaoucratie.html",
+      "mentions-legales.html": null,
+      "mythes-chat.html": "coulisses-miaoucratie.html",
+      "presse.html": "presse.html",
+      "reservation.html": "reservation.html",
+      "sens-du-chat.html": "coulisses-miaoucratie.html",
+      "sondage-deuil-animal.html": "coulisses-miaoucratie.html",
+      "tarifs.html": "tarifs.html",
+      "visite-soins.html": null
+    }
   },
   "articles": [
     {

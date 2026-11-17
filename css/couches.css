@@ -464,3 +464,14 @@ body.cgv-page .brand-rule {
     gap: 6px 16px;
   }
 }
+
+/* Symbole de marque */
+.footer-logo sup,
+.logo-name sup {
+  font-size: 0.5em;
+  font-style: normal;
+  line-height: 0;
+  vertical-align: super;
+}
+.footer-bar .footer-logo sup { color: var(--cream,#FBF7F0); }
+.logo-name sup { color: var(--deep,#1E1812); }
