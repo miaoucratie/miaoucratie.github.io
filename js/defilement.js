@@ -42,6 +42,8 @@
     };
     rangee.addEventListener('scroll', maj, { passive: true });
     addEventListener('resize', maj);
+    addEventListener('load', maj);
+    if (document.fonts) document.fonts.ready.then(maj);
     maj();
   }
 

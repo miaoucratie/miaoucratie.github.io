@@ -301,6 +301,8 @@
 
 /* Boutons de fiche */
 .art-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 10px; }
+.avis-grid .art-actions .btn-primary { white-space: nowrap; }
+@media (max-width: 900px) { .avis-grid .art-actions .btn-primary { padding-inline: 20px; } }
 
 /* ══ ENCADRES ══ */
 .cred-item--large { padding: 28px 30px; }
