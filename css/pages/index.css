@@ -13,12 +13,11 @@ body .hero-title,
 body .acc-question,
 body .logo-name,
 body .hero-card-title {
-  font-family: 'Cormorant Garamond', serif !important;
-
-  font-weight: 700 !important;
-  letter-spacing: -0.02em !important;
-  line-height: 1.08 !important;
-  color: var(--N, #1A1A1A) !important;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: var(--N, #1A1A1A);
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
   font-synthesis: none;
@@ -75,7 +74,7 @@ body .section-label {
 .stripe-item:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 32px rgba(200, 96, 58, 0.10);
-  background: rgba(200, 96, 58, 0.04) !important;
+  background: rgba(200, 96, 58, 0.04);
 }
 
 /* Flottement de l'emoji */
@@ -88,7 +87,7 @@ body .section-label {
 
 /* Rebond de l'emoji au survol */
 .stripe-item:hover .stripe-emoji {
-  animation: emojiBounce 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+  animation: emojiBounce 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 /* CTA sombre */
@@ -105,10 +104,6 @@ body .section-label {
   font-style: italic;
 }
 
-/* Page tarifs */
-
-/* Pages autonomes */
-
 /* Bande des promesses */
 .stripe { background: rgba(200,96,58,0.06); border-top: 1.5px solid rgba(200,96,58,0.18); border-bottom: 1.5px solid rgba(200,96,58,0.18); }
 .stripe-item {
@@ -120,7 +115,7 @@ body .section-label {
     background 0.32s ease;
   border-right-color: rgba(200,96,58,0.12);
 }
-.stripe-item h2 { color: var(--deep) !important; }
+.stripe-item h2 { color: var(--deep); }
 .stripe-item p { color: var(--mid); }
 
 /* Appel final */

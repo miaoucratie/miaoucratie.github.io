@@ -73,7 +73,7 @@ body.calculateur-page h1 {
 }
 body .hero-title,
 body .cgv-title {
-  font-size: clamp(52px, 7vw, 88px) !important;
+  font-size: clamp(52px, 7vw, 88px);
 }
 /* Calculateur */
 body.calculateur-page h1 {
@@ -85,7 +85,7 @@ body .section-title {
 }
 /* Questions d'accordéon */
 body .acc-question {
-  font-size: clamp(19px, 1.8vw, 22px) !important;
+  font-size: clamp(19px, 1.8vw, 22px);
 }
 body h3 {
   font-size: clamp(18px, 1.8vw, 24px) !important;
@@ -330,9 +330,9 @@ body.cgv-page .brand-rule {
 
 .faq-cta-secondary:hover,
 .faq-cta-secondary:focus-visible {
-  background: rgba(255,255,255,0.10) !important;
-  border-color: rgba(242,205,176,0.72) !important;
-  color: #FFF8F2 !important;
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(242,205,176,0.72);
+  color: #FFF8F2;
   transform: translateY(-1px);
 }
 

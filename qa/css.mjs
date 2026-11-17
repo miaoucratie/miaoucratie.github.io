@@ -22,6 +22,35 @@ const EXCEPTIONS = new Map([
   ['calculateur.css', 'feuille de cette seule page'],
 ]);
 
+/* !important admis */
+const TITRES = 'harmonisation des titres, au-dessus du style propre à chaque page';
+const AU_DESSUS = 'titre particulier, au-dessus de l\'harmonisation des titres';
+const IMPORTANTS_ADMIS = new Map([
+  ['couches.css', new Map([
+    ['body .faq-hero .hero-title, body .cgv-title, body .hero-title', TITRES],
+    ['body h1, body h2, body h3, body .hero-title, body .section-title, body .acc-question, body .cgv-title, body.calculateur-page h1', TITRES],
+    ['body h2, body .section-title', TITRES],
+    ['body h3', TITRES],
+    ['body .stripe-item h2', TITRES],
+    ['body .cred-item h3', TITRES],
+    ['body .step h3', TITRES],
+    ['.faq-cta .cta-title', AU_DESSUS],
+    ['body.calculateur-page h1', 'page appelée à disparaître'],
+    ['.topbar', 'barre du haut jamais animée'],
+  ])],
+  ['article.css', new Map([
+    ['.art-etapes--echelle .art-etape h3', AU_DESSUS],
+    ['.art-voie h3', AU_DESSUS],
+  ])],
+  ['pages/index.css', new Map([['.cta-section h2', AU_DESSUS]])],
+  ['reservation.css', new Map([['[hidden]', 'un élément masqué reste masqué']])],
+  ['pages/carte.css', new Map([
+    ['.leaflet-control-zoom a', 'surcharge de la bibliothèque de carte'],
+    ['@media (prefers-reduced-motion: reduce) { *,*::before,*::after', 'mouvement réduit à la demande du lecteur'],
+  ])],
+]);
+const cleRegle = (r) => `${r.contexte ? r.contexte + ' { ' : ''}${r.selecteur.replace(/\s+/g, ' ').trim()}`;
+
 const lister = (dossier, prefixe = '') => readdirSync(join(RACINE, dossier), { withFileTypes: true })
   .flatMap((e) => (e.isDirectory()
     ? lister(join(dossier, e.name), `${prefixe}${e.name}/`)
@@ -66,9 +95,18 @@ for (const [f, brut] of sources) {
 
   regles.set(f, reglesCSS(brut));
 
-  const bang = (css.match(/!important/g) || []).length;
-  if (bang) noter(f, `${bang} !important`);
+  const admis = IMPORTANTS_ADMIS.get(f) || new Map();
+  const vus = new Set();
+  let bang = 0;
+  for (const r of regles.get(f)) {
+    const n = (r.corps.match(/!important/g) || []).length;
+    if (!n) continue;
+    if (admis.has(cleRegle(r))) vus.add(cleRegle(r)); else bang += n;
+  }
+  if (bang) noter(f, `${bang} !important hors exceptions`);
+  for (const cle of admis.keys()) if (!vus.has(cle)) noter(f, `exception sans objet : ${cle}`);
 }
+for (const f of IMPORTANTS_ADMIS.keys()) if (!sources.has(f)) noter(f, 'exception pour une feuille absente');
 for (const [p, h] of html) {
   if (EXCEPTIONS.has(p)) continue;
   const bang = [...h.matchAll(/style="([^"]*)"/g)].filter((m) => m[1].includes('!important')).length;
@@ -131,7 +169,7 @@ for (const [f, liste] of regles) {
   const vus = new Map();
   for (const r of liste) {
     if (r.arobase && !r.selecteur.startsWith('@keyframes')) continue;
-    const cle = `${r.contexte ? r.contexte + ' { ' : ''}${r.selecteur.replace(/\s+/g, ' ').trim()}`;
+    const cle = cleRegle(r);
     vus.set(cle, (vus.get(cle) || 0) + 1);
   }
   const doubles = [...vus].filter(([, n]) => n > 1);
@@ -157,6 +195,8 @@ for (const [p, h] of html) {
 console.log(`\nFeuilles de style — ${feuilles.length} feuilles, ${pages.length} pages, ${blocs} bloc(s) <style> dans les pages\n`);
 console.log(constats.length ? constats.join('\n') : '  Aucun constat.');
 console.log(`\n  ── exceptions ──\n${[...EXCEPTIONS].map(([n, r]) => `  ${n} : ${r}`).join('\n')}`);
+console.log('\n  ── !important admis ──');
+for (const [f, admis] of IMPORTANTS_ADMIS) for (const [s, r] of admis) console.log(`  ${f} ${s} : ${r}`);
 console.log('\n  ── ordre de chargement ──');
 for (const [suite, liste] of [...ordres].sort((a, b) => b[1].length - a[1].length)) {
   console.log(`  ${String(liste.length).padStart(2)} page(s)  ${suite}`);

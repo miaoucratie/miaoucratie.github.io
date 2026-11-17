@@ -12,7 +12,7 @@ import { chromium } from 'playwright';
 const RACINE = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const REF = process.argv[2] || 'origin/main';
 const LARGEURS = [1280, 1024, 768, 375, 320];
-const MAX_LIGNES = 200;
+const MAX_LIGNES = Number(process.env.STYLES_LIGNES) || 200;
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',

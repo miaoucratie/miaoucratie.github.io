@@ -40,18 +40,6 @@ export function commentairesNonFermes(source) {
   return commentairesCSS(source).filter((c) => !c.ferme).map((c) => c.ligne);
 }
 
-export function selecteursDePremierNiveau(feuille) {
-  const css = String(feuille).replace(/\/\*[\s\S]*?\*\//g, '');
-  const sels = [];
-  let tampon = '', prof = 0;
-  for (const c of css) {
-    if (c === '{') { if (prof === 0) sels.push(tampon.trim()); prof++; tampon = ''; }
-    else if (c === '}') { prof = Math.max(0, prof - 1); tampon = ''; }
-    else tampon += c;
-  }
-  return sels;
-}
-
 /* Règles à toute profondeur */
 export function reglesCSS(feuille) {
   const css = String(feuille).replace(/\/\*[\s\S]*?\*\//g, '');
@@ -63,19 +51,21 @@ export function reglesCSS(feuille) {
     if (c === '"' || c === "'") {
       const fin = css.indexOf(c, i + 1);
       tampon += css.slice(i, fin < 0 ? css.length : fin + 1);
+      if (pile.length) pile[pile.length - 1].regle.corps += css.slice(i, fin < 0 ? css.length : fin + 1);
       i = fin < 0 ? css.length : fin + 1;
       continue;
     }
     if (c === '{') {
       const tete = tampon.trim();
-      const contexte = pile.filter((p) => p.startsWith('@')).join(' > ');
-      if (!pile.some((p) => p.startsWith('@keyframes') || p.startsWith('@font-face'))) {
-        regles.push({ contexte, selecteur: tete, arobase: tete.startsWith('@') });
-      }
-      pile.push(tete);
+      const contexte = pile.filter((p) => p.tete.startsWith('@')).map((p) => p.tete).join(' > ');
+      const regle = { contexte, selecteur: tete, arobase: tete.startsWith('@'), corps: '' };
+      if (!pile.some((p) => /^@(keyframes|font-face)/.test(p.tete))) regles.push(regle);
+      pile.push({ tete, regle });
       tampon = '';
-    } else if (c === '}') { pile.pop(); tampon = ''; } else if (c === ';') tampon = '';
-    else tampon += c;
+    } else if (c === '}') { pile.pop(); tampon = ''; } else {
+      if (c === ';') tampon = ''; else tampon += c;
+      if (pile.length) pile[pile.length - 1].regle.corps += c;
+    }
     i++;
   }
   return regles;

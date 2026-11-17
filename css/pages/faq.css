@@ -45,7 +45,7 @@ body .cta-eyebrow {
 }
 /* Pastille */
 body .faq-hero .hero-eyebrow {
-  letter-spacing: 0.14em !important;
+  letter-spacing: 0.14em;
 }
 
 /* Page tarifs */
