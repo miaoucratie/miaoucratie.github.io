@@ -68,22 +68,17 @@ jobs:
     name: Empreinte visuelle
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 20
-    container:
-      image: mcr.microsoft.com/playwright:v1.62.1-noble-arm64@sha256:941cc91e5022880ac1d14ae90b476b624deb6399dbbc28d612d5d5bd7928fcbd
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Installer les dépendances
-        run: npm ci
-
       - name: Comparer
         if: ${{ inputs.regenerer_empreinte != true }}
-        run: npm run qa:empreinte
+        run: npm run empreinte
 
       - name: Régénérer
         if: ${{ inputs.regenerer_empreinte == true }}
-        run: npm run qa:update
+        run: npm run empreinte:maj
 
       - name: Publier le relevé régénéré
         if: ${{ inputs.regenerer_empreinte == true }}

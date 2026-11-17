@@ -3,7 +3,7 @@
 
 set -e
 
-IMAGE="mcr.microsoft.com/playwright@sha256:941cc91e5022880ac1d14ae90b476b624deb6399dbbc28d612d5d5bd7928fcbd"
+IMAGE="mcr.microsoft.com/playwright:v1.62.1-noble-arm64@sha256:941cc91e5022880ac1d14ae90b476b624deb6399dbbc28d612d5d5bd7928fcbd"
 
 RACINE=$(cd "$(dirname "$0")/.." && pwd)
 
