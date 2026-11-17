@@ -273,7 +273,7 @@ const barre = (courante) => {
   }).join('\n');
   return `<header class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><nav class="tmenu-panel" id="tmenuPanel" style="display:none" aria-label="Menu principal">
 ${liens}
-</nav></div><div class="topbar-links"><a href="tel:+${NUMERO}">${pleinBarre(TELEPHONE)} 06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</a><span class="tsep"></span><a href="mailto:miaoucratie@gmail.com">${pleinBarre(COURRIEL)} miaoucratie@gmail.com</a><span class="tsep"></span><a href="${INSTAGRAM}" target="_blank" rel="noopener">${pleinBarre(LOGO_INSTAGRAM)} @miaoucratie</a><span class="tsep"></span><a href="https://wa.me/${NUMERO}" target="_blank" rel="noopener">${pleinBarre(LOGO_WHATSAPP)} WhatsApp</a></div></header>`;
+</nav></div><div class="topbar-links"><a href="tel:+${NUMERO}">${pleinBarre(TELEPHONE)}<span>06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</span></a><span class="tsep"></span><a href="mailto:miaoucratie@gmail.com">${pleinBarre(COURRIEL)}<span>miaoucratie@gmail.com</span></a><span class="tsep"></span><a href="${INSTAGRAM}" target="_blank" rel="noopener">${pleinBarre(LOGO_INSTAGRAM)}<span>@miaoucratie</span></a><span class="tsep"></span><a href="https://wa.me/${NUMERO}" target="_blank" rel="noopener">${pleinBarre(LOGO_WHATSAPP)}<span>WhatsApp</span></a></div></header>`;
 };
 
 const lienPied = (href) => `<a href="${href}">${trait(14, entreeMenu(href).dessin)}${entreeMenu(href).libelle}</a>`;

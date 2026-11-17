@@ -26,29 +26,6 @@
     overflow-x: hidden;
   }
 
-  /* ── BARRE DU HAUT ── */
-  .topbar {
-    background: var(--deep);
-    padding: 12px 40px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .topbar a {
-    color: var(--light);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    transition: color 0.2s;
-  }
-  .topbar a:hover { color: var(--peach); }
-  .topbar .sep { width: 1px; height: 16px; background: rgba(255,255,255,0.15); }
-
   /* ── HERO ── */
   .hero {
     background: var(--cream);
@@ -439,10 +416,6 @@
   }
 
   @media (max-width: 768px) {
-    .topbar { padding: 10px 20px; gap: 12px; justify-content: center; }
-    .topbar .sep { display: none; }
-    .topbar a { font-size: 12px; }
-
     .hero { grid-template-columns: 1fr; min-height: auto; }
     .hero-left { padding: 48px 24px 32px; }
     .hero-right { padding: 0 24px 48px; }
@@ -478,8 +451,6 @@
     .steps-row { grid-template-columns: 1fr; }
     .cta-btns { flex-direction: column; align-items: center; }
     .hero-card { padding: 24px; }
-    .topbar { gap: 8px; }
-    .topbar a span { display: none; }
   }
 .footer-legal {
   font-size: 0.8em;

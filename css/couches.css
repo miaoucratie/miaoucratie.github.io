@@ -333,9 +333,21 @@ body.cgv-page .brand-rule {
 }
 @media (max-width: 768px) {
   .topbar { gap: 12px 14px; }
-  .topbar-links { gap: 12px; }
+  .topbar-links { gap: 8px; }
   .tsep { display: none; }
-  .topbar-links a[href^="mailto"] { display: none; }
+  .topbar-links a { justify-content: center; min-width: 44px; min-height: 44px; }
+  .topbar-links a svg { width: 18px; height: 18px; }
+  .topbar-links a span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    clip-path: inset(50%);
+    border: 0;
+    white-space: nowrap;
+  }
 }
 /* Pied de page en colonne */
 @media (max-width: 920px) {
@@ -343,10 +355,6 @@ body.cgv-page .brand-rule {
   .footer-bar .footer-links { justify-content: center; }
   .footer-bar > .footer-logo,
   .footer-bar > .footer-legal { flex: 0 1 auto; justify-content: center; }
-}
-@media (max-width: 600px) {
-  .topbar-links { gap: 8px; }
-  .topbar-links a span { display: none; }
 }
 
 /* ── Bouton secondaire de fin de FAQ ── */
@@ -448,22 +456,6 @@ body.cgv-page .brand-rule {
     .avis-grid > * { flex-basis: calc(100% - 14px); }
     .avis-card { padding: 24px; }
   }
-
-/* ── BARRE DU HAUT EN MOBILE ── */
-@media (max-width: 560px) {
-  .topbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-  .topbar-links {
-    margin-left: 0;
-    justify-content: flex-start;
-    gap: 6px 16px;
-  }
-}
 
 /* Symbole de marque */
 .footer-logo sup,
