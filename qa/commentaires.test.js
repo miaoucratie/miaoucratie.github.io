@@ -124,7 +124,7 @@ describe('règles', () => {
   });
 
   test('les repères du générateur passent, et eux seuls', () => {
-    for (const nom of ['BLOG_GRID', 'BLOG_JSONLD', 'RELATED', 'BLOG_URLS']) {
+    for (const nom of ['BLOG_GRID', 'BLOG_JSONLD', 'RELATED', 'BLOG_URLS', 'TOPBAR', 'FOOTER']) {
       for (const bout of ['START', 'END']) {
         const marque = `<!-- GENERATED:${nom}:${bout} -->`;
         assert.match(marque, REPERE);
