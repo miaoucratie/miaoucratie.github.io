@@ -278,7 +278,7 @@ ${liens}
 
 const lienPied = (href) => `<a href="${href}">${trait(14, entreeMenu(href).dessin)}${entreeMenu(href).libelle}</a>`;
 const pied = `<footer class="footer-bar">
-<div class="footer-logo"><img alt="Miaoucratie" src="images/logo-footer.webp" width="80" height="80" loading="lazy" decoding="async"/><span>Miaou<em>cratie.</em></span></div>
+<div class="footer-logo"><img alt="Miaoucratie" src="images/logo-footer.webp" width="80" height="80" loading="lazy" decoding="async"/><span>Miaou<em>cratie<sup>®</sup>.</em></span></div>
 <div class="footer-links">
 ${lienPied('coulisses-miaoucratie.html')}
 ${lienPied('presse.html')}
