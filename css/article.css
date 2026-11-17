@@ -80,8 +80,8 @@
     display: flex;
     gap: 8px;
     overflow-x: auto;
-    padding-bottom: 8px;
     scrollbar-width: none;
+    padding-bottom: 8px;
   }
   .art-sommaire ol::-webkit-scrollbar { display: none; }
   .art-sommaire a {
