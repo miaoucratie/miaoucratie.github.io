@@ -48,12 +48,12 @@ const META_ANTIROBOT = /(<meta name="miaoucratie-antirobot" content=")[^"]*(")/;
 const CLE_ANTIROBOT_ESSAI = 'cle-essai';
 
 /* Serveur du site */
-function demarrerServeur(api) {
+export function demarrerServeur(api, racine = RACINE) {
   const serveur = createServer(async (req, res) => {
     const chemin = decodeURIComponent(req.url.split('?')[0]);
-    let fichier = join(RACINE, normalize(chemin).replace(/^(\.\.[/\\])+/, ''));
+    let fichier = join(racine, normalize(chemin).replace(/^(\.\.[/\\])+/, ''));
     if (chemin.endsWith('/')) fichier = join(fichier, 'index.html');
-    if (!fichier.startsWith(RACINE) || !existsSync(fichier)) {
+    if (!fichier.startsWith(racine) || !existsSync(fichier)) {
       res.writeHead(404).end('introuvable');
       return;
     }
@@ -75,20 +75,20 @@ function demarrerServeur(api) {
 
 /* ─── Faux Worker ────────────────────────────────────────────────────── */
 
-const jourDecale = (jours) => new Date(Date.now() + jours * 86400000).toISOString().slice(0, 10);
+export const jourDecale = (jours) => new Date(Date.now() + jours * 86400000).toISOString().slice(0, 10);
 
 /* Indisponibilites figees */
 const indisponibilitesFigees = () => [{ startDate: jourDecale(10), endDate: jourDecale(14) }];
 
 /* Administration */
-const MOT_DE_PASSE_ESSAI = 'essai-valide';
+export const MOT_DE_PASSE_ESSAI = 'essai-valide';
 const JETON_ESSAI = 'jeton-essai';
 
 /* Jeton anti-robot refusé */
-const JETON_REFUSE = 'jeton-refuse';
+export const JETON_REFUSE = 'jeton-refuse';
 const MESSAGE_REFUS = "La vérification anti-robot n'a pas abouti. Merci de réessayer.";
 
-function demarrerFauxWorker() {
+export function demarrerFauxWorker() {
   const envois = [];
   const periodes = [{ id: 1, startDate: jourDecale(10), endDate: jourDecale(14), comment: 'Essai' }];
   const reglages = { demandes: [], statutDemandes: 200 };
@@ -204,7 +204,7 @@ async function poserFilet(contexte, reseau) {
 
 const FAUX_ANTIROBOT = join(RACINE, 'qa', 'fixtures', 'turnstile.js');
 
-async function nouveauContexte(navigateur, reseau, options) {
+export async function nouveauContexte(navigateur, reseau, options) {
   const contexte = await navigateur.newContext(options);
   await poserFilet(contexte, reseau);
   return contexte;
@@ -232,7 +232,7 @@ function contourAutourDe(point) {
   };
 }
 
-async function figerApiAdresse(contexte, requetesInconnues, enPlus = {}) {
+export async function figerApiAdresse(contexte, requetesInconnues, enPlus = {}) {
   const fixture = JSON.parse(await readFile(FIXTURE_GEO, 'utf8'));
   const parRequete = { ...fixture.requetes, ...enPlus };
   const parCode = new Map();
@@ -292,7 +292,7 @@ async function figerApiAdresse(contexte, requetesInconnues, enPlus = {}) {
 const CLE_CONSENTEMENT = 'miaoucratie.consentement';
 const HOTES_MESURE = ['https://www.googletagmanager.com/**', 'https://*.google-analytics.com/**'];
 
-async function intercepterMesure(contexte, appels) {
+export async function intercepterMesure(contexte, appels) {
   for (const motif of HOTES_MESURE) {
     await contexte.route(motif, async (route) => {
       appels.push(route.request().url());
@@ -302,7 +302,7 @@ async function intercepterMesure(contexte, appels) {
   }
 }
 
-async function refuserLaMesure(contexte) {
+export async function refuserLaMesure(contexte) {
   const choix = JSON.stringify({ valeur: 'refuse', version: 1, date: new Date().toISOString() });
   await contexte.addInitScript(([cle, valeur]) => {
     try { window.localStorage.setItem(cle, valeur); } catch (e) { /* stockage indisponible */ }
@@ -800,7 +800,7 @@ async function testerGestion(navigateur, base, reseau, echecs) {
 
 /* Liste des demandes */
 const soumiseIlYa = (jours) => new Date(Date.now() - jours * 86400000).toISOString().slice(0, 19).replace('T', ' ');
-const DEMANDES_ESSAI = () => [
+export const DEMANDES_ESSAI = () => [
   { prenom: 'Marie', nom: 'Essai', soumiseLe: soumiseIlYa(2), statut: 'relayee', dateDebut: jourDecale(20), dateFin: jourDecale(24),
     commune: 'Domagné', nombreChats: 2, frequence: '1 visite par jour', telephone: '06 39 98 12 34', email: 'marie@example.com', observations: 'Chat craintif' },
   { prenom: 'Paul', nom: 'Test', soumiseLe: soumiseIlYa(1), statut: 'notification_echouee', dateDebut: jourDecale(30), dateFin: jourDecale(31),
@@ -1007,7 +1007,7 @@ async function testerCoupures(navigateur, base, reseau, echecs) {
 /* ─── Envoi complet ──────────────────────────────────────────────────── */
 
 /* Formulaire rempli */
-async function remplirFormulaire(page) {
+export async function remplirFormulaire(page) {
   await page.waitForFunction(() => document.querySelectorAll('.flatpickr-input').length === 2, { timeout: 12000 });
   await page.fill('#nom', 'Exemple');
   await page.fill('#prenom', 'Claire');
@@ -1153,8 +1153,8 @@ async function testerAntirobotAbsent(navigateur, base, reseau, echecs) {
 }
 
 /* Période indisponible simulée */
-const JOUR_FIGE = new Date('2026-12-20T10:00:00');
-const INDISPONIBILITES_DATEES = [
+export const JOUR_FIGE = new Date('2026-12-20T10:00:00');
+export const INDISPONIBILITES_DATEES = [
   { startDate: '2026-12-24', endDate: '2026-12-26' },
   { startDate: '2027-01-01', endDate: '2027-01-03' },
 ];

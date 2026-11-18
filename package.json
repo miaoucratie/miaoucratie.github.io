@@ -17,6 +17,8 @@
     "mise-en-page:strict": "node qa/mise-en-page.mjs --strict",
     "css": "node qa/css.mjs",
     "css:strict": "node qa/css.mjs --strict",
+    "dette-css": "node qa/dette-css.mjs",
+    "dette-html": "node qa/dette-html.mjs",
     "espacements": "node qa/espacements.mjs",
     "espacements:strict": "node qa/espacements.mjs --strict",
     "renvois": "node qa/renvois.mjs",
