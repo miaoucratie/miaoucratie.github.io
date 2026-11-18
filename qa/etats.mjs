@@ -15,6 +15,7 @@ const finirAnimations = (page) => page.evaluate(() => document.getAnimations().f
 
 /* Page stabilisée */
 async function stabiliser(page) {
+  await page.mouse.move(0, 0);
   for (let i = 0; i < 20; i++) {
     const enCours = await page.evaluate(() => document.fonts.status !== 'loaded' || [...document.images].some((im) => im.loading !== 'lazy' && !im.complete));
     if (!enCours) break;
