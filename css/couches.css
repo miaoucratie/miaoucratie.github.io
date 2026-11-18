@@ -448,6 +448,10 @@ body.cgv-page .brand-rule {
 [data-defilement].suite-avant { margin-left: 44px; -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); }
 [data-defilement].suite-avant.suite-apres { -webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
 
+/* Utilitaires */
+.insecable { white-space: nowrap; }
+.sans-soulignement { text-decoration: none; }
+
 /* Couleurs */
 .etoiles { color: #E8A33D; letter-spacing: 1px; }
 .c-fond-art-eau { background: var(--art-eau); }

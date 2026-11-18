@@ -119,8 +119,28 @@ body .section-label {
 .stripe-item p { color: var(--mid); }
 
 /* Appel final */
-.cta-section .cta-surtitre { color: var(--peach); }
-.cta-section .cta-intro { color: rgba(251, 247, 240, 0.7); }
-.cta-section .cta-garanties { color: rgba(251, 247, 240, 0.5); }
-.cta-section .cta-tarif { color: rgba(251, 247, 240, 0.65); }
+.cta-section { padding: 80px 40px; }
+.cta-section .cta-surtitre { color: var(--peach); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 16px; }
+.cta-section .cta-titre { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 60px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 8px; }
+.cta-section .cta-intro { color: rgba(251, 247, 240, 0.7); font-family: 'DM Sans', sans-serif; font-size: 16px; margin: 16px auto 32px; max-width: 620px; line-height: 1.7; }
+.cta-section .cta-garanties { color: rgba(251, 247, 240, 0.5); margin-top: 20px; font-size: 13px; letter-spacing: 0.04em; }
+.cta-section .cta-tarif { color: rgba(251, 247, 240, 0.65); margin-top: 14px; font-size: 14px; }
+.cta-section .cta-tarif-lien { text-decoration: underline; text-underline-offset: 3px; font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; font-style: normal; }
+.cta-section .cta-btn-white { font-weight: 600; }
 .cta-section .cta-btn-outline { border-color: rgba(251, 247, 240, 0.35); }
+
+/* Haut de page */
+.sprite { display: none; }
+.hero-lead { max-width: 560px; }
+.hero .hero-communes { margin-bottom: 20px; }
+.hero .hero-avis { margin-bottom: 20px; font-size: 14px; }
+.hero .hero-prix { margin-top: 12px; }
+.hero .hero-zone { margin-top: 10px; font-size: 13px; }
+.hero-card .hero-card-note { margin-top: 12px; font-size: 13px; }
+.stripe-item .stripe-nuance { font-style: italic; font-weight: 300; }
+
+/* Tarifs et zone */
+.pcard .note { border-top: none; padding-top: 0; }
+.section.section--zone { padding-top: 0; }
+.section--zone .zone-suite { margin-top: 8px; }
+.section--zone .zone-exclus { font-size: 14px; }

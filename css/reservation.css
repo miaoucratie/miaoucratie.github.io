@@ -1576,4 +1576,4 @@ body.reservation-page input.flatpickr-input[aria-invalid="true"] {
 }
 
 /* Preuves sous le formulaire */
-.submit-panel .submit-preuves { color: var(--muted, #7A6B5E); }
+.submit-panel .submit-preuves { color: var(--muted, #7A6B5E); font-size: 14px; margin: 0 0 4px; }

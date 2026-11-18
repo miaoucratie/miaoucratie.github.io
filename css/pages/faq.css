@@ -53,4 +53,11 @@ body .faq-hero .hero-eyebrow {
 /* Pages autonomes */
 
 /* Recherche sans résultat */
-.faq-vide { color: var(--muted); }
+.faq-vide { color: var(--muted); text-align: center; padding: 60px 0; }
+.faq-vide .faq-vide-icone { font-size: 48px; margin-bottom: 16px; }
+.faq-vide .faq-vide-titre { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; }
+.faq-vide .faq-vide-aide { margin-top: 8px; font-size: 14px; }
+.faq-vide .faq-vide-aide a { text-decoration: underline; }
+
+/* Paragraphe suivant */
+.acc-content .acc-suite { margin-top: 12px; }

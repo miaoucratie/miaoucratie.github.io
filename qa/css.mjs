@@ -49,6 +49,14 @@ const IMPORTANTS_ADMIS = new Map([
     ['@media (prefers-reduced-motion: reduce) { *,*::before,*::after', 'mouvement réduit à la demande du lecteur'],
   ])],
 ]);
+/* Réglages admis dans une page */
+const REGLAGES_ADMIS = [
+  ['donnée d\'un graphique ou d\'un service', (p) => /^(width|height|left|top|right|bottom|transform|--[\w-]+)$/.test(p)],
+  ['affichage piloté par un script', (p, v, balise) => p === 'display' && v === 'none' && /\sid="/.test(balise)],
+  ['début d\'une barre de graphique', (p, v, balise) => p === 'margin-left' && /class="[^"]*\bart-part\b/.test(balise)],
+  ['réglage optique d\'un caractère', (p, v, balise) => /^margin(-left)?$/.test(p) && /^<(small|span)\b/.test(balise) && /^(-?[\d.]+em\s*|0\s*)+$/.test(v)],
+];
+
 const cleRegle = (r) => `${r.contexte ? r.contexte + ' { ' : ''}${r.selecteur.replace(/\s+/g, ' ').trim()}`;
 
 const lister = (dossier, prefixe = '') => readdirSync(join(RACINE, dossier), { withFileTypes: true })
@@ -92,6 +100,8 @@ for (const [f, brut] of sources) {
   }
   if (profondeur !== 0) noter(f, `accolades desequilibrees : ${profondeur > 0 ? profondeur + ' non fermee(s)' : -profondeur + ' en trop'}`);
   if (mini < 0) noter(f, 'une accolade fermante precede son ouvrante');
+  const vides = [...css.matchAll(/([^{};]+)\{\s*\}/g)].map((m) => m[1].trim());
+  if (vides.length) noter(f, `${vides.length} regle(s) vide(s) : ${vides.join(' · ')}`);
 
   regles.set(f, reglesCSS(brut));
 
@@ -111,6 +121,17 @@ for (const [p, h] of html) {
   if (EXCEPTIONS.has(p)) continue;
   const bang = [...h.matchAll(/style="([^"]*)"/g)].filter((m) => m[1].includes('!important')).length;
   if (bang) noter(p, `${bang} attribut(s) style avec !important`);
+  const hors = [];
+  for (const m of h.matchAll(/<[a-zA-Z][^>]*?\sstyle="([^"]*)"[^>]*>/g)) {
+    for (const d of m[1].split(';')) {
+      const i = d.indexOf(':');
+      if (i < 0) continue;
+      const prop = d.slice(0, i).trim().toLowerCase();
+      const val = d.slice(i + 1).trim();
+      if (!REGLAGES_ADMIS.some(([, admis]) => admis(prop, val, m[0]))) hors.push(`${prop}: ${val}`);
+    }
+  }
+  if (hors.length) noter(p, `${hors.length} reglage(s) de presentation ecrit(s) dans la page : ${hors.slice(0, 6).join(' · ')}`);
 }
 
 /* ── Trois relevés ── */
@@ -195,6 +216,7 @@ for (const [p, h] of html) {
 console.log(`\nFeuilles de style — ${feuilles.length} feuilles, ${pages.length} pages, ${blocs} bloc(s) <style> dans les pages\n`);
 console.log(constats.length ? constats.join('\n') : '  Aucun constat.');
 console.log(`\n  ── exceptions ──\n${[...EXCEPTIONS].map(([n, r]) => `  ${n} : ${r}`).join('\n')}`);
+console.log(`\n  ── réglages admis dans une page ──\n${REGLAGES_ADMIS.map(([r]) => `  ${r}`).join('\n')}`);
 console.log('\n  ── !important admis ──');
 for (const [f, admis] of IMPORTANTS_ADMIS) for (const [s, r] of admis) console.log(`  ${f} ${s} : ${r}`);
 console.log('\n  ── ordre de chargement ──');

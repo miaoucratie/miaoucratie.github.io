@@ -500,6 +500,7 @@
   border: 1px solid rgba(30, 24, 18, 0.28);
 }
 /* Pastilles */
+.art-legende-item svg { flex-shrink: 0; }
 i.art-cle--noisette { background: var(--art-noisette); }
 i.art-cle--mixte { background: rgba(122, 107, 94, 0.16); border: 1px dashed var(--mid); }
 i.art-cle--plafond { background: none; border: 1.5px solid var(--rust); }
@@ -849,7 +850,7 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
 
 /* Bande de couleurs */
 .art-barre--bande { grid-template-columns: minmax(96px, 24%) 1fr; }
-.art-bande { height: 26px; border-radius: 999px; }
+.art-bande { display: block; height: 26px; border-radius: 999px; }
 /* Spectre humain */
 .art-bande--humain {
   margin-left: 14.29%;
@@ -1455,3 +1456,6 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
   .sd-pivot { height: 1px; margin: 44px 0; }
   .sd-pivot svg { top: 0; transform: translate(-50%, -50%) rotate(90deg); }
 }
+
+/* Filtres SVG */
+.svg-filtres { position: absolute; }

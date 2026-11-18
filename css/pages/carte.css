@@ -154,6 +154,6 @@
     }
     @media (prefers-reduced-motion: reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
-@media(max-width:768px){
-}
   
+    .hero-copy .hero-suite{display:block;margin-top:6px}
+    .rule-card.rule-card--premiere{margin-top:0}
