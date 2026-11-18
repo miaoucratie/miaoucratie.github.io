@@ -34,11 +34,6 @@ body .container .subtitle {
   line-height: 1.8;
 }
 
-/* Pages autonomes */
-body.standalone-page {
-  background: var(--cream, #FBF7F0);
-  color: var(--deep, #1E1812);
-}
 /* Animation d'apparition */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
