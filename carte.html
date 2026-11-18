@@ -234,7 +234,13 @@
   const overlayNote = document.getElementById('overlayNote');
   const resetBtn = document.getElementById('resetView');
   const sticky = document.getElementById('desktopStickyCta');
-  new ResizeObserver(() => document.documentElement.style.setProperty('--place-note', `${sticky.offsetHeight + 24}px`)).observe(sticky);
+  const lever = () => {
+    const pied = document.querySelector('.footer-bar');
+    if (pied) document.documentElement.style.setProperty('--leve', `${Math.max(0, innerHeight - pied.getBoundingClientRect().top)}px`);
+  };
+  addEventListener('scroll', lever, { passive: true });
+  addEventListener('resize', lever);
+  addEventListener('DOMContentLoaded', lever);
   const stickyTitle = document.getElementById('stickyTitle');
   const stickyDesc = document.getElementById('stickyDesc');
   const stickyPrimary = document.getElementById('stickyPrimary');

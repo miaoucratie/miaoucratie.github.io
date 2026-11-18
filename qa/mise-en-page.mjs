@@ -41,7 +41,7 @@ function demarrerServeur() {
 }
 
 /* ══ Relevé dans la page ══ */
-const RELEVE = () => {
+const RELEVE = async () => {
   const d = document, D = d.documentElement;
 
   const nom = (e) => e.tagName.toLowerCase() + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/)[0] : '');
@@ -299,21 +299,24 @@ const RELEVE = () => {
     }
   }
 
-  /* 13. Pied de page masqué */
+  /* 13. Fin de page */
   {
-    window.scrollTo(0, D.scrollHeight);
+    window.scrollTo({ top: D.scrollHeight, behavior: 'instant' });
+    await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
     const pied = [...d.querySelectorAll('footer')].filter(visible).pop();
     if (pied) {
       const f = pied.getBoundingClientRect();
+      const sous = Math.round(D.scrollHeight - (f.bottom + scrollY));
+      if (sous > 1) ajouter('fin de page', `${sous} px sous le pied de page`);
       for (const x of d.querySelectorAll('body *')) {
         if (!visible(x) || x.closest('.consentement') || getComputedStyle(x).position !== 'fixed') continue;
         const r = x.getBoundingClientRect();
         if (r.width && r.height && r.top < f.bottom - 1 && r.bottom > f.top + 1 && r.left < f.right && r.right > f.left) {
-          ajouter('pied de page masqué', `${nom(x)} recouvre le pied de page en bas de page`);
+          ajouter('fin de page', `${nom(x)} recouvre le pied de page`);
         }
       }
     }
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   return echecs;
