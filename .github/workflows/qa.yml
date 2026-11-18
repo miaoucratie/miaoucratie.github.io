@@ -45,6 +45,12 @@ jobs:
       - name: Dépendances système du navigateur
         run: npx playwright install-deps chromium
 
+      - name: Harnais et pages séparés
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags --depth=1 origin ${{ github.base_ref }}
+          node qa/separation.mjs origin/${{ github.base_ref }}
+
       - name: Tests
         run: npm test
 
