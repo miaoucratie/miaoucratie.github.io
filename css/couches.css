@@ -34,11 +34,6 @@ body .container .subtitle {
   line-height: 1.8;
 }
 
-/* Pages autonomes */
-body.standalone-page {
-  background: var(--cream, #FBF7F0);
-  color: var(--deep, #1E1812);
-}
 /* Animation d'apparition */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
@@ -73,7 +68,7 @@ body.calculateur-page h1 {
 }
 body .hero-title,
 body .cgv-title {
-  font-size: clamp(52px, 7vw, 88px) !important;
+  font-size: clamp(52px, 7vw, 88px);
 }
 /* Calculateur */
 body.calculateur-page h1 {
@@ -85,7 +80,7 @@ body .section-title {
 }
 /* Questions d'accordéon */
 body .acc-question {
-  font-size: clamp(19px, 1.8vw, 22px) !important;
+  font-size: clamp(19px, 1.8vw, 22px);
 }
 body h3 {
   font-size: clamp(18px, 1.8vw, 24px) !important;
@@ -330,9 +325,9 @@ body.cgv-page .brand-rule {
 
 .faq-cta-secondary:hover,
 .faq-cta-secondary:focus-visible {
-  background: rgba(255,255,255,0.10) !important;
-  border-color: rgba(242,205,176,0.72) !important;
-  color: #FFF8F2 !important;
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(242,205,176,0.72);
+  color: #FFF8F2;
   transform: translateY(-1px);
 }
 
@@ -444,8 +439,31 @@ body.cgv-page .brand-rule {
 .defile:focus-visible { color: var(--deep, #1E1812); outline: 2px solid var(--rust, #A8472A); outline-offset: -4px; border-radius: 50%; }
 .defile--avant { left: 0; }
 .defile--apres { right: 0; }
-[data-defilement].suite-avant { margin-left: 44px; }
-[data-defilement].suite-apres { margin-right: 44px; }
-[data-defilement].suite-apres { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
-[data-defilement].suite-avant { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); }
+[data-defilement].suite-apres { margin-right: 44px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
+[data-defilement].suite-avant { margin-left: 44px; -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent); }
 [data-defilement].suite-avant.suite-apres { -webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
+
+/* Utilitaires */
+.insecable { white-space: nowrap; }
+.sans-soulignement { text-decoration: none; }
+
+/* Couleurs */
+.etoiles { color: #E8A33D; letter-spacing: 1px; }
+.c-fond-art-eau { background: var(--art-eau); }
+.c-fond-art-eau-encre { background: var(--art-eau-encre); }
+.c-fond-art-mythe { background: var(--art-mythe); }
+.c-fond-cream { background: var(--cream); }
+.c-fond-deep { background: var(--deep); }
+.c-fond-light { background: var(--light); }
+.c-fond-mid { background: var(--mid); }
+.c-fond-rust { background: var(--rust); }
+.c-fond-sage { background: var(--sage); }
+.c-fond-sand { background: var(--sand); }
+.c-fond-terracotta { background: var(--terracotta); }
+.c-fond-warm { background: var(--warm); }
+.c-texte-cream { color: var(--cream); }
+.c-texte-deep { color: var(--deep); }
+.c-texte-mid { color: var(--mid); }
+.c-texte-peach { color: var(--peach); }
+.c-texte-rust { color: var(--rust); }
+.c-texte-terracotta { color: var(--terracotta); }

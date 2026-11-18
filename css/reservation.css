@@ -1288,27 +1288,6 @@ body.reservation-page .autocomplete__list[hidden] {
   display: none;
 }
 
-body.reservation-page .autocomplete__option {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.8rem 0.95rem;
-  border: 0;
-  border-radius: 0.8rem;
-  background: #fff;
-  cursor: pointer;
-  text-align: left;
-  font: 500 14px/1.3 'DM Sans', sans-serif;
-  color: var(--deep, #1E1812);
-}
-
-body.reservation-page .autocomplete__option:hover,
-body.reservation-page .autocomplete__option:focus-visible {
-  background: rgba(122, 158, 142, 0.08);
-}
-
 body.reservation-page .autocomplete__option small {
   color: var(--muted, #735F50);
   font-weight: 700;
@@ -1595,3 +1574,6 @@ body.reservation-page input.flatpickr-input[aria-invalid="true"] {
   border-color: rgba(157, 59, 35, 0.45);
   background: #fff7f6;
 }
+
+/* Preuves sous le formulaire */
+.submit-panel .submit-preuves { color: var(--muted, #7A6B5E); font-size: 14px; margin: 0 0 4px; }

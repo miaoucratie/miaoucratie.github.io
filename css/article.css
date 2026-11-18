@@ -15,6 +15,8 @@
   --art-jeu-encre: #3B5540;
   --art-jeu: #5E8266;
   --art-mythe: #4A6B58;
+  /* Teinte commune */
+  --art-noisette: #8C6A4F;
 }
 
 /* ══ LA COMPOSITION D'UN ARTICLE ══ */
@@ -301,6 +303,8 @@
 
 /* Boutons de fiche */
 .art-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 10px; }
+.avis-grid .art-actions .btn-primary { white-space: nowrap; }
+@media (max-width: 900px) { .avis-grid .art-actions .btn-primary { padding-inline: 20px; } }
 
 /* ══ ENCADRES ══ */
 .cred-item--large { padding: 28px 30px; }
@@ -460,6 +464,7 @@
 .art-part--clair { background: var(--sand); }
 .art-part--sauge { background: #4A6B58; }
 .art-part--brun { background: var(--mid); }
+.art-part--noisette { background: var(--art-noisette); }
 
 /* Deux produits comparés */
 .art-barres--duel { gap: 0; }
@@ -494,6 +499,14 @@
   width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
   border: 1px solid rgba(30, 24, 18, 0.28);
 }
+/* Pastilles */
+.art-legende-item svg { flex-shrink: 0; }
+i.art-cle--noisette { background: var(--art-noisette); }
+i.art-cle--mixte { background: rgba(122, 107, 94, 0.16); border: 1px dashed var(--mid); }
+i.art-cle--plafond { background: none; border: 1.5px solid var(--rust); }
+i.art-cle--miroir { background: repeating-linear-gradient(90deg, var(--terracotta) 0 5px, transparent 5px 9px); }
+i.art-cle--neutre { background: #C9C3B4; }
+i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 0.55) 0 3px, transparent 3px 6px); }
 
 .art-piste > .art-pile { height: 100%; border-radius: 0; background: none; }
 
@@ -528,7 +541,7 @@
   white-space: nowrap;
 }
 .art-croise-bande--haut { top: 10px; background: var(--rust); }
-.art-croise-bande--bas { bottom: 10px; background: #8C6A4F; }
+.art-croise-bande--bas { bottom: 10px; background: var(--art-noisette); }
 .art-croise-bornes {
   display: flex;
   justify-content: space-between;
@@ -837,7 +850,7 @@
 
 /* Bande de couleurs */
 .art-barre--bande { grid-template-columns: minmax(96px, 24%) 1fr; }
-.art-bande { height: 26px; border-radius: 999px; }
+.art-bande { display: block; height: 26px; border-radius: 999px; }
 /* Spectre humain */
 .art-bande--humain {
   margin-left: 14.29%;
@@ -1443,3 +1456,6 @@
   .sd-pivot { height: 1px; margin: 44px 0; }
   .sd-pivot svg { top: 0; transform: translate(-50%, -50%) rotate(90deg); }
 }
+
+/* Filtres SVG */
+.svg-filtres { position: absolute; }

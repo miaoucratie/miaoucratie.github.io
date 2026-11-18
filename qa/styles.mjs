@@ -12,7 +12,7 @@ import { chromium } from 'playwright';
 const RACINE = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const REF = process.argv[2] || 'origin/main';
 const LARGEURS = [1280, 1024, 768, 375, 320];
-const MAX_LIGNES = 200;
+const MAX_LIGNES = Number(process.env.STYLES_LIGNES) || 200;
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
@@ -97,6 +97,9 @@ async function relever(contexte, base, page, largeur) {
   return { repos, survolees };
 }
 
+/* Variables CSS */
+const variable = (k) => k.replace(/^::(before|after)/, '').startsWith('--');
+
 /* Comparaison */
 function comparer(a, b, lieu, ecarts) {
   if (a.repos.length !== b.repos.length) {
@@ -106,14 +109,14 @@ function comparer(a, b, lieu, ecarts) {
   a.repos.forEach(([nom, avant], i) => {
     const apres = b.repos[i][1];
     for (const k of Object.keys({ ...avant, ...apres })) {
-      if (avant[k] !== apres[k]) ecarts.push(`${lieu} ${nom} ${k} : « ${avant[k]} » → « ${apres[k]} »`);
+      if (!variable(k) && avant[k] !== apres[k]) ecarts.push(`${lieu} ${nom} ${k} : « ${avant[k]} » → « ${apres[k]} »`);
     }
     const sa = a.survolees[i];
     const sb = b.survolees[i];
     if (!sa && !sb) return;
     if (!sa || !sb) return ecarts.push(`${lieu} ${nom} survol présent d'un seul côté`);
     for (const k of Object.keys(sa)) {
-      if (sa[k] !== sb[k]) ecarts.push(`${lieu} ${nom} :hover ${k} : « ${sa[k]} » → « ${sb[k]} »`);
+      if (!variable(k) && sa[k] !== sb[k]) ecarts.push(`${lieu} ${nom} :hover ${k} : « ${sa[k]} » → « ${sb[k]} »`);
     }
   });
 }

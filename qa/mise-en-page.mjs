@@ -15,7 +15,7 @@ const DEMANDEES = process.argv.slice(2).filter((a) => a.endsWith('.html'));
 const EXCLUES = new Set(['administration.html']);
 
 /* Largeurs de contrôle */
-const LARGEURS = [1280, 768, 375, 320];
+const LARGEURS = [1280, 1024, 900, 768, 600, 480, 375, 320];
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -41,7 +41,7 @@ function demarrerServeur() {
 }
 
 /* ══ Relevé dans la page ══ */
-const RELEVE = () => {
+const RELEVE = async () => {
   const d = document, D = d.documentElement;
 
   const nom = (e) => e.tagName.toLowerCase() + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/)[0] : '');
@@ -270,6 +270,53 @@ const RELEVE = () => {
     if (!/auto|scroll/.test(s.overflowX) || s.scrollbarWidth !== 'none' || e.scrollWidth <= e.clientWidth + 1) continue;
     const fleches = e.parentElement && [...e.parentElement.querySelectorAll(':scope > button')].some(visible);
     if (!fleches) ajouter('défilement figé', `${nom(e)} : contenu caché sur le côté, sans flèche pour le faire défiler`);
+  }
+
+  /* 12. Cadres d'une même colonne */
+  /* Exceptions */
+  const sansCadres = /calculateur-miaoucratie/.test(location.pathname);
+  const cadre = (x) => {
+    if (!x || !visible(x)) return null;
+    const st = getComputedStyle(x);
+    const bord = ['Top', 'Right', 'Bottom', 'Left'].some((c) => parseFloat(st[`border${c}Width`]) > 0 && rgba(st[`border${c}Color`])[3] > 0);
+    return rgba(st.backgroundColor)[3] > 0 || st.backgroundImage !== 'none' || bord ? x : null;
+  };
+  for (const p of sansCadres ? [] : d.querySelectorAll('body *')) {
+    if (!visible(p) || p.closest('.leaflet-container')) continue;
+    const ps = getComputedStyle(p);
+    if (ps.display !== 'block' && !(ps.display.includes('flex') && ps.flexDirection.startsWith('column')) && !(ps.display.includes('grid') && ps.gridTemplateColumns.split(' ').length === 1)) continue;
+    const largeur = p.clientWidth;
+    if (largeur < innerWidth * 0.5) continue;
+    const cadres = [...p.children].map((c) => cadre(c) || (c.children.length === 1 ? cadre(c.children[0]) : null)).filter(Boolean)
+      .filter((c) => !c.matches('.hero-photo-frame') && !fixe(c) && getComputedStyle(c).position !== 'absolute' && /^(block|flex|grid|flow-root|list-item)$/.test(getComputedStyle(c).display))
+      .map((c) => ({ c, r: c.getBoundingClientRect() })).filter(({ r }) => r.width >= largeur * 0.9 && r.height >= 24);
+    for (let i = 1; i < cadres.length; i++) {
+      const a = cadres[i - 1].r, b = cadres[i].r;
+      if (b.top < a.bottom - 1) continue;
+      if (Math.abs(a.left - b.left) > 1 || Math.abs(a.right - b.right) > 1) {
+        ajouter('cadres non alignés', `${nom(cadres[i - 1].c)} [${Math.round(a.left)}–${Math.round(a.right)}] et ${nom(cadres[i].c)} [${Math.round(b.left)}–${Math.round(b.right)}]`);
+      }
+    }
+  }
+
+  /* 13. Fin de page */
+  {
+    window.scrollTo({ top: D.scrollHeight, behavior: 'instant' });
+    await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+    const pied = [...d.querySelectorAll('footer')].filter(visible).pop();
+    if (pied) {
+      const f = pied.getBoundingClientRect();
+      const sous = Math.round(D.scrollHeight - (f.bottom + scrollY));
+      if (sous > 1) ajouter('fin de page', `${sous} px sous le pied de page`);
+      for (const x of d.querySelectorAll('body *')) {
+        if (!visible(x) || x.closest('.consentement') || getComputedStyle(x).position !== 'fixed') continue;
+        const r = x.getBoundingClientRect();
+        if (r.width && r.height && r.top < f.bottom - 1 && r.bottom > f.top + 1 && r.left < f.right && r.right > f.left) {
+          ajouter('fin de page', `${nom(x)} recouvre le pied de page`);
+        }
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   return echecs;

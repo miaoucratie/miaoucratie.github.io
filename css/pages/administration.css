@@ -1,0 +1,41 @@
+    body.admin-reservation-page .hero__lead {
+      max-width: 38rem;
+    }
+
+    body.admin-reservation-page .section-heading {
+      margin-bottom: 1.6rem;
+    }
+
+    body.admin-reservation-page .admin-panel,
+    body.admin-reservation-page .admin-form-card,
+    body.admin-reservation-page .period-list-card {
+      background: rgba(255,255,255,0.88);
+    }
+
+    body.admin-reservation-page .hero__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(2rem, 4vw, 3.5rem);
+    }
+
+    body.admin-reservation-page .hero__content {
+      max-width: 44rem;
+    }
+
+    body.admin-reservation-page .admin-section {
+      padding-top: 0;
+    }
+
+    body.admin-reservation-page .admin-grid {
+      max-width: 44rem;
+      margin: 0;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    body.admin-reservation-page #login-panel {
+      max-width: 100%;
+    }
+
+    body.admin-reservation-page .footer-bar {
+      margin-top: 0;
+    }
+  

@@ -27,76 +27,7 @@
 
   <link rel="stylesheet" href="css/polices.css">
 <link href="css/style.css" rel="stylesheet"/>
-<style>
-/* ── Page presse ── */
-
-html{height:100%}
-body{min-height:100vh;display:flex;flex-direction:column}
-.page-wrap{max-width:1100px;margin:0 auto;padding:52px 40px 80px;flex:1}
-
-/* ── Hero ── */
-.pr-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A8472A;background:rgba(168,71,42,.1);border-radius:999px;padding:7px 14px;margin-bottom:20px}
-.pr-hero{margin-bottom:48px}
-.pr-hero h1{font-size:clamp(44px,6vw,76px);margin-bottom:16px}
-.pr-hero h1 em{font-style:italic;font-weight:400;color:#A8472A}
-.pr-hero-sub{font-size:16px;color:#7A6B5E;line-height:1.8}
-
-/* ── Liste des articles ── */
-.pr-list{display:grid;gap:20px;margin-bottom:56px}
-.pr-card{background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:28px 32px}
-
-/* Nom du journal */
-.pr-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:12px}
-.pr-journal{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#A8472A}
-.pr-date{font-size:13px;color:#7A6B5E}
-/* Statut d'accès */
-.pr-access{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap}
-.pr-access.is-open{color:#1E1812;background:rgba(122,158,142,.22)}
-.pr-access.is-paid{color:#4A3728;background:rgba(184,155,128,.22)}
-
-/* Titre de l'article */
-.pr-title{font-style:italic;margin-bottom:6px}
-.pr-title span{display:block;font-weight:400;font-size:clamp(24px,2.6vw,32px);line-height:1.25;letter-spacing:-.01em}
-.pr-byline{font-size:13px;color:#7A6B5E;margin-bottom:20px}
-
-.pr-said{margin-bottom:24px}
-.pr-said p{font-size:16px;line-height:1.9;color:#1E1812;margin-bottom:16px}
-.pr-said p:last-child{margin-bottom:0}
-
-/* ── Actions ── */
-.pr-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.pr-ghost{display:inline-flex;align-items:center;min-height:44px;font-family:'DM Sans',sans-serif;font-size:14px;color:#7A6B5E;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#D4BEA8;transition:color .2s,text-decoration-color .2s}
-.pr-ghost:hover{color:#1E1812;text-decoration-color:#1E1812}
-
-/* ── Bloc journalistes ── */
-.pr-press{background:#F0E8DA;border:1.5px solid #E8DDD0;border-radius:16px;padding:36px 40px;margin-bottom:48px}
-.pr-press h2{margin-bottom:12px}
-.pr-press p{font-size:15px;color:#4A3728;margin-bottom:16px;line-height:1.9}
-.pr-press ul{list-style:none;margin-bottom:24px}
-.pr-press li{font-size:15px;color:#4A3728;padding-left:18px;position:relative;margin-bottom:8px;line-height:1.7}
-.pr-press li::before{content:"·";position:absolute;left:4px;color:#A8472A;font-weight:700}
-.pr-press-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-
-/* ── Bloc final ── */
-.pr-final{text-align:center;background:#fff;border:1px solid #E8DDD0;border-radius:16px;padding:44px 32px}
-.pr-final h2{margin-bottom:10px}
-.pr-final h2 em{font-style:italic;font-weight:400;color:#A8472A}
-.pr-final p{font-size:15px;color:#7A6B5E;margin-bottom:26px}
-.pr-final-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center}
-
-/* ── Focus ── */
-.page-wrap a:focus-visible{outline:2px solid #A8472A;outline-offset:3px;border-radius:4px}
-
-@media (max-width:720px){
-  .page-wrap{padding:36px 20px 60px}
-  .pr-card{padding:24px 22px}
-  .pr-press{padding:28px 24px}
-  .pr-actions{flex-direction:column;align-items:stretch}
-  .pr-actions .btn-primary{justify-content:center}
-  .pr-final-cta{flex-direction:column;align-items:stretch}
-  .pr-final-cta .btn-primary{justify-content:center}
-}
-</style>
+<link rel="stylesheet" href="css/pages/presse.css">
 <link rel="stylesheet" href="css/couches.css">
 
 <script type="application/ld+json">

@@ -8,8 +8,9 @@ import {
   commentairesCSS,
   commentairesNonFermes,
   estTiers,
+  estAccrochee,
   nomsDeClasses,
-  selecteursDePremierNiveau,
+  reglesCSS,
 } from './css-regles.mjs';
 
 describe('commentairesNonFermes', () => {
@@ -98,15 +99,48 @@ describe('classesManipulees', () => {
   });
 });
 
-describe('selecteursDePremierNiveau', () => {
+describe('reglesCSS', () => {
   test('les declarations ne sont pas prises pour des selecteurs', () => {
-    const sels = selecteursDePremierNiveau('.a { padding: 0.5rem; background: url(x.png); }');
-    assert.deepEqual(sels, ['.a']);
+    const r = reglesCSS('.a { padding: 0.5rem; background: url(x.png); }\n/* note */\n.b { color: blue; }');
+    assert.deepEqual(r.map((x) => x.selecteur), ['.a', '.b']);
   });
 
-  test('un commentaire entre deux regles ne devient pas un selecteur', () => {
-    const sels = selecteursDePremierNiveau('.a { color: red; }\n/* note */\n.b { color: blue; }');
-    assert.deepEqual(sels.map((s) => s.trim()).filter(Boolean), ['.a', '.b']);
+  test('une regle dans un @media est lue, avec son contexte', () => {
+    const r = reglesCSS('@media (max-width: 5px) { .b, .c { color: red; } @supports (x: y) { .f { margin: 0; } } }');
+    assert.deepEqual(r.filter((x) => !x.arobase).map((x) => [x.contexte, x.selecteur]), [
+      ['@media (max-width: 5px)', '.b, .c'],
+      ['@media (max-width: 5px) > @supports (x: y)', '.f'],
+    ]);
+  });
+
+  test('le contenu d\'une regle est rendu, !important compris', () => {
+    const [r] = reglesCSS('.a { color: red !important; content: "{"; }');
+    assert.match(r.corps, /!important/);
+    assert.match(r.corps, /content: "\{"/);
+  });
+
+  test('les etapes d\'une animation ne sont pas des regles', () => {
+    const r = reglesCSS('@keyframes k { from { opacity: 0; } to { opacity: 1; } } @font-face { font-family: x; }');
+    assert.deepEqual(r.map((x) => x.selecteur), ['@keyframes k', '@font-face']);
+  });
+});
+
+describe('classes fabriquees par un script', () => {
+  test('une liste de classes passee en argument est relevee', () => {
+    const vues = classesManipulees('const card = element("article", "period-card demande-card");');
+    assert.ok(vues.has('period-card') && vues.has('demande-card'));
+  });
+
+  test('un mot sans tiret passe en argument n\'est pas une classe', () => {
+    assert.ok(!classesManipulees('el.addEventListener("click", f);').has('click'));
+  });
+
+  test('un nom fabrique a partir d\'un prefixe accroche toutes les classes du prefixe', () => {
+    const vues = classesManipulees('b.className = `defile defile--${sens}`; x(`demande-card__info${l ? ` demande-card__info--${l}` : ""}`);');
+    assert.ok(estAccrochee('defile--avant', vues));
+    assert.ok(estAccrochee('demande-card__info', vues));
+    assert.ok(estAccrochee('demande-card__info--large', vues));
+    assert.ok(!estAccrochee('autre', vues));
   });
 });
 
