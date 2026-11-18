@@ -166,7 +166,7 @@
     .leaflet-popup-content-wrapper{border-radius:16px}
     .leaflet-popup-content{margin:12px 14px;font-size:13px;line-height:1.5}
 
-    .map-overlay{position:absolute;left:28px;bottom:28px;z-index:40;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:16px;padding:12px 14px;max-width:430px;box-shadow:var(--shadow)}
+    .map-overlay{margin:0 16px 16px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
     .map-overlay strong{display:block;margin-bottom:4px;font-size:15px}
     .map-overlay span{display:block;color:var(--muted);font-size:13px}
 
@@ -190,10 +190,6 @@
     .info-card p{margin:0;color:var(--muted);font-size:14px}
     .info-card p+p{margin-top:10px}
 
-    .mobile-cta{display:none;position:sticky;bottom:12px;z-index:999;margin:18px 0 0;padding:0 12px}
-    .mobile-cta-inner{display:flex;gap:10px;flex-wrap:wrap;padding:12px;background:rgba(251,247,240,.92);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-    .cta-btn{flex:1 1 140px;text-align:center;text-decoration:none;padding:12px 14px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid var(--line);color:var(--deep);background:#fff}
-    .cta-btn.primary{background:var(--rust,#A8472A);color:#fff;border-color:var(--rust,#A8472A)}
 
     .desktop-sticky-cta{position:fixed;right:24px;bottom:24px;z-index:1100;width:min(320px, calc(100vw - 48px));background:rgba(255,252,249,.92);backdrop-filter:blur(16px);border:1px solid rgba(232,218,200,.95);border-radius:18px;box-shadow:0 12px 28px rgba(30,24,18,.12);padding:12px 14px;display:none}
     .desktop-sticky-cta.show{display:block}
@@ -219,15 +215,15 @@
       .map-card{min-height:auto}
       #map{height:520px}
       .rule-grid{grid-template-columns:1fr}
-      .mobile-cta{display:block}
-      .desktop-sticky-cta{display:none !important}
     }
     @media (max-width:720px){
       .page{width:min(100% - 20px,1240px);margin:12px auto 28px}
-      .hero-left,.hero-right,.legend,.rule-card,.info-card,.search-card,.zone-card{padding:18px}
-      .map-head{padding:16px 16px 12px;flex-direction:column;align-items:flex-start}
-      #map{height:440px;margin:0 12px 12px}
-      .map-overlay{left:12px;right:12px;bottom:12px;max-width:none}
+      .hero-left,.hero-right,.legend,.rule-card,.info-card,.search-card,.zone-card,.map-card{padding:18px}
+      .map-head{padding:0 0 12px;flex-direction:column;align-items:flex-start}
+      #map{height:440px;margin:0 0 12px}
+      .map-overlay{margin:0}
+      .desktop-sticky-cta{left:12px;right:12px;bottom:12px;width:auto}
+      body:has(.desktop-sticky-cta.show){padding-bottom:var(--place-note)}
       .hero-points{grid-template-columns:1fr}
       .search-grid{grid-template-columns:1fr auto}
     }
@@ -320,29 +316,22 @@
         <div class="card map-card">
           <div class="map-head">
             <div class="map-title">
-              <strong>Voir la zone de déplacement</strong>
+              <strong>Votre commune sur la carte</strong>
             </div>
             <div class="map-controls">
               <button class="btn" id="resetView" type="button">Réinitialiser</button>
             </div>
           </div>
           <div id="map" aria-label="Carte de la zone d'intervention Miaoucratie"></div>
-          <div class="map-overlay" id="overlayNote"><strong>Zone de déplacement</strong><span>Distances par la route depuis Domagné. Rennes est exclue. Au-delà de 45&nbsp;km, je ne peux pas intervenir.</span></div>
+          <div class="map-overlay" id="overlayNote"><strong>Comment je compte les distances</strong><span>Distances par la route depuis Domagné. Rennes est exclue. Au-delà de 45&nbsp;km, je ne peux pas intervenir.</span></div>
         </div>
 
-        <div class="mobile-cta">
-          <div class="mobile-cta-inner">
-            <a class="cta-btn primary" href="tel:+33644247681">Appeler</a>
-            <a class="cta-btn" href="mailto:miaoucratie@gmail.com">Envoyer un mail</a>
-            <a class="cta-btn" href="https://wa.me/33644247681" target="_blank" rel="noopener">WhatsApp</a>
-          </div>
-        </div>
       </div>
 
       <aside>
         <div class="card legend">
           <h2>Légende</h2>
-          <div class="legend-item"><div class="legend-dot green"></div><div><strong>Commune incluse</strong><p>La demande entre dans la zone de déplacement.</p></div></div>
+          <div class="legend-item"><div class="legend-dot green"></div><div><strong>Commune incluse</strong><p>Le déplacement est inclus dans le prix.</p></div></div>
           <div class="legend-item"><div class="legend-dot terracotta"></div><div><strong>Commune sur devis</strong><p>J'étudie la demande, selon le trajet et mes disponibilités.</p></div></div>
           <div class="legend-item"><div class="legend-dot red"></div><div><strong>Commune hors zone</strong><p>Rennes, hors Ille-et-Vilaine, ou au-delà de 45&nbsp;km&nbsp;: je ne peux pas intervenir.</p></div></div>
         </div>
@@ -414,6 +403,7 @@
   const overlayNote = document.getElementById('overlayNote');
   const resetBtn = document.getElementById('resetView');
   const sticky = document.getElementById('desktopStickyCta');
+  new ResizeObserver(() => document.documentElement.style.setProperty('--place-note', `${sticky.offsetHeight + 24}px`)).observe(sticky);
   const stickyTitle = document.getElementById('stickyTitle');
   const stickyDesc = document.getElementById('stickyDesc');
   const stickyPrimary = document.getElementById('stickyPrimary');

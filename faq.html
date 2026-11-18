@@ -148,8 +148,8 @@
         display: flex;
         gap: 8px;
         overflow-x: auto;
-        padding-bottom: 8px;
         scrollbar-width: none;
+        padding-bottom: 8px;
       }
       .faq-sommaire ol::-webkit-scrollbar { display: none; }
       .faq-sommaire a {
@@ -1023,7 +1023,8 @@ body .faq-hero .hero-eyebrow {
 </style>
   <link rel="stylesheet" href="css/polices.css">
 <link rel="stylesheet" href="css/couches.css">
-</link></head>
+</link>  <script src="js/defilement.js" defer></script>
+</head>
 <body class="faq-page">
 <!-- GENERATED:TOPBAR:START -->
 <header class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><nav class="tmenu-panel" id="tmenuPanel" style="display:none" aria-label="Menu principal">
@@ -1055,7 +1056,7 @@ body .faq-hero .hero-eyebrow {
 <div class="faq-wrapper">
 <nav aria-label="Sommaire" class="faq-sommaire">
 <p class="faq-sommaire-titre">Sommaire</p>
-<ol>
+<ol data-defilement="rubriques">
 <li><a href="#faq-service">Le service</a></li>
 <li><a href="#faq-reservation">Réservation</a></li>
 <li><a href="#faq-visites">Les visites</a></li>

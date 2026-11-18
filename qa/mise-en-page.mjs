@@ -210,6 +210,68 @@ const RELEVE = () => {
     if (b.height < 24 || b.width < 24) ajouter('cible trop petite', `« ${e.textContent.trim().slice(0, 26)} » ${Math.round(b.width)}×${Math.round(b.height)}`);
   }
 
+  /* 9. Texte recouvert */
+  const peint = (h) => {
+    if (/^(IMG|SVG|CANVAS|VIDEO|IFRAME|PICTURE)$/i.test(h.tagName) || h.closest('svg')) return true;
+    const s = getComputedStyle(h);
+    if (s.backgroundImage !== 'none' || rgba(s.backgroundColor)[3] > 0) return true;
+    return ['Top', 'Right', 'Bottom', 'Left'].some((c) => parseFloat(s[`border${c}Width`]) > 0 && rgba(s[`border${c}Color`])[3] > 0);
+  };
+  const fixe = (x) => { for (let y = x; y; y = y.parentElement) { const p = getComputedStyle(y).position; if (p === 'fixed' || p === 'sticky') return true; } return false; };
+  const textes = [...d.querySelectorAll('body *')].filter((e) => visible(e)
+    && [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())
+    && !fixe(e) && !e.closest('.leaflet-container'));
+  for (const e of textes) {
+    const r0 = e.getBoundingClientRect();
+    if (r0.width < 4 || r0.height < 4) continue;
+    window.scrollTo(0, r0.top + scrollY - 120);
+    const q = e.getBoundingClientRect();
+    const cx = (q.left + q.right) / 2, cy = (q.top + q.bottom) / 2;
+    const points = [[cx, cy], [cx, q.top + 2], [cx, q.bottom - 2], [q.left + 2, cy], [q.right - 2, cy]];
+    const cadres = [];
+    for (let a = e.parentElement; a && a !== d.body; a = a.parentElement) {
+      const sa = getComputedStyle(a);
+      if (sa.overflowX !== 'visible' || sa.overflowY !== 'visible') cadres.push(a.getBoundingClientRect());
+    }
+    for (const [x, y] of points) {
+      if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) continue;
+      if (cadres.some((c) => x < c.left || x > c.right || y < c.top || y > c.bottom)) continue;
+      const h = d.elementFromPoint(x, y);
+      if (h && h !== e && !e.contains(h) && !h.contains(e) && !fixe(h) && peint(h)) {
+        ajouter('texte recouvert', `${nom(e)} « ${e.textContent.trim().slice(0, 34)} » sous ${nom(h)}`);
+        break;
+      }
+    }
+  }
+  window.scrollTo(0, 0);
+
+  /* 10. Texte coupé */
+  for (const e of textes) {
+    const r = e.getBoundingClientRect();
+    if (r.width < 4 || r.height < 4) continue;
+    for (let a = e.parentElement; a && a !== d.body; a = a.parentElement) {
+      const s = getComputedStyle(a);
+      if (/auto|scroll/.test(s.overflowX + s.overflowY)) break;
+      const cx = /hidden|clip/.test(s.overflowX), cy = /hidden|clip/.test(s.overflowY);
+      if (!cx && !cy) continue;
+      const b = a.getBoundingClientRect();
+      if (b.width <= 2 || b.height <= 2) break;
+      if ((cx && (r.left < b.left - 1 || r.right > b.right + 1)) || (cy && (r.top < b.top - 1 || r.bottom > b.bottom + 1))) {
+        ajouter('texte coupé', `${nom(e)} « ${e.textContent.trim().slice(0, 34)} » par ${nom(a)}`);
+      }
+      break;
+    }
+  }
+
+  /* 11. Défilement sans indice */
+  for (const e of d.querySelectorAll('body *')) {
+    if (!visible(e)) continue;
+    const s = getComputedStyle(e);
+    if (!/auto|scroll/.test(s.overflowX) || s.scrollbarWidth !== 'none' || e.scrollWidth <= e.clientWidth + 1) continue;
+    const fleches = e.parentElement && [...e.parentElement.querySelectorAll(':scope > button')].some(visible);
+    if (!fleches) ajouter('défilement figé', `${nom(e)} : contenu caché sur le côté, sans flèche pour le faire défiler`);
+  }
+
   return echecs;
 };
 
@@ -274,6 +336,7 @@ for (const fichier of pages) {
     await page.evaluate(() => document.fonts.ready);
     await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
     await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
+    await page.addStyleTag({ content: '* { pointer-events: auto !important; }' });
     const echecs = await page.evaluate(RELEVE);
     await contexte.close();
     if (!echecs.length) continue;
