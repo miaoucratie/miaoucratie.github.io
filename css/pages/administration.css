@@ -2,10 +2,6 @@
       max-width: 38rem;
     }
 
-    body.admin-reservation-page .section-heading {
-      margin-bottom: 1.6rem;
-    }
-
     body.admin-reservation-page .admin-panel,
     body.admin-reservation-page .admin-form-card,
     body.admin-reservation-page .period-list-card {
@@ -27,7 +23,6 @@
 
     body.admin-reservation-page .admin-grid {
       max-width: 44rem;
-      margin: 0;
       grid-template-columns: minmax(0, 1fr);
     }
 
@@ -35,7 +30,4 @@
       max-width: 100%;
     }
 
-    body.admin-reservation-page .footer-bar {
-      margin-top: 0;
-    }
   

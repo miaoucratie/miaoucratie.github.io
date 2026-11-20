@@ -23,27 +23,12 @@
   --radius-pill: 999px;
   --container: 1180px;
   --header-height: 5.5rem;
-  --font-display: "Cormorant Garamond", Georgia, serif;
   --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
   --focus-ring: 0 0 0 3px rgba(201, 107, 62, 0.28);
   color-scheme: light;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
 body {
-  margin: 0;
-  font-family: var(--font-body);
-  background: var(--color-bg);
-  color: var(--color-text);
   line-height: 1.6;
   min-width: 320px;
 }
@@ -131,21 +116,6 @@ a:hover {
   margin-inline: auto;
 }
 
-.hero {
-  padding: 4.5rem 0 2rem;
-}
-
-.hero__grid {
-  display: grid;
-  gap: 2.2rem;
-  align-items: center;
-}
-
-.hero__content {
-  max-width: 35rem;
-}
-
-.eyebrow,
 .step-card__eyebrow,
 .success-panel__eyebrow {
   margin: 0 0 0.8rem;
@@ -165,19 +135,9 @@ a:hover {
 .admin-form-card h3,
 .period-list-card h3 {
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 0.95;
-}
-
-.hero h1 {
-  font-size: clamp(3rem, 7vw, 5.5rem);
 }
 
 .hero h1 span {
-  color: var(--color-primary);
-  font-style: italic;
   font-weight: 400;
   display: inline-block;
 }
@@ -196,29 +156,8 @@ body.reservation-page .hero h1 span.nowrap {
   }
 }
 
-.hero__lead,
-.section-heading__lead {
-  color: var(--color-muted);
-  font-size: 1rem;
-}
-
-.hero__lead {
-  margin: 1.4rem 0 0;
-  max-width: 34rem;
-}
-
-.hero__media {
-  display: flex;
-  justify-content: center;
-}
-
 .hero__media-frame {
   position: relative;
-  width: min(100%, 29rem);
-  padding: 1.2rem;
-  border-radius: 2.75rem;
-  background: linear-gradient(180deg, #f1e4d7 0%, #f7f0ea 100%);
-  box-shadow: var(--shadow-card);
 }
 
 /* Photo de Méli */
@@ -252,18 +191,7 @@ body.reservation-page .hero h1 span.nowrap {
 .hero__media-frame::before {
   content: "";
   position: absolute;
-  inset: 0.9rem;
-  border-radius: 2.2rem;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0));
-}
-
-.hero__media-frame img {
-  width: 100%;
-  border-radius: 2rem;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  box-shadow: 0 14px 30px rgba(38, 22, 10, 0.14);
 }
 
 .info-band {
@@ -293,7 +221,6 @@ body.reservation-page .hero h1 span.nowrap {
 }
 
 .info-card p {
-  margin: 0;
   font-size: 1.04rem;
 }
 
@@ -303,15 +230,7 @@ body.reservation-page .hero h1 span.nowrap {
 }
 
 .section-heading {
-  margin-bottom: 2rem;
   max-width: 40rem;
-}
-
-.section-heading h2,
-.success-panel h2,
-.admin-page h1,
-.admin-panel h2 {
-  font-size: clamp(2.4rem, 5vw, 3.4rem);
 }
 
 .reservation-form {
@@ -355,12 +274,6 @@ body.reservation-page .hero h1 span.nowrap {
 .step-card__header {
   display: grid;
   gap: 0.35rem;
-}
-
-.step-card h3,
-.admin-form-card h3,
-.period-list-card h3 {
-  font-size: clamp(2rem, 4vw, 2.6rem);
 }
 
 .grid {
@@ -467,47 +380,6 @@ textarea:disabled {
   position: relative;
 }
 
-.autocomplete__list {
-  position: absolute;
-  inset-inline: 0;
-  top: calc(100% + 0.45rem);
-  z-index: 40;
-  display: grid;
-  gap: 0;
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 0.35rem;
-  border: 1px solid rgba(122, 107, 94, 0.18);
-  border-radius: 1rem;
-  background: #fff;
-  box-shadow: 0 18px 30px rgba(30, 24, 18, 0.12);
-}
-
-.autocomplete__list[hidden] {
-  display: none;
-}
-
-.autocomplete__option {
-  display: grid;
-  gap: 0.15rem;
-  width: 100%;
-  text-align: left;
-  padding: 0.8rem 0.9rem;
-  border: 0;
-  border-radius: 0.8rem;
-  background: transparent;
-  color: inherit;
-}
-
-.autocomplete__option:hover,
-.autocomplete__option:focus-visible {
-  background: var(--color-card-soft);
-}
-
-.autocomplete__option small {
-  color: var(--color-muted);
-}
-
 .availability-note {
   padding: 0.9rem 1rem;
   border-radius: 1rem;
@@ -532,9 +404,7 @@ textarea:disabled {
 
 .periode__phrase,
 .relais__texte {
-  margin: 0;
   font-size: 0.96rem;
-  line-height: 1.6;
   color: var(--color-text);
 }
 
@@ -566,8 +436,6 @@ textarea:disabled {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem 1.1rem;
-  margin: 0;
-  padding: 0;
   list-style: none;
   font-size: 0.85rem;
   color: var(--color-muted);
@@ -646,7 +514,6 @@ textarea:disabled {
   display: grid;
   justify-items: center;
   gap: 1rem;
-  padding-top: 1.5rem;
 }
 
 .button {
@@ -744,12 +611,6 @@ textarea:disabled {
   font-weight: 600;
 }
 
-.admin-body {
-  background:
-    radial-gradient(circle at top right, rgba(201, 107, 62, 0.08), transparent 28%),
-    var(--color-bg);
-}
-
 .admin-page {
   min-height: 100vh;
 }
@@ -766,7 +627,6 @@ textarea:disabled {
 .admin-panel__toolbar {
   display: grid;
   gap: 1rem;
-  margin-bottom: 1.25rem;
 }
 
 .admin-panel__toolbar-actions {
@@ -818,7 +678,6 @@ textarea:disabled {
 }
 
 .empty-state {
-  margin: 0;
   color: var(--color-muted);
 }
 
@@ -826,10 +685,6 @@ textarea:disabled {
 .admin-gestion {
   display: grid;
   gap: 1.5rem;
-}
-
-.admin-gestion .admin-panel__toolbar {
-  margin-bottom: 0;
 }
 
 /* Périodes terminées */
@@ -879,15 +734,9 @@ textarea:disabled {
 }
 
 .demande-card__nom {
-  margin: 0;
   font-size: 1.2rem;
   line-height: 1.3;
-  font-weight: 700;
   color: var(--color-text);
-}
-
-.demande-card p {
-  margin: 0;
 }
 
 .demande-card__recue {
@@ -907,7 +756,6 @@ textarea:disabled {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.85rem 1.25rem;
-  margin: 0;
 }
 
 .demande-card__info {
@@ -953,7 +801,6 @@ textarea:disabled {
 }
 
 .demande-card__infos dd {
-  margin: 0;
   overflow-wrap: anywhere;
   white-space: pre-line;
 }
@@ -1069,15 +916,6 @@ textarea:disabled {
     grid-row: 3;
   }
 
-  .hero__grid,
-  .admin-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
-  }
-
-  .hero__grid {
-    gap: 3rem;
-  }
-
   .info-card {
     grid-template-columns: auto 1fr;
     padding: 2.25rem 2.5rem;
@@ -1111,15 +949,6 @@ textarea:disabled {
 }
 
 @media (min-width: 64rem) {
-  .hero {
-    padding: 5rem 0 2.2rem;
-  }
-
-  .hero__grid {
-    grid-template-columns: minmax(0, 1fr) minmax(25rem, 31rem);
-    gap: 5rem;
-  }
-
   .step-card {
     display: grid;
     grid-template-columns: 4.2rem minmax(0, 1fr);
@@ -1165,10 +994,6 @@ body.reservation-page .section-heading {
   font-family: "Cormorant Garamond", serif;
 }
 
-body.reservation-page main {
-  display: block;
-}
-
 body.reservation-page .topbar,
 body.reservation-page .footer-bar {
   position: relative;
@@ -1189,9 +1014,7 @@ body.reservation-page .footer-bar .footer-legal a:hover {
 body.reservation-page .hero {
   display: block;
   min-height: auto;
-  position: relative;
   overflow: visible;
-  background: var(--cream, #FBF7F0);
   padding: 4rem 0 2.75rem;
 }
 
@@ -1211,33 +1034,12 @@ body.reservation-page .hero__content {
   min-width: 0;
 }
 
-body.reservation-page .reservation-kicker,
-.reservation-section-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  margin: 0 0 18px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(168, 71, 42, 0.1);
-  color: var(--rust, #A8472A);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .14em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 body.reservation-page .section-heading .reservation-section-kicker {
   margin-bottom: 1.1rem;
 }
 
 body.reservation-page .hero h1 {
   font-size: clamp(44px, 6vw, 76px);
-  line-height: 0.92;
-  letter-spacing: -0.04em;
 }
 
 body.reservation-page .hero h1 span {
@@ -1249,7 +1051,6 @@ body.reservation-page .hero__lead {
   margin: 1.25rem 0 0;
   max-width: 30rem;
   color: var(--mid, #4A3728);
-  font-size: 16px;
   line-height: 1.85;
 }
 
@@ -1275,17 +1076,11 @@ body.reservation-page .hero__media-frame::before {
 }
 
 body.reservation-page .hero__media-frame img {
-  display: block;
   width: 100%;
   border-radius: 1.85rem;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  object-position: center center;
   box-shadow: 0 14px 30px rgba(38, 22, 10, 0.14);
-}
-
-body.reservation-page .autocomplete__list[hidden] {
-  display: none;
 }
 
 body.reservation-page .autocomplete__option small {
@@ -1337,10 +1132,6 @@ body.reservation-page .success-panel p {
     padding: 2.25rem 0 1.8rem;
   }
 
-  body.reservation-page .reservation-kicker {
-    margin-bottom: 14px;
-  }
-
   body.reservation-page .hero h1 {
     font-size: clamp(42px, 15vw, 64px);
   }
@@ -1386,40 +1177,21 @@ body.reservation-page .skip-link:not(:focus):not(:active) {
   pointer-events: none;
 }
 
-body.reservation-page .success-panel[hidden],
-body.reservation-page .autocomplete__list[hidden] {
-  display: none;
-}
-
 body.reservation-page .reservation-kicker,
 body.reservation-page .reservation-section-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
   margin: 0 0 18px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: rgba(168, 71, 42, 0.10);
-  color: var(--rust, #A8472A);
   font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .14em;
   line-height: 1.7;
-  text-transform: uppercase;
 }
 
 body.reservation-page .reservation-kicker svg,
 body.reservation-page .reservation-section-kicker svg {
   width: 14px;
-  height: 14px;
   flex: 0 0 14px;
 }
 
 body.reservation-page .section-heading__lead {
   font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
   line-height: 1.7;
   color: var(--color-muted);
   margin-top: 0.8rem;
@@ -1427,10 +1199,6 @@ body.reservation-page .section-heading__lead {
 
 body.reservation-page .field[data-field="commune"] .field-error {
   margin-top: 0.55rem;
-}
-
-body.reservation-page .autocomplete {
-  position: relative;
 }
 
 body.reservation-page .autocomplete__list {

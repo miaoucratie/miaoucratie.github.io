@@ -1,1 +1,101 @@
-.lavis-host{position:relative;isolation:isolate}.larmes{position:absolute;inset:0;z-index:-1;pointer-events:none}.tache{position:absolute;height:auto;overflow:visible}main{overflow-x:clip}.art-fin--podcast{text-align:left;background:#fff;border-top:0}.art-fin--podcast p{max-width:none;margin:0 0 var(--e-para)}.art-fin--podcast .art-fin-btns{justify-content:flex-start}
+.lavis-host{position:relative;isolation:isolate}.larmes{position:absolute;inset:0;z-index:-1;pointer-events:none}.tache{position:absolute;overflow:visible}main{overflow-x:clip}.art-fin--podcast{text-align:left;background:#fff;border-top:0}.art-fin--podcast p{max-width:none}.art-fin--podcast .art-fin-btns{justify-content:flex-start}
+
+/* ══ INFOGRAPHIES DU SONDAGE DEUIL ANIMAL ══ */
+
+/* Chiffres alignés */
+.sd-chiffre {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rust);
+  font-feature-settings: 'lnum' 1;
+  white-space: nowrap;
+}
+.sd-chiffre small { font-size: 0.5em; font-weight: 600; }
+.sd-texte { font-size: 15px; line-height: 1.5; color: var(--mid); }
+.sd-etiquette {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 10px;
+}
+
+/* Chiffre clé */
+.sd-cle { display: grid; grid-template-columns: auto auto auto; justify-content: center; align-items: center; column-gap: 44px; }
+.sd-cle .sd-chiffre { font-size: 80px; }
+.sd-cle .sd-texte { font-size: 18px; color: var(--deep); max-width: 30ch; }
+
+/* Silhouettes */
+.sd-silhouettes { display: flex; gap: 12px; }
+.sd-silhouettes svg { width: 46px; }
+.sd-on { fill: var(--rust); }
+.sd-off { fill: var(--light); }
+
+/* Anneau */
+.sd-anneau { width: 96px; }
+.sd-anneau .piste { fill: none; stroke: var(--warm); stroke-width: 12; }
+.sd-anneau .part { fill: none; stroke: var(--rust); stroke-width: 12; }
+
+/* Deux panneaux côte à côte */
+.sd-duo { display: grid; grid-template-columns: 1fr 1fr; }
+.sd-duo > div { padding: 0 28px; display: flex; flex-direction: column; align-items: flex-start; }
+.sd-duo > div:first-child { padding-left: 0; }
+.sd-duo > div:last-child { padding-right: 0; border-left: 1px solid var(--warm); }
+.sd-duo .sd-chiffre { font-size: 56px; margin-bottom: 8px; }
+.sd-duo .sd-texte { margin-bottom: 20px; max-width: 28ch; }
+.sd-duo .sd-silhouettes, .sd-duo .sd-points, .sd-duo .sd-jauge { margin-top: auto; }
+
+/* Grille de points */
+.sd-points { display: grid; grid-template-columns: repeat(12, 10px); gap: 7px; }
+.sd-points i { height: 10px; border-radius: 50%; background: var(--light); }
+.sd-points i.on { background: var(--rust); box-shadow: 0 0 0 3px rgba(168, 71, 42, 0.18); }
+
+/* Jauge */
+.sd-jauge { width: 100%; height: 12px; border-radius: 999px; background: var(--warm); overflow: hidden; }
+.sd-jauge span { display: block; height: 100%; border-radius: 999px; background: var(--rust); }
+
+/* Deux colonnes face à face */
+.sd-face { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); }
+.sd-face > div {
+  padding: 0 28px; display: grid; grid-row: span 4; grid-template-rows: subgrid;
+  align-content: start; align-items: start;
+}
+.sd-face > div:first-child { padding-left: 0; }
+.sd-face > div:last-child { padding-right: 0; border-left: 1px solid var(--warm); }
+.sd-citation {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 21px; line-height: 1.35;
+  margin: 0 0 14px; padding-left: 14px; border-left: 3px solid var(--rust);
+}
+.sd-face > div:last-child .sd-citation { border-left-color: var(--mid); }
+.sd-compte { margin: 0 0 18px; display: flex; align-items: baseline; gap: 12px; }
+.sd-compte .sd-texte { max-width: 26ch; }
+.sd-compte .sd-chiffre { font-size: 44px; }
+.sd-face > div:last-child .sd-compte .sd-chiffre { color: var(--mid); }
+
+/* Deux chiffres */
+.sd-fleche { display: grid; grid-template-columns: auto 1px auto; justify-content: center; }
+.sd-fleche > div { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.sd-fleche > div:first-child { padding-right: 52px; }
+.sd-fleche > div:last-child { padding-left: 52px; }
+.sd-fleche .sd-chiffre { font-size: 56px; margin-bottom: 8px; }
+.sd-fleche > div:first-child .sd-chiffre { color: var(--mid); }
+.sd-pivot { position: relative; background: var(--warm); }
+.sd-pivot svg {
+  position: absolute; left: 50%; top: 55px; transform: translate(-50%, -50%);
+  width: 52px; padding: 13px;
+  border-radius: 50%; background: var(--cream); border: 1px solid var(--warm);
+}
+.sd-pivot path { fill: none; stroke: var(--rust); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+@media (max-width: 600px) {
+  .sd-cle { grid-template-columns: 1fr; justify-items: center; text-align: center; row-gap: 18px; }
+  .sd-cle .sd-chiffre { font-size: 64px; }
+  .sd-cle .sd-texte { font-size: 16px; }
+  .sd-duo, .sd-face { grid-template-columns: 1fr; }
+  .sd-duo > div, .sd-face > div { padding: 0; }
+  .sd-duo > div:last-child, .sd-face > div:last-child { border-left: 0; border-top: 1px solid var(--warm); margin-top: 22px; padding-top: 22px; }
+  .sd-duo .sd-chiffre, .sd-fleche .sd-chiffre { font-size: 48px; }
+  .sd-fleche { grid-template-columns: 1fr; }
+  .sd-fleche > div:first-child, .sd-fleche > div:last-child { padding: 0; }
+  .sd-pivot { height: 1px; margin: 44px 0; }
+  .sd-pivot svg { top: 0; transform: translate(-50%, -50%) rotate(90deg); }
+}
