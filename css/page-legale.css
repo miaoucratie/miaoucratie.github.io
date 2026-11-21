@@ -1,30 +1,11 @@
 /* CGV et mentions légales */
 :root {
       --T: #A8472A;
-      --N: #1E1812;
-      --fond-legal: #F9F5F0;
       --rule: #e8ddd4;
     }
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      background: var(--fond-legal);
-      color: var(--N);
-      font-family: 'DM Sans', sans-serif;
       font-size: 15px;
-      line-height: 1.7;
-      padding: 60px 24px;
-    }
-
-    .cgv-wrapper {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 52px 24px 72px;
     }
 
     /* En-tête */
@@ -39,14 +20,12 @@
       font-size: 36px;
       font-weight: 600;
       letter-spacing: -1px;
-      color: var(--N);
       line-height: 1;
       margin-bottom: 10px;
     }
 
     .cgv-brand em {
       color: var(--T);
-      font-style: italic;
     }
 
     .brand-rule {
@@ -58,15 +37,9 @@
 
     .cgv-header p {
       font-size: 13px;
-      color: #888;
-      line-height: 1.6;
     }
 
     .cgv-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px;
-      font-weight: 600;
-      color: var(--N);
       margin-bottom: 4px;
     }
 
@@ -76,11 +49,6 @@
     }
 
     .cgv-article h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--T);
-      letter-spacing: 0.02em;
       text-transform: uppercase;
       margin-bottom: 10px;
     }

@@ -12,7 +12,7 @@
     line-height: 1;
     color: var(--terracotta);
   }
-  .e404-chat { width: .86em; height: .86em; }
+  .e404-chat { width: .86em; }
   .e404-dort { transform-origin: 100px 150px; animation: e404-souffle 3.6s ease-in-out infinite; }
   .e404-zzz text { animation: e404-z 3.6s ease-in-out infinite; }
   .e404-zzz text:nth-child(2) { animation-delay: .6s; }
@@ -40,7 +40,6 @@
   .e404-pistes a:hover { text-decoration: underline; text-underline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
     .e404-dort, .e404-zzz text { animation: none; }
-    .e404-zzz text { opacity: 1; }
   }
 
 /* Pleine hauteur */

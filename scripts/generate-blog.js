@@ -272,7 +272,7 @@ const barre = (courante) => {
     const classes = [e.href === courante ? 'is-current' : '', e.classe || ''].filter(Boolean).join(' ');
     return `    <a href="${e.href}"${classes ? ` class="${classes}"` : ''}>${trait(16, e.dessin)}${e.libelle}</a>`;
   }).join('\n');
-  return `<header class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><nav class="tmenu-panel" id="tmenuPanel" style="display:none" aria-label="Menu principal">
+  return `<header class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><nav class="tmenu-panel" id="tmenuPanel" hidden aria-label="Menu principal">
 ${liens}
 </nav></div><div class="topbar-links"><a href="tel:+${NUMERO}">${pleinBarre(TELEPHONE)}<span>06&nbsp;44&nbsp;24&nbsp;76&nbsp;81</span></a><span class="tsep"></span><a href="mailto:miaoucratie@gmail.com">${pleinBarre(COURRIEL)}<span>miaoucratie@gmail.com</span></a><span class="tsep"></span><a href="${INSTAGRAM}" target="_blank" rel="noopener">${pleinBarre(LOGO_INSTAGRAM)}<span>@miaoucratie</span></a><span class="tsep"></span><a href="https://wa.me/${NUMERO}" target="_blank" rel="noopener">${pleinBarre(LOGO_WHATSAPP)}<span>WhatsApp</span></a></div></header>`;
 };
