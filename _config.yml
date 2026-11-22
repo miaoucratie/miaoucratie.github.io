@@ -14,5 +14,6 @@ exclude:
   - README.md
   - api/
   - scripts/
+  - gabarit/
   - shared/*.test.js
   - blog/articles.json
