@@ -68,9 +68,7 @@ a:hover {
   height: 1px;
   margin: -1px;
   overflow: hidden;
-  padding: 0;
   clip-path: inset(50%);
-  border: 0;
   white-space: nowrap;
 }
 
@@ -88,7 +86,6 @@ a:hover {
 }
 
 .skip-link:focus {
-  position: absolute;
   left: 1rem;
   top: 1rem;
   width: auto;
@@ -351,12 +348,6 @@ textarea[aria-invalid="true"],
   background: #fff7f6;
 }
 
-input:disabled,
-select:disabled,
-textarea:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
 
 .field-help {
   margin: 0.55rem 0 0;
@@ -571,11 +562,6 @@ textarea:disabled {
   display: none;
 }
 
-.button--secondary .button__loader,
-.button--ghost .button__loader {
-  border-color: rgba(201, 107, 62, 0.22);
-  border-top-color: var(--color-primary);
-}
 
 .button.is-loading .button__loader {
   display: inline-block;
@@ -754,7 +740,6 @@ textarea:disabled {
 
 .demande-card__infos {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
   gap: 0.85rem 1.25rem;
 }
 
@@ -819,21 +804,14 @@ textarea:disabled {
 }
 
 .flatpickr-calendar {
-  border: 0;
   border-radius: 1.2rem;
   box-shadow: var(--shadow-card);
-  overflow: hidden;
-  font-family: var(--font-body);
 }
 
 .flatpickr-months {
   background: var(--color-card-soft);
 }
 
-.flatpickr-current-month,
-.flatpickr-weekday {
-  color: var(--color-text);
-}
 
 .flatpickr-day.selected,
 .flatpickr-day.startRange,
@@ -848,10 +826,6 @@ textarea:disabled {
   border-color: var(--color-primary);
 }
 
-.flatpickr-day.inRange {
-  background: rgba(201, 107, 62, 0.12);
-  border-color: transparent;
-}
 
 /* Dates passées */
 .flatpickr-day.flatpickr-disabled,
@@ -977,7 +951,6 @@ textarea:disabled {
   *::before,
   *::after {
     animation-duration: 0.01ms;
-    animation-iteration-count: 1;
     transition-duration: 0.01ms;
   }
 }
@@ -985,8 +958,6 @@ textarea:disabled {
 /* Intégration */
 body.reservation-page {
   font-family: var(--font-body);
-  background: var(--cream, #FBF7F0);
-  color: var(--deep, #1E1812);
 }
 
 body.reservation-page .hero h1,
@@ -1024,7 +995,6 @@ body.reservation-page .hero::before {
 
 body.reservation-page .hero__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
   gap: 2.25rem;
   align-items: center;
 }
@@ -1062,7 +1032,6 @@ body.reservation-page .hero__media {
 }
 
 body.reservation-page .hero__media-frame {
-  width: min(100%, 33rem);
   padding: 1.15rem;
   border-radius: 2.4rem;
   background: linear-gradient(180deg, #efe1d2 0%, #f7efe8 100%);
@@ -1076,7 +1045,6 @@ body.reservation-page .hero__media-frame::before {
 }
 
 body.reservation-page .hero__media-frame img {
-  width: 100%;
   border-radius: 1.85rem;
   aspect-ratio: 4 / 5;
   object-fit: cover;
@@ -1164,16 +1132,7 @@ body.reservation-page .section-heading {
 body.reservation-page .skip-link:not(:focus):not(:active) {
   position: fixed;
   left: -100vw;
-  top: auto;
-  width: 1px;
-  height: 1px;
   margin: 0;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  opacity: 0;
   pointer-events: none;
 }
 
@@ -1186,7 +1145,6 @@ body.reservation-page .reservation-section-kicker {
 
 body.reservation-page .reservation-kicker svg,
 body.reservation-page .reservation-section-kicker svg {
-  width: 14px;
   flex: 0 0 14px;
 }
 
@@ -1207,7 +1165,6 @@ body.reservation-page .autocomplete__list {
   right: 0;
   top: calc(100% + 8px);
   z-index: 50;
-  display: none;
   max-height: 300px;
   overflow-y: auto;
   padding: 6px;
@@ -1228,9 +1185,7 @@ body.reservation-page .autocomplete__option {
   align-items: center;
   gap: 12px;
   border: 0;
-  background: #fff;
   padding: 12px 14px;
-  cursor: pointer;
   text-align: left;
   font: 500 14px/1.3 'DM Sans', sans-serif;
   color: var(--deep, #1E1812);
@@ -1242,14 +1197,9 @@ body.reservation-page .autocomplete__option:focus-visible {
   background: rgba(240, 232, 218, 0.75);
 }
 
-body.reservation-page .autocomplete__option-main {
-  display: block;
-  font-weight: 500;
-}
 
 body.reservation-page .autocomplete__option-meta {
   flex: 0 0 auto;
-  color: var(--sand, #B89B80);
   font-size: 12px;
   line-height: 1.2;
 }
@@ -1290,29 +1240,21 @@ body.reservation-page .flatpickr-current-month .numInputWrapper input.cur-year {
   width: auto;
   min-width: 0;
   min-height: 0;
-  height: auto;
   margin: 0;
   padding: 0;
-  border: 0;
-  border-radius: 0;
   background: transparent;
   box-shadow: none;
-  color: var(--deep, #1E1812);
   font: inherit;
-  line-height: 1;
 }
 
 body.reservation-page .flatpickr-current-month .flatpickr-monthDropdown-months {
   appearance: none;
   padding-right: 0.9rem;
-  font-weight: 600;
 }
 
 body.reservation-page .flatpickr-current-month .numInputWrapper {
   width: 4.75ch;
   min-width: 4.75ch;
-  height: auto;
-  padding: 0;
 }
 
 body.reservation-page .flatpickr-current-month .numInputWrapper span.arrowUp,
@@ -1326,22 +1268,11 @@ body.reservation-page .flatpickr-months .flatpickr-next-month {
   padding: 0.15rem 0.45rem;
 }
 
-body.reservation-page .flatpickr-months .flatpickr-prev-month svg,
-body.reservation-page .flatpickr-months .flatpickr-next-month svg {
-  width: 14px;
-  height: 14px;
-}
 
 body.reservation-page .flatpickr-weekdays {
   padding-top: 0.25rem;
 }
 
-body.reservation-page .flatpickr-alt-input[aria-invalid="true"],
-body.reservation-page .flatpickr-input[aria-invalid="true"] + .flatpickr-alt-input,
-body.reservation-page input.flatpickr-input[aria-invalid="true"] {
-  border-color: rgba(157, 59, 35, 0.45);
-  background: #fff7f6;
-}
 
 /* Preuves sous le formulaire */
 .submit-panel .submit-preuves { color: var(--muted, #7A6B5E); font-size: 14px; margin: 0 0 4px; }

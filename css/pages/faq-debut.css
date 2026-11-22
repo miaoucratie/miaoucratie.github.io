@@ -17,7 +17,6 @@
       max-width: 860px;
       margin: 0 auto;
       text-align: center;
-      animation: fadeUp 0.7s ease both;
     }
     .hero-title {
       margin-bottom: 28px;
@@ -35,7 +34,6 @@
       max-width: 1040px;
       margin: 0 auto;
       padding: 0 48px 80px;
-      animation: fadeUp 0.7s 0.1s ease both;
     }
     .faq-sommaire {
       font-size: 14px;
@@ -329,7 +327,6 @@
       margin: 0 auto 48px;
       padding: 0 48px;
       position: relative;
-      animation: fadeUp 0.7s 0.05s ease both;
     }
     .search-input {
       width: 100%;
