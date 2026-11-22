@@ -41,7 +41,3 @@
   @media (prefers-reduced-motion: reduce) {
     .e404-dort, .e404-zzz text { animation: none; }
   }
-
-/* Pleine hauteur */
-body.standalone-page.cgv-page { min-height: 100vh; display: flex; flex-direction: column; }
-main.e404 { flex: 1 0 auto; width: 100%; }
