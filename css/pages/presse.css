@@ -8,7 +8,7 @@
 .pr-date{font-size:13px;color:#7A6B5E}
 
 /* ── Actions ── */
-.pr-ghost{display:inline-flex;align-items:center;min-height:44px;font-size:14px;color:#7A6B5E;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#D4BEA8;transition:color .2s,text-decoration-color .2s}
+.pr-ghost{display:inline-flex;align-items:center;min-height:44px;font-size:14px;color:#7A6B5E;text-underline-offset:4px;text-decoration-color:#D4BEA8;transition:color .2s,text-decoration-color .2s}
 .pr-ghost:hover{color:#1E1812;text-decoration-color:#1E1812}
 
 /* ── Bloc journalistes ── */

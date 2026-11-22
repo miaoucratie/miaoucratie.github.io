@@ -53,7 +53,7 @@
 .sd-jauge span { display: block; height: 100%; border-radius: 999px; background: var(--rust); }
 
 /* Deux colonnes face à face */
-.sd-face { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); }
+.sd-face { display: grid; grid-template-columns: 1fr 1fr; }
 .sd-face > div {
   padding: 0 28px; display: grid; grid-row: span 4; grid-template-rows: subgrid;
   align-content: start; align-items: start;

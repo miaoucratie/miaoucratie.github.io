@@ -41,7 +41,6 @@
   .t-offre--attente{transition:none}
 }
 @supports (grid-template-rows:subgrid){
-  .t-offres{grid-template-rows:auto auto auto 1fr auto auto}
   .t-offre{display:grid;grid-row:span 6;grid-template-rows:subgrid;row-gap:0}
 }
 .t-offre-tete{padding:28px var(--t-pad) 4px}
@@ -94,7 +93,7 @@
 /* Titre de section */
 #prix .t-section-title{margin-bottom:32px}
 .t-bande{--sens:var(--svc);background:#fff;border:1px solid #E8DDD0;border-radius:18px;padding:32px var(--t-pad)}
-.t-bande-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));grid-template-rows:auto auto auto;gap:20px 24px}
+.t-bande-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:20px 24px}
 .t-bande-carte{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
 @supports (grid-template-rows:subgrid){
   .t-bande-carte{display:grid;grid-row:span 3;grid-template-rows:subgrid;justify-items:center}
@@ -118,7 +117,7 @@
   .t-renvois{grid-auto-flow:row;width:100%}
 }
 /* Liens dans le texte */
-.page-wrap p a,.page-wrap li a,.page-wrap dd a{color:#A8472A;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px;transition:color .2s}
+.page-wrap p a,.page-wrap li a,.page-wrap dd a{color:#A8472A;text-underline-offset:2px;text-decoration-thickness:1px;transition:color .2s}
 .page-wrap p a:hover,.page-wrap li a:hover,.page-wrap dd a:hover{color:#8B3921}
 /* Ligne d'avis */
 .t-avis{flex-wrap:wrap}
