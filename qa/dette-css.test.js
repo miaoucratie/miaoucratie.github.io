@@ -84,3 +84,65 @@ test('règle recopiée : seulement si les deux feuilles sont chargées ensemble'
   assert.deepEqual(recopiees(sources, [['a.css'], ['b.css']]), []);
   assert.deepEqual(recopiees(new Map([['a.css', '.x { color: red; }'], ['b.css', '.x { color: blue; }']]), [['a.css', 'b.css']]), []);
 });
+
+test('une déclaration est lue telle qu\'écrite, même quand le navigateur la découpe', async () => {
+  const r = await relever('.a { border: 0; border-bottom: 1px solid red; }', '<button class="a">x</button>');
+  assert.deepEqual([...r.vues].sort(), [cle('.a', 'border'), cle('.a', 'border-bottom')]);
+  assert.ok(r.utiles.has(cle('.a', 'border')) && r.utiles.has(cle('.a', 'border-bottom')));
+});
+
+test('white-space se mesure sur toutes ses sous-propriétés', async () => {
+  const r = await relever('.a { white-space: nowrap; }', '<p class="a">x</p>');
+  assert.ok(r.utiles.has(cle('.a', 'white-space')));
+});
+
+test('une liste qui mêle éléments et pseudo-éléments se mesure sur les deux', async () => {
+  const r = await relever('*, *::before { margin: 0; }', '<p>x</p>');
+  assert.ok(r.utiles.has(cle('*, ::before', 'margin')));
+});
+
+test('un préfixe de secours écrit avec la propriété standard est mis hors mesure', async () => {
+  const r = await relever('.a { -webkit-mask-image: none; mask-image: none; color: red; }', '<p class="a">x</p>');
+  assert.ok(r.exclues.includes(`${cle('.a', '-webkit-mask-image')} | préfixe de secours pour un autre navigateur`));
+});
+
+test('le repli d’une règle @supports est mis hors mesure, avec sa condition', async () => {
+  const r = await relever('.a { display: flex; color: red; } @supports (display: grid) { .a { display: grid; } }', '<p class="a">x</p>');
+  assert.ok(r.exclues.includes(`${cle('.a', 'display')} | repli pour les navigateurs sans « (display: grid) »`));
+});
+
+test('une propriété animée par une transition se mesure à sa valeur finale', async () => {
+  const r = await relever('.a { transition: color 1s; } .a:not(.z) { color: red; }', '<p class="a">x</p>');
+  assert.ok(r.utiles.has(cle('.a:not(.z)', 'color')));
+});
+
+test('un retrait rend la main aux lignes précédentes de la règle', async () => {
+  const r = await relever('.a { color: white; border: 3px solid red; border-top-color: white; }', '<p class="a">x</p>');
+  assert.ok(r.utiles.has(cle('.a', 'border-top-color')));
+});
+
+test('une propriété standard se juge avec son préfixe de secours', async () => {
+  const r = await relever('.a { -webkit-mask-image: linear-gradient(red, transparent); mask-image: linear-gradient(red, transparent); }', '<p class="a">x</p>');
+  assert.ok(r.utiles.has(cle('.a', 'mask-image')));
+});
+
+test('une règle ajoutée par un script est mise hors mesure', async () => {
+  const r = await relever('.a { color: red; }', '<p class="a">x</p>', () => document.styleSheets[0].insertRule('.a { margin-top: 3px; }', 1));
+  assert.ok(r.exclues.includes(`${cle('.a', 'margin-top')} | règle ajoutée par un script, absente du fichier`));
+  assert.ok(r.utiles.has(cle('.a', 'color')));
+});
+
+test('une taille de police presque égale se voit à la hauteur de ligne', async () => {
+  const r = await relever('.p { font-size: 12.99996px; } .a { font-size: 13px; line-height: 1.5; }', '<div class="p"><p class="a">x</p></div>');
+  assert.ok(r.utiles.has(cle('.a', 'font-size')));
+});
+
+test('une déclaration écrasée dans sa propre règle est relevée', async () => {
+  const r = await relever('.a { color: red; margin-top: 1px; margin: 0; }', '<p class="a">x</p>');
+  assert.deepEqual(r.sansEffet, [cle('.a', 'margin-top')]);
+});
+
+test('une propriété inconnue du navigateur est mise hors mesure, avec sa raison', async () => {
+  const r = await relever('.a { -moz-osx-font-smoothing: grayscale; color: red; }', '<p class="a">x</p>');
+  assert.deepEqual(r.exclues, [`${cle('.a', '-moz-osx-font-smoothing')} | propriété inconnue de ce navigateur`]);
+});

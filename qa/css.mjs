@@ -23,32 +23,7 @@ const EXCEPTIONS = new Map([
 ]);
 
 /* !important admis */
-const TITRES = 'harmonisation des titres, au-dessus du style propre à chaque page';
-const AU_DESSUS = 'titre particulier, au-dessus de l\'harmonisation des titres';
-const IMPORTANTS_ADMIS = new Map([
-  ['couches.css', new Map([
-    ['body .faq-hero .hero-title, body .cgv-title, body .hero-title', TITRES],
-    ['body h1, body h2, body h3, body .hero-title, body .section-title, body .acc-question, body .cgv-title, body.calculateur-page h1', TITRES],
-    ['body h2, body .section-title', TITRES],
-    ['body h3', TITRES],
-    ['body .stripe-item h2', TITRES],
-    ['body .cred-item h3', TITRES],
-    ['body .step h3', TITRES],
-    ['.faq-cta .cta-title', AU_DESSUS],
-    ['body.calculateur-page h1', 'page appelée à disparaître'],
-    ['.topbar', 'barre du haut jamais animée'],
-  ])],
-  ['article.css', new Map([
-    ['.art-etapes--echelle .art-etape h3', AU_DESSUS],
-    ['.art-voie h3', AU_DESSUS],
-  ])],
-  ['pages/index.css', new Map([['.cta-section h2', AU_DESSUS]])],
-  ['reservation.css', new Map([['[hidden]', 'un élément masqué reste masqué']])],
-  ['pages/carte.css', new Map([
-    ['.leaflet-control-zoom a', 'surcharge de la bibliothèque de carte'],
-    ['@media (prefers-reduced-motion: reduce) { *,*::before,*::after', 'mouvement réduit à la demande du lecteur'],
-  ])],
-]);
+const IMPORTANTS_ADMIS = new Map(Object.entries(JSON.parse(readFileSync(join(RACINE, 'qa', 'exceptions-css.json'), 'utf8'))).map(([f, m]) => [f, new Map(Object.entries(m))]));
 /* Réglages admis dans une page */
 const REGLAGES_ADMIS = [
   ['donnée d\'un graphique ou d\'un service', (p) => /^(width|height|left|top|right|bottom|transform|--[\w-]+)$/.test(p)],

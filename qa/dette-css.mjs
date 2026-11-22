@@ -2,6 +2,7 @@
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { availableParallelism } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { demarrerFauxWorker, demarrerServeur } from './qa.mjs';
@@ -22,25 +23,34 @@ const EXCEPTIONS = new Map([
 
 /* Programme */
 const pages = readdirSync(RACINE).filter((f) => f.endsWith('.html') && !EXCEPTIONS.has(f) && (!DEMANDEES.length || DEMANDEES.includes(f))).sort();
-const worker = await demarrerFauxWorker();
-const serveur = await demarrerServeur(worker.url);
-const base = `http://127.0.0.1:${serveur.address().port}`;
-const reseau = { coupees: [], antirobot: [], courriels: [], worker };
 const navigateur = await chromium.launch();
 const mesuresFaites = [];
 const exclues = [...EXCEPTIONS.keys()];
 let mesures = 0;
-for (const page of pages) {
-  for (const largeur of LARGEURS) {
-    await parcourirEtats(navigateur, base, reseau, page, largeur, async (p) => {
-      mesuresFaites.push(await p.evaluate(RELEVE, exclues));
-      mesures++;
-    });
+/* Quatre files en parallèle */
+const travaux = pages.flatMap((page) => LARGEURS.map((largeur) => [page, largeur]));
+const FILES = Number(process.env.DETTE_PARALLELE) || Math.max(1, Math.min(4, availableParallelism() - 1));
+await Promise.all(Array.from({ length: FILES }, async () => {
+  const worker = await demarrerFauxWorker();
+  const serveur = await demarrerServeur(worker.url);
+  const base = `http://127.0.0.1:${serveur.address().port}`;
+  const reseau = { coupees: [], antirobot: [], courriels: [], worker };
+  while (travaux.length) {
+    const [page, largeur] = travaux.shift();
+    let minuteur;
+    await Promise.race([
+      parcourirEtats(navigateur, base, reseau, page, largeur, async (p) => {
+        mesuresFaites.push(await p.evaluate(RELEVE, exclues));
+        mesures++;
+      }),
+      new Promise((_, ko) => { minuteur = setTimeout(() => ko(new Error(`${page}@${largeur} : plus de 3 minutes`)), 180000); }),
+    ]).finally(() => clearTimeout(minuteur));
+    if (DETAIL) process.stderr.write(`  ${page}@${largeur}\n`);
   }
-}
+  serveur.close();
+  worker.serveur.close();
+}));
 await navigateur.close();
-serveur.close();
-worker.serveur.close();
 
 const { vues, utiles, jamais, sansEffet, exclues: horsMesure } = classer(mesuresFaites);
 const lister = (dossier, prefixe = '') => readdirSync(join(RACINE, dossier), { withFileTypes: true })

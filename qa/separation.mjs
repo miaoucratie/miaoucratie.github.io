@@ -4,8 +4,8 @@ import { execFileSync } from 'node:child_process';
 
 /* Classement des fichiers */
 export function classerFichiers(fichiers) {
-  const harnais = fichiers.filter((f) => (f.startsWith('qa/') && f !== 'qa/reference.json') || f.startsWith('.github/'));
-  const site = fichiers.filter((f) => /\.html$/.test(f) || /^(css|js|shared|images|scripts|data)\//.test(f));
+  const harnais = fichiers.filter((f) => (f.startsWith('qa/') && !['qa/reference.json', 'qa/exceptions-css.json'].includes(f)) || f.startsWith('.github/'));
+  const site = fichiers.filter((f) => /\.html$/.test(f) || /^(css|js|shared|images|scripts|data|gabarit)\//.test(f));
   return { harnais, site, melange: harnais.length > 0 && site.length > 0 };
 }
 
