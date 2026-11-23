@@ -23,7 +23,7 @@ jobs:
   qa:
     name: Non-régression
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
 
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +62,9 @@ jobs:
 
       - name: Mise en page
         run: npm run mise-en-page:strict
+
+      - name: Code mort
+        run: npm run code-mort
 
       - name: Articles
         run: npm run articles
