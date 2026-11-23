@@ -330,6 +330,8 @@
 .art-etapes--couleurs .art-etape .step-bubble { background: var(--et); }
 .art-etapes--couleurs .art-etape h3 span { color: var(--et); }
 .art-etape p { font-size: 15px; color: var(--mid); }
+/* Numéros centrés sur le texte */
+.art-etapes--centre .art-etape { align-items: center; }
 
 /* ══ UN PROCEDE, DE GAUCHE A DROITE ══ */
 .art-etapes--parcours {
@@ -614,6 +616,10 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
   }
 }
 
+/* Cartes de texte seul */
+.art-duo--texte > .pcard { display: flex; grid-row: auto; }
+.art-duo--texte > .pcard ul { margin-bottom: 0; }
+
 /* ══ SOURCES ══ */
 .art-sources {
   background: var(--warm);
@@ -700,12 +706,12 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
 
 /* ══ ARTICLES DE LA RUBRIQUE COMPORTEMENT ══ */
 
-:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
-:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
-:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .art-sommaire a:hover { color: var(--art-mythe); border-left-color: var(--art-mythe); }
-:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .art-fig-titre { color: var(--art-mythe); }
-:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .art-tab thead th { color: var(--art-mythe); }
-:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage) .art-tab caption { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage, .art-page--complements) .eyebrow { color: var(--art-mythe); background: rgba(74, 107, 88, 0.10); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage, .art-page--complements) .art-sommaire a { border-left-color: rgba(74, 107, 88, 0.22); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage, .art-page--complements) .art-sommaire a:hover { color: var(--art-mythe); border-left-color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage, .art-page--complements) .art-fig-titre { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage, .art-page--complements) .art-tab thead th { color: var(--art-mythe); }
+:is(.art-page--mythes, .art-page--umwelt, .art-page--enfants, .art-page--lechage, .art-page--complements) .art-tab caption { color: var(--art-mythe); }
 
 
 /* ── Les deux branches du ronronnement ── */
@@ -757,14 +763,14 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
 .art-page--mythes .art-gestes { gap: 10px; margin: 0 0 var(--e-para); }
 .art-page--mythes .art-gestes .art-cat { font-size: 15px; padding: 9px 17px; }
 
-:is(.art-page--mythes, .art-page--umwelt) .art-verdict {
+:is(.art-page--mythes, .art-page--umwelt, .art-page--complements) .art-verdict {
   margin: var(--e-bloc) 0;
   padding: 0 0 0 22px;
   border-left: 3px solid var(--art-mythe);
   font-size: 19px;
   line-height: 1.6;
 }
-:is(.art-page--mythes, .art-page--umwelt) .art-verdict::before {
+:is(.art-page--mythes, .art-page--umwelt, .art-page--complements) .art-verdict::before {
   content: "Le verdict";
   display: block;
   margin-bottom: 8px;
@@ -775,16 +781,23 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
   color: var(--art-mythe);
 }
 
-:is(.art-page--mythes, .art-page--enfants) .art-corps > .art-duo { margin: var(--e-bloc) 0; }
+:is(.art-page--mythes, .art-page--enfants, .art-page--complements) .art-corps > .art-duo { margin: var(--e-bloc) 0; }
 /* Photo carrée */
 :is(.art-page--mythes, .art-page--lechage) .art-fig--photo { max-width: 480px; margin-inline: auto; }
 
 /* ══ ARTICLE UMWELT ══ */
 .art-page--umwelt .art-verdict::before { content: "À retenir"; }
-.art-page--umwelt .art-etapes--suite .step-bubble {
+/* Conclusion négative */
+.art-corps .art-verdict--non { border-left-color: var(--terracotta); }
+.art-corps .art-verdict--non::before { content: "✕ Le verdict"; color: var(--rust); }
+.art-produit :is(h2, h3) > span.art-non { color: var(--terracotta); }
+:is(.art-page--umwelt, .art-page--complements) .art-etapes--suite .step-bubble {
   border-color: var(--art-mythe);
   color: var(--art-mythe);
 }
+.art-page--complements .art-etapes--suite { --e-cercle: 60px; }
+/* Étape manquante d'une suite */
+.art-etapes--suite .art-etape--manque .step-bubble { border-color: var(--terracotta); background: var(--terracotta); color: var(--cream); }
 
 /* Bande de couleurs */
 .art-barre--bande { grid-template-columns: minmax(96px, 24%) 1fr; }
@@ -806,17 +819,28 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
 .art-axe > span:first-child { transform: none; }
 .art-axe > span:last-child { transform: translateX(-100%); }
 .art-barre--axe { margin-top: -6px; }
-:is(.art-page--umwelt, .art-page--lechage) :is(.art-tab td, .art-tab th, .art-legende-item) { text-wrap-style: pretty; }
+:is(.art-page--umwelt, .art-page--lechage, .art-page--complements) :is(.art-tab td, .art-tab th, .art-legende-item) { text-wrap-style: pretty; }
 @media (max-width: 560px) {
-  :is(.art-page--umwelt, .art-page--lechage) .art-tab--duel tr { display: grid; grid-template-columns: 1fr 1fr; }
-  :is(.art-page--umwelt, .art-page--lechage) .art-tab--duel thead th:first-child { display: none; }
-  :is(.art-page--umwelt, .art-page--lechage) .art-tab--duel thead th { width: auto; }
-  :is(.art-page--umwelt, .art-page--lechage) .art-tab--duel tbody th { grid-column: 1 / -1; padding-bottom: 6px; }
-  :is(.art-page--umwelt, .art-page--lechage) .art-tab--duel tbody tr + tr td { border-top: 0; }
-  .art-page--lechage .art-tab:not(.art-tab--duel) thead { display: none; }
-  .art-page--lechage .art-tab:not(.art-tab--duel) tr { display: grid; }
-  .art-page--lechage .art-tab:not(.art-tab--duel) tbody th { padding-bottom: 4px; }
-  .art-page--lechage .art-tab:not(.art-tab--duel) tbody tr + tr td { border-top: 0; }
+  :is(.art-page--umwelt, .art-page--lechage, .art-page--complements) .art-tab--duel tr { display: grid; grid-template-columns: 1fr 1fr; }
+  :is(.art-page--umwelt, .art-page--lechage, .art-page--complements) .art-tab--duel thead th:first-child { display: none; }
+  :is(.art-page--umwelt, .art-page--lechage, .art-page--complements) .art-tab--duel thead th { width: auto; }
+  :is(.art-page--umwelt, .art-page--lechage, .art-page--complements) .art-tab--duel tbody th { grid-column: 1 / -1; padding-bottom: 6px; }
+  :is(.art-page--umwelt, .art-page--lechage, .art-page--complements) .art-tab--duel tbody tr + tr td { border-top: 0; }
+  :is(.art-page--lechage, .art-page--complements) .art-tab:not(.art-tab--duel) thead { display: none; }
+  :is(.art-page--lechage, .art-page--complements) .art-tab:not(.art-tab--duel) tr { display: grid; }
+  :is(.art-page--lechage, .art-page--complements) .art-tab:not(.art-tab--duel) tbody th { padding-bottom: 4px; }
+  :is(.art-page--lechage, .art-page--complements) .art-tab:not(.art-tab--duel) tbody tr + tr td { border-top: 0; }
+  /* Étiquette de colonne d'une cellule empilée */
+  .art-tab td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
 }
 
 

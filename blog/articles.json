@@ -35,6 +35,7 @@
     "pages": {
       "404.html": null,
       "administration.html": "reservation.html",
+      "anti-stress-chat.html": "coulisses-miaoucratie.html",
       "calculateur-miaoucratie.html": null,
       "carte.html": "carte.html",
       "ce-que-jutilise.html": null,
@@ -88,7 +89,7 @@
       "related": [
         "jeu-chat",
         "enfants-et-chats",
-        "sens-du-chat"
+        "anti-stress-chat"
       ],
       "image": "https://miaoucratie.fr/images/logo.webp",
       "rang": 1
@@ -166,6 +167,7 @@
       "status": "published",
       "category": "Matériel",
       "affiliate": true,
+      "enTete": true,
       "h1": "Ce que j'utilise.",
       "seoTitle": "Friandises, jouets, soins : ce que j'utilise | Miaoucratie",
       "description": "Le matériel que j'utilise au quotidien avec mes chats et ceux que j'accueille : friandises, fontaine, jouets, soins. Liens affiliés Amazon signalés.",
@@ -359,6 +361,42 @@
       ],
       "image": "https://miaoucratie.fr/images/lechage-partage.jpg",
       "rang": 4
+    },
+    {
+      "slug": "anti-stress-chat",
+      "url": "/anti-stress-chat.html",
+      "status": "published",
+      "category": "Comportement",
+      "affiliate": false,
+      "h1": "Zylkène, CBD, fleurs de Bach : ce que valent vraiment les anti-stress pour chat",
+      "seoTitle": "Compléments anti-stress pour chat : ça marche ? | Miaoucratie",
+      "description": "Zylkène, Anxitane, Feliway, CBD, fleurs de Bach, plantes : ce que disent vraiment les études sur les anti-stress pour chat, et ce qui le calme.",
+      "ldHeadline": "Zylkène, CBD, fleurs de Bach : ce que valent vraiment les anti-stress pour chat",
+      "cardTitle": "Les anti-stress pour chat, ce qu'ils valent vraiment",
+      "cardText": [
+        "Zylkène, Feliway, CBD, fleurs de Bach, plantes&nbsp;: aucun de ces produits n'a fait la preuve de son efficacité dans une étude indépendante.",
+        "Pourquoi on y croit quand même, et ce qui aide un chat stressé."
+      ],
+      "cardCta": "Mes recherches",
+      "datePublished": "2026-11-23",
+      "dateModified": "2026-11-23",
+      "keywords": [
+        "complément anti-stress chat",
+        "anti-stress chat",
+        "Zylkène chat",
+        "Feliway efficace",
+        "CBD chat",
+        "fleurs de Bach chat",
+        "Anxitane chat",
+        "calmant naturel chat"
+      ],
+      "related": [
+        "mythes-chat",
+        "jeu-chat",
+        "sens-du-chat"
+      ],
+      "image": "https://miaoucratie.fr/images/logo.webp",
+      "rang": 5
     },
     {
       "slug": "sondage-deuil-animal",

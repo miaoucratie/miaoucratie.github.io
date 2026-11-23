@@ -87,6 +87,7 @@ for (const [i, a] of tous.entries()) {
   if (!Array.isArray(a.related)) faute(ou, '« related » doit etre une liste');
   if (!Array.isArray(a.keywords || [])) faute(ou, '« keywords » doit etre une liste');
   if (typeof a.affiliate !== 'boolean') faute(ou, '« affiliate » doit valoir true ou false');
+  if (a.enTete !== undefined && typeof a.enTete !== 'boolean') faute(ou, '« enTete » doit valoir true ou false');
   for (const c of ['datePublished', 'dateModified']) {
     if (!DATE.test(a[c] || '')) faute(ou, `${c} doit etre au format AAAA-MM-JJ, lu « ${a[c]} »`);
   }
@@ -172,12 +173,14 @@ for (const a of publies) {
 if (erreurs.length) terminer();
 
 /* ── Ordre d'affichage ── */
+/* « enTete » en premier */
 const rangRubrique = (a) => {
   const i = NOMS.indexOf(a.category);
   return i < 0 ? NOMS.length : i;
 };
 const ordre = publies.slice().sort((a, b) =>
-  (rangRubrique(a) - rangRubrique(b))
+  ((b.enTete === true) - (a.enTete === true))
+  || (rangRubrique(a) - rangRubrique(b))
   || ((a.rang ?? Infinity) - (b.rang ?? Infinity))
   || (b.datePublished.localeCompare(a.datePublished))
   || a.slug.localeCompare(b.slug));
