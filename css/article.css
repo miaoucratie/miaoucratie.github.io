@@ -399,13 +399,13 @@
 /* Titre de composant */
 .art-fig-titre,
 .art-tab caption,
-.art-etape h3,
 .cred-item h4 {
   font-size: 17px;
   font-weight: 700;
   line-height: 1.4;
   margin: 0 0 var(--e-titre);
 }
+.art-etape h3 { margin: 0 0 var(--e-titre); }
 /* Unité */
 .art-fig-unite {
   font-size: 12px;
@@ -941,7 +941,7 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
   background: var(--light);
 }
 /* Titre de palier */
-.art-etapes--echelle .art-etape h3 { font-size: 26px !important; margin: 0; }
+.art-etapes--echelle .art-etape h3 { font-size: 26px; margin: 0; }
 .art-etapes--echelle .art-etape h3 span { font-weight: 600; color: var(--palier); }
 .art-etapes--echelle .art-etape p { margin: 3px 0 0; }
 /* Liste de palier */
@@ -1003,7 +1003,7 @@ i.art-cle--uv { background: repeating-linear-gradient(135deg, rgba(74, 88, 200, 
   padding: 18px 24px;
   border-radius: 14px;
 }
-.art-voie h3 { font-size: 15px !important; margin: 2px 0 0; }
+.art-voie h3 { font-size: 15px; margin: 2px 0 0; }
 .art-voie h3 span {
   font-family: 'DM Sans', sans-serif;
   letter-spacing: .06em; text-transform: uppercase;

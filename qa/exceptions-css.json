@@ -1,22 +1,7 @@
 {
   "couches.css": {
-    "body .faq-hero .hero-title, body .cgv-title, body .hero-title": "harmonisation des titres, au-dessus du style propre à chaque page",
-    "body h1, body h2, body h3, body .hero-title, body .section-title, body .acc-question, body .cgv-title, body.calculateur-page h1": "harmonisation des titres, au-dessus du style propre à chaque page",
-    "body h2, body .section-title": "harmonisation des titres, au-dessus du style propre à chaque page",
-    "body h3": "harmonisation des titres, au-dessus du style propre à chaque page",
-    "body .stripe-item h2": "harmonisation des titres, au-dessus du style propre à chaque page",
-    "body .cred-item h3": "harmonisation des titres, au-dessus du style propre à chaque page",
-    "body .step h3": "harmonisation des titres, au-dessus du style propre à chaque page",
-    ".faq-cta .cta-title": "titre particulier, au-dessus de l'harmonisation des titres",
     "body.calculateur-page h1": "page appelée à disparaître",
     ".topbar": "barre du haut jamais animée"
-  },
-  "article.css": {
-    ".art-etapes--echelle .art-etape h3": "titre particulier, au-dessus de l'harmonisation des titres",
-    ".art-voie h3": "titre particulier, au-dessus de l'harmonisation des titres"
-  },
-  "pages/index.css": {
-    ".cta-section h2": "titre particulier, au-dessus de l'harmonisation des titres"
   },
   "reservation.css": {
     "[hidden]": "un élément masqué reste masqué"

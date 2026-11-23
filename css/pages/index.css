@@ -57,10 +57,6 @@ body .hero-card-title {
   color: var(--T, #A8472A);
 }
 
-.cta-section h2 {
-  color: #FBF7F0 !important;
-}
-
 /* Bande des promesses */
 .stripe { background: rgba(200,96,58,0.06); border-top: 1.5px solid rgba(200,96,58,0.18); border-bottom: 1.5px solid rgba(200,96,58,0.18); }
 .stripe-item {
