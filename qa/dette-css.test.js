@@ -2,7 +2,10 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { RELEVE, classer, recopiees } from './dette-css-regles.mjs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { RELEVE, classer, recopiees, empreinteDePage } from './dette-css-regles.mjs';
 
 let navigateur;
 before(async () => { navigateur = await chromium.launch(); });
@@ -145,4 +148,43 @@ test('une déclaration écrasée dans sa propre règle est relevée', async () =
 test('une propriété inconnue du navigateur est mise hors mesure, avec sa raison', async () => {
   const r = await relever('.a { -moz-osx-font-smoothing: grayscale; color: red; }', '<p class="a">x</p>');
   assert.deepEqual(r.exclues, [`${cle('.a', '-moz-osx-font-smoothing')} | propriété inconnue de ce navigateur`]);
+});
+
+/* Empreinte d'une page */
+const siteEssai = () => {
+  const r = mkdtempSync(join(tmpdir(), 'empreinte-'));
+  mkdirSync(join(r, 'css'));
+  mkdirSync(join(r, 'qa'));
+  writeFileSync(join(r, 'a.html'), '<link href="css/a.css"><a href="b.html">b</a><a href="/">accueil</a>');
+  writeFileSync(join(r, 'b.html'), '<link href="css/b.css">');
+  writeFileSync(join(r, 'css', 'a.css'), '.a { color: red; }');
+  writeFileSync(join(r, 'css', 'b.css'), '.b { color: red; }');
+  writeFileSync(join(r, 'qa', 'etats.mjs'), '// états');
+  return r;
+};
+
+test('une page change d\'empreinte quand une feuille qu\'elle charge change', () => {
+  const r = siteEssai();
+  const avant = empreinteDePage(r, 'a.html');
+  writeFileSync(join(r, 'css', 'a.css'), '.a { color: blue; }');
+  assert.notEqual(empreinteDePage(r, 'a.html'), avant);
+  rmSync(r, { recursive: true });
+});
+
+test('une page garde son empreinte quand une autre page ou sa feuille change', () => {
+  const r = siteEssai();
+  const avant = empreinteDePage(r, 'a.html');
+  writeFileSync(join(r, 'b.html'), '<link href="css/b.css"><p>neuf</p>');
+  writeFileSync(join(r, 'css', 'b.css'), '.b { color: blue; }');
+  assert.equal(empreinteDePage(r, 'a.html'), avant);
+  rmSync(r, { recursive: true });
+});
+
+test('toutes les pages changent d\'empreinte quand le harnais change', () => {
+  const r = siteEssai();
+  const avant = [empreinteDePage(r, 'a.html'), empreinteDePage(r, 'b.html')];
+  writeFileSync(join(r, 'qa', 'etats.mjs'), '// états modifiés');
+  assert.notEqual(empreinteDePage(r, 'a.html'), avant[0]);
+  assert.notEqual(empreinteDePage(r, 'b.html'), avant[1]);
+  rmSync(r, { recursive: true });
 });

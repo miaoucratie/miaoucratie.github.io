@@ -10,3 +10,6 @@ CLAUDE.local.md
 
 # Maquettes
 maquette-*.html
+
+# Mesures gardées
+qa/.cache/
