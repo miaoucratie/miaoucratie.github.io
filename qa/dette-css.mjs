@@ -1,17 +1,19 @@
 /* Relevé du CSS mort */
 
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { availableParallelism } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { demarrerFauxWorker, demarrerServeur } from './qa.mjs';
 import { parcourirEtats } from './etats.mjs';
-import { RELEVE, classer, recopiees } from './dette-css-regles.mjs';
+import { RELEVE, classer, recopiees, empreinteDePage } from './dette-css-regles.mjs';
 
 const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STRICT = process.argv.includes('--strict');
 const DETAIL = process.argv.includes('--detail');
+const SANS_CACHE = process.argv.includes('--sans-cache');
+const CACHE = join(RACINE, 'qa', '.cache', 'dette-css');
 const DEMANDEES = process.argv.slice(2).filter((a) => a.endsWith('.html'));
 const LARGEURS = [1280, 1024, 900, 768, 600, 480, 375, 320];
 
@@ -23,12 +25,28 @@ const EXCEPTIONS = new Map([
 
 /* Programme */
 const pages = readdirSync(RACINE).filter((f) => f.endsWith('.html') && !EXCEPTIONS.has(f) && (!DEMANDEES.length || DEMANDEES.includes(f))).sort();
-const navigateur = await chromium.launch();
-const mesuresFaites = [];
 const exclues = [...EXCEPTIONS.keys()];
 let mesures = 0;
+
+/* Pages inchangées */
+mkdirSync(CACHE, { recursive: true });
+const releves = new Map();
+const empreintes = new Map(pages.map((p) => [p, empreinteDePage(RACINE, p)]));
+for (const p of pages) {
+  const fichier = join(CACHE, `${p}.json`);
+  if (SANS_CACHE || !existsSync(fichier)) continue;
+  const garde = JSON.parse(readFileSync(fichier, 'utf8'));
+  if (garde.empreinte !== empreintes.get(p)) continue;
+  releves.set(p, garde);
+  mesures += garde.etats;
+}
+const reprises = releves.size;
+const aMesurer = pages.filter((p) => !releves.has(p));
+for (const p of aMesurer) releves.set(p, { empreinte: empreintes.get(p), etats: 0, vues: new Set(), visees: new Set(), utiles: new Set(), exclues: new Set() });
+
+const navigateur = await chromium.launch();
 /* Quatre files en parallèle */
-const travaux = pages.flatMap((page) => LARGEURS.map((largeur) => [page, largeur]));
+const travaux = aMesurer.flatMap((page) => LARGEURS.map((largeur) => [page, largeur]));
 const FILES = Number(process.env.DETTE_PARALLELE) || Math.max(1, Math.min(4, availableParallelism() - 1));
 await Promise.all(Array.from({ length: FILES }, async () => {
   const worker = await demarrerFauxWorker();
@@ -40,7 +58,10 @@ await Promise.all(Array.from({ length: FILES }, async () => {
     let minuteur;
     await Promise.race([
       parcourirEtats(navigateur, base, reseau, page, largeur, async (p) => {
-        mesuresFaites.push(await p.evaluate(RELEVE, exclues));
+        const m = await p.evaluate(RELEVE, exclues);
+        const r = releves.get(page);
+        for (const k of ['vues', 'visees', 'utiles', 'exclues']) m[k].forEach((c) => r[k].add(c));
+        r.etats++;
         mesures++;
       }),
       new Promise((_, ko) => { minuteur = setTimeout(() => ko(new Error(`${page}@${largeur} : plus de 3 minutes`)), 180000); }),
@@ -51,8 +72,13 @@ await Promise.all(Array.from({ length: FILES }, async () => {
   worker.serveur.close();
 }));
 await navigateur.close();
+for (const p of aMesurer) {
+  const r = releves.get(p);
+  for (const k of ['vues', 'visees', 'utiles', 'exclues']) r[k] = [...r[k]].sort();
+  writeFileSync(join(CACHE, `${p}.json`), JSON.stringify(r));
+}
 
-const { vues, utiles, jamais, sansEffet, exclues: horsMesure } = classer(mesuresFaites);
+const { vues, utiles, jamais, sansEffet, exclues: horsMesure } = classer([...releves.values()]);
 const lister = (dossier, prefixe = '') => readdirSync(join(RACINE, dossier), { withFileTypes: true })
   .flatMap((e) => (e.isDirectory() ? lister(join(dossier, e.name), `${prefixe}${e.name}/`) : e.name.endsWith('.css') ? [`${prefixe}${e.name}`] : []));
 const sources = new Map(lister('css').filter((f) => !EXCEPTIONS.has(f)).map((f) => [f, readFileSync(join(RACINE, 'css', f), 'utf8')]));
@@ -64,7 +90,8 @@ const parFeuille = (liste) => {
   return [...n].sort((a, b) => b[1] - a[1]).map(([f, c]) => `    ${String(c).padStart(5)}  ${f}`).join('\n');
 };
 
-console.log(`\nCSS mort — ${pages.length} pages, ${LARGEURS.length} largeurs, ${mesures} états mesurés, ${vues.size} déclarations\n`);
+console.log(`\nCSS mort — ${pages.length} pages, ${LARGEURS.length} largeurs, ${mesures} états mesurés, ${vues.size} déclarations`);
+console.log(`  pages mesurées ${aMesurer.length}, reprises inchangées ${reprises}\n`);
 console.log(`  utiles                         ${utiles.size}`);
 console.log(`  ne s'appliquent jamais         ${jamais.length}`);
 console.log(`  s'appliquent sans rien changer ${sansEffet.length}`);

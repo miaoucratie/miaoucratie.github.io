@@ -63,8 +63,22 @@ jobs:
       - name: Mise en page
         run: npm run mise-en-page:strict
 
+      - name: Mesures gardées
+        uses: actions/cache/restore@v4
+        with:
+          path: qa/.cache
+          key: code-mort-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: code-mort-
+
       - name: Code mort
         run: npm run code-mort
+
+      - name: Garder les mesures
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: qa/.cache
+          key: code-mort-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Articles
         run: npm run articles

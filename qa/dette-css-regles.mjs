@@ -1,5 +1,8 @@
 /* Classement du CSS mort */
 
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { dirname, join, normalize, relative } from 'node:path';
 import { reglesCSS } from './css-regles.mjs';
 
 /* Relevé dans la page */
@@ -221,4 +224,29 @@ export function recopiees(sources, chargements) {
     if (chargements.some((ch) => liste.filter((f) => ch.includes(f)).length > 1)) constats.push(`${liste.join(' + ')} | ${cle}`);
   }
   return constats.sort();
+}
+
+/* Empreinte d'une page */
+export const SOCLE = ['package-lock.json', 'qa/qa.mjs', 'qa/etats.mjs', 'qa/dette-css.mjs', 'qa/dette-css-regles.mjs', 'qa/css-regles.mjs', 'qa/fixtures', 'js', 'shared'];
+export function empreinteDePage(racine, page) {
+  const vus = new Set();
+  const ajouter = (f) => {
+    if (f && !f.endsWith('.html') && existsSync(join(racine, f)) && statSync(join(racine, f)).isFile()) vus.add(f);
+  };
+  const local = (u, base = '') => (/^([a-z]+:|\/\/)/i.test(u) ? null : normalize(join(base, u.replace(/^\//, '').split(/[?#]/)[0])));
+  for (const s of SOCLE) {
+    if (!existsSync(join(racine, s))) continue;
+    if (statSync(join(racine, s)).isFile()) vus.add(s);
+    else for (const e of readdirSync(join(racine, s), { withFileTypes: true, recursive: true })) if (e.isFile()) vus.add(relative(racine, join(e.parentPath, e.name)));
+  }
+  vus.add(page);
+  const html = readFileSync(join(racine, page), 'utf8');
+  for (const m of html.matchAll(/(?:href|src|poster)="([^"]+)"/g)) ajouter(local(m[1]));
+  for (const m of html.matchAll(/srcset="([^"]+)"/g)) for (const p of m[1].split(',')) ajouter(local(p.trim().split(/\s+/)[0]));
+  for (const f of [...vus].filter((f) => f.endsWith('.css'))) {
+    for (const m of readFileSync(join(racine, f), 'utf8').matchAll(/url\(\s*['"]?([^'")]+)/g)) ajouter(local(m[1], dirname(f)));
+  }
+  const h = createHash('sha256');
+  for (const f of [...vus].sort()) h.update(`${f}\0`).update(readFileSync(join(racine, f))).update('\0');
+  return h.digest('hex');
 }
