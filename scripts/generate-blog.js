@@ -275,6 +275,8 @@ const MENU = [
 ];
 const entreeMenu = (href) => MENU.flatMap((e) => [e, ...(e.enfants || [])]).find((e) => e.href === href);
 
+const FLECHE = '<path d="m6 9 6 6 6-6"/>';
+
 const lienMenu = (e, courante) => {
   const classes = [e.href === courante ? 'is-current' : '', e.classe || ''].filter(Boolean).join(' ');
   return `<a href="${e.href}"${classes ? ` class="${classes}"` : ''}>${trait(16, e.dessin)}${e.libelle}</a>`;
@@ -283,7 +285,10 @@ const lienMenu = (e, courante) => {
 const barre = (courante) => {
   const liens = MENU.map((e) => {
     if (!e.enfants) return `    ${lienMenu(e, courante)}`;
-    return `    ${lienMenu(e, courante)}\n    <div class="tmenu-sous">\n${e.enfants.map((f) => `      ${lienMenu(f, courante)}`).join('\n')}\n    </div>`;
+    const ouvert = e.enfants.some((f) => f.href === courante);
+    const id = `sousMenu-${e.href.replace('.html', '')}`;
+    return `    <div class="tmenu-univers">${lienMenu(e, courante)}<button class="tmenu-fleche" type="button" aria-expanded="${ouvert}" aria-controls="${id}" aria-label="Sous-menu de ${e.libelle}">${trait(16, FLECHE)}</button></div>
+    <div class="tmenu-sous" id="${id}"${ouvert ? '' : ' hidden'}>\n${e.enfants.map((f) => `      ${lienMenu(f, courante)}`).join('\n')}\n    </div>`;
   }).join('\n');
   return `<header class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><nav class="tmenu-panel" id="tmenuPanel" hidden aria-label="Menu principal">
 ${liens}
