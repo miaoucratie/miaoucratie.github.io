@@ -200,6 +200,8 @@ body.cgv-page .brand-rule {
   padding-top: 12px;
   border-top: 1px solid rgba(255,255,255,0.12);
 }
+/* Sous-entrées */
+.tmenu-sous { display: flex; flex-direction: column; gap: 2px; padding-left: 26px; }
 .topbar-links {
   margin-left: auto; display: flex; align-items: center; gap: 16px;
   flex-wrap: wrap;

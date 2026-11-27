@@ -263,17 +263,27 @@ const MENU = [
   { href: 'tarifs.html', libelle: 'Tarifs', dessin: '<path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.6" cy="7.6" r="1.4"/>' },
   { href: 'faq.html', libelle: 'FAQ', dessin: '<circle cx="12" cy="12" r="9"/><path d="M9.8 9.6a2.2 2.2 0 1 1 3 2.1v1.4"/><path d="M12.8 16.6h.01"/>' },
   { href: 'carte.html', libelle: 'Carte', dessin: '<path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/>' },
-  { href: 'presse.html', libelle: 'Ils en parlent', dessin: '<path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-3 1.7"/><path d="M7 9h7M7 12h7M7 15h4"/>' },
+  {
+    href: 'ma-methode.html', libelle: 'Ma méthode', dessin: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
+    enfants: [
+      { href: 'presse.html', libelle: 'Ils en parlent', dessin: '<path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-3 1.7"/><path d="M7 9h7M7 12h7M7 15h4"/>' },
+      { href: 'espece-de-deuil.html', libelle: 'Espèce de Deuil', dessin: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/>' },
+    ],
+  },
   { href: 'coulisses-miaoucratie.html', libelle: 'Les coulisses de Miaoucratie', dessin: '<path d="M12.6 6.1v14.6a1 1 0 0 1-1.24.97L5 20.2V7.1a1.9 1.9 0 0 1 1.44-1.84l3.8-.95A1.9 1.9 0 0 1 12.6 6.1Z"/><path d="M12.6 5.4h2.9a1.9 1.9 0 0 1 1.9 1.9V21"/><path d="M3.2 21h1.8M12.6 21h8.2"/><path d="M10.2 13.4v.01"/><path fill="currentColor" stroke="none" d="M20.9 0.4 21.6 2.24 23.56 2.33 22.03 3.57 22.55 5.47 20.9 4.39 19.25 5.47 19.77 3.57 18.24 2.33 20.2 2.24Z"/>' },
-  { href: 'espece-de-deuil.html', libelle: 'Espèce de Deuil', dessin: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/>' },
   { href: 'reservation.html', libelle: 'Réservation', classe: 'is-cta', dessin: '<path d="M4 6h16v14H4z"/><path d="M4 10.5h16"/><path d="M8 3v4M16 3v4"/>' },
 ];
-const entreeMenu = (href) => MENU.find((e) => e.href === href);
+const entreeMenu = (href) => MENU.flatMap((e) => [e, ...(e.enfants || [])]).find((e) => e.href === href);
+
+const lienMenu = (e, courante) => {
+  const classes = [e.href === courante ? 'is-current' : '', e.classe || ''].filter(Boolean).join(' ');
+  return `<a href="${e.href}"${classes ? ` class="${classes}"` : ''}>${trait(16, e.dessin)}${e.libelle}</a>`;
+};
 
 const barre = (courante) => {
   const liens = MENU.map((e) => {
-    const classes = [e.href === courante ? 'is-current' : '', e.classe || ''].filter(Boolean).join(' ');
-    return `    <a href="${e.href}"${classes ? ` class="${classes}"` : ''}>${trait(16, e.dessin)}${e.libelle}</a>`;
+    if (!e.enfants) return `    ${lienMenu(e, courante)}`;
+    return `    ${lienMenu(e, courante)}\n    <div class="tmenu-sous">\n${e.enfants.map((f) => `      ${lienMenu(f, courante)}`).join('\n')}\n    </div>`;
   }).join('\n');
   return `<header class="topbar"><div class="tmenu-wrap"><button class="tmenu-btn" id="tmenuBtn" aria-expanded="false">&#9776; Menu</button><nav class="tmenu-panel" id="tmenuPanel" hidden aria-label="Menu principal">
 ${liens}
