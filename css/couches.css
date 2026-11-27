@@ -151,7 +151,8 @@ body.cgv-page .brand-rule {
   font-weight: 500;
 }
 .topbar a:focus-visible,
-.tmenu-panel a:focus-visible {
+.tmenu-panel a:focus-visible,
+.tmenu-fleche:focus-visible {
   outline: 2px solid rgba(242,205,176,0.8);
   outline-offset: 2px;
 }
@@ -200,8 +201,20 @@ body.cgv-page .brand-rule {
   padding-top: 12px;
   border-top: 1px solid rgba(255,255,255,0.12);
 }
-/* Sous-entrées */
+/* Sous-menu */
+.tmenu-univers { position: relative; display: flex; flex-direction: column; }
+.tmenu-fleche {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 8px; background: none;
+  color: var(--light, #D4BEA8); cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.tmenu-fleche:hover { background: rgba(255,255,255,0.07); color: var(--cream,#FBF7F0); }
+.tmenu-fleche svg { opacity: .7; transition: transform 0.2s; }
+.tmenu-fleche[aria-expanded="true"] svg { transform: rotate(180deg); }
 .tmenu-sous { display: flex; flex-direction: column; gap: 2px; padding-left: 26px; }
+.tmenu-sous[hidden] { display: none; }
 .topbar-links {
   margin-left: auto; display: flex; align-items: center; gap: 16px;
   flex-wrap: wrap;
